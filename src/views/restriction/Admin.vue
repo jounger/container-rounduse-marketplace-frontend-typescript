@@ -1,10 +1,10 @@
 <template>
   <div>
-    <h1>HOME PAGE</h1>
+    <h1>ADMIN SECTION</h1>
   </div>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 @Component
-export default class Home extends Vue {}
+export default class Admin extends Vue {}
 </script>
