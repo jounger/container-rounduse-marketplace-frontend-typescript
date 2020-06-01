@@ -2,21 +2,21 @@
   <v-content>
     <v-container class="fill-height" fluid>
       <v-row align="center" justify="center">
-        <v-col class="text-center">
-          <p v-if="$auth.check()">User is logged in</p>
-        </v-col>
+        <h1>ADMIN SECTION</h1>
       </v-row>
     </v-container>
   </v-content>
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
-import DefaultLayout from "@/layouts/DefaultLayout.vue";
+import NavLayout from "@/layouts/NavLayout.vue";
+
 @Component
-export default class Home extends Vue {
+export default class Admin extends Vue {
   @PropSync("layout") layoutSync!: object;
+  private users = [];
   created() {
-    this.layoutSync = DefaultLayout;
+    this.layoutSync = NavLayout;
   }
 }
 </script>
