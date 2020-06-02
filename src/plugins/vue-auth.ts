@@ -33,13 +33,13 @@ const options = {
     url: "/auth/user",
     method: "GET",
     interval: 30,
-    enabled: false
+    enabled: true
   },
   refreshData: {
     url: "/auth/refresh",
     method: "GET",
     interval: 30,
-    enabled: false
+    enabled: true
   }
 };
 
