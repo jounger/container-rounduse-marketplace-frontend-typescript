@@ -2,7 +2,7 @@
   <v-content>
     <v-container class="fill-height" fluid>
       <v-row align="center" justify="center">
-        <Card :info.sync="info" />
+        <Card :profile.sync="profile" />
         <!-- <h1>USER SECTION</h1> -->
       </v-row>
     </v-container>
@@ -12,7 +12,9 @@
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
 import Card from "@/components/Card.vue";
-import { AuthUser } from "@d0whc3r/vue-auth-plugin";
+import UserModule from "@/store/modules/user";
+import { UserEntity } from "@/store/definitions/user";
+
 @Component({
   components: {
     Card
@@ -20,12 +22,13 @@ import { AuthUser } from "@d0whc3r/vue-auth-plugin";
 })
 export default class User extends Vue {
   @PropSync("layout") layoutSync!: object;
-  public info: AuthUser = {};
+  public profile: UserEntity | null = null;
   created() {
     this.layoutSync = NavLayout;
   }
-  beforeMount() {
-    this.info = this.$auth.user();
+  async mounted() {
+    await UserModule.loadProfile();
+    this.profile = UserModule.getCurrentUser;
   }
 }
 </script>

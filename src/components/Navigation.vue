@@ -35,7 +35,7 @@ export default class Navigation extends Vue {
   public items: Array<object> = [
     { title: "Dashboard", to: "/admin", icon: "mdi-view-dashboard" },
     { title: "User Management", to: "/user", icon: "mdi-image" },
-    { title: " My Profile", to: "/my-profile", icon: "mdi-help-box" }
+    { title: " My Profile", to: "/profile", icon: "mdi-help-box" }
   ];
 }
 </script>

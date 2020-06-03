@@ -1,6 +1,6 @@
 <template>
   <v-content>
-    <v-container class="fill-height" fluid>
+    <v-container v-if="paging" class="fill-height" fluid>
       <v-row align="center" justify="center">
         <!-- <h1>USER SECTION</h1> -->
         <v-simple-table fixed-header height="300px">
@@ -14,7 +14,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="item in users" :key="item.username">
+              <tr v-for="item in paging.data" :key="item.username">
                 <td>{{ item.username }}</td>
                 <td>{{ item.email }}</td>
                 <td>{{ item.fullname }}</td>
@@ -24,43 +24,40 @@
           </template>
         </v-simple-table>
       </v-row>
+      <v-pagination
+        v-model="paging.page"
+        :length="paging.total_pages"
+        :total-visible="7"
+        class="my-4"
+      ></v-pagination>
     </v-container>
   </v-content>
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
+import UserModule from "@/store/modules/user";
+
 @Component
 export default class User extends Vue {
+  // layout props
   @PropSync("layout") layoutSync!: object;
-  private users: Array<object> = [];
 
-  created() {
-    this.layoutSync = NavLayout;
+  public pagingResponse: any = {};
+
+  get paging() {
+    return UserModule.getUsersPaging;
+  }
+
+  async created() {
+    this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
   }
   async mounted() {
-    const res = await this.getUsers();
-    this.users = res.data.data;
-    console.log(this.users);
-  }
-  public getUsers(): any {
-    return this.$http({
-      url: "/admin/user",
-      method: "GET",
-      headers: {
-        Authorization: "Bearer {auth_token}"
-      },
-      params: {
-        page: 0,
-        limit: 5
-      }
-    });
-    // .then(response => {
-    //   console.warn("SUCCESS get", response);
-    // })
-    // .catch(err => {
-    //   console.error("ERROR! in get", err);
-    // });
+    await UserModule.fetchUsers({
+      page: 0,
+      limit: 5
+    }); // -> store.dispatch("user/fetchUsers", {page: 0, limit: 5})
+    console.log(this.paging);
   }
 }
 </script>

@@ -30,9 +30,9 @@ const routes: Array<RouteConfig> = [
     }
   },
   {
-    path: "/my-profile",
-    name: "MyProfile",
-    component: () => import("@/views/user/MyProfile.vue"),
+    path: "/profile",
+    name: "Profile",
+    component: () => import("@/views/user/Profile.vue"),
     meta: {
       auth: true
     }

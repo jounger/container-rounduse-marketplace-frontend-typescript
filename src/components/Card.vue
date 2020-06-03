@@ -1,5 +1,5 @@
 <template>
-  <v-card max-width="375" class="mx-auto">
+  <v-card v-if="profileSync" max-width="375" class="mx-auto">
     <v-img
       src="https://cdn.vuetifyjs.com/images/lists/ali.png"
       height="300px"
@@ -25,7 +25,7 @@
         <v-spacer></v-spacer>
 
         <v-card-title class="white--text pl-12 pt-12">
-          <div class="display-1 pl-12 pt-12">{{ infoSync.fullname }}</div>
+          <div class="display-1 pl-12 pt-12">{{ profileSync.fullname }}</div>
         </v-card-title>
       </v-row>
     </v-img>
@@ -54,7 +54,7 @@
         </v-list-item-icon>
 
         <v-list-item-content>
-          <v-list-item-title>{{ infoSync.email }}</v-list-item-title>
+          <v-list-item-title>{{ profileSync.email }}</v-list-item-title>
           <v-list-item-subtitle>Personal</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
@@ -77,9 +77,9 @@
 
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
-import { AuthUser } from "@d0whc3r/vue-auth-plugin";
+import { UserEntity } from "../store/definitions/user";
 @Component
 export default class Card extends Vue {
-  @PropSync("info", { type: Object }) infoSync!: AuthUser;
+  @PropSync("profile", { type: Object }) profileSync!: UserEntity;
 }
 </script>
