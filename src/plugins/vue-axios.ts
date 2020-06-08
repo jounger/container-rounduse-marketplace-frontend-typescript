@@ -8,7 +8,7 @@ const instance = axios.create({
   baseURL: "http://localhost:8085/api", // base on server-side port
   timeout: 15000,
   headers: {
-    Accept: "application/json",
+    "Accept": "application/json",
     "Content-type": "application/json"
   }
 });

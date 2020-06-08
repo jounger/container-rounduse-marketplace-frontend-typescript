@@ -16,7 +16,7 @@ const options = {
   loginData: {
     url: "/auth/signin",
     method: "POST",
-    redirect: "/admin",
+    redirect: "/user",
     headerToken: "Authorization",
     fetchUser: true,
     fetchData: (response: any) => response.data.userInfo
@@ -25,7 +25,7 @@ const options = {
   logoutData: {
     // url: '/auth/signout',
     // method: 'POST',
-    redirect: "/signout"
+    redirect: "/login"
     // makeRequest: false,
   },
   fetchItem: "",
@@ -33,13 +33,13 @@ const options = {
     url: "/auth/user",
     method: "GET",
     interval: 30,
-    enabled: false
+    enabled: true
   },
   refreshData: {
     url: "/auth/refresh",
     method: "GET",
     interval: 30,
-    enabled: false
+    enabled: true
   }
 };
 
