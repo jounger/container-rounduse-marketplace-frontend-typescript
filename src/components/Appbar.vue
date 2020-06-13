@@ -2,18 +2,24 @@
   <v-app-bar app clipped-left>
     <v-app-bar-nav-icon @click.stop="changeDrawer()"></v-app-bar-nav-icon>
     <v-toolbar-title>CRM</v-toolbar-title>
-    <v-btn text to="/">Home</v-btn>
+    <v-btn text to="/">Trang chủ</v-btn>
     <div v-if="$auth.check('ROLE_ADMIN')">
-      <v-btn text to="/admin">Admin</v-btn>
+      <v-btn text to="/admin">Quản trị viên</v-btn>
     </div>
     <div v-if="$auth.check(['ROLE_ADMIN', 'ROLE_USER'])">
-      <v-btn text to="/user">User</v-btn>
+      <v-btn text to="/list-user">Danh sách người dùng</v-btn>
     </div>
     <div v-if="!$auth.check()">
-      <v-btn text to="/login">Login</v-btn>
+      <v-btn text to="/login">Đăng nhập</v-btn>
+    </div>
+    <div v-if="!$auth.check()">
+      <v-btn text to="/register">Đăng ký</v-btn>
     </div>
     <div v-if="$auth.check()">
-      <v-btn text to="/logout">Logout</v-btn>
+      <v-btn text to="/logout">Đăng xuất</v-btn>
+    </div>
+    <div style="margin-left:800px;">
+      <v-icon>mdi-dots-vertical</v-icon>
     </div>
   </v-app-bar>
 </template>

@@ -52,6 +52,46 @@ const routes: Array<RouteConfig> = [
     name: "Register",
     component: () => import("@/views/auth/Register.vue")
   },
+  {
+    path: "/list-user",
+    name: "ListUser",
+    component: () => import("@/views/user/ListUser.vue")
+  },
+  {
+    path: "/user-detail",
+    name: "UserDetail",
+    component: () => import("@/views/user/UserDetail.vue")
+  },
+  {
+    path: "/add-shipping-line",
+    name: "AddShippingLine",
+    component: () => import("@/views/AddShippingLine.vue")
+  },
+  {
+    path: "/add-roles",
+    name: "AddRoles",
+    component: () => import("@/views/AddRoles.vue")
+  },
+  {
+    path: "/list-admin",
+    name: "ListAdmin",
+    component: () => import("@/views/user/ListAdmin.vue")
+  },
+  {
+    path: "/list-moderator",
+    name: "ListModerator",
+    component: () => import("@/views/user/ListModerator.vue")
+  },
+  {
+    path: "/list-shipping-line",
+    name: "ListShippingLine",
+    component: () => import("@/views/ListShippingLine.vue")
+  },
+  {
+    path: "/list-roles",
+    name: "ListRoles",
+    component: () => import("@/views/ListRoles.vue")
+  }
 ];
 
 const router = new VueRouter({

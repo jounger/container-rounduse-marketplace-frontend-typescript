@@ -20,3 +20,4 @@ export async function getUsers(paging: PaginationRequest): Promise<PaginationRes
   });
   return (response.data as PaginationResponse<UserEntity>);
 }
+

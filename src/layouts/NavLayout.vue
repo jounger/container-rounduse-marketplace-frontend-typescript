@@ -3,7 +3,9 @@
     <Navigation :drawer.sync="drawer" />
     <Appbar :drawer.sync="drawer" />
     <slot />
-    <Footer />
+    <div style="margin-top:30px;">
+      <Footer />
+    </div>
   </div>
 </template>
 <script lang="ts">

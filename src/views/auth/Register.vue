@@ -1,7 +1,7 @@
 <template>
   <v-card class="elevation-12">
     <v-toolbar color="primary" light flat>
-      <v-toolbar-title>Sign up form</v-toolbar-title>
+      <v-toolbar-title style="color: white;">Sign up form</v-toolbar-title>
     </v-toolbar>
     <v-card-text>
       <v-form>
@@ -51,6 +51,7 @@
     <v-card-actions>
       <v-spacer></v-spacer>
       <v-btn @click="submit()" color="primary">Sign up</v-btn>
+      <v-btn @click="cancel()" color="primary">Login</v-btn>
     </v-card-actions>
     <Dialog :dialog.sync="dialog" />
   </v-card>
@@ -105,6 +106,9 @@ export default class Register extends Vue {
       .catch(err => {
         console.error("ERROR! in register", err);
       });
+  }
+  public cancel(): void {
+    this.$router.push("/login");
   }
 }
 </script>
