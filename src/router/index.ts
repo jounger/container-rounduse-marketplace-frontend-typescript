@@ -53,9 +53,9 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/auth/Register.vue")
   },
   {
-    path: "/list-user",
-    name: "ListUser",
-    component: () => import("@/views/user/ListUser.vue")
+    path: "/user-management",
+    name: "UserManagement",
+    component: () => import("@/views/user/UserManagement.vue")
   },
   {
     path: "/user-detail",
@@ -65,32 +65,42 @@ const routes: Array<RouteConfig> = [
   {
     path: "/add-shipping-line",
     name: "AddShippingLine",
-    component: () => import("@/views/AddShippingLine.vue")
+    component: () => import("@/views/moderator/AddShippingLine.vue")
   },
   {
     path: "/add-roles",
     name: "AddRoles",
-    component: () => import("@/views/AddRoles.vue")
+    component: () => import("@/views/admin/AddRoles.vue")
   },
   {
-    path: "/list-admin",
-    name: "ListAdmin",
-    component: () => import("@/views/user/ListAdmin.vue")
+    path: "/admin-management",
+    name: "AdminManagement",
+    component: () => import("@/views/user/AdminManagement.vue")
   },
   {
-    path: "/list-moderator",
-    name: "ListModerator",
-    component: () => import("@/views/user/ListModerator.vue")
+    path: "/moderator-management",
+    name: "ModeratorManagement",
+    component: () => import("@/views/user/ModeratorManagement.vue")
   },
   {
-    path: "/list-shipping-line",
-    name: "ListShippingLine",
-    component: () => import("@/views/ListShippingLine.vue")
+    path: "/shipping-line-management",
+    name: "ShippingLineManagement",
+    component: () => import("@/views/moderator/ShippingLineManagement.vue")
   },
   {
-    path: "/list-roles",
-    name: "ListRoles",
-    component: () => import("@/views/ListRoles.vue")
+    path: "/roles-management",
+    name: "RolesManagement",
+    component: () => import("@/views/admin/RolesManagement.vue")
+  },
+  {
+    path: "/permission-management",
+    name: "PermissionManagement",
+    component: () => import("@/views/admin/PermissionManagement.vue")
+  },
+  {
+    path: "/consignment-management",
+    name: "ConsignmentManagement",
+    component: () => import("@/views/supplier/ConsignmentManagement.vue")
   }
 ];
 

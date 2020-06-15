@@ -9,11 +9,11 @@
         <v-list-item-content>
           <v-list-item-title class="title" style="margin-left: 5px;"
             ><router-link to="/profile">{{
-              profile.fullname
+              fullname
             }}</router-link></v-list-item-title
           >
           <v-list-item-subtitle style="margin-top:10px;"
-            ><v-list-item v-for="(item, i) in profile.roles" :key="i">
+            ><v-list-item v-for="(item, i) in roles" :key="i">
               <v-list-item-title
                 v-text="item"
               ></v-list-item-title> </v-list-item
@@ -24,7 +24,10 @@
     <v-divider></v-divider>
 
     <v-list dense nav>
-      <v-list-item @click="dashboard">
+      <v-list-item
+        @click="toDashboard"
+        v-if="$auth.check(['ROLE_MODERATOR', 'ROLE_ADMIN'])"
+      >
         <v-list-item-icon>
           <v-icon>mdi-view-dashboard</v-icon>
         </v-list-item-icon>
@@ -36,13 +39,59 @@
         <template v-slot:activator>
           <v-list-item-title>Quản lý người dùng</v-list-item-title>
         </template>
-        <v-list-item v-for="(item, i) in items" :key="i" link :to="item.to">
-          <v-list-item-title v-text="item.title"></v-list-item-title>
+        <v-list-item
+          @click="toModermator"
+          v-if="$auth.check(['ROLE_MODERATOR', 'ROLE_ADMIN'])"
+        >
+          <v-list-item-title>Đối tác</v-list-item-title>
           <v-list-item-icon>
-            <v-icon v-text="item.icon"></v-icon>
+            <v-icon>mdi-view-dashboard</v-icon>
+          </v-list-item-icon>
+        </v-list-item>
+        <v-list-item
+          @click="toShippingline"
+          v-if="$auth.check(['ROLE_MODERATOR', 'ROLE_USER'])"
+        >
+          <v-list-item-title>Hãng tàu</v-list-item-title>
+          <v-list-item-icon>
+            <v-icon>mdi-image</v-icon>
+          </v-list-item-icon>
+        </v-list-item>
+        <v-list-item @click="toAdmin" v-if="$auth.check(['ROLE_ADMIN'])">
+          <v-list-item-title>Quản trị viên</v-list-item-title>
+          <v-list-item-icon>
+            <v-icon>mdi-help-box</v-icon>
+          </v-list-item-icon>
+        </v-list-item>
+        <v-list-item
+          @click.native="toRoles"
+          v-if="$auth.check(['ROLE_ADMIN'])"
+          style="cursor: pointer;"
+        >
+          <v-list-item-title>Phân quyền</v-list-item-title>
+          <v-list-item-icon>
+            <v-icon>mdi-image</v-icon>
+          </v-list-item-icon>
+        </v-list-item>
+        <v-list-item
+          @click.native="toPermission"
+          v-if="$auth.check(['ROLE_ADMIN'])"
+          style="cursor: pointer;"
+        >
+          <v-list-item-title>Phân vai trò</v-list-item-title>
+          <v-list-item-icon>
+            <v-icon>mdi-image</v-icon>
           </v-list-item-icon>
         </v-list-item>
       </v-list-group>
+      <v-list-item @click="toConsignment" v-if="$auth.check(['ROLE_USER'])">
+        <v-list-item-icon>
+          <v-icon>mdi-help-box</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title>Quản lý hàng</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
       <v-list-item @click="toProfile">
         <v-list-item-icon>
           <v-icon>mdi-help-box</v-icon>
@@ -62,24 +111,40 @@ import { UserEntity } from "@/store/definitions/user";
 @Component
 export default class Navigation extends Vue {
   @PropSync("drawer", { type: Boolean }) drawerSync!: boolean | null;
-  public profile: UserEntity | null = null;
   check = false;
-  public items: Array<object> = [
-    { title: "Đối tác", to: "/list-moderator", icon: "mdi-view-dashboard" },
-    { title: "Hãng tàu", to: "/list-shipping-line", icon: "mdi-image" },
-    { title: "Quản trị viên", to: "/list-admin", icon: "mdi-help-box" },
-    { title: "Phân quyền", to: "/list-roles", icon: "mdi-help-box" },
-    { title: "Phân vai trò", to: "/list-user", icon: "mdi-help-box" }
-  ];
+  fullname = "";
+  roles = [] as any;
   async created() {
     await UserModule.loadProfile();
-    this.profile = UserModule.getCurrentUser;
+    if (UserModule.getCurrentUser != null) {
+      this.fullname = UserModule.getCurrentUser.fullname;
+      console.log(UserModule.getCurrentUser.roles);
+      this.roles = UserModule.getCurrentUser.roles;
+    }
   }
-  public dashboard(): void {
+  public toDashboard(): void {
     this.$router.push("/admin");
   }
   public toProfile(): void {
     this.$router.push("/profile");
+  }
+  public toAdmin(): void {
+    this.$router.push("/admin-management");
+  }
+  public toModermator(): void {
+    this.$router.push("/moderator-management");
+  }
+  public toShippingline(): void {
+    this.$router.push("/shipping-line-management");
+  }
+  public toRoles(): void {
+    this.$router.push("/roles-management");
+  }
+  public toPermission(): void {
+    this.$router.push("/permission-management");
+  }
+  public toConsignment(): void {
+    this.$router.push("/consignment-management");
   }
   public checked(): void {
     this.check = !this.check;

@@ -3,7 +3,7 @@ export interface UserEntity {
   username: string;
   email: string;
   fullname: string;
-  role: Set<string>;
+  roles: Set<string>;
 }
 
 export interface SignUpRequest {
