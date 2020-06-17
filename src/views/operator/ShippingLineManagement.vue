@@ -2,7 +2,7 @@
   <v-content>
     <v-card>
       <v-card-title>
-        Danh sách Admin
+        Danh sách hãng tàu
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -17,7 +17,7 @@
         style="margin-left: 35px;"
         dark
         @click.stop="dialogAdd = true"
-        v-if="$auth.check(['ROLE_ADMIN'])"
+        v-if="$auth.check(['ROLE_MODERATOR'])"
       >
         Thêm mới
       </v-btn>
@@ -26,21 +26,21 @@
         style="margin-left: 605px;"
         dark
         @click.stop="dialogDel = true"
-        v-if="selected.length > 0 && $auth.check(['ROLE_ADMIN'])"
+        v-if="selected.length > 0 && $auth.check(['ROLE_MODERATOR'])"
       >
-        Xóa Admin
+        Xóa hãng tàu
       </v-btn>
       <v-row justify="center">
         <v-dialog v-model="dialogDel" persistent max-width="600px">
           <v-card>
             <v-toolbar color="primary" light flat>
               <v-toolbar-title
-                ><span class="headline" style="color:white;">Xóa Admin</span>
+                ><span class="headline" style="color:white;">Xóa hãng tàu</span>
                 <v-btn
                   icon
                   dark
                   @click="dialogDel = false"
-                  style="margin-left:403px;"
+                  style="margin-left:379px;"
                 >
                   <v-icon>mdi-close</v-icon>
                 </v-btn></v-toolbar-title
@@ -51,14 +51,14 @@
               <v-form>
                 <v-container>
                   <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa những Admin này?</span
+                    >Bạn có chắc chắn muốn xóa những hãng tàu này?</span
                   >
                   <div class="line"></div>
                   <v-list>
                     <v-list-item v-for="(item, i) in selected" :key="i">
                       <v-list-item-content>
                         <v-list-item-title
-                          v-text="item.username"
+                          v-text="item.shipname"
                         ></v-list-item-title>
                       </v-list-item-content>
                     </v-list-item>
@@ -81,66 +81,118 @@
             <v-toolbar color="primary" light flat>
               <v-toolbar-title
                 ><span class="headline" style="color:white;"
-                  >Thêm mới Admin</span
+                  >Thêm mới hãng tàu</span
                 >
                 <v-btn
                   icon
                   dark
                   @click="dialogAdd = false"
-                  style="margin-left:336px;"
+                  style="margin-left:313px;"
                 >
                   <v-icon>mdi-close</v-icon>
                 </v-btn></v-toolbar-title
               >
             </v-toolbar>
-
             <v-card-text>
               <v-form>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="6" md="6">
+                <v-layout col>
+                  <v-layout row>
+                    <v-flex xs8>
                       <v-text-field
-                        label="Tên đăng nhập*"
+                        label="Tên đăng nhập"
+                        name="username"
+                        prepend-icon="mdi-account"
                         type="text"
                         v-model="username"
-                        required
                       ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="6">
+                    </v-flex>
+                  </v-layout>
+                  <v-layout row>
+                    <v-flex xs8>
                       <v-text-field
-                        label="Mật khẩu*"
+                        label="Tên hãng tàu"
+                        name="shippingLineName"
+                        prepend-icon="mdi-lock"
+                        type="text"
+                      ></v-text-field>
+                    </v-flex>
+                  </v-layout>
+                </v-layout>
+                <v-layout col>
+                  <v-layout row>
+                    <v-flex xs8>
+                      <v-text-field
+                        label="Mật khẩu"
+                        name="password"
+                        prepend-icon="mdi-lock"
                         type="password"
                         v-model="password"
-                        required
                       ></v-text-field>
-                    </v-col>
-                    <v-col cols="12">
+                    </v-flex>
+                  </v-layout>
+                  <v-layout row>
+                    <v-flex xs8>
                       <v-text-field
-                        label="Email*"
+                        label="Mã tên"
+                        name="namecode"
+                        prepend-icon="mdi-lock"
+                        type="text"
+                      ></v-text-field>
+                    </v-flex>
+                  </v-layout>
+                </v-layout>
+                <v-layout col>
+                  <v-layout row>
+                    <v-flex xs8>
+                      <v-text-field
+                        label="Email"
+                        name="email"
+                        prepend-icon="mdi-lock"
                         type="email"
                         v-model="email"
-                        required
                       ></v-text-field>
-                    </v-col>
-                    <v-col cols="12">
+                    </v-flex>
+                  </v-layout>
+                  <v-layout row>
+                    <v-flex xs8>
                       <v-text-field
-                        label="Tên đầy đủ"
+                        label="Website"
+                        name="website"
+                        prepend-icon="mdi-lock"
                         type="text"
-                        v-model="fullname"
-                        required
                       ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="8">
-                      <v-select
-                        :items="['ROLE_ADMIN']"
-                        label="Phân quyền*"
-                        required
-                        v-model="roles"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-container>
-                <small>*Dấu sao là trường bắt buộc</small>
+                    </v-flex>
+                  </v-layout>
+                </v-layout>
+                <v-layout col>
+                  <v-layout row>
+                    <v-flex xs8>
+                      <v-text-field
+                        label="Số điện thoại"
+                        name="phone"
+                        prepend-icon="mdi-lock"
+                        type="phone"
+                      ></v-text-field>
+                    </v-flex>
+                  </v-layout>
+                  <v-layout row>
+                    <v-flex xs8>
+                      <v-select :items="icd" attach label="ICD"></v-select>
+                    </v-flex>
+                  </v-layout>
+                </v-layout>
+                <v-layout col>
+                  <v-layout row>
+                    <v-flex xs6>
+                      <v-text-field
+                        label="Địa chỉ"
+                        name="address"
+                        prepend-icon="mdi-lock"
+                        type="text"
+                      ></v-text-field>
+                    </v-flex>
+                  </v-layout>
+                </v-layout>
                 <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
               </v-form>
             </v-card-text>
@@ -164,12 +216,12 @@
       <v-data-table
         v-model="selected"
         :headers="headers"
-        :items="users"
+        :items="ships"
         :search="search"
-        item-key="username"
+        item-key="namecode"
         show-select
         :options.sync="options"
-        :server-items-length="totalUsers"
+        :server-items-length="totalShips"
         :loading="loading"
         :items-per-page="5"
         class="elevation-1"
@@ -180,17 +232,16 @@
 </template>
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import UserModule from "@/store/modules/user";
 import Dialog from "@/components/Dialog.vue";
 import NavLayout from "@/layouts/NavLayout.vue";
 import { UserEntity } from "@/store/definitions/user";
 @Component({
-  name: "AdminManagement",
+  name: "ShippingLineManagement",
   components: {
     Dialog
   }
 })
-export default class AdminManagement extends Vue {
+export default class ShippingLineManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
   selected = [] as Array<any>;
   dialog = false;
@@ -198,14 +249,15 @@ export default class AdminManagement extends Vue {
   password = "";
   email = "";
   fullname = "";
+  icd = ["Seaport", "Dryport"];
+  success = "";
+  checkSuccess = false;
   roles = [] as Array<string>;
   dialogAdd = false;
   dialogDel = false;
   search = "";
-  success = "";
-  checkSuccess = false;
-  totalUsers = 0;
-  users = [] as Array<any>;
+  totalShips = 0;
+  ships = [] as Array<any>;
   loading = true;
   options = {} as any;
   headers = [
@@ -215,10 +267,13 @@ export default class AdminManagement extends Vue {
       sortable: true,
       value: "username"
     },
+    { text: "Tên hãng tàu", value: "shipname" },
+    { text: "Mã tên", value: "namecode" },
     { text: "Email", value: "email" },
+    { text: "Website", value: "website" },
     { text: "Số điện thoại", value: "phone" },
-    { text: "Phân quyền", value: "roles" },
-    { text: "Trạng thái", value: "status" },
+    { text: "ICD", value: "icds" },
+    { text: "Địa chỉ", value: "address" },
     {
       text: "Hành động",
       value: "mdi-dots-vertical"
@@ -230,20 +285,15 @@ export default class AdminManagement extends Vue {
   @Watch("options", { deep: true })
   getOptions() {
     this.getDataFromApi().then((data: any) => {
-      this.users = data.items;
-      this.totalUsers = data.total;
+      this.ships = data.items;
+      this.totalShips = data.total;
     });
   }
   async mounted() {
-    await UserModule.fetchUsers({
-      page: 0,
-      limit: 5
-    }); // -> store.dispatch("user/fetchUsers", {page: 0, limit: 5})
     this.getDataFromApi().then((data: any) => {
-      this.users = data.items;
-      this.totalUsers = data.total;
+      this.ships = data.items;
+      this.totalShips = data.total;
     });
-    console.log(this.users);
   }
   public getDataFromApi() {
     console.log(this.options);
@@ -251,7 +301,7 @@ export default class AdminManagement extends Vue {
     return new Promise((resolve, reject) => {
       const { sortBy, sortDesc, page, itemsPerPage } = this.options;
 
-      let items = this.getUsers();
+      let items = this.getShips();
       const total = items.length;
 
       if (sortBy.length === 1 && sortDesc.length === 1) {
@@ -284,16 +334,89 @@ export default class AdminManagement extends Vue {
       }, 1000);
     });
   }
-  public getUsers(): Array<any> {
-    if (UserModule.getListUsers != null) {
-      console.log(1);
-      return UserModule.getListUsers.filter(
-        (user: any) => user.roles[0] == "ROLE_ADMIN"
-      );
-    } else {
-      console.log(0);
-      return [{}];
-    }
+  public getShips(): Array<any> {
+    return [
+      {
+        username: "Admin",
+        shipname: "ABC",
+        namecode: "A01",
+        email: "abc@gmail.com",
+        website: "abc.com.vn",
+        phone: "0359049292",
+        icds: ["Dry port", "Seaport"],
+        address: "abc xyz"
+      },
+      {
+        username: "Admin",
+        shipname: "ABC",
+        namecode: "A02",
+        email: "abc@gmail.com",
+        website: "abc.com.vn",
+        phone: "0359049292",
+        icds: ["Dry port", "Seaport"],
+        address: "abc xyz"
+      },
+      {
+        username: "Admin",
+        shipname: "ABC",
+        namecode: "A03",
+        email: "abc@gmail.com",
+        website: "abc.com.vn",
+        phone: "0359049292",
+        icds: ["Dry port", "Seaport"],
+        address: "abc xyz"
+      },
+      {
+        username: "Admin",
+        shipname: "ABC",
+        namecode: "A04",
+        email: "abc@gmail.com",
+        website: "abc.com.vn",
+        phone: "0359049292",
+        icds: ["Dry port", "Seaport"],
+        address: "abc xyz"
+      },
+      {
+        username: "Admin",
+        shipname: "ABC",
+        namecode: "A05",
+        email: "abc@gmail.com",
+        website: "abc.com.vn",
+        phone: "0359049292",
+        icds: ["Dry port", "Seaport"],
+        address: "abc xyz"
+      },
+      {
+        username: "Admin1",
+        shipname: "ABC",
+        namecode: "A06",
+        email: "abc@gmail.com",
+        website: "abc.com.vn",
+        phone: "0359049292",
+        icds: ["Dry port", "Seaport"],
+        address: "abc xyz"
+      },
+      {
+        username: "Admin1",
+        shipname: "ABC",
+        namecode: "A07",
+        email: "abc@gmail.com",
+        website: "abc.com.vn",
+        phone: "0359049292",
+        icds: ["Dry port", "Seaport"],
+        address: "abc xyz"
+      },
+      {
+        username: "Admin",
+        shipname: "ABC",
+        namecode: "A08",
+        email: "abc@gmail.com",
+        website: "abc.com.vn",
+        phone: "0359049292",
+        icds: ["Dry port", "Seaport"],
+        address: "abc xyz"
+      },
+    ];
   }
   public submit() {
     this.success = "Thêm mới thành công!";
@@ -306,7 +429,6 @@ export default class AdminManagement extends Vue {
   public del() {
     this.success = "Xóa thành công!";
     this.checkSuccess = true;
-
     console.log(this.selected);
     this.dialogDel = false;
   }

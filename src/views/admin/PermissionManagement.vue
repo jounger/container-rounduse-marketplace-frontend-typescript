@@ -16,20 +16,62 @@
         color="primary"
         style="margin-left: 35px;"
         dark
-        @click.stop="dialogAdd = true"
+        @click.stop="addPermission"
         v-if="$auth.check(['ROLE_ADMIN'])"
       >
         Thêm mới
       </v-btn>
       <v-btn
         color="red"
-        style="margin-left: 605px;"
+        style="margin-left: 20px;"
         dark
         @click.stop="dialogDel = true"
         v-if="selected.length > 0 && $auth.check(['ROLE_ADMIN'])"
       >
         Xóa Vai trò
       </v-btn>
+      <v-row justify="center">
+        <v-dialog v-model="dialogDelSingle" persistent max-width="600px">
+          <v-card>
+            <v-toolbar color="primary" light flat>
+              <v-toolbar-title
+                ><span class="headline" style="color:white;">Xóa vai trò</span>
+                <v-btn
+                  icon
+                  dark
+                  @click="dialogDelSingle = false"
+                  style="margin-left:425px;"
+                >
+                  <v-icon>mdi-close</v-icon>
+                </v-btn></v-toolbar-title
+              >
+            </v-toolbar>
+
+            <v-card-text>
+              <v-form>
+                <v-container>
+                  <span style="color: black; font-size:22px;"
+                    >Bạn có chắc chắn muốn xóa vai trò này?</span
+                  >
+                  <div class="line"></div>
+                  <v-list>
+                    <v-list-item>
+                      <v-list-item-content>
+                        <v-list-item-title>{{ name }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list>
+                </v-container>
+                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
+              </v-form>
+            </v-card-text>
+            <v-card-actions style="margin-left: 205px;">
+              <v-btn @click="cancelDelSingle()">Hủy</v-btn>
+              <v-btn @click="delSingle(name)" color="red">Xóa</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-row>
       <v-row justify="center">
         <v-dialog v-model="dialogDel" persistent max-width="600px">
           <v-card>
@@ -71,7 +113,6 @@
               <v-btn @click="cancelDel()">Hủy</v-btn>
               <v-btn @click="del()" color="red">Xóa</v-btn>
             </v-card-actions>
-            <Dialog :dialog.sync="dialog" />
           </v-card>
         </v-dialog>
       </v-row>
@@ -80,14 +121,12 @@
           <v-card style="height: 350px;">
             <v-toolbar color="primary" light flat>
               <v-toolbar-title
-                ><span class="headline" style="color:white;"
-                  >Thêm mới Vai trò</span
-                >
+                ><span class="headline" style="color:white;">{{ title }}</span>
                 <v-btn
                   icon
                   dark
                   @click="dialogAdd = false"
-                  style="margin-left:346px;"
+                  style="margin-left:337px;"
                 >
                   <v-icon>mdi-close</v-icon>
                 </v-btn></v-toolbar-title
@@ -102,6 +141,8 @@
                       name="permissionsName"
                       prepend-icon="mdi-account"
                       type="text"
+                      v-model="permissionName"
+                      :readonly="readonly"
                     ></v-text-field>
                   </v-flex>
                 </v-layout>
@@ -112,6 +153,8 @@
                       name="content"
                       prepend-icon="mdi-account"
                       type="text"
+                      v-model="description"
+                      :readonly="readonly"
                     ></v-text-field>
                   </v-flex>
                 </v-layout>
@@ -120,10 +163,17 @@
             </v-card-text>
             <v-card-actions style="margin-top: 65px;">
               <v-spacer></v-spacer>
-              <v-btn @click="cancel()">Hủy</v-btn>
-              <v-btn @click="submit()" color="primary">Thêm mới</v-btn>
+              <v-btn @click="cancel()">Trở về</v-btn>
+              <v-btn @click="submit()" color="primary" v-if="checkAdd"
+                >Thêm mới</v-btn
+              >
+              <v-btn
+                @click="updatePermission()"
+                color="primary"
+                v-if="checkUpdate"
+                >Cập nhập</v-btn
+              >
             </v-card-actions>
-            <Dialog :dialog.sync="dialog" />
           </v-card>
         </v-dialog>
       </v-row>
@@ -148,34 +198,53 @@
         :items-per-page="5"
         class="elevation-1"
       >
+        <template v-slot:item.action="{ item }">
+          <v-menu :loading="item.createloading" :disabled="item.createloading">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="secondary" dark v-bind="attrs" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item @click="viewDetail(item)">
+                <v-list-item-title>Xem chi tiết</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="update(item)">
+                <v-list-item-title>Cập nhập</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="delPermission(item)">
+                <v-list-item-title>Xóa</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </template>
       </v-data-table>
     </v-card>
   </v-content>
 </template>
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import Dialog from "@/components/Dialog.vue";
 import NavLayout from "@/layouts/NavLayout.vue";
 import { UserEntity } from "@/store/definitions/user";
 @Component({
-  name: "PermissionManagement",
-  components: {
-    Dialog,
-  }
+  name: "PermissionManagement"
 })
 export default class PermissionManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
   selected = [] as Array<any>;
-  dialog = false;
-  username = "";
-  password = "";
-  email = "";
-  fullname = "";
+  permissionName = "";
+  description = "";
   success = "";
   checkSuccess = false;
   dialogAdd = false;
   dialogDel = false;
+  dialogDelSingle = false;
+  checkAdd = false;
+  checkUpdate = false;
+  title = "";
+  name = "";
   search = "";
+  readonly = false;
   totalPermissions = 0;
   permissions = [] as Array<any>;
   loading = true;
@@ -187,10 +256,10 @@ export default class PermissionManagement extends Vue {
       sortable: true,
       value: "permissionName"
     },
-    { text: "Mô tả", value: "content" },
+    { text: "Mô tả", value: "description" },
     {
       text: "Hành động",
-      value: "mdi-dots-vertical"
+      value: "action"
     }
   ];
   async created() {
@@ -253,15 +322,15 @@ export default class PermissionManagement extends Vue {
     return [
       {
         permissionName: "Create",
-        content: "Create new"
+        description: "Create new"
       },
       {
         permissionName: "Update",
-        content: "Update content available"
+        description: "Update content available"
       },
       {
         permissionName: "Delete",
-        content: "Delete somthing"
+        description: "Delete somthing"
       }
     ];
   }
@@ -271,6 +340,57 @@ export default class PermissionManagement extends Vue {
     this.dialogAdd = false;
   }
   public cancel() {
+    this.checkAdd = false;
+    this.checkUpdate = false;
+    this.readonly = false;
+    this.dialogAdd = false;
+  }
+  public viewDetail(item: any) {
+    this.permissionName = item.permissionName;
+    this.description = item.description;
+    this.checkAdd = false;
+    this.checkUpdate = false;
+    this.title = "Thông tin vai trò";
+    this.readonly = true;
+    this.dialogAdd = true;
+  }
+  public update(item: any) {
+    this.permissionName = item.permissionName;
+    this.description = item.description;
+    this.checkAdd = false;
+    this.checkUpdate = true;
+    this.title = "Cập nhập vai trò";
+    this.readonly = false;
+    this.dialogAdd = true;
+  }
+  public delPermission(item: any) {
+    this.name = item.permissionName;
+    this.dialogDelSingle = true;
+  }
+  public delSingle(name: string) {
+    this.permissions = this.permissions.filter(
+      (permission: any) => permission.rolename != name
+    );
+    this.success = "Xóa thành công";
+    this.checkSuccess = true;
+    this.dialogDelSingle = false;
+  }
+  public cancelDelSingle() {
+    this.name = "";
+    this.dialogDelSingle = false;
+  }
+  public addPermission() {
+    this.title = "Thêm mới Vai trò";
+    this.permissionName = "";
+    this.description = "";
+    this.checkAdd = true;
+    this.checkUpdate = false;
+    this.readonly = false;
+    this.dialogAdd = true;
+  }
+  public updatePermission() {
+    this.success = "Cập nhập thành công";
+    this.checkSuccess = true;
     this.dialogAdd = false;
   }
   public del() {

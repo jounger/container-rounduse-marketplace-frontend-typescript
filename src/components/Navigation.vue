@@ -9,7 +9,7 @@
         <v-list-item-content>
           <v-list-item-title class="title" style="margin-left: 5px;"
             ><router-link to="/profile">{{
-              fullname
+              username
             }}</router-link></v-list-item-title
           >
           <v-list-item-subtitle style="margin-top:10px;"
@@ -63,33 +63,39 @@
             <v-icon>mdi-help-box</v-icon>
           </v-list-item-icon>
         </v-list-item>
-        <v-list-item
-          @click.native="toRoles"
-          v-if="$auth.check(['ROLE_ADMIN'])"
-          style="cursor: pointer;"
-        >
+        <v-list-item @click="toRoles" v-if="$auth.check(['ROLE_ADMIN'])">
           <v-list-item-title>Phân quyền</v-list-item-title>
           <v-list-item-icon>
             <v-icon>mdi-image</v-icon>
           </v-list-item-icon>
         </v-list-item>
-        <v-list-item
-          @click.native="toPermission"
-          v-if="$auth.check(['ROLE_ADMIN'])"
-          style="cursor: pointer;"
-        >
+        <v-list-item @click="toPermission" v-if="$auth.check(['ROLE_ADMIN'])">
           <v-list-item-title>Phân vai trò</v-list-item-title>
           <v-list-item-icon>
             <v-icon>mdi-image</v-icon>
           </v-list-item-icon>
         </v-list-item>
+        <v-list-item @click="toRequest">
+          <v-list-item-title>Yêu cầu đăng ký</v-list-item-title>
+          <v-list-item-icon>
+            <v-icon>mdi-help-box</v-icon>
+          </v-list-item-icon>
+        </v-list-item>
       </v-list-group>
-      <v-list-item @click="toConsignment" v-if="$auth.check(['ROLE_USER'])">
+      <v-list-item @click="toConsignment">
         <v-list-item-icon>
           <v-icon>mdi-help-box</v-icon>
         </v-list-item-icon>
         <v-list-item-content>
           <v-list-item-title>Quản lý hàng</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item @click="toContainer">
+        <v-list-item-icon>
+          <v-icon>mdi-image</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title>Quản lý Container</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
       <v-list-item @click="toProfile">
@@ -113,13 +119,14 @@ export default class Navigation extends Vue {
   @PropSync("drawer", { type: Boolean }) drawerSync!: boolean | null;
   check = false;
   fullname = "";
+  username = "";
   roles = [] as any;
   async created() {
     await UserModule.loadProfile();
     if (UserModule.getCurrentUser != null) {
-      this.fullname = UserModule.getCurrentUser.fullname;
       console.log(UserModule.getCurrentUser.roles);
       this.roles = UserModule.getCurrentUser.roles;
+      this.username = UserModule.getCurrentUser.username;
     }
   }
   public toDashboard(): void {
@@ -139,12 +146,19 @@ export default class Navigation extends Vue {
   }
   public toRoles(): void {
     this.$router.push("/roles-management");
+    console.log(this.$route.params.pathMatch);
   }
   public toPermission(): void {
     this.$router.push("/permission-management");
   }
   public toConsignment(): void {
     this.$router.push("/consignment-management");
+  }
+  public toRequest(): void {
+    this.$router.push("/request-user-management");
+  }
+  public toContainer(): void {
+    this.$router.push("/container-management");
   }
   public checked(): void {
     this.check = !this.check;

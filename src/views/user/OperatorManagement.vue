@@ -2,7 +2,7 @@
   <v-content>
     <v-card>
       <v-card-title>
-        Danh sách Admin
+        Danh sách Partner
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -28,19 +28,19 @@
         @click.stop="dialogDel = true"
         v-if="selected.length > 0 && $auth.check(['ROLE_ADMIN'])"
       >
-        Xóa Admin
+        Xóa Partner
       </v-btn>
       <v-row justify="center">
         <v-dialog v-model="dialogDel" persistent max-width="600px">
           <v-card>
             <v-toolbar color="primary" light flat>
               <v-toolbar-title
-                ><span class="headline" style="color:white;">Xóa Admin</span>
+                ><span class="headline" style="color:white;">Xóa Partner</span>
                 <v-btn
                   icon
                   dark
                   @click="dialogDel = false"
-                  style="margin-left:403px;"
+                  style="margin-left:393px;"
                 >
                   <v-icon>mdi-close</v-icon>
                 </v-btn></v-toolbar-title
@@ -51,7 +51,7 @@
               <v-form>
                 <v-container>
                   <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa những Admin này?</span
+                    >Bạn có chắc chắn muốn xóa những Partner này?</span
                   >
                   <div class="line"></div>
                   <v-list>
@@ -81,13 +81,13 @@
             <v-toolbar color="primary" light flat>
               <v-toolbar-title
                 ><span class="headline" style="color:white;"
-                  >Thêm mới Admin</span
+                  >Thêm mới Partner</span
                 >
                 <v-btn
                   icon
                   dark
                   @click="dialogAdd = false"
-                  style="margin-left:336px;"
+                  style="margin-left:327px;"
                 >
                   <v-icon>mdi-close</v-icon>
                 </v-btn></v-toolbar-title
@@ -185,12 +185,12 @@ import Dialog from "@/components/Dialog.vue";
 import NavLayout from "@/layouts/NavLayout.vue";
 import { UserEntity } from "@/store/definitions/user";
 @Component({
-  name: "AdminManagement",
+  name: "OperatorManagement",
   components: {
     Dialog
   }
 })
-export default class AdminManagement extends Vue {
+export default class OperatorManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
   selected = [] as Array<any>;
   dialog = false;
@@ -198,12 +198,12 @@ export default class AdminManagement extends Vue {
   password = "";
   email = "";
   fullname = "";
+  success = "";
+  checkSuccess = false;
   roles = [] as Array<string>;
   dialogAdd = false;
   dialogDel = false;
   search = "";
-  success = "";
-  checkSuccess = false;
   totalUsers = 0;
   users = [] as Array<any>;
   loading = true;
@@ -216,9 +216,8 @@ export default class AdminManagement extends Vue {
       value: "username"
     },
     { text: "Email", value: "email" },
-    { text: "Số điện thoại", value: "phone" },
+    { text: "Tên đầy đủ", value: "fullname" },
     { text: "Phân quyền", value: "roles" },
-    { text: "Trạng thái", value: "status" },
     {
       text: "Hành động",
       value: "mdi-dots-vertical"
@@ -237,13 +236,12 @@ export default class AdminManagement extends Vue {
   async mounted() {
     await UserModule.fetchUsers({
       page: 0,
-      limit: 5
+      limit: 20
     }); // -> store.dispatch("user/fetchUsers", {page: 0, limit: 5})
     this.getDataFromApi().then((data: any) => {
       this.users = data.items;
       this.totalUsers = data.total;
     });
-    console.log(this.users);
   }
   public getDataFromApi() {
     console.log(this.options);
@@ -286,13 +284,18 @@ export default class AdminManagement extends Vue {
   }
   public getUsers(): Array<any> {
     if (UserModule.getListUsers != null) {
-      console.log(1);
       return UserModule.getListUsers.filter(
-        (user: any) => user.roles[0] == "ROLE_ADMIN"
+        (user: any) => user.roles[0] == "ROLE_MODERATOR"
       );
     } else {
-      console.log(0);
-      return [{}];
+      return [
+        {
+          username: "",
+          email: "",
+          fullname: "",
+          roles: ""
+        }
+      ];
     }
   }
   public submit() {
@@ -306,7 +309,6 @@ export default class AdminManagement extends Vue {
   public del() {
     this.success = "Xóa thành công!";
     this.checkSuccess = true;
-
     console.log(this.selected);
     this.dialogDel = false;
   }

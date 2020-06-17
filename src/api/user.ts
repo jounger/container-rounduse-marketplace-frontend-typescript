@@ -14,7 +14,7 @@ export async function getProfile(): Promise<UserEntity> {
 }
 
 export async function getUsers(paging: PaginationRequest): Promise<PaginationResponse<UserEntity>> {
-  const response = await Vue.axios.get("/admin/user", {
+  const response = await Vue.axios.get("/user/", {
     params: paging,
     headers: config
   });

@@ -132,7 +132,6 @@ export default class Card extends Vue {
   }
   public edit(): void {
     this.checkEdit = !this.checkEdit;
-    this.name = this.profileSync.fullname;
     this.email = this.profileSync.email;
     console.log(this.name);
   }
@@ -140,7 +139,6 @@ export default class Card extends Vue {
     this.checkEdit = false;
   }
   public doneEdit(): void {
-    this.profileSync.fullname = this.name;
     this.profileSync.email = this.email;
     this.checkEdit = false;
   }

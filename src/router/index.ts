@@ -65,7 +65,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/add-shipping-line",
     name: "AddShippingLine",
-    component: () => import("@/views/moderator/AddShippingLine.vue")
+    component: () => import("@/views/operator/AddShippingLine.vue")
   },
   {
     path: "/add-roles",
@@ -80,17 +80,17 @@ const routes: Array<RouteConfig> = [
   {
     path: "/moderator-management",
     name: "ModeratorManagement",
-    component: () => import("@/views/user/ModeratorManagement.vue")
+    component: () => import("@/views/user/OperatorManagement.vue")
   },
   {
     path: "/shipping-line-management",
     name: "ShippingLineManagement",
-    component: () => import("@/views/moderator/ShippingLineManagement.vue")
+    component: () => import("@/views/operator/ShippingLineManagement.vue")
   },
   {
     path: "/roles-management",
     name: "RolesManagement",
-    component: () => import("@/views/admin/RolesManagement.vue")
+    component: () => import("@/views/admin/RolesManagement.vue"),
   },
   {
     path: "/permission-management",
@@ -101,6 +101,21 @@ const routes: Array<RouteConfig> = [
     path: "/consignment-management",
     name: "ConsignmentManagement",
     component: () => import("@/views/supplier/ConsignmentManagement.vue")
+  },
+  {
+    path: "/request-user-management",
+    name: "RequestUserManagement",
+    component: () => import("@/views/operator/RequestUserManagement.vue")
+  },
+  {
+    path: "/request-status",
+    name: "RequestStatus",
+    component: () => import("@/views/supplier/RequestStatus.vue")
+  },
+  {
+    path: "/container-management",
+    name: "ContainerManagement",
+    component: () => import("@/views/supplier/ContainerManagement.vue")
   }
 ];
 

@@ -2,7 +2,7 @@
   <v-content>
     <v-card>
       <v-card-title>
-        Danh sách hàng
+        Danh sách Container
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -25,7 +25,7 @@
           class="pa-2"
           outlined
           tile
-          style="width: 210px; height: 130px;"
+          style="width: 240px; height: 130px;"
         >
           <v-card-title>{{ n.name }}</v-card-title>
           <v-list-item two-line :class="'px-0'">
@@ -45,7 +45,7 @@
         color="primary"
         style="margin-left: 35px;"
         dark
-        @click.stop="addConsignment"
+        @click.stop="addContainer"
       >
         Thêm mới
       </v-btn>
@@ -56,19 +56,21 @@
         @click.stop="dialogDel = true"
         v-if="selected.length > 0"
       >
-        Xóa hàng
+        Xóa Container
       </v-btn>
       <v-row justify="center">
         <v-dialog v-model="dialogDelSingle" persistent max-width="600px">
           <v-card>
             <v-toolbar color="primary" light flat>
               <v-toolbar-title
-                ><span class="headline" style="color:white;">Xóa hàng</span>
+                ><span class="headline" style="color:white;"
+                  >Xóa Container</span
+                >
                 <v-btn
                   icon
                   dark
                   @click="dialogDelSingle = false"
-                  style="margin-left:419px;"
+                  style="margin-left:369px;"
                 >
                   <v-icon>mdi-close</v-icon>
                 </v-btn></v-toolbar-title
@@ -79,7 +81,7 @@
               <v-form>
                 <v-container>
                   <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa mặt hàng này?</span
+                    >Bạn có chắc chắn muốn xóa Container này?</span
                   >
                   <div class="line"></div>
                   <v-list>
@@ -105,12 +107,14 @@
           <v-card>
             <v-toolbar color="primary" light flat>
               <v-toolbar-title
-                ><span class="headline" style="color:white;">Xóa hàng</span>
+                ><span class="headline" style="color:white;"
+                  >Xóa Container</span
+                >
                 <v-btn
                   icon
                   dark
                   @click="dialogDel = false"
-                  style="margin-left:419px;"
+                  style="margin-left:369px;"
                 >
                   <v-icon>mdi-close</v-icon>
                 </v-btn></v-toolbar-title
@@ -121,14 +125,14 @@
               <v-form>
                 <v-container>
                   <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa những hàng này?</span
+                    >Bạn có chắc chắn muốn xóa những Container này?</span
                   >
                   <div class="line"></div>
                   <v-list>
                     <v-list-item v-for="(item, i) in selected" :key="i">
                       <v-list-item-content>
                         <v-list-item-title
-                          v-text="item.bookNo"
+                          v-text="item.containerNumber"
                         ></v-list-item-title>
                       </v-list-item-content>
                     </v-list-item>
@@ -161,11 +165,11 @@
                   <v-layout row>
                     <v-flex xs8>
                       <v-text-field
-                        label="Mã hàng"
-                        name="bookNo"
+                        label="Mã Container"
+                        name="containerNumber"
                         prepend-icon="mdi-account"
                         type="text"
-                        v-model="bookNo"
+                        v-model="containerNumber"
                         :readonly="readonly"
                       ></v-text-field>
                     </v-flex>
@@ -173,17 +177,70 @@
                   <v-layout row>
                     <v-flex xs8>
                       <v-text-field
-                        label="Người liên hệ"
-                        name="PIC"
+                        label="Rơ mooc"
+                        name="containerTrailer"
                         prepend-icon="mdi-lock"
                         type="text"
-                        v-model="PIC"
+                        v-model="containerTrailer"
                         :readonly="readonly"
                       ></v-text-field>
                     </v-flex>
                   </v-layout>
                 </v-layout>
                 <v-layout col>
+                  <v-layout row>
+                    <v-flex xs8>
+                      <v-text-field
+                        label="Đầu kéo"
+                        name="containerTractor"
+                        prepend-icon="mdi-lock"
+                        type="text"
+                        v-model="containerTractor"
+                        :readonly="readonly"
+                      ></v-text-field>
+                    </v-flex>
+                  </v-layout>
+                  <v-layout row>
+                    <v-flex xs8>
+                      <v-text-field
+                        label="Hóa đơn vận tải"
+                        name="blNumber"
+                        prepend-icon="mdi-lock"
+                        type="text"
+                        v-model="blNumber"
+                        :readonly="readonly"
+                      ></v-text-field>
+                    </v-flex>
+                  </v-layout>
+                </v-layout>
+                <v-layout col>
+                  <v-layout row>
+                    <v-flex xs10>
+                      <v-select
+                        :items="drivers"
+                        prepend-icon="mdi-lock"
+                        attach
+                        label="Lái xe"
+                        chips
+                        v-model="driver"
+                        :readonly="readonly"
+                      ></v-select>
+                    </v-flex>
+                  </v-layout>
+                </v-layout>
+                <v-layout col>
+                  <v-layout row>
+                    <v-flex xs8>
+                      <v-text-field
+                        label="Biển số xe"
+                        name="licensePlate"
+                        prepend-icon="mdi-lock"
+                        type="text"
+                        v-model="licensePlate"
+                        :readonly="readonly"
+                      ></v-text-field>
+                    </v-flex>
+                  </v-layout>
                   <v-layout row>
                     <v-flex xs8>
                       <v-menu
@@ -194,38 +251,26 @@
                         offset-y
                         max-width="290px"
                         min-width="290px"
-                        :readonly="readonly"
                       >
                         <template v-slot:activator="{ on, attrs }">
                           <v-text-field
-                            :readonly="readonly"
-                            v-model="packingTime"
-                            label="Thời gian đóng hàng"
+                            v-model="emptyTime"
+                            label="Thời gian có vỏ rỗng"
+                            hint="YYYY/MM/DD"
+                            persistent-hint
                             prepend-icon="event"
                             v-bind="attrs"
                             v-on="on"
+                            :readonly="readonly"
                           ></v-text-field>
                         </template>
                         <v-date-picker
                           v-if="!readonly"
-                          v-model="packingTime"
+                          v-model="emptyTime"
                           no-title
                           @input="date1 = false"
-                          :readonly="readonly"
                         ></v-date-picker>
                       </v-menu>
-                    </v-flex>
-                  </v-layout>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-text-field
-                        label="Nơi đóng hàng"
-                        name="packingStation"
-                        prepend-icon="mdi-lock"
-                        type="text"
-                        v-model="packingStation"
-                        :readonly="readonly"
-                      ></v-text-field>
                     </v-flex>
                   </v-layout>
                 </v-layout>
@@ -243,8 +288,8 @@
                       >
                         <template v-slot:activator="{ on, attrs }">
                           <v-text-field
-                            v-model="layTime"
-                            label="Thời gian làm hàng"
+                            v-model="pickUpTime"
+                            label="Thời gian kéo vỏ từ ICD"
                             hint="YYYY/MM/DD"
                             persistent-hint
                             prepend-icon="event"
@@ -255,7 +300,7 @@
                         </template>
                         <v-date-picker
                           v-if="!readonly"
-                          v-model="layTime"
+                          v-model="pickUpTime"
                           no-title
                           @input="date2 = false"
                         ></v-date-picker>
@@ -275,8 +320,8 @@
                       >
                         <template v-slot:activator="{ on, attrs }">
                           <v-text-field
-                            v-model="cutOfTime"
-                            label="Thời gian tàu chạy"
+                            v-model="freeTime"
+                            label="Thời gian miễn phí sử dụng"
                             hint="YYYY/MM/DD"
                             persistent-hint
                             prepend-icon="event"
@@ -287,7 +332,7 @@
                         </template>
                         <v-date-picker
                           v-if="!readonly"
-                          v-model="cutOfTime"
+                          v-model="freeTime"
                           no-title
                           @input="date3 = false"
                         ></v-date-picker>
@@ -298,39 +343,12 @@
                 <v-layout col>
                   <v-layout row>
                     <v-flex xs8>
-                      <v-select
-                        :items="yesno"
-                        attach
-                        label="FCL"
-                        chips
-                        v-model="FCL"
-                        :readonly="readonly"
-                      ></v-select>
-                    </v-flex>
-                  </v-layout>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-select
-                        :items="type"
-                        attach
-                        label="Loại hàng"
-                        multiple
-                        chips
-                        v-model="categories"
-                        :readonly="readonly"
-                      ></v-select>
-                    </v-flex>
-                  </v-layout>
-                </v-layout>
-                <v-layout col>
-                  <v-layout row>
-                    <v-flex xs8>
                       <v-text-field
-                        label="Khối lượng(tấn)"
-                        name="UOM"
+                        label="Nơi trả vỏ"
+                        name="returnStation"
                         prepend-icon="mdi-lock"
-                        type="number"
-                        v-model="UOM"
+                        type="text"
+                        v-model="returnStation"
                         :readonly="readonly"
                       ></v-text-field>
                     </v-flex>
@@ -338,21 +356,7 @@
                   <v-layout row>
                     <v-flex xs8>
                       <v-text-field
-                        label="Trọng lượng"
-                        name="payload"
-                        prepend-icon="mdi-lock"
-                        type="number"
-                        v-model="payload"
-                        :readonly="readonly"
-                      ></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                </v-layout>
-                <v-layout col>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-text-field
-                        label="Bến cảng"
+                        label="Cảng lấy hàng"
                         name="port"
                         prepend-icon="mdi-lock"
                         type="text"
@@ -372,7 +376,7 @@
                 >Thêm mới</v-btn
               >
               <v-btn
-                @click="updateConsignment()"
+                @click="updateContainer()"
                 color="primary"
                 v-if="checkUpdate"
                 >Cập nhập</v-btn
@@ -392,12 +396,12 @@
       <v-data-table
         v-model="selected"
         :headers="headers"
-        :items="consignments"
+        :items="containers"
         :search="search"
-        item-key="bookNo"
+        item-key="containerNumber"
         show-select
         :options.sync="options"
-        :server-items-length="totalConsignments"
+        :server-items-length="totalContainers"
         :loading="loading"
         :items-per-page="5"
         class="elevation-1"
@@ -416,7 +420,7 @@
               <v-list-item @click="update(item)">
                 <v-list-item-title>Cập nhập</v-list-item-title>
               </v-list-item>
-              <v-list-item @click="delConsignment(item)">
+              <v-list-item @click="delContainer(item)">
                 <v-list-item-title>Xóa</v-list-item-title>
               </v-list-item>
             </v-list>
@@ -447,70 +451,73 @@ export default class ConsignmentManagement extends Vue {
   readonly = false;
   checkAdd = false;
   checkUpdate = false;
-  packingTime = "";
-  packingStation = "";
-  PIC = "";
-  bookNo = "";
-  layTime = "";
-  cutOfTime = "";
-  payload = 0 as number;
-  UOM = 0 as number | null;
-  categories = [] as any;
-  FCL = "";
+  driver = [] as Array<string>;
+  containerTrailer = "";
+  containerTractor = "";
+  containerNumber = "";
+  blNumber = "";
+  licensePlate = "";
+  emptyTime = "";
+  pickUpTime = "";
+  returnStation = "";
+  freeTime = "";
   port = "";
-  type = ["Hard", "Soft"];
+  drivers = ["Duy", "An", "Quyền", "Minh", "Dương"];
   items = [
     {
-      name: "Tổng số hàng",
+      name: "Tổng số Container",
       content: "53",
       icon: "mdi-domain"
     },
     {
-      name: "Hàng đang thầu",
+      name: "Tổng số Driver",
       content: "75",
       icon: "mdi-dialpad"
     },
     {
-      name: "Đang đợi ghép",
+      name: "Container rỗng",
       content: "18",
       icon: "mdi-call-split"
     },
     {
-      name: "Ghép thành công",
+      name: "Container đang chạy",
       content: "6",
+      icon: "mdi-arrow-up-bold-box-outline"
+    },
+    {
+      name: "Container đang thầu",
+      content: "8",
       icon: "mdi-arrow-up-bold-box-outline"
     }
   ];
-  yesno = ["Có", "Không"];
   success = "";
   name = "";
   checkSuccess = false;
-  roles = [] as Array<string>;
   dialogAdd = false;
   dialogDel = false;
   dialogDelSingle = false;
   search = "";
-  totalConsignments = 0;
-  consignments = [] as Array<any>;
+  totalContainers = 0;
+  containers = [] as Array<any>;
   loading = true;
   options = {} as any;
   headers = [
     {
-      text: "Mã hàng",
+      text: "Mã Container",
       align: "start",
       sortable: true,
-      value: "bookNo"
+      value: "containerNumber"
     },
-    { text: "Người liên hệ", value: "PIC" },
-    { text: "Thời gian đóng hàng", value: "packingTime" },
-    { text: "Nơi đóng hàng", value: "packingStation" },
-    { text: "Thời gian làm hàng", value: "layTime" },
-    { text: "Thời gian tàu chạy", value: "cutOfTime" },
-    { text: "Trọng lượng", value: "payload" },
-    { text: "Khối lượng", value: "UOM" },
-    { text: "Loại hàng", value: "categories" },
-    { text: "FCL", value: "FCL" },
-    { text: "Bến cảng", value: "port" },
+    { text: "Rơ mooc", value: "containerTrailer" },
+    { text: "Đầu kéo", value: "containerTractor" },
+    { text: "Hóa đơn vận tải", value: "blNumber" },
+    { text: "Lái xe", value: "driver" },
+    { text: "Biển số xe", value: "licensePlate" },
+    { text: "Thời gian có vỏ rỗng", value: "emptyTime" },
+    { text: "Thời gian kéo vỏ từ ICD", value: "pickUpTime" },
+    { text: "Nơi trả vỏ", value: "returnStation" },
+    { text: "Thời gian miễn phí sử dụng", value: "freeTime" },
+    { text: "Cảng lấy hàng", value: "port" },
     {
       text: "Hành động",
       value: "action"
@@ -522,14 +529,14 @@ export default class ConsignmentManagement extends Vue {
   @Watch("options", { deep: true })
   getOptions() {
     this.getDataFromApi().then((data: any) => {
-      this.consignments = data.items;
-      this.totalConsignments = data.total;
+      this.containers = data.items;
+      this.totalContainers = data.total;
     });
   }
   async mounted() {
     this.getDataFromApi().then((data: any) => {
-      this.consignments = data.items;
-      this.totalConsignments = data.total;
+      this.containers = data.items;
+      this.totalContainers = data.total;
     });
   }
   public getDataFromApi() {
@@ -538,7 +545,7 @@ export default class ConsignmentManagement extends Vue {
     return new Promise((resolve, reject) => {
       const { sortBy, sortDesc, page, itemsPerPage } = this.options;
 
-      let items = this.getConsignments();
+      let items = this.getContainers();
       const total = items.length;
 
       if (sortBy.length === 1 && sortDesc.length === 1) {
@@ -571,85 +578,85 @@ export default class ConsignmentManagement extends Vue {
       }, 1000);
     });
   }
-  public getConsignments(): Array<any> {
+  public getContainers(): Array<any> {
     return [
       {
-        bookNo: "A01",
-        PIC: "Admin",
-        packingTime: "2020-06-17",
-        packingStation: "Hạ Long",
-        layTime: "2020-06-22",
-        cutOfTime: "2020-06-28",
-        payload: 10,
-        UOM: 23,
-        categories: ["Soft"],
-        FCL: "Có",
-        port: "abc xyz"
+        containerNumber: "A01",
+        containerTrailer: "Dài",
+        containerTractor: "To",
+        blNumber: "123ass",
+        driver: "An",
+        licensePlate: "26914648763",
+        emptyTime: "2020-06-17",
+        pickUpTime: "2020-06-28",
+        returnStation: "Hà Nội",
+        freeTime: "2020-06-22",
+        port: "Hải Phòng"
       },
       {
-        bookNo: "A02",
-        PIC: "Admin",
-        packingTime: "2020-06-17",
-        packingStation: "Hạ Long",
-        layTime: "2020-06-22",
-        cutOfTime: "2020-06-28",
-        payload: 10,
-        UOM: 23,
-        categories: ["Soft"],
-        FCL: "Có",
-        port: "abc xyz"
+        containerNumber: "A02",
+        containerTrailer: "Dài",
+        containerTractor: "To",
+        blNumber: "123ass",
+        driver: "An",
+        licensePlate: "26914648763",
+        emptyTime: "2020-06-17",
+        pickUpTime: "2020-06-28",
+        returnStation: "Hà Nội",
+        freeTime: "2020-06-22",
+        port: "Hải Phòng"
       },
       {
-        bookNo: "A03",
-        PIC: "Admin",
-        packingTime: "2020-06-17",
-        packingStation: "Hạ Long",
-        layTime: "2020-06-22",
-        cutOfTime: "2020-06-28",
-        payload: 10,
-        UOM: 23,
-        categories: ["Soft"],
-        FCL: "Có",
-        port: "abc xyz"
+        containerNumber: "A03",
+        containerTrailer: "Dài",
+        containerTractor: "To",
+        blNumber: "123ass",
+        driver: "An",
+        licensePlate: "26914648763",
+        emptyTime: "2020-06-17",
+        pickUpTime: "2020-06-28",
+        returnStation: "Hà Nội",
+        freeTime: "2020-06-22",
+        port: "Hải Phòng"
       },
       {
-        bookNo: "A04",
-        PIC: "Admin",
-        packingTime: "2020-06-17",
-        packingStation: "Hạ Long",
-        layTime: "2020-06-22",
-        cutOfTime: "2020-06-28",
-        payload: 10,
-        UOM: 23,
-        categories: ["Soft"],
-        FCL: "Có",
-        port: "abc xyz"
+        containerNumber: "A04",
+        containerTrailer: "Dài",
+        containerTractor: "To",
+        blNumber: "123ass",
+        driver: "An",
+        licensePlate: "26914648763",
+        emptyTime: "2020-06-17",
+        pickUpTime: "2020-06-28",
+        returnStation: "Hà Nội",
+        freeTime: "2020-06-22",
+        port: "Hải Phòng"
       },
       {
-        bookNo: "A05",
-        PIC: "Admin",
-        packingTime: "2020-06-17",
-        packingStation: "Hạ Long",
-        layTime: "2020-06-22",
-        cutOfTime: "2020-06-28",
-        payload: 10,
-        UOM: 23,
-        categories: ["Soft"],
-        FCL: "Có",
-        port: "abc xyz"
+        containerNumber: "A05",
+        containerTrailer: "Dài",
+        containerTractor: "To",
+        blNumber: "123ass",
+        driver: "An",
+        licensePlate: "26914648763",
+        emptyTime: "2020-06-17",
+        pickUpTime: "2020-06-28",
+        returnStation: "Hà Nội",
+        freeTime: "2020-06-22",
+        port: "Hải Phòng"
       },
       {
-        bookNo: "A06",
-        PIC: "Admin",
-        packingTime: "2020-06-17",
-        packingStation: "Hạ Long",
-        layTime: "2020-06-22",
-        cutOfTime: "2020-06-28",
-        payload: 10,
-        UOM: 23,
-        categories: ["Soft"],
-        FCL: "Có",
-        port: "abc xyz"
+        containerNumber: "A06",
+        containerTrailer: "Dài",
+        containerTractor: "To",
+        blNumber: "123ass",
+        driver: "An",
+        licensePlate: "26914648763",
+        emptyTime: "2020-06-17",
+        pickUpTime: "2020-06-28",
+        returnStation: "Hà Nội",
+        freeTime: "2020-06-22",
+        port: "Hải Phòng"
       }
     ];
   }
@@ -672,16 +679,17 @@ export default class ConsignmentManagement extends Vue {
     this.readonly = false;
     this.dialogDel = false;
   }
-  public addConsignment() {
-    this.bookNo = "";
-    this.PIC = "";
-    this.packingTime = "";
-    this.packingStation = "";
-    this.layTime = "";
-    this.cutOfTime = "";
-    this.FCL = "";
-    this.categories = "";
-    this.UOM = null;
+  public addContainer() {
+    this.containerNumber = "";
+    this.containerTrailer = "";
+    this.containerTractor = "";
+    this.blNumber = "";
+    this.driver = [];
+    this.licensePlate = "";
+    this.emptyTime = "";
+    this.pickUpTime = "";
+    this.returnStation = "";
+    this.freeTime = "";
     this.port = "";
     this.title = "Thêm mới hàng";
     this.checkAdd = true;
@@ -690,15 +698,17 @@ export default class ConsignmentManagement extends Vue {
     this.dialogAdd = true;
   }
   public viewDetail(item: any) {
-    this.bookNo = item.bookNo;
-    this.PIC = item.PIC;
-    this.packingTime = item.packingTime;
-    this.packingStation = item.packingStation;
-    this.layTime = item.laytime;
-    this.cutOfTime = item.cutOfTime;
-    this.FCL = item.FCL;
-    this.categories = item.categories;
-    this.UOM = item.UOM;
+    this.containerNumber = item.containerNumber;
+    this.containerTrailer = item.containerTrailer;
+    this.containerTractor = item.containerTractor;
+    this.blNumber = item.blNumber;
+
+    this.driver = item.driver;
+    this.licensePlate = item.licensePlate;
+    this.emptyTime = item.emptyTime;
+    this.pickUpTime = item.pickUpTime;
+    this.returnStation = item.returnStation;
+    this.freeTime = item.freeTime;
     this.port = item.port;
     this.checkAdd = false;
     this.checkUpdate = false;
@@ -707,15 +717,16 @@ export default class ConsignmentManagement extends Vue {
     this.dialogAdd = true;
   }
   public update(item: any) {
-    this.bookNo = item.bookNo;
-    this.PIC = item.PIC;
-    this.packingTime = item.packingTime;
-    this.packingStation = item.packingStation;
-    this.layTime = item.laytime;
-    this.cutOfTime = item.cutOfTime;
-    this.FCL = item.FCL;
-    this.categories = item.categories;
-    this.UOM = item.UOM;
+    this.containerNumber = item.containerNumber;
+    this.containerTrailer = item.containerTrailer;
+    this.containerTractor = item.containerTractor;
+    this.blNumber = item.blNumber;
+    this.driver = item.driver;
+    this.licensePlate = item.licensePlate;
+    this.emptyTime = item.emptyTime;
+    this.pickUpTime = item.pickUpTime;
+    this.returnStation = item.returnStation;
+    this.freeTime = item.freeTime;
     this.port = item.port;
     this.checkAdd = false;
     this.checkUpdate = true;
@@ -723,12 +734,14 @@ export default class ConsignmentManagement extends Vue {
     this.readonly = false;
     this.dialogAdd = true;
   }
-  public delConsignment(item: any) {
-    this.name = item.bookNo;
+  public delContainer(item: any) {
+    this.name = item.containerNumber;
     this.dialogDelSingle = true;
   }
   public delSingle(name: string) {
-    this.consignments = this.consignments.filter(item => item.bookNo != name);
+    this.containers = this.containers.filter(
+      item => item.containerNumber != name
+    );
     this.success = "Xóa thành công";
     this.dialogDelSingle = false;
     this.checkSuccess = true;
@@ -737,13 +750,12 @@ export default class ConsignmentManagement extends Vue {
     this.name = "";
     this.dialogDelSingle = false;
   }
-  public updateConsignment() {
+  public updateContainer() {
     this.success = "Cập nhập thành công!";
     this.checkSuccess = true;
     this.dialogAdd = false;
   }
   public add() {
-    console.log(this.packingTime);
     this.success = "Thêm mới thành công!";
     this.checkSuccess = true;
     this.dialogAdd = false;

@@ -9,6 +9,9 @@
     <div v-if="$auth.check(['ROLE_ADMIN', 'ROLE_MODERATOR'])">
       <v-btn text to="/user-management">Danh sách người dùng</v-btn>
     </div>
+    <div>
+      <v-btn text to="/request-status">Trạng thái đơn đăng ký</v-btn>
+    </div>
     <div v-if="!$auth.check()">
       <v-btn text to="/login">Đăng nhập</v-btn>
     </div>
@@ -18,7 +21,7 @@
     <div v-if="$auth.check()">
       <v-btn text to="/logout">Đăng xuất</v-btn>
     </div>
-    <div style="margin-left:650px;">
+    <div style="margin-left:400px;">
       <v-badge :content="messages" :value="messages" color="green" overlap>
         <v-btn icon @click="seeNotify"><v-icon>mdi-email</v-icon></v-btn>
       </v-badge>

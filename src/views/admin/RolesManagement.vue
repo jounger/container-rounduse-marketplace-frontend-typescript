@@ -16,14 +16,14 @@
         color="primary"
         style="margin-left: 35px;"
         dark
-        @click.stop="dialogAdd = true"
+        @click.stop="addRoles"
         v-if="$auth.check(['ROLE_ADMIN'])"
       >
         Thêm mới
       </v-btn>
       <v-btn
         color="red"
-        style="margin-left: 605px;"
+        style="margin-left: 20px;"
         dark
         @click.stop="dialogDel = true"
         v-if="selected.length > 0 && $auth.check(['ROLE_ADMIN'])"
@@ -31,16 +31,16 @@
         Xóa Role
       </v-btn>
       <v-row justify="center">
-        <v-dialog v-model="dialogDel" persistent max-width="600px">
+        <v-dialog v-model="dialogDelSingle" persistent max-width="600px">
           <v-card>
             <v-toolbar color="primary" light flat>
               <v-toolbar-title
-                ><span class="headline" style="color:white;">Xóa Role</span>
+                ><span class="headline" style="color:white;">Xóa quyền</span>
                 <v-btn
                   icon
                   dark
-                  @click="dialogDel = false"
-                  style="margin-left:425px;"
+                  @click="dialogDelSingle = false"
+                  style="margin-left:408px;"
                 >
                   <v-icon>mdi-close</v-icon>
                 </v-btn></v-toolbar-title
@@ -51,7 +51,49 @@
               <v-form>
                 <v-container>
                   <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa những Roles này?</span
+                    >Bạn có chắc chắn muốn xóa quyền này?</span
+                  >
+                  <div class="line"></div>
+                  <v-list>
+                    <v-list-item>
+                      <v-list-item-content>
+                        <v-list-item-title>{{ name }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list>
+                </v-container>
+                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
+              </v-form>
+            </v-card-text>
+            <v-card-actions style="margin-left: 205px;">
+              <v-btn @click="cancelDelSingle()">Hủy</v-btn>
+              <v-btn @click="delSingle(name)" color="red">Xóa</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-row>
+      <v-row justify="center">
+        <v-dialog v-model="dialogDel" persistent max-width="600px">
+          <v-card>
+            <v-toolbar color="primary" light flat>
+              <v-toolbar-title
+                ><span class="headline" style="color:white;">Xóa quyền</span>
+                <v-btn
+                  icon
+                  dark
+                  @click="dialogDel = false"
+                  style="margin-left:408px;"
+                >
+                  <v-icon>mdi-close</v-icon>
+                </v-btn></v-toolbar-title
+              >
+            </v-toolbar>
+
+            <v-card-text>
+              <v-form>
+                <v-container>
+                  <span style="color: black; font-size:22px;"
+                    >Bạn có chắc chắn muốn xóa những quyền này?</span
                   >
                   <div class="line"></div>
                   <v-list>
@@ -71,7 +113,6 @@
               <v-btn @click="cancelDel()">Hủy</v-btn>
               <v-btn @click="del()" color="red">Xóa</v-btn>
             </v-card-actions>
-            <Dialog :dialog.sync="dialog" />
           </v-card>
         </v-dialog>
       </v-row>
@@ -80,15 +121,8 @@
           <v-card style="height: 350px;">
             <v-toolbar color="primary" light flat>
               <v-toolbar-title
-                ><span class="headline" style="color:white;"
-                  >Thêm mới Roles</span
-                >
-                <v-btn
-                  icon
-                  dark
-                  @click="dialogAdd = false"
-                  style="margin-left:346px;"
-                >
+                ><span class="headline" style="color:white;">{{ title }}</span>
+                <v-btn icon dark @click="cancel" style="margin-left:320px;">
                   <v-icon>mdi-close</v-icon>
                 </v-btn></v-toolbar-title
               >
@@ -102,6 +136,8 @@
                       name="rolesname"
                       prepend-icon="mdi-account"
                       type="text"
+                      v-model="rolename"
+                      :readonly="readonly"
                     ></v-text-field>
                   </v-flex>
                 </v-layout>
@@ -112,7 +148,9 @@
                       attach
                       chips
                       label="Vai trò"
+                      v-model="permissions"
                       multiple
+                      :readonly="readonly"
                     ></v-select>
                   </v-flex>
                 </v-layout>
@@ -121,10 +159,14 @@
             </v-card-text>
             <v-card-actions style="margin-top: 65px;">
               <v-spacer></v-spacer>
-              <v-btn @click="cancel()">Hủy</v-btn>
-              <v-btn @click="submit()" color="primary">Thêm mới</v-btn>
+              <v-btn @click="cancel()">Trở về</v-btn>
+              <v-btn @click="submit()" color="primary" v-if="checkAdd"
+                >Thêm mới</v-btn
+              >
+              <v-btn @click="updateRoles()" color="primary" v-if="checkUpdate"
+                >Cập nhập</v-btn
+              >
             </v-card-actions>
-            <Dialog :dialog.sync="dialog" />
           </v-card>
         </v-dialog>
       </v-row>
@@ -149,40 +191,58 @@
         :items-per-page="5"
         class="elevation-1"
       >
+        <template v-slot:item.action="{ item }">
+          <v-menu :loading="item.createloading" :disabled="item.createloading">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="secondary" dark v-bind="attrs" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item @click="viewDetail(item)">
+                <v-list-item-title>Xem chi tiết</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="update(item)">
+                <v-list-item-title>Cập nhập</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="delRoles(item)">
+                <v-list-item-title>Xóa</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </template>
       </v-data-table>
     </v-card>
   </v-content>
 </template>
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import Dialog from "@/components/Dialog.vue";
 import NavLayout from "@/layouts/NavLayout.vue";
 import { UserEntity } from "@/store/definitions/user";
 @Component({
-  name: "RolesManagement",
-  components: {
-    Dialog
-  }
+  name: "RolesManagement"
 })
 export default class RolesManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
   selected = [] as Array<any>;
-  dialog = false;
-  username = "";
-  password = "";
-  email = "";
-  fullname = "";
   success = "";
   checkSuccess = false;
   permission = ["Create", "Update", "Delete"];
-  roles = [] as Array<string>;
   dialogAdd = false;
   dialogDel = false;
+  dialogDelSingle = false;
+  name = "";
+  rolename = "";
+  permissions = [] as Array<string>;
+  role = [] as any;
   search = "";
   totalRoles = 0;
-  role = [] as Array<any>;
   loading = true;
+  checkAdd = false;
+  checkUpdate = false;
   options = {} as any;
+  title = "";
+  readonly = false;
   headers = [
     {
       text: "Tên quyền",
@@ -193,7 +253,7 @@ export default class RolesManagement extends Vue {
     { text: "Chức năng", value: "permissions" },
     {
       text: "Hành động",
-      value: "mdi-dots-vertical"
+      value: "action"
     }
   ];
   async created() {
@@ -255,15 +315,15 @@ export default class RolesManagement extends Vue {
     return [
       {
         rolename: "ROLE_ADMIN",
-        permissions: "Create, Update, Delete"
+        permissions: ["Create"]
       },
       {
         rolename: "ROLE_MODERATOR",
-        permissions: "Create, Update"
+        permissions: ["Create", "Update"]
       },
       {
         rolename: "ROLE_USER",
-        permissions: "Create, Delete"
+        permissions: ["Create", "Delete"]
       }
     ];
   }
@@ -278,11 +338,60 @@ export default class RolesManagement extends Vue {
   public del() {
     this.success = "Xóa thành công!";
     this.checkSuccess = true;
-    console.log(this.selected);
     this.dialogDel = false;
   }
   public cancelDel() {
+    this.checkAdd = false;
+    this.checkUpdate = false;
+    this.readonly = false;
     this.dialogDel = false;
+  }
+  public viewDetail(item: any) {
+    this.rolename = item.rolename;
+    this.permissions = item.permissions;
+    console.log(this.permissions);
+    this.checkAdd = false;
+    this.checkUpdate = false;
+    this.title = "Thông tin quyền";
+    this.readonly = true;
+    this.dialogAdd = true;
+  }
+  public update(item: any) {
+    this.rolename = item.rolename;
+    this.permissions = item.permissions;
+    this.checkAdd = false;
+    this.checkUpdate = true;
+    this.title = "Cập nhập quyền";
+    this.readonly = false;
+    this.dialogAdd = true;
+  }
+  public delRoles(item: any) {
+    this.name = item.rolename;
+    this.dialogDelSingle = true;
+  }
+  public delSingle(name: string) {
+    this.role = this.role.filter((roles: any) => roles.rolename != name);
+    this.success = "Xóa thành công";
+    this.checkSuccess = true;
+    this.dialogDelSingle = false;
+  }
+  public cancelDelSingle() {
+    this.name = "";
+    this.dialogDelSingle = false;
+  }
+  public addRoles() {
+    this.title = "Thêm mới quyền";
+    this.rolename = "";
+    this.permissions = [];
+    this.checkAdd = true;
+    this.checkUpdate = false;
+    this.readonly = false;
+    this.dialogAdd = true;
+  }
+  public updateRoles() {
+    this.success = "Cập nhập thành công";
+    this.checkSuccess = true;
+    this.dialogAdd = false;
   }
 }
 </script>

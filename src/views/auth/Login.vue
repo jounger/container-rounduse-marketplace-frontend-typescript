@@ -38,8 +38,8 @@ import AuthLayout from "@/layouts/AuthLayout.vue";
 @Component
 export default class Login extends Vue {
   @PropSync("layout") layoutSync!: object;
-  public username = "admin";
-  public password = "admin";
+  public username = "admin1";
+  public password = "123456";
   created() {
     this.layoutSync = AuthLayout;
   }

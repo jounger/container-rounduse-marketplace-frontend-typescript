@@ -5,47 +5,79 @@
     </v-toolbar>
     <v-card-text>
       <v-form>
-        <v-text-field
-          label="Username"
-          name="username"
-          prepend-icon="mdi-account"
-          type="text"
-          v-model="username"
-        ></v-text-field>
+        <v-container>
+          <v-row>
+            <v-text-field
+              label="Tên đăng nhập"
+              name="username"
+              prepend-icon="mdi-account"
+              type="text"
+              v-model="username"
+            ></v-text-field>
 
-        <v-text-field
-          label="Password"
-          name="password"
-          prepend-icon="mdi-lock"
-          type="password"
-          v-model="password"
-        ></v-text-field>
+            <v-text-field
+              label="Mật khẩu"
+              name="password"
+              prepend-icon="mdi-lock"
+              type="password"
+              v-model="password"
+            ></v-text-field>
 
-        <v-text-field
-          label="Email"
-          name="email"
-          prepend-icon="mdi-lock"
-          type="email"
-          v-model="email"
-        ></v-text-field>
+            <v-text-field
+              label="Email"
+              name="email"
+              prepend-icon="mdi-lock"
+              type="email"
+              v-model="email"
+            ></v-text-field>
 
-        <v-text-field
-          label="Fullname"
-          name="fullname"
-          prepend-icon="mdi-lock"
-          type="text"
-          v-model="fullname"
-        ></v-text-field>
+            <v-text-field
+              label="Số điện thoại"
+              name="phone"
+              prepend-icon="mdi-lock"
+              type="text"
+              v-model="phone"
+            ></v-text-field>
 
-        <v-select
-          v-model="roles"
-          :items="enumRole"
-          attach
-          chips
-          label="Roles"
-          multiple
-        ></v-select>
-        <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
+            <v-select
+              v-model="roles"
+              :items="role"
+              attach
+              chips
+              label="Chọn quyền"
+              multiple
+            ></v-select>
+            <v-text-field
+              label="Quốc tịch"
+              name="country"
+              prepend-icon="mdi-lock"
+              type="text"
+              v-model="country"
+            ></v-text-field>
+            <v-text-field
+              label="Tỉnh/ Thành phố"
+              name="city"
+              prepend-icon="mdi-lock"
+              type="text"
+              v-model="city"
+            ></v-text-field>
+            <v-text-field
+              label="Postal Code"
+              name="code"
+              prepend-icon="mdi-lock"
+              type="text"
+              v-model="code"
+            ></v-text-field>
+            <v-text-field
+              label="Địa chỉ chi tiết"
+              name="address"
+              prepend-icon="mdi-lock"
+              type="text"
+              v-model="address"
+            ></v-text-field>
+            <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
+          </v-row>
+        </v-container>
       </v-form>
     </v-card-text>
     <v-card-actions>
@@ -59,7 +91,7 @@
 
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
-import EmptyLayout from "@/layouts/EmptyLayout.vue";
+import AuthLayout from "@/layouts/AuthLayout.vue";
 import { EnumRole } from "@/common/EnumRole";
 import Dialog from "@/components/Dialog.vue";
 @Component({
@@ -72,20 +104,17 @@ export default class Register extends Vue {
   private username = null;
   private password = null;
   private email = null;
-  private fullname = null;
+  private phone = null;
+  private address = null;
+  private city = null;
+  private code = null;
+  private country = null;
   private roles: string[] = [];
-  public enumRole: string[] = [];
+  public role = ["ROLE_FORWARDER", "merchant"];
   public dialog = false;
 
   created() {
-    this.layoutSync = EmptyLayout;
-  }
-  public mounted() {
-    Object.entries(EnumRole).forEach(([key, value]) => {
-      if (key.toString().includes("ROLE_")) {
-        this.enumRole.push(key.toString().split("_")[1]);
-      }
-    });
+    this.layoutSync = AuthLayout;
   }
   public submit() {
     this.$http({
@@ -95,8 +124,15 @@ export default class Register extends Vue {
         username: this.username,
         password: this.password,
         email: this.email,
-        fullname: this.fullname,
-        roles: this.roles
+        phone: this.phone,
+        roles: this.roles,
+        address: {
+          address: this.address,
+          city: this.city,
+          country: this.country,
+          postalCode: this.code
+        },
+        status: 1
       }
     })
       .then(response => {
