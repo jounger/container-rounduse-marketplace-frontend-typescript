@@ -98,6 +98,46 @@
           <v-list-item-title>Quản lý Container</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
+      <v-list-item @click="toDriver">
+        <v-list-item-icon>
+          <v-icon>mdi-image</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title>Quản lý Lái xe</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item @click="toICD">
+        <v-list-item-icon>
+          <v-icon>mdi-help-box</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title>Quản lý ICD</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item @click="toPort">
+        <v-list-item-icon>
+          <v-icon>mdi-help-box</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title>Quản lý bến cảng</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item @click="toContainerType">
+        <v-list-item-icon>
+          <v-icon>mdi-help-box</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title>Quản lý loại Container</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item @click="toBiddingDocument">
+        <v-list-item-icon>
+          <v-icon>mdi-help-box</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title>Quản lý Hồ sơ mời thầu</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
       <v-list-item @click="toProfile">
         <v-list-item-icon>
           <v-icon>mdi-help-box</v-icon>
@@ -114,6 +154,7 @@
 import { Vue, Component, PropSync } from "vue-property-decorator";
 import UserModule from "@/store/modules/user";
 import { UserEntity } from "@/store/definitions/user";
+import router from "../router/index";
 @Component
 export default class Navigation extends Vue {
   @PropSync("drawer", { type: Boolean }) drawerSync!: boolean | null;
@@ -162,6 +203,21 @@ export default class Navigation extends Vue {
   }
   public checked(): void {
     this.check = !this.check;
+  }
+  public toDriver(): void {
+    this.$router.push("/driver-management");
+  }
+  public toICD(): void {
+    this.$router.push("/icd-management");
+  }
+  public toPort(): void {
+    this.$router.push("/port-management");
+  }
+  public toContainerType(): void {
+    this.$router.push("/container-type-management");
+  }
+  public toBiddingDocument(): void{
+    this.$router.push("/bidding-document-management");
   }
 }
 </script>

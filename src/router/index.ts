@@ -116,6 +116,31 @@ const routes: Array<RouteConfig> = [
     path: "/container-management",
     name: "ContainerManagement",
     component: () => import("@/views/supplier/ContainerManagement.vue")
+  },
+  {
+    path: "/driver-management",
+    name: "DriverManagement",
+    component: () => import("@/views/supplier/DriverManagement.vue")
+  },
+  {
+    path: "/icd-management",
+    name: "ICDManagement",
+    component: () => import("@/views/operator/ICDManagement.vue")
+  },
+  {
+    path: "/port-management",
+    name: "PortManagement",
+    component: () => import("@/views/operator/PortManagement.vue")
+  },
+  {
+    path: "/container-type-management",
+    name: "ContainerTypeManagement",
+    component: () => import("@/views/operator/ContainerTypeManagement.vue")
+  },
+  {
+    path: "/bidding-document-management",
+    name: "BiddingDocumentManagement",
+    component: () => import("@/views/supplier/BiddingDocumentManagement.vue")
   }
 ];
 

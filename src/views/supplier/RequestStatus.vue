@@ -167,6 +167,7 @@ export default class Logout extends Vue {
   created() {
     this.layoutSync = NavLayout;
     this.profile = UserModule.getCurrentUser;
+    console.log(this.profile);
   }
   public showDialog() {
     console.log(UserModule.getCurrentUser);
