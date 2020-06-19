@@ -141,6 +141,11 @@ const routes: Array<RouteConfig> = [
     path: "/bidding-document-management",
     name: "BiddingDocumentManagement",
     component: () => import("@/views/supplier/BiddingDocumentManagement.vue")
+  },
+  {
+    path: "/consignment-management-new",
+    name: "ConsignmentManagementNew",
+    component: () => import("@/views/supplier/ConsignmentManagementNew.vue")
   }
 ];
 

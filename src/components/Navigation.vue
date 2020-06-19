@@ -3,7 +3,7 @@
     <v-list dense nav>
       <v-list-item two-line :class="'px-0'">
         <v-list-item-avatar size="90">
-          <v-img src="@/img/ava.jpg" />
+          <v-img src="@/assets/images/ava.jpg" />
         </v-list-item-avatar>
 
         <v-list-item-content>
@@ -88,6 +88,14 @@
         </v-list-item-icon>
         <v-list-item-content>
           <v-list-item-title>Quản lý hàng</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item @click="toConsignmentNew">
+        <v-list-item-icon>
+          <v-icon>mdi-help-box</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title>Quản lý hàng (bản mới)</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
       <v-list-item @click="toContainer">
@@ -194,6 +202,9 @@ export default class Navigation extends Vue {
   }
   public toConsignment(): void {
     this.$router.push("/consignment-management");
+  }
+  public toConsignmentNew(): void{
+    this.$router.push("/consignment-management-new");
   }
   public toRequest(): void {
     this.$router.push("/request-user-management");
