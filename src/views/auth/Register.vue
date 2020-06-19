@@ -92,7 +92,6 @@
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import AuthLayout from "@/layouts/AuthLayout.vue";
-import { EnumRole } from "@/common/EnumRole";
 import Dialog from "@/components/Dialog.vue";
 @Component({
   components: {

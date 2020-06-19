@@ -58,21 +58,6 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/user/UserManagement.vue")
   },
   {
-    path: "/user-detail",
-    name: "UserDetail",
-    component: () => import("@/views/user/UserDetail.vue")
-  },
-  {
-    path: "/add-shipping-line",
-    name: "AddShippingLine",
-    component: () => import("@/views/operator/AddShippingLine.vue")
-  },
-  {
-    path: "/add-roles",
-    name: "AddRoles",
-    component: () => import("@/views/admin/AddRoles.vue")
-  },
-  {
     path: "/admin-management",
     name: "AdminManagement",
     component: () => import("@/views/user/AdminManagement.vue")
