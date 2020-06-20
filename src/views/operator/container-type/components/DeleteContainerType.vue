@@ -18,15 +18,24 @@
       <v-card-text>
         <v-form>
           <v-container>
-            <span style="color: black; font-size:22px;"
-              >Bạn có chắc chắn muốn xóa những loại Container này?
-              DeleteContainerType</span
+            <span v-if="!singleDelSync" style="color: black; font-size:22px;"
+              >Bạn có chắc chắn muốn xóa những loại Container này?</span
+            >
+            <span v-if="singleDelSync" style="color: black; font-size:22px;"
+              >Bạn có chắc chắn muốn xóa loại Container này?</span
             >
             <div class="line"></div>
-            <v-list>
+            <v-list v-if="!singleDelSync">
               <v-list-item v-for="item in selectedSync" :key="item.name">
                 <v-list-item-content>
                   <v-list-item-title v-text="item.name"></v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+            <v-list v-if="singleDelSync">
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title>{{ nameDelSync }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -53,9 +62,26 @@ export default class DeleteContainerType extends Vue {
     ContainerType
   > | null;
   @PropSync("dialogDel", { type: Boolean }) dialogSync!: boolean | null;
+  @PropSync("checkSuccess", { type: Boolean }) checkSuccessSync!:
+    | boolean
+    | null;
+  @PropSync("success", { type: String }) successSync!: string | null;
+  @PropSync("singleDel", { type: Boolean }) singleDelSync!: boolean | null;
+  @PropSync("nameDel", { type: String }) nameDelSync!: string | null;
 
   mounted() {
     console.log("PROP selected", this.selectedSync);
+  }
+  public cancelDel() {
+    this.dialogSync = false;
+    this.singleDelSync = false;
+    this.nameDelSync = "";
+  }
+  public del() {
+    this.successSync = "Xóa thành công!";
+    this.checkSuccessSync = true;
+    this.dialogSync = false;
+    this.singleDelSync = false;
   }
 }
 </script>

@@ -234,7 +234,9 @@
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import Dialog from "@/components/Dialog.vue";
 import NavLayout from "@/layouts/NavLayout.vue";
-import { UserEntity } from "@/store/definitions/user";
+import data from "../shipping-line/data";
+import { ShippingLine } from "./shipping-line";
+
 @Component({
   name: "ShippingLineManagement",
   components: {
@@ -243,7 +245,7 @@ import { UserEntity } from "@/store/definitions/user";
 })
 export default class ShippingLineManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
-  selected = [] as Array<any>;
+  selected = [] as Array<ShippingLine>;
   dialog = false;
   username = "";
   password = "";
@@ -257,7 +259,7 @@ export default class ShippingLineManagement extends Vue {
   dialogDel = false;
   search = "";
   totalShips = 0;
-  ships = [] as Array<any>;
+  ships = [] as Array<ShippingLine>;
   loading = true;
   options = {} as any;
   headers = [
@@ -305,7 +307,7 @@ export default class ShippingLineManagement extends Vue {
       const total = items.length;
 
       if (sortBy.length === 1 && sortDesc.length === 1) {
-        items = items.sort((a: Array<UserEntity>, b: Array<UserEntity>) => {
+        items = items.sort((a: any, b: any) => {
           const sortA = a[sortBy[0]];
           const sortB = b[sortBy[0]];
 
@@ -334,89 +336,8 @@ export default class ShippingLineManagement extends Vue {
       }, 1000);
     });
   }
-  public getShips(): Array<any> {
-    return [
-      {
-        username: "Admin",
-        shipname: "ABC",
-        namecode: "A01",
-        email: "abc@gmail.com",
-        website: "abc.com.vn",
-        phone: "0359049292",
-        icds: ["Dry port", "Seaport"],
-        address: "abc xyz"
-      },
-      {
-        username: "Admin",
-        shipname: "ABC",
-        namecode: "A02",
-        email: "abc@gmail.com",
-        website: "abc.com.vn",
-        phone: "0359049292",
-        icds: ["Dry port", "Seaport"],
-        address: "abc xyz"
-      },
-      {
-        username: "Admin",
-        shipname: "ABC",
-        namecode: "A03",
-        email: "abc@gmail.com",
-        website: "abc.com.vn",
-        phone: "0359049292",
-        icds: ["Dry port", "Seaport"],
-        address: "abc xyz"
-      },
-      {
-        username: "Admin",
-        shipname: "ABC",
-        namecode: "A04",
-        email: "abc@gmail.com",
-        website: "abc.com.vn",
-        phone: "0359049292",
-        icds: ["Dry port", "Seaport"],
-        address: "abc xyz"
-      },
-      {
-        username: "Admin",
-        shipname: "ABC",
-        namecode: "A05",
-        email: "abc@gmail.com",
-        website: "abc.com.vn",
-        phone: "0359049292",
-        icds: ["Dry port", "Seaport"],
-        address: "abc xyz"
-      },
-      {
-        username: "Admin1",
-        shipname: "ABC",
-        namecode: "A06",
-        email: "abc@gmail.com",
-        website: "abc.com.vn",
-        phone: "0359049292",
-        icds: ["Dry port", "Seaport"],
-        address: "abc xyz"
-      },
-      {
-        username: "Admin1",
-        shipname: "ABC",
-        namecode: "A07",
-        email: "abc@gmail.com",
-        website: "abc.com.vn",
-        phone: "0359049292",
-        icds: ["Dry port", "Seaport"],
-        address: "abc xyz"
-      },
-      {
-        username: "Admin",
-        shipname: "ABC",
-        namecode: "A08",
-        email: "abc@gmail.com",
-        website: "abc.com.vn",
-        phone: "0359049292",
-        icds: ["Dry port", "Seaport"],
-        address: "abc xyz"
-      },
-    ];
+  public getShips(): Array<ShippingLine> {
+    return data;
   }
   public submit() {
     this.success = "Thêm mới thành công!";

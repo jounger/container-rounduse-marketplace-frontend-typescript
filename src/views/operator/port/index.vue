@@ -234,12 +234,15 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
+import data from "../port/data";
+import { Port } from "../port/port";
+
 @Component({
   name: "PortManagement"
 })
 export default class PortManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
-  selected = [] as Array<any>;
+  selected = [] as Array<Port>;
   fullname = "";
   nameCode = "";
   address = "";
@@ -255,7 +258,7 @@ export default class PortManagement extends Vue {
   search = "";
   readonly = false;
   totalPorts = 0;
-  ports = [] as Array<any>;
+  ports = [] as Array<Port>;
   loading = true;
   options = {} as any;
   headers = [
@@ -299,7 +302,7 @@ export default class PortManagement extends Vue {
       const total = items.length;
 
       if (sortBy.length === 1 && sortDesc.length === 1) {
-        items = items.sort((a: Array<any>, b: Array<any>) => {
+        items = items.sort((a: any, b: any) => {
           const sortA = a[sortBy[0]];
           const sortB = b[sortBy[0]];
 
@@ -328,39 +331,8 @@ export default class PortManagement extends Vue {
       }, 1000);
     });
   }
-  public getPorts(): Array<any> {
-    return [
-      {
-        fullname: "Hải Phòng",
-        nameCode: "HP",
-        address: "Hải Phòng"
-      },
-      {
-        fullname: "Hà Nội",
-        nameCode: "HN",
-        address: "Hà Nội"
-      },
-      {
-        fullname: "Vĩnh Tuy",
-        nameCode: "VT",
-        address: "Vĩnh Tuy"
-      },
-      {
-        fullname: "Hạ Long",
-        nameCode: "HL",
-        address: "Hạ Long"
-      },
-      {
-        fullname: "Hòa Lạc",
-        nameCode: "HOLA",
-        address: "Hòa Lạc"
-      },
-      {
-        fullname: "FPT",
-        nameCode: "FPT",
-        address: "FPT"
-      }
-    ];
+  public getPorts(): Array<Port> {
+    return data;
   }
   public submit() {
     this.success = "Thêm mới thành công!";
@@ -373,7 +345,7 @@ export default class PortManagement extends Vue {
     this.readonly = false;
     this.dialogAdd = false;
   }
-  public viewDetail(item: any) {
+  public viewDetail(item: Port) {
     this.fullname = item.fullname;
     this.nameCode = item.nameCode;
     this.address = item.address;
@@ -383,7 +355,7 @@ export default class PortManagement extends Vue {
     this.readonly = true;
     this.dialogAdd = true;
   }
-  public update(item: any) {
+  public update(item: Port) {
     this.fullname = item.fullname;
     this.nameCode = item.nameCode;
     this.address = item.address;
@@ -393,12 +365,12 @@ export default class PortManagement extends Vue {
     this.readonly = false;
     this.dialogAdd = true;
   }
-  public delPort(item: any) {
+  public delPort(item: Port) {
     this.name = item.fullname;
     this.dialogDelSingle = true;
   }
   public delSingle(name: string) {
-    this.ports = this.ports.filter((port: any) => port.fullname != name);
+    this.ports = this.ports.filter((port: Port) => port.fullname != name);
     this.success = "Xóa thành công";
     this.checkSuccess = true;
     this.dialogDelSingle = false;

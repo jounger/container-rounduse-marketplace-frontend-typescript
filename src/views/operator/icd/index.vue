@@ -234,13 +234,15 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
-import { UserEntity } from "@/store/definitions/user";
+import data from "../icd/data";
+import { Icd } from "../icd/icd";
+
 @Component({
   name: "ICDManagement"
 })
 export default class ICDManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
-  selected = [] as Array<any>;
+  selected = [] as Array<Icd>;
   fullname = "";
   nameCode = "";
   address = "";
@@ -256,7 +258,7 @@ export default class ICDManagement extends Vue {
   search = "";
   readonly = false;
   totalICDs = 0;
-  ICDs = [] as Array<any>;
+  ICDs = [] as Array<Icd>;
   loading = true;
   options = {} as any;
   headers = [
@@ -300,7 +302,7 @@ export default class ICDManagement extends Vue {
       const total = items.length;
 
       if (sortBy.length === 1 && sortDesc.length === 1) {
-        items = items.sort((a: Array<any>, b: Array<any>) => {
+        items = items.sort((a: any, b: any) => {
           const sortA = a[sortBy[0]];
           const sortB = b[sortBy[0]];
 
@@ -329,39 +331,8 @@ export default class ICDManagement extends Vue {
       }, 1000);
     });
   }
-  public getICDs(): Array<any> {
-    return [
-      {
-        fullname: "Cảng cạn 01",
-        nameCode: "DRY01",
-        address: "Hải Phòng"
-      },
-      {
-        fullname: "Cảng cạn 02",
-        nameCode: "DRY02",
-        address: "Hà Nội"
-      },
-      {
-        fullname: "Cảng biển 01",
-        nameCode: "SEA01",
-        address: "Vĩnh Tuy"
-      },
-      {
-        fullname: "Cảng nội địa 01",
-        nameCode: "DEP01",
-        address: "Hạ Long"
-      },
-      {
-        fullname: "Cảng biển 02",
-        nameCode: "SEA02",
-        address: "Hòa Lạc"
-      },
-      {
-        fullname: "Cảng nội địa 02",
-        nameCode: "DEP02",
-        address: "FPT"
-      }
-    ];
+  public getICDs(): Array<Icd> {
+    return data;
   }
   public submit() {
     this.success = "Thêm mới thành công!";
@@ -374,7 +345,7 @@ export default class ICDManagement extends Vue {
     this.readonly = false;
     this.dialogAdd = false;
   }
-  public viewDetail(item: any) {
+  public viewDetail(item: Icd) {
     this.fullname = item.fullname;
     this.nameCode = item.nameCode;
     this.address = item.address;
@@ -384,7 +355,7 @@ export default class ICDManagement extends Vue {
     this.readonly = true;
     this.dialogAdd = true;
   }
-  public update(item: any) {
+  public update(item: Icd) {
     this.fullname = item.fullname;
     this.nameCode = item.nameCode;
     this.address = item.address;
@@ -394,12 +365,12 @@ export default class ICDManagement extends Vue {
     this.readonly = false;
     this.dialogAdd = true;
   }
-  public delICD(item: any) {
+  public delICD(item: Icd) {
     this.name = item.fullname;
     this.dialogDelSingle = true;
   }
   public delSingle(name: string) {
-    this.ICDs = this.ICDs.filter((ICD: any) => ICD.fullname != name);
+    this.ICDs = this.ICDs.filter((ICD: Icd) => ICD.fullname != name);
     this.success = "Xóa thành công";
     this.checkSuccess = true;
     this.dialogDelSingle = false;

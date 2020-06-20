@@ -2,7 +2,7 @@
   <v-content>
     <v-card>
       <v-card-title>
-        Danh sách quyền
+        Danh sách Vai trò
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -16,7 +16,7 @@
         color="primary"
         style="margin-left: 35px;"
         dark
-        @click.stop="addRoles"
+        @click.stop="addPermission"
         v-if="$auth.check(['ROLE_ADMIN'])"
       >
         Thêm mới
@@ -28,19 +28,19 @@
         @click.stop="dialogDel = true"
         v-if="selected.length > 0 && $auth.check(['ROLE_ADMIN'])"
       >
-        Xóa Role
+        Xóa Vai trò
       </v-btn>
       <v-row justify="center">
         <v-dialog v-model="dialogDelSingle" persistent max-width="600px">
           <v-card>
             <v-toolbar color="primary" light flat>
               <v-toolbar-title
-                ><span class="headline" style="color:white;">Xóa quyền</span>
+                ><span class="headline" style="color:white;">Xóa vai trò</span>
                 <v-btn
                   icon
                   dark
                   @click="dialogDelSingle = false"
-                  style="margin-left:408px;"
+                  style="margin-left:425px;"
                 >
                   <v-icon>mdi-close</v-icon>
                 </v-btn></v-toolbar-title
@@ -51,7 +51,7 @@
               <v-form>
                 <v-container>
                   <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa quyền này?</span
+                    >Bạn có chắc chắn muốn xóa vai trò này?</span
                   >
                   <div class="line"></div>
                   <v-list>
@@ -77,12 +77,12 @@
           <v-card>
             <v-toolbar color="primary" light flat>
               <v-toolbar-title
-                ><span class="headline" style="color:white;">Xóa quyền</span>
+                ><span class="headline" style="color:white;">Xóa Vai trò</span>
                 <v-btn
                   icon
                   dark
                   @click="dialogDel = false"
-                  style="margin-left:408px;"
+                  style="margin-left:425px;"
                 >
                   <v-icon>mdi-close</v-icon>
                 </v-btn></v-toolbar-title
@@ -93,7 +93,7 @@
               <v-form>
                 <v-container>
                   <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa những quyền này?</span
+                    >Bạn có chắc chắn muốn xóa những Vai trò này?</span
                   >
                   <div class="line"></div>
                   <v-list>
@@ -122,7 +122,12 @@
             <v-toolbar color="primary" light flat>
               <v-toolbar-title
                 ><span class="headline" style="color:white;">{{ title }}</span>
-                <v-btn icon dark @click="cancel" style="margin-left:320px;">
+                <v-btn
+                  icon
+                  dark
+                  @click="dialogAdd = false"
+                  style="margin-left:337px;"
+                >
                   <v-icon>mdi-close</v-icon>
                 </v-btn></v-toolbar-title
               >
@@ -132,26 +137,25 @@
                 <v-layout row>
                   <v-flex xs9>
                     <v-text-field
-                      label="Tên quyền"
-                      name="rolesname"
+                      label="Tên vai trò"
+                      name="permissionsName"
                       prepend-icon="mdi-account"
                       type="text"
-                      v-model="rolename"
+                      v-model="permissionName"
                       :readonly="readonly"
                     ></v-text-field>
                   </v-flex>
                 </v-layout>
                 <v-layout row>
                   <v-flex xs9>
-                    <v-select
-                      :items="permission"
-                      attach
-                      chips
-                      label="Vai trò"
-                      v-model="permissions"
-                      multiple
+                    <v-text-field
+                      label="Mô tả"
+                      name="content"
+                      prepend-icon="mdi-account"
+                      type="text"
+                      v-model="description"
                       :readonly="readonly"
-                    ></v-select>
+                    ></v-text-field>
                   </v-flex>
                 </v-layout>
                 <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
@@ -163,7 +167,10 @@
               <v-btn @click="submit()" color="primary" v-if="checkAdd"
                 >Thêm mới</v-btn
               >
-              <v-btn @click="updateRoles()" color="primary" v-if="checkUpdate"
+              <v-btn
+                @click="updatePermission()"
+                color="primary"
+                v-if="checkUpdate"
                 >Cập nhập</v-btn
               >
             </v-card-actions>
@@ -181,12 +188,12 @@
       <v-data-table
         v-model="selected"
         :headers="headers"
-        :items="role"
+        :items="permissions"
         :search="search"
-        item-key="rolename"
+        item-key="permissionName"
         show-select
         :options.sync="options"
-        :server-items-length="totalRoles"
+        :server-items-length="totalPermissions"
         :loading="loading"
         :items-per-page="5"
         class="elevation-1"
@@ -205,7 +212,7 @@
               <v-list-item @click="update(item)">
                 <v-list-item-title>Cập nhập</v-list-item-title>
               </v-list-item>
-              <v-list-item @click="delRoles(item)">
+              <v-list-item @click="delPermission(item)">
                 <v-list-item-title>Xóa</v-list-item-title>
               </v-list-item>
             </v-list>
@@ -218,39 +225,38 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
-import { UserEntity } from "@/store/definitions/user";
+import { Permission } from "../permission/permission";
 @Component({
-  name: "RolesManagement"
+  name: "PermissionManagement"
 })
-export default class RolesManagement extends Vue {
+export default class PermissionManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
-  selected = [] as Array<any>;
+  selected = [] as Array<Permission>;
+  permissionName = "";
+  description = "";
   success = "";
   checkSuccess = false;
-  permission = ["Create", "Update", "Delete"];
   dialogAdd = false;
   dialogDel = false;
   dialogDelSingle = false;
-  name = "";
-  rolename = "";
-  permissions = [] as Array<string>;
-  role = [] as any;
-  search = "";
-  totalRoles = 0;
-  loading = true;
   checkAdd = false;
   checkUpdate = false;
-  options = {} as any;
   title = "";
+  name = "";
+  search = "";
   readonly = false;
+  totalPermissions = 0;
+  permissions = [] as Array<Permission>;
+  loading = true;
+  options = {} as any;
   headers = [
     {
-      text: "Tên quyền",
+      text: "Tên vai trò",
       align: "start",
       sortable: true,
-      value: "rolename"
+      value: "permissionName"
     },
-    { text: "Chức năng", value: "permissions" },
+    { text: "Mô tả", value: "description" },
     {
       text: "Hành động",
       value: "action"
@@ -262,14 +268,14 @@ export default class RolesManagement extends Vue {
   @Watch("options", { deep: true })
   getOptions() {
     this.getDataFromApi().then((data: any) => {
-      this.role = data.items;
-      this.totalRoles = data.total;
+      this.permissions = data.items;
+      this.totalPermissions = data.total;
     });
   }
   async mounted() {
     this.getDataFromApi().then((data: any) => {
-      this.role = data.items;
-      this.totalRoles = data.total;
+      this.permissions = data.items;
+      this.totalPermissions = data.total;
     });
   }
   public getDataFromApi() {
@@ -278,11 +284,12 @@ export default class RolesManagement extends Vue {
     return new Promise((resolve, reject) => {
       const { sortBy, sortDesc, page, itemsPerPage } = this.options;
 
-      let items = this.getRoles();
+      let items = this.getPermissions();
+      console.log(this.getPermissions());
       const total = items.length;
 
       if (sortBy.length === 1 && sortDesc.length === 1) {
-        items = items.sort((a: Array<UserEntity>, b: Array<UserEntity>) => {
+        items = items.sort((a: any, b: any) => {
           const sortA = a[sortBy[0]];
           const sortB = b[sortBy[0]];
 
@@ -311,19 +318,19 @@ export default class RolesManagement extends Vue {
       }, 1000);
     });
   }
-  public getRoles(): Array<any> {
+  public getPermissions(): Array<Permission> {
     return [
       {
-        rolename: "ROLE_ADMIN",
-        permissions: ["Create"]
+        permissionName: "Create",
+        description: "Create new"
       },
       {
-        rolename: "ROLE_MODERATOR",
-        permissions: ["Create", "Update"]
+        permissionName: "Update",
+        description: "Update content available"
       },
       {
-        rolename: "ROLE_USER",
-        permissions: ["Create", "Delete"]
+        permissionName: "Delete",
+        description: "Delete somthing"
       }
     ];
   }
@@ -333,44 +340,37 @@ export default class RolesManagement extends Vue {
     this.dialogAdd = false;
   }
   public cancel() {
-    this.dialogAdd = false;
-  }
-  public del() {
-    this.success = "Xóa thành công!";
-    this.checkSuccess = true;
-    this.dialogDel = false;
-  }
-  public cancelDel() {
     this.checkAdd = false;
     this.checkUpdate = false;
     this.readonly = false;
-    this.dialogDel = false;
+    this.dialogAdd = false;
   }
-  public viewDetail(item: any) {
-    this.rolename = item.rolename;
-    this.permissions = item.permissions;
-    console.log(this.permissions);
+  public viewDetail(item: Permission) {
+    this.permissionName = item.permissionName;
+    this.description = item.description;
     this.checkAdd = false;
     this.checkUpdate = false;
-    this.title = "Thông tin quyền";
+    this.title = "Thông tin vai trò";
     this.readonly = true;
     this.dialogAdd = true;
   }
-  public update(item: any) {
-    this.rolename = item.rolename;
-    this.permissions = item.permissions;
+  public update(item: Permission) {
+    this.permissionName = item.permissionName;
+    this.description = item.description;
     this.checkAdd = false;
     this.checkUpdate = true;
-    this.title = "Cập nhập quyền";
+    this.title = "Cập nhập vai trò";
     this.readonly = false;
     this.dialogAdd = true;
   }
-  public delRoles(item: any) {
-    this.name = item.rolename;
+  public delPermission(item: Permission) {
+    this.name = item.permissionName;
     this.dialogDelSingle = true;
   }
   public delSingle(name: string) {
-    this.role = this.role.filter((roles: any) => roles.rolename != name);
+    this.permissions = this.permissions.filter(
+      (permission: Permission) => permission.permissionName != name
+    );
     this.success = "Xóa thành công";
     this.checkSuccess = true;
     this.dialogDelSingle = false;
@@ -379,19 +379,28 @@ export default class RolesManagement extends Vue {
     this.name = "";
     this.dialogDelSingle = false;
   }
-  public addRoles() {
-    this.title = "Thêm mới quyền";
-    this.rolename = "";
-    this.permissions = [];
+  public addPermission() {
+    this.title = "Thêm mới Vai trò";
+    this.permissionName = "";
+    this.description = "";
     this.checkAdd = true;
     this.checkUpdate = false;
     this.readonly = false;
     this.dialogAdd = true;
   }
-  public updateRoles() {
+  public updatePermission() {
     this.success = "Cập nhập thành công";
     this.checkSuccess = true;
     this.dialogAdd = false;
+  }
+  public del() {
+    this.success = "Xóa thành công!";
+    this.checkSuccess = true;
+    console.log(this.selected);
+    this.dialogDel = false;
+  }
+  public cancelDel() {
+    this.dialogDel = false;
   }
 }
 </script>

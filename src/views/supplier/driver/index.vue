@@ -234,13 +234,15 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
-import { UserEntity } from "@/store/definitions/user";
+import data from "../driver/data";
+import { Driver } from "../driver/driver";
+
 @Component({
   name: "DriverManagement"
 })
 export default class DriverManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
-  selected = [] as Array<any>;
+  selected = [] as Array<Driver>;
   driverName = "";
   driverLicense = "";
   location = "";
@@ -256,7 +258,7 @@ export default class DriverManagement extends Vue {
   search = "";
   readonly = false;
   totalDrivers = 0;
-  drivers = [] as Array<any>;
+  drivers = [] as Array<Driver>;
   loading = true;
   options = {} as any;
   headers = [
@@ -299,7 +301,7 @@ export default class DriverManagement extends Vue {
       const total = items.length;
 
       if (sortBy.length === 1 && sortDesc.length === 1) {
-        items = items.sort((a: Array<any>, b: Array<any>) => {
+        items = items.sort((a: any, b: any) => {
           const sortA = a[sortBy[0]];
           const sortB = b[sortBy[0]];
 
@@ -328,39 +330,8 @@ export default class DriverManagement extends Vue {
       }, 1000);
     });
   }
-  public getDrivers(): Array<any> {
-    return [
-      {
-        driverName: "An",
-        driverLicense: "23166021545",
-        location: "20,30"
-      },
-      {
-        driverName: "Duy",
-        driverLicense: "2316602154512",
-        location: "20,30"
-      },
-      {
-        driverName: "Quyền",
-        driverLicense: "23166021545455",
-        location: "20,30"
-      },
-      {
-        driverName: "Dương",
-        driverLicense: "231651216021545",
-        location: "20,30"
-      },
-      {
-        driverName: "Minh",
-        driverLicense: "2316602154545545",
-        location: "20,30"
-      },
-      {
-        driverName: "Abc",
-        driverLicense: "231660215487545",
-        location: "20,30"
-      },
-    ];
+  public getDrivers(): Array<Driver> {
+    return data;
   }
   public submit() {
     this.success = "Thêm mới thành công!";
@@ -373,7 +344,7 @@ export default class DriverManagement extends Vue {
     this.readonly = false;
     this.dialogAdd = false;
   }
-  public viewDetail(item: any) {
+  public viewDetail(item: Driver) {
     this.driverName = item.driverName;
     this.driverLicense = item.driverLicense;
     this.location = item.location;
@@ -383,7 +354,7 @@ export default class DriverManagement extends Vue {
     this.readonly = true;
     this.dialogAdd = true;
   }
-  public update(item: any) {
+  public update(item: Driver) {
     this.driverName = item.driverName;
     this.driverLicense = item.driverLicense;
     this.location = item.location;
@@ -393,13 +364,13 @@ export default class DriverManagement extends Vue {
     this.readonly = false;
     this.dialogAdd = true;
   }
-  public delDriver(item: any) {
+  public delDriver(item: Driver) {
     this.name = item.driverName;
     this.dialogDelSingle = true;
   }
   public delSingle(name: string) {
     this.drivers = this.drivers.filter(
-      (driver: any) => driver.driverName != name
+      (driver: Driver) => driver.driverName != name
     );
     this.success = "Xóa thành công";
     this.checkSuccess = true;

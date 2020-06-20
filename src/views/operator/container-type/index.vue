@@ -31,216 +31,26 @@
         Xóa loại Container
       </v-btn>
       <v-row justify="center">
-        <v-dialog v-model="dialogDelSingle" persistent max-width="600px">
-          <v-card>
-            <v-toolbar color="primary" light flat>
-              <v-toolbar-title
-                ><span class="headline" style="color:white;"
-                  >Xóa loại Container</span
-                >
-                <v-btn
-                  icon
-                  dark
-                  @click="dialogDelSingle = false"
-                  style="margin-left:324px;"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn></v-toolbar-title
-              >
-            </v-toolbar>
-
-            <v-card-text>
-              <v-form>
-                <v-container>
-                  <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa loại Container này?</span
-                  >
-                  <div class="line"></div>
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-content>
-                        <v-list-item-title>{{ name }}</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-container>
-                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-              </v-form>
-            </v-card-text>
-            <v-card-actions style="margin-left: 205px;">
-              <v-btn @click="cancelDelSingle()">Hủy</v-btn>
-              <v-btn @click="delSingle(name)" color="red">Xóa</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-row>
-      <v-row justify="center">
         <DeleteContainerType
           :selected.sync="selected"
           :dialogDel.sync="dialogDel"
+          :checkSuccess.sync="checkSuccess"
+          :success.sync="success"
+          :singleDel.sync="singleDel"
+          :nameDel="nameDel"
         />
       </v-row>
       <v-row justify="center">
-        <v-dialog v-model="dialogAdd" persistent max-width="600px">
-          <v-card>
-            <v-toolbar color="primary" light flat>
-              <v-toolbar-title
-                ><span class="headline" style="color:white;">{{ title }}</span>
-                <v-btn icon dark @click="cancel()" style="margin-left:258px;">
-                  <v-icon>mdi-close</v-icon>
-                </v-btn></v-toolbar-title
-              >
-            </v-toolbar>
-            <v-card-text>
-              <v-form>
-                <v-layout col>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-text-field
-                        label="Tên loại Container"
-                        name="name"
-                        prepend-icon="mdi-account"
-                        type="text"
-                        v-model="name"
-                        :readonly="readonly"
-                      ></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-text-field
-                        label="Chi tiết"
-                        name="description"
-                        prepend-icon="mdi-lock"
-                        type="text"
-                        v-model="description"
-                        :readonly="readonly"
-                      ></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                </v-layout>
-                <v-layout col>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-text-field
-                        label="Khối lượng vỏ"
-                        name="tareWeight"
-                        prepend-icon="mdi-lock"
-                        type="number"
-                        v-model="tareWeight"
-                        :readonly="readonly"
-                      ></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-text-field
-                        label="Trọng tải"
-                        name="payloadCapacity"
-                        prepend-icon="mdi-lock"
-                        type="number"
-                        v-model="payloadCapacity"
-                        :readonly="readonly"
-                      ></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                </v-layout>
-                <v-layout col>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-text-field
-                        label="Công suất khối"
-                        name="cubicCapacity"
-                        prepend-icon="mdi-lock"
-                        type="number"
-                        v-model="cubicCapacity"
-                        :readonly="readonly"
-                      ></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-text-field
-                        label="Chiều dài trong"
-                        name="internalLength"
-                        prepend-icon="mdi-lock"
-                        type="number"
-                        v-model="internalLength"
-                        :readonly="readonly"
-                      ></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                </v-layout>
-                <v-layout col>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-text-field
-                        label="Chiều rộng trong"
-                        name="internalWidth"
-                        prepend-icon="mdi-lock"
-                        type="number"
-                        v-model="internalWidth"
-                        :readonly="readonly"
-                      ></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-text-field
-                        label="Chiều cao trong"
-                        name="internalHeight"
-                        prepend-icon="mdi-lock"
-                        type="number"
-                        v-model="internalHeight"
-                        :readonly="readonly"
-                      ></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                </v-layout>
-                <v-layout col>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-text-field
-                        label="Chiều rộng cửa mở"
-                        name="doorOpeningWidth"
-                        prepend-icon="mdi-lock"
-                        type="number"
-                        v-model="doorOpeningWidth"
-                        :readonly="readonly"
-                      ></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-text-field
-                        label="Chiều cao cửa mở"
-                        name="doorOpeningHeight"
-                        prepend-icon="mdi-lock"
-                        type="number"
-                        v-model="doorOpeningHeight"
-                        :readonly="readonly"
-                      ></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                </v-layout>
-                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-              </v-form>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn @click="cancel()">Trở về</v-btn>
-              <v-btn @click="submit()" color="primary" v-if="checkAdd"
-                >Thêm mới</v-btn
-              >
-              <v-btn
-                @click="updateContainerType()"
-                color="primary"
-                v-if="checkUpdate"
-                >Cập nhập</v-btn
-              >
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+        <CreateContainerType
+          :containerType.sync="containerType"
+          :title="title"
+          :dialogAdd.sync="dialogAdd"
+          :checkSuccess.sync="checkSuccess"
+          :checkAdd="checkAdd"
+          :checkUpdate="checkUpdate"
+          :success.sync="success"
+          :readonly="readonly"
+        />
       </v-row>
       <v-alert
         v-model="checkSuccess"
@@ -291,36 +101,30 @@
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
 import DeleteContainerType from "../container-type/components/DeleteContainerType.vue";
-import { ContainerType } from "../container-type/container-type";
+import CreateContainerType from "./components/CreateContainerType.vue";
+import { ContainerType } from "./container-type";
+import data from "./data";
 
 @Component({
   name: "ContainerTypeManagement",
   components: {
-    DeleteContainerType
+    DeleteContainerType,
+    CreateContainerType
   }
 })
 export default class ContainerTypeManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
   selected = [] as Array<ContainerType>;
-  name = "";
-  description = "";
-  tareWeight = null;
-  payloadCapacity = null;
-  cubicCapacity = null;
-  internalLength = null;
-  internalWidth = null;
-  internalHeight = null;
-  doorOpeningWidth = null;
-  doorOpeningHeight = null;
+  containerType: ContainerType | null = null;
   success = "";
   checkSuccess = false;
   dialogAdd = false;
   dialogDel = false;
-  dialogDelSingle = false;
+  singleDel = false;
   checkAdd = false;
   checkUpdate = false;
   title = "";
-  // name = "";
+  nameDel = "";
   search = "";
   readonly = false;
   totalContainerTypes = 0;
@@ -375,9 +179,9 @@ export default class ContainerTypeManagement extends Vue {
       const total = items.length;
 
       if (sortBy.length === 1 && sortDesc.length === 1) {
-        items = items.sort((a: ContainerType, b: ContainerType) => {
-          const sortA = a;
-          const sortB = b;
+        items = items.sort((a: any, b: any) => {
+          const sortA = a[sortBy[0]];
+          const sortB = b[sortBy[0]];
 
           if (sortDesc[0]) {
             if (sortA < sortB) return 1;
@@ -405,163 +209,55 @@ export default class ContainerTypeManagement extends Vue {
     });
   }
   public getContainerTypes(): Array<ContainerType> {
-    return [
-      {
-        name: "Container to 01",
-        description: "Nó to",
-        tareWeight: 100,
-        payloadCapacity: 500,
-        cubicCapacity: 100,
-        internalLength: 200,
-        internalWidth: 100,
-        internalHeight: 100,
-        doorOpeningWidth: 200,
-        doorOpeningHeight: 150
-      },
-      {
-        name: "Container to 02",
-        description: "Nó to",
-        tareWeight: 100,
-        payloadCapacity: 500,
-        cubicCapacity: 100,
-        internalLength: 200,
-        internalWidth: 100,
-        internalHeight: 100,
-        doorOpeningWidth: 200,
-        doorOpeningHeight: 150
-      },
-      {
-        name: "Container to 03",
-        description: "Nó to",
-        tareWeight: 100,
-        payloadCapacity: 500,
-        cubicCapacity: 100,
-        internalLength: 200,
-        internalWidth: 100,
-        internalHeight: 100,
-        doorOpeningWidth: 200,
-        doorOpeningHeight: 150
-      },
-      {
-        name: "Container to 04",
-        description: "Nó to",
-        tareWeight: 100,
-        payloadCapacity: 500,
-        cubicCapacity: 100,
-        internalLength: 200,
-        internalWidth: 100,
-        internalHeight: 100,
-        doorOpeningWidth: 200,
-        doorOpeningHeight: 150
-      },
-      {
-        name: "Container to 05",
-        description: "Nó to",
-        tareWeight: 100,
-        payloadCapacity: 500,
-        cubicCapacity: 100,
-        internalLength: 200,
-        internalWidth: 100,
-        internalHeight: 100,
-        doorOpeningWidth: 200,
-        doorOpeningHeight: 150
-      },
-      {
-        name: "Container to 06",
-        description: "Nó to",
-        tareWeight: 100,
-        payloadCapacity: 500,
-        cubicCapacity: 100,
-        internalLength: 200,
-        internalWidth: 100,
-        internalHeight: 100,
-        doorOpeningWidth: 200,
-        doorOpeningHeight: 150
-      }
-    ];
+    return data;
   }
-  public submit() {
-    this.success = "Thêm mới thành công!";
-    this.checkSuccess = true;
-    this.dialogAdd = false;
-  }
+
   public cancel() {
     this.checkAdd = false;
     this.checkUpdate = false;
     this.readonly = false;
     this.dialogAdd = false;
   }
-  public viewDetail(item: any) {
-    this.name = item.name;
-    this.description = item.description;
-    this.tareWeight = item.tareWeight;
-    this.payloadCapacity = item.payloadCapacity;
-    this.cubicCapacity = item.cubicCapacity;
-    this.internalLength = item.internalLength;
-    this.internalWidth = item.internalWidth;
-    this.internalHeight = item.internalHeight;
-    this.doorOpeningWidth = item.doorOpeningWidth;
-    this.doorOpeningHeight = item.doorOpeningHeight;
+  public viewDetail(item: ContainerType) {
+    this.containerType = item;
     this.checkAdd = false;
     this.checkUpdate = false;
     this.title = "Thông tin containerType";
     this.readonly = true;
     this.dialogAdd = true;
   }
-  public update(item: any) {
-    this.name = item.name;
-    this.description = item.description;
-    this.tareWeight = item.tareWeight;
-    this.payloadCapacity = item.payloadCapacity;
-    this.cubicCapacity = item.cubicCapacity;
-    this.internalLength = item.internalLength;
-    this.internalWidth = item.internalWidth;
-    this.internalHeight = item.internalHeight;
-    this.doorOpeningWidth = item.doorOpeningWidth;
-    this.doorOpeningHeight = item.doorOpeningHeight;
+  public update(item: ContainerType) {
+    this.containerType = item;
     this.checkAdd = false;
     this.checkUpdate = true;
     this.title = "Cập nhập containerType";
     this.readonly = false;
     this.dialogAdd = true;
   }
-  public delContainerType(item: any) {
-    this.name = item.name;
-    this.dialogDelSingle = true;
+  public delContainerType(item: ContainerType) {
+    this.nameDel = item.name;
+    this.singleDel = true;
+    this.dialogDel = true;
   }
   public delSingle(name: string) {
     this.containerTypes = this.containerTypes.filter(
-      (containerType: any) => containerType.name != name
+      (containerType: ContainerType) => containerType.name != name
     );
     this.success = "Xóa thành công";
     this.checkSuccess = true;
-    this.dialogDelSingle = false;
+    this.singleDel = false;
   }
   public cancelDelSingle() {
-    this.name = "";
-    this.dialogDelSingle = false;
+    this.nameDel = "";
+    this.singleDel = false;
   }
   public addContainerType() {
-    this.name = "";
-    this.description = "";
-    this.tareWeight = null;
-    this.payloadCapacity = null;
-    this.cubicCapacity = null;
-    this.internalLength = null;
-    this.internalWidth = null;
-    this.internalHeight = null;
-    this.doorOpeningWidth = null;
-    this.doorOpeningHeight = null;
+    this.containerType = null;
     this.title = "Thêm mới loại Container";
     this.checkAdd = true;
     this.checkUpdate = false;
     this.readonly = false;
     this.dialogAdd = true;
-  }
-  public updateContainerType() {
-    this.success = "Cập nhập thành công";
-    this.checkSuccess = true;
-    this.dialogAdd = false;
   }
   public del() {
     this.success = "Xóa thành công!";

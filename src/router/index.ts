@@ -1,9 +1,5 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
-import Login from "@/views/auth/Login.vue";
-import Logout from "@/views/auth/Logout.vue";
-import Home from "@/views/Home.vue";
-import Admin from "@/views/user/Admin.vue";
 
 Vue.use(VueRouter);
 
@@ -11,12 +7,12 @@ const routes: Array<RouteConfig> = [
   {
     path: "/",
     name: "Home",
-    component: Home
+    component: () => import("@/views/Home.vue")
   },
   {
-    path: "/admin",
-    name: "Admin",
-    component: Admin,
+    path: "/dashboard",
+    name: "Dashboard",
+    component: () => import("@/views/user/dashboard/index.vue"),
     meta: {
       auth: ["ROLE_ADMIN"]
     }
@@ -32,7 +28,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/profile",
     name: "Profile",
-    component: () => import("@/views/user/Profile.vue"),
+    component: () => import("@/views/user/profile/index.vue"),
     meta: {
       auth: true
     }
@@ -40,12 +36,12 @@ const routes: Array<RouteConfig> = [
   {
     path: "/login",
     name: "Login",
-    component: Login
+    component: () => import("@/views/auth/Login.vue")
   },
   {
     path: "/logout",
     name: "Logout",
-    component: Logout
+    component: () => import("@/views/auth/Logout.vue")
   },
   {
     path: "/register",
@@ -55,67 +51,67 @@ const routes: Array<RouteConfig> = [
   {
     path: "/user-management",
     name: "UserManagement",
-    component: () => import("@/views/user/UserManagement.vue")
+    component: () => import("@/views/user/user/index.vue")
   },
   {
     path: "/admin-management",
     name: "AdminManagement",
-    component: () => import("@/views/user/AdminManagement.vue")
+    component: () => import("@/views/user/admin/index.vue")
   },
   {
     path: "/moderator-management",
     name: "ModeratorManagement",
-    component: () => import("@/views/user/OperatorManagement.vue")
+    component: () => import("@/views/user/moderator/index.vue")
   },
   {
     path: "/shipping-line-management",
     name: "ShippingLineManagement",
-    component: () => import("@/views/operator/ShippingLineManagement.vue")
+    component: () => import("@/views/operator/shipping-line/index.vue")
   },
   {
     path: "/roles-management",
     name: "RolesManagement",
-    component: () => import("@/views/admin/RolesManagement.vue"),
+    component: () => import("@/views/admin/roles/index.vue"),
   },
   {
     path: "/permission-management",
     name: "PermissionManagement",
-    component: () => import("@/views/admin/PermissionManagement.vue")
+    component: () => import("@/views/admin/permission/index.vue")
   },
   {
     path: "/consignment-management",
     name: "ConsignmentManagement",
-    component: () => import("@/views/supply/ConsignmentManagement.vue")
+    component: () => import("@/views/supply/consignment/index.vue")
   },
   {
     path: "/request-user-management",
     name: "RequestUserManagement",
-    component: () => import("@/views/operator/RequestUserManagement.vue")
+    component: () => import("@/views/operator/supplier-register/index.vue")
   },
   {
     path: "/request-status",
     name: "RequestStatus",
-    component: () => import("@/views/supplier/RequestStatus.vue")
+    component: () => import("@/views/supplier/request-status/index.vue")
   },
   {
     path: "/container-management",
     name: "ContainerManagement",
-    component: () => import("@/views/supply/ContainerManagement.vue")
+    component: () => import("@/views/supply/container/index.vue")
   },
   {
     path: "/driver-management",
     name: "DriverManagement",
-    component: () => import("@/views/supplier/DriverManagement.vue")
+    component: () => import("@/views/supplier/driver/index.vue")
   },
   {
     path: "/icd-management",
     name: "ICDManagement",
-    component: () => import("@/views/operator/ICDManagement.vue")
+    component: () => import("@/views/operator/icd/index.vue")
   },
   {
     path: "/port-management",
     name: "PortManagement",
-    component: () => import("@/views/operator/PortManagement.vue")
+    component: () => import("@/views/operator/port/index.vue")
   },
   {
     path: "/container-type-management",
@@ -125,12 +121,12 @@ const routes: Array<RouteConfig> = [
   {
     path: "/bidding-document-management",
     name: "BiddingDocumentManagement",
-    component: () => import("@/views/supplier/BiddingDocumentManagement.vue")
+    component: () => import("@/views/supplier/bidding-document/index.vue")
   },
   {
     path: "/consignment-management-new",
     name: "ConsignmentManagementNew",
-    component: () => import("@/views/supply/ConsignmentManagementNew.vue")
+    component: () => import("@/views/supply/consignment/ConsignmentManagementNew.vue")
   }
 ];
 

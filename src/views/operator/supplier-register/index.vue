@@ -147,7 +147,6 @@
               <v-btn @click="destroy()" color="red">Hủy bỏ</v-btn>
               <v-btn @click="approve()" color="primary">Cho phép</v-btn>
             </v-card-actions>
-            <Dialog :dialog.sync="dialog" />
           </v-card>
         </v-dialog>
       </v-row>
@@ -196,7 +195,6 @@
                 >Chấp nhận</v-btn
               >
             </v-card-actions>
-            <Dialog :dialog.sync="dialog" />
           </v-card>
         </v-dialog>
       </v-row>
@@ -240,18 +238,17 @@
 </template>
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import Dialog from "@/components/Dialog.vue";
 import NavLayout from "@/layouts/NavLayout.vue";
 import { UserEntity } from "@/store/definitions/user";
+import data from "../supplier-register/data";
+import { SupplierRegister } from "../supplier-register/supplier-register";
+
 @Component({
   name: "RequestUserManagement",
-  components: {
-    Dialog
-  }
+  components: {}
 })
 export default class RequestUserManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
-  dialog = false;
   username = "";
   password = "";
   email = "";
@@ -272,7 +269,7 @@ export default class RequestUserManagement extends Vue {
   dialogDetail = false;
   search = "";
   totalRequests = 0;
-  requests = [] as Array<any>;
+  requests = [] as Array<SupplierRegister>;
   loading = true;
   options = {} as any;
   headers = [
@@ -319,7 +316,7 @@ export default class RequestUserManagement extends Vue {
       const total = items.length;
 
       if (sortBy.length === 1 && sortDesc.length === 1) {
-        items = items.sort((a: Array<UserEntity>, b: Array<UserEntity>) => {
+        items = items.sort((a: any, b: any) => {
           const sortA = a[sortBy[0]];
           const sortB = b[sortBy[0]];
 
@@ -348,89 +345,8 @@ export default class RequestUserManagement extends Vue {
       }, 1000);
     });
   }
-  public getRequests(): Array<any> {
-    return [
-      {
-        username: "Admin",
-        roles: "ROLE_FORWARDER",
-        postalCode: "A01",
-        email: "abc@gmail.com",
-        country: "Việt Nam",
-        phone: "0359049292",
-        city: "Hà Nội",
-        address: "abc xyz"
-      },
-      {
-        username: "Bdmin",
-        roles: "ROLE_FORWARDER",
-        postalCode: "A01",
-        email: "abc@gmail.com",
-        country: "Việt Nam",
-        phone: "0359049292",
-        city: "Hà Nội",
-        address: "abc xyz"
-      },
-      {
-        username: "Admin",
-        roles: "ROLE_FORWARDER",
-        postalCode: "A01",
-        email: "abc@gmail.com",
-        country: "Việt Nam",
-        phone: "0359049292",
-        city: "Hà Nội",
-        address: "abc xyz"
-      },
-      {
-        username: "Admin",
-        roles: "ROLE_FORWARDER",
-        postalCode: "A01",
-        email: "abc@gmail.com",
-        country: "Việt Nam",
-        phone: "0359049292",
-        city: "Hà Nội",
-        address: "abc xyz"
-      },
-      {
-        username: "Admin1",
-        roles: "ROLE_FORWARDER",
-        postalCode: "A01",
-        email: "abc@gmail.com",
-        country: "Việt Nam",
-        phone: "0359049292",
-        city: "Hà Nội",
-        address: "abc xyz"
-      },
-      {
-        username: "Admin1",
-        roles: "ROLE_FORWARDER",
-        postalCode: "A01",
-        email: "abc@gmail.com",
-        country: "Việt Nam",
-        phone: "0359049292",
-        city: "Hà Nội",
-        address: "abc xyz"
-      },
-      {
-        username: "Admin1",
-        roles: "ROLE_FORWARDER",
-        postalCode: "A01",
-        email: "abc@gmail.com",
-        country: "Việt Nam",
-        phone: "0359049292",
-        city: "Hà Nội",
-        address: "abc xyz"
-      },
-      {
-        username: "Admin",
-        roles: "ROLE_FORWARDER",
-        postalCode: "A01",
-        email: "abc@gmail.com",
-        country: "Việt Nam",
-        phone: "0359049292",
-        city: "Hà Nội",
-        address: "abc xyz"
-      }
-    ];
+  public getRequests(): Array<SupplierRegister> {
+    return data;
   }
   public approve() {
     this.checkAcc = true;
@@ -457,7 +373,7 @@ export default class RequestUserManagement extends Vue {
     this.title = "";
     this.status = "";
   }
-  public accept(){
+  public accept() {
     this.success = "Thành công!";
     this.checkSuccess = true;
     this.dialogConfirm = false;
@@ -465,12 +381,12 @@ export default class RequestUserManagement extends Vue {
     this.title = "";
     this.status = "";
   }
-  public cancelConfirm(){
+  public cancelConfirm() {
     this.dialogConfirm = false;
     this.title = "";
     this.status = "";
   }
-  public viewDetail(item: any) {
+  public viewDetail(item: SupplierRegister) {
     this.username = item.username;
     this.email = item.email;
     this.phone = item.phone;
