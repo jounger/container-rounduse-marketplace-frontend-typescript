@@ -291,6 +291,7 @@
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
 import DeleteContainerType from "../container-type/components/DeleteContainerType.vue";
+import { ContainerType } from "../container-type/container-type";
 
 @Component({
   name: "ContainerTypeManagement",
@@ -300,7 +301,7 @@ import DeleteContainerType from "../container-type/components/DeleteContainerTyp
 })
 export default class ContainerTypeManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
-  selected = [] as Array<object>;
+  selected = [] as Array<ContainerType>;
   name = "";
   description = "";
   tareWeight = null;
@@ -323,7 +324,7 @@ export default class ContainerTypeManagement extends Vue {
   search = "";
   readonly = false;
   totalContainerTypes = 0;
-  containerTypes = [] as Array<any>;
+  containerTypes = [] as Array<ContainerType>;
   loading = true;
   options = {} as any;
   headers = [
@@ -374,9 +375,9 @@ export default class ContainerTypeManagement extends Vue {
       const total = items.length;
 
       if (sortBy.length === 1 && sortDesc.length === 1) {
-        items = items.sort((a: Array<any>, b: Array<any>) => {
-          const sortA = a[sortBy[0]];
-          const sortB = b[sortBy[0]];
+        items = items.sort((a: ContainerType, b: ContainerType) => {
+          const sortA = a;
+          const sortB = b;
 
           if (sortDesc[0]) {
             if (sortA < sortB) return 1;
@@ -403,7 +404,7 @@ export default class ContainerTypeManagement extends Vue {
       }, 1000);
     });
   }
-  public getContainerTypes(): Array<any> {
+  public getContainerTypes(): Array<ContainerType> {
     return [
       {
         name: "Container to 01",

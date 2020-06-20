@@ -19,7 +19,8 @@
         <v-form>
           <v-container>
             <span style="color: black; font-size:22px;"
-              >Bạn có chắc chắn muốn xóa những loại Container này? DeleteContainerType</span
+              >Bạn có chắc chắn muốn xóa những loại Container này?
+              DeleteContainerType</span
             >
             <div class="line"></div>
             <v-list>
@@ -41,13 +42,16 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, Prop, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync } from "vue-property-decorator";
+import { ContainerType } from "../container-type";
 @Component({
   name: "DeleteContainerType"
 })
 export default class DeleteContainerType extends Vue {
   // @Prop() selected!: Array<object>;
-  @PropSync("selected", { type: Array }) selectedSync!: Array<object> | null;
+  @PropSync("selected", { type: Array }) selectedSync!: Array<
+    ContainerType
+  > | null;
   @PropSync("dialogDel", { type: Boolean }) dialogSync!: boolean | null;
 
   mounted() {
