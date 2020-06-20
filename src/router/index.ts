@@ -85,7 +85,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/consignment-management",
     name: "ConsignmentManagement",
-    component: () => import("@/views/supplier/ConsignmentManagement.vue")
+    component: () => import("@/views/supply/ConsignmentManagement.vue")
   },
   {
     path: "/request-user-management",
@@ -100,7 +100,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/container-management",
     name: "ContainerManagement",
-    component: () => import("@/views/supplier/ContainerManagement.vue")
+    component: () => import("@/views/supply/ContainerManagement.vue")
   },
   {
     path: "/driver-management",
@@ -120,7 +120,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/container-type-management",
     name: "ContainerTypeManagement",
-    component: () => import("@/views/operator/ContainerTypeManagement.vue")
+    component: () => import("@/views/operator/container-type/index.vue")
   },
   {
     path: "/bidding-document-management",
@@ -130,7 +130,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/consignment-management-new",
     name: "ConsignmentManagementNew",
-    component: () => import("@/views/supplier/ConsignmentManagementNew.vue")
+    component: () => import("@/views/supply/ConsignmentManagementNew.vue")
   }
 ];
 

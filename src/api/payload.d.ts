@@ -7,6 +7,7 @@ export interface JwtResponse {
 export interface PaginationRequest {
   page: number;
   limit: number;
+  status?: string;
 }
 
 export interface PaginationResponse<T> {
