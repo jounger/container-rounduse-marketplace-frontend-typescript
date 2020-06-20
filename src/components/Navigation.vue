@@ -25,7 +25,7 @@
 
     <v-list dense nav>
       <v-list-item
-        @click="toDashboard"
+        to="/admin"
         v-if="$auth.check(['ROLE_MODERATOR', 'ROLE_ADMIN'])"
       >
         <v-list-item-icon>
@@ -40,7 +40,7 @@
           <v-list-item-title>Quản lý người dùng</v-list-item-title>
         </template>
         <v-list-item
-          @click="toModermator"
+          to="/moderator-management"
           v-if="$auth.check(['ROLE_MODERATOR', 'ROLE_ADMIN'])"
         >
           <v-list-item-title>Đối tác</v-list-item-title>
@@ -48,41 +48,30 @@
             <v-icon>mdi-view-dashboard</v-icon>
           </v-list-item-icon>
         </v-list-item>
-        <v-list-item
-          @click="toShippingline"
-          v-if="$auth.check(['ROLE_MODERATOR', 'ROLE_USER'])"
-        >
-          <v-list-item-title>Hãng tàu</v-list-item-title>
-          <v-list-item-icon>
-            <v-icon>mdi-image</v-icon>
-          </v-list-item-icon>
-        </v-list-item>
-        <v-list-item @click="toAdmin" v-if="$auth.check(['ROLE_ADMIN'])">
+        <v-list-item to="/admin-management" v-if="$auth.check(['ROLE_ADMIN'])">
           <v-list-item-title>Quản trị viên</v-list-item-title>
           <v-list-item-icon>
             <v-icon>mdi-help-box</v-icon>
           </v-list-item-icon>
         </v-list-item>
-        <v-list-item @click="toRoles" v-if="$auth.check(['ROLE_ADMIN'])">
+        <v-list-item to="/roles-management" v-if="$auth.check(['ROLE_ADMIN'])">
           <v-list-item-title>Phân quyền</v-list-item-title>
           <v-list-item-icon>
             <v-icon>mdi-image</v-icon>
           </v-list-item-icon>
         </v-list-item>
-        <v-list-item @click="toPermission" v-if="$auth.check(['ROLE_ADMIN'])">
+        <v-list-item
+          to="/permission-management"
+          v-if="$auth.check(['ROLE_ADMIN'])"
+        >
           <v-list-item-title>Phân vai trò</v-list-item-title>
           <v-list-item-icon>
             <v-icon>mdi-image</v-icon>
           </v-list-item-icon>
         </v-list-item>
-        <v-list-item @click="toRequest">
-          <v-list-item-title>Yêu cầu đăng ký</v-list-item-title>
-          <v-list-item-icon>
-            <v-icon>mdi-help-box</v-icon>
-          </v-list-item-icon>
-        </v-list-item>
       </v-list-group>
-      <v-list-item @click="toConsignment">
+
+      <v-list-item to="/consignment-management">
         <v-list-item-icon>
           <v-icon>mdi-help-box</v-icon>
         </v-list-item-icon>
@@ -90,7 +79,7 @@
           <v-list-item-title>Quản lý hàng</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item @click="toConsignmentNew">
+      <v-list-item to="/consignment-management-new">
         <v-list-item-icon>
           <v-icon>mdi-help-box</v-icon>
         </v-list-item-icon>
@@ -98,7 +87,7 @@
           <v-list-item-title>Quản lý hàng (bản mới)</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item @click="toContainer">
+      <v-list-item to="/container-management">
         <v-list-item-icon>
           <v-icon>mdi-image</v-icon>
         </v-list-item-icon>
@@ -106,7 +95,7 @@
           <v-list-item-title>Quản lý Container</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item @click="toDriver">
+      <v-list-item to="/driver-management">
         <v-list-item-icon>
           <v-icon>mdi-image</v-icon>
         </v-list-item-icon>
@@ -114,31 +103,8 @@
           <v-list-item-title>Quản lý Lái xe</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item @click="toICD">
-        <v-list-item-icon>
-          <v-icon>mdi-help-box</v-icon>
-        </v-list-item-icon>
-        <v-list-item-content>
-          <v-list-item-title>Quản lý ICD</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item @click="toPort">
-        <v-list-item-icon>
-          <v-icon>mdi-help-box</v-icon>
-        </v-list-item-icon>
-        <v-list-item-content>
-          <v-list-item-title>Quản lý bến cảng</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item @click="toContainerType">
-        <v-list-item-icon>
-          <v-icon>mdi-help-box</v-icon>
-        </v-list-item-icon>
-        <v-list-item-content>
-          <v-list-item-title>Quản lý loại Container</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item @click="toBiddingDocument">
+      <NavigationOperator />
+      <v-list-item to="/bidding-document-management">
         <v-list-item-icon>
           <v-icon>mdi-help-box</v-icon>
         </v-list-item-icon>
@@ -146,7 +112,7 @@
           <v-list-item-title>Quản lý Hồ sơ mời thầu</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item @click="toProfile">
+      <v-list-item to="/profile">
         <v-list-item-icon>
           <v-icon>mdi-help-box</v-icon>
         </v-list-item-icon>
@@ -161,9 +127,13 @@
 <script lang="ts">
 import { Vue, Component, PropSync } from "vue-property-decorator";
 import UserModule from "@/store/modules/user";
-import { UserEntity } from "@/store/definitions/user";
-import router from "../router/index";
-@Component
+import NavigationOperator from "./NavigationOperator.vue";
+@Component({
+  name: "Navigation",
+  components: {
+    NavigationOperator
+  }
+})
 export default class Navigation extends Vue {
   @PropSync("drawer", { type: Boolean }) drawerSync!: boolean | null;
   check = false;
@@ -203,7 +173,7 @@ export default class Navigation extends Vue {
   public toConsignment(): void {
     this.$router.push("/consignment-management");
   }
-  public toConsignmentNew(): void{
+  public toConsignmentNew(): void {
     this.$router.push("/consignment-management-new");
   }
   public toRequest(): void {
@@ -227,7 +197,7 @@ export default class Navigation extends Vue {
   public toContainerType(): void {
     this.$router.push("/container-type-management");
   }
-  public toBiddingDocument(): void{
+  public toBiddingDocument(): void {
     this.$router.push("/bidding-document-management");
   }
 }
