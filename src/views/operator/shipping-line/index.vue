@@ -88,7 +88,7 @@
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
 import data from "../shipping-line/data";
-import { ShippingLine } from "./shipping-line";
+import { ShippingLineEntity } from "./shipping-line";
 import DeleteShippingLine from "./components/DeleteShippingLine.vue";
 import CreateShippingLine from "./components/CreateShippingLine.vue";
 
@@ -110,7 +110,7 @@ export default class ShippingLineManagement extends Vue {
   readonly = false;
   checkAdd = false;
   checkUpdate = false;
-  shippingLine: ShippingLine = {
+  shippingLine: ShippingLineEntity = {
     username: "",
     password: "",
     email: "",
@@ -126,7 +126,7 @@ export default class ShippingLineManagement extends Vue {
   search = "";
   title = "";
   totalShips = 0;
-  ships = [] as Array<ShippingLine>;
+  ships = [] as Array<ShippingLineEntity>;
   loading = true;
   options = {} as any;
   headers = [
@@ -203,10 +203,10 @@ export default class ShippingLineManagement extends Vue {
       }, 1000);
     });
   }
-  public getShips(): Array<ShippingLine> {
+  public getShips(): Array<ShippingLineEntity> {
     return data;
   }
-  public viewDetail(item: ShippingLine) {
+  public viewDetail(item: ShippingLineEntity) {
     this.shippingLine = item;
     this.checkAdd = false;
     this.checkUpdate = false;
@@ -214,7 +214,7 @@ export default class ShippingLineManagement extends Vue {
     this.readonly = true;
     this.dialogAdd = true;
   }
-  public update(item: ShippingLine) {
+  public update(item: ShippingLineEntity) {
     this.shippingLine = item;
     this.checkAdd = false;
     this.checkUpdate = true;

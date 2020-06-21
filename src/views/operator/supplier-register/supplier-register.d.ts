@@ -1,11 +1,11 @@
 import { UserEntity } from '../../../store/definitions/user';
-export interface SupplierRegister extends UserEntity{
-  id?: number,
-  username: string,
-  postalCode: string,
-  email: string,
-  country: string,
-  phone: string,
-  city: string,
-  address: string
+import { Address } from '../../user/address';
+export interface SupplierEntity extends UserEntity {
+  website: string;
+  contactPerson: string;
+  companyName: string;
+  shortName: string;
+  companyDescription: string;
+  tin: string;
+  tax: string;
 }

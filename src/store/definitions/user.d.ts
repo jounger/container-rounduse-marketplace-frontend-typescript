@@ -1,11 +1,13 @@
+import { Address } from '../../views/user/address';
 export interface UserEntity {
   id?: number;
   username: string;
-  password: string;
+  password?: string;
   email: string;
   phone: string;
   role: Array<string>;
   status: string;
+  address?: Address;
 }
 
 export interface SignUpRequest {

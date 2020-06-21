@@ -90,10 +90,10 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn @click="dialogDetail = false">Trở về</v-btn>
-        <v-btn @click="destroy()" color="red"
-          ><span style="color:white;">Hủy bỏ</span></v-btn
+        <v-btn @click="reviewRegister(false)" color="red"
+          ><span style="color:white;">Từ chối</span></v-btn
         >
-        <v-btn @click="approve()" color="primary"
+        <v-btn @click="reviewRegister(true)" color="primary"
           ><span style="color:white;">Cho phép</span></v-btn
         >
       </v-card-actions>
@@ -101,40 +101,36 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, Prop, PropSync } from "vue-property-decorator";
-import { SupplierRegister } from "../supplier-register";
+import { Component, Vue, PropSync } from "vue-property-decorator";
+import { SupplierEntity } from "../supplier-register";
+import { reviewSupplier } from "../../../../api/supplier-request";
 
 @Component({
-  name: "SupplierRegisterDetail"
+  name: "DialogRegisterDetail"
 })
-export default class SupplierRegisterDetail extends Vue {
-  // @Prop() selected!: Array<object>;
+export default class DialogRegisterDetail extends Vue {
   @PropSync("dialogDetail", { type: Boolean }) dialogSync!: boolean;
-  @PropSync("checkSuccess", { type: Boolean }) checkSuccessSync!: boolean;
-  @PropSync("success", { type: String }) successSync!: string | null;
-  @PropSync("supplier", {
-    type: Object
-  })
-  supplierSync!: SupplierRegister | null;
-  @PropSync("checkDestroy", { type: Boolean }) checkDestroySync!: boolean;
-  @PropSync("checkAcc", { type: Boolean }) checkAccSync!: boolean;
-  @PropSync("title", { type: String }) titleSync!: string | null;
-  @PropSync("status", { type: String }) statusSync!: string | null;
-  @PropSync("dialogConfirm", { type: Boolean }) dialogConfirmSync!: boolean;
+  @PropSync("message", { type: String }) messageSync!: string;
+  @PropSync("supplier", { type: Object }) supplierSync!: SupplierEntity;
+  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
-  public approve() {
-    this.checkAccSync = true;
-    this.checkDestroySync = false;
-    this.titleSync = "Xác nhận kiểm duyệt";
-    this.statusSync = "chấp nhận";
-    this.dialogConfirmSync = true;
-  }
-  public destroy() {
-    this.checkDestroySync = true;
-    this.checkAccSync = false;
-    this.titleSync = "Xác nhận hủy bỏ";
-    this.statusSync = "hủy bỏ";
-    this.dialogConfirmSync = true;
+  reviewRegister(status: boolean) {
+    if (this.supplierSync.id) {
+      reviewSupplier(this.supplierSync.id, {
+        status: status == true ? "ACTIVE" : "BANNED"
+      })
+        .then(res => {
+          console.log(res.data);
+          const response: SupplierEntity = res.data;
+          this.messageSync =
+            "Success " + response.status + " for user: " + response.username;
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Error happend";
+        })
+        .finally(() => (this.snackbarSync = true));
+    }
   }
 }
 </script>

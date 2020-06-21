@@ -1,6 +1,15 @@
 <template>
   <v-content>
     <v-card>
+      <v-row justify="center">
+        <DialogRegisterDetail
+          :dialogDetail.sync="dialogDetail"
+          :supplier.sync="supplier"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
+        />
+      </v-row>
+      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-card-title>
         Danh sách đơn đăng ký
         <v-spacer></v-spacer>
@@ -12,32 +21,14 @@
           hide-details
         ></v-text-field>
       </v-card-title>
-      <v-row justify="center">
-        <SupplierRegisterDetail
-          :dialogDetail.sync="dialogDetail"
-          :supplier.sync="supplier"
-          :checkSuccess.sync="checkSuccess"
-          :sucess.sync="success"
-        />
-      </v-row>
-      <v-alert
-        v-model="checkSuccess"
-        dismissible
-        close-icon="mdi-delete"
-        type="success"
-      >
-        {{ success }}
-      </v-alert>
       <v-data-table
         :headers="headers"
-        :items="requests"
+        :items="suppliers"
         :search="search"
-        :options.sync="options"
-        :server-items-length="totalRequests"
         :loading="loading"
-        :items-per-page="5"
-        :sort-by="['username']"
-        :sort-asc="[true]"
+        :options.sync="options"
+        :server-items-length="options.totalItems"
+        :actions-append="options.page"
         class="elevation-1"
       >
         <template v-slot:item.action="{ item }">
@@ -61,65 +52,64 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
-import data from "../supplier-register/data";
-import { SupplierRegister } from "../supplier-register/supplier-register";
-import DialogConfirm from "./components/DialogConfirm.vue";
-import SupplierRegisterDetail from "./components/SupplierRegisterDetail.vue";
+import { SupplierEntity } from "../supplier-register/supplier-register";
+import DialogRegisterDetail from "./components/DialogRegisterDetail.vue";
+import { getSuppliers } from "../../../api/supplier-request";
+import { PaginationResponse } from "../../../api/payload";
+import Snackbar from "../../../components/Snackbar.vue";
 
 @Component({
   name: "RequestUserManagement",
   components: {
-    SupplierRegisterDetail
+    DialogRegisterDetail,
+    Snackbar
   }
 })
 export default class RequestUserManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
-  username = "";
-  password = "";
-  email = "";
-  phone = "";
-  name = "";
-  supplier: SupplierRegister = {
+  suppliers: Array<SupplierEntity> = [];
+  supplier: SupplierEntity = {
     username: "",
     password: "",
     email: "",
     phone: "",
-    role: [""],
+    role: [],
     status: "",
-    postalCode: "",
-    country: "",
-    city: "",
-    address: ""
+    address: {
+      street: "",
+      county: "",
+      city: "",
+      country: "",
+      postalCode: ""
+    },
+    website: "",
+    contactPerson: "",
+    companyName: "",
+    shortName: "",
+    companyDescription: "",
+    tin: "",
+    tax: ""
   };
-  dialogConfirm = false;
-  checkDestroy = false;
-  checkAcc = false;
-  readonly = false;
-  role = "";
-  country = "";
-  city = "";
-  address = "";
-  code = "";
-  success = "";
-  title = "";
-  status = "";
-  checkSuccess = false;
+
   dialogDetail = false;
-  search = "";
-  totalRequests = 0;
-  requests = [] as Array<SupplierRegister>;
   loading = true;
-  options = {} as any;
+  message = "";
+  snackbar = false;
+  search = "";
+  options = {
+    descending: true,
+    page: 1,
+    itemsPerPage: 5,
+    totalItems: 0,
+    itemsPerPageItems: [5, 10, 15, 20]
+  };
   headers = [
     {
       text: "Tên đăng nhập",
-      align: "start",
-      sortable: true,
-      searchable: true,
       value: "username"
     },
     { text: "Email", value: "email" },
-    { text: "Số điện thoại", value: "phone" },
+    { text: "Trạng thái", value: "status" },
     { text: "Phân quyền", value: "roles" },
     {
       text: "Hành động",
@@ -131,82 +121,38 @@ export default class RequestUserManagement extends Vue {
   async created() {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
   }
+
+  viewDetail(item: SupplierEntity) {
+    this.dialogDetail = true;
+    this.supplier = item;
+  }
+
   @Watch("options", { deep: true })
   getOptions() {
-    this.getDataFromApi().then((data: any) => {
-      this.requests = data.items;
-      this.totalRequests = data.total;
-    });
+    getSuppliers({
+      page: this.options.page - 1,
+      limit: this.options.itemsPerPage
+    })
+      .then(res => {
+        const response: PaginationResponse<SupplierEntity> = res.data;
+        console.log(response);
+        this.suppliers = response.data;
+        this.options.totalItems = response.total_elements;
+      })
+      .catch(err => console.log(err))
+      .finally(() => (this.loading = false));
   }
+
   async mounted() {
-    this.getDataFromApi().then((data: any) => {
-      this.requests = data.items;
-      this.totalRequests = data.total;
-    });
-  }
-  public getDataFromApi() {
-    console.log(this.options);
-    this.loading = true;
-    return new Promise((resolve, reject) => {
-      const { sortBy, sortDesc, page, itemsPerPage } = this.options;
-
-      let items = this.getRequests();
-      const total = items.length;
-
-      if (sortBy.length === 1 && sortDesc.length === 1) {
-        items = items.sort((a: any, b: any) => {
-          const sortA = a[sortBy[0]];
-          const sortB = b[sortBy[0]];
-
-          if (sortDesc[0]) {
-            if (sortA < sortB) return 1;
-            if (sortA > sortB) return -1;
-            return 0;
-          } else {
-            if (sortA < sortB) return -1;
-            if (sortA > sortB) return 1;
-            return 0;
-          }
-        });
-      }
-
-      if (itemsPerPage > 0) {
-        items = items.slice((page - 1) * itemsPerPage, page * itemsPerPage);
-      }
-
-      setTimeout(() => {
-        this.loading = false;
-        resolve({
-          items,
-          total
-        });
-      }, 1000);
-    });
-  }
-  public getRequests(): Array<SupplierRegister> {
-    return data;
-  }
-  public approve() {
-    this.checkAcc = true;
-    this.checkDestroy = false;
-    this.title = "Xác nhận kiểm duyệt";
-    this.status = "chấp nhận";
-    this.dialogConfirm = true;
-  }
-  public cancel() {
-    this.dialogDetail = false;
-  }
-  public destroy() {
-    this.checkDestroy = true;
-    this.checkAcc = false;
-    this.title = "Xác nhận hủy bỏ";
-    this.status = "hủy bỏ";
-    this.dialogConfirm = true;
-  }
-
-  public viewDetail(item: SupplierRegister) {
-    this.supplier = item;
-    this.dialogDetail = true;
+    console.log("--- get supplier ----");
+    getSuppliers({ page: 0, limit: 5 })
+      .then(res => {
+        const response: PaginationResponse<SupplierEntity> = res.data;
+        this.suppliers = response.data;
+        this.options.totalItems = response.total_elements;
+      })
+      .catch(err => console.log(err))
+      .finally(() => (this.loading = false));
   }
 }
 </script>

@@ -6,7 +6,13 @@ export default [
     country: "Việt Nam",
     phone: "0359049292",
     city: "Hà Nội",
-    address: "abc xyz",
+    address: {
+      street: "",
+      county: "",
+      city: "",
+      country: "",
+      postalCode: ""
+    },
     password: "123456",
     role: ["ROLE_FORWARDER"],
     status: "PENDING"
@@ -18,7 +24,13 @@ export default [
     country: "Việt Nam",
     phone: "0359049292",
     city: "Hà Nội",
-    address: "abc xyz",
+    address: {
+      street: "",
+      county: "",
+      city: "",
+      country: "",
+      postalCode: ""
+    },
     password: "123456",
     role: ["ROLE_FORWARDER"],
     status: "PENDING"
@@ -30,7 +42,13 @@ export default [
     country: "Việt Nam",
     phone: "0359049292",
     city: "Hà Nội",
-    address: "abc xyz",
+    address: {
+      street: "",
+      county: "",
+      city: "",
+      country: "",
+      postalCode: ""
+    },
     password: "123456",
     role: ["ROLE_FORWARDER"],
     status: "PENDING"
@@ -42,7 +60,13 @@ export default [
     country: "Việt Nam",
     phone: "0359049292",
     city: "Hà Nội",
-    address: "abc xyz",
+    address: {
+      street: "",
+      county: "",
+      city: "",
+      country: "",
+      postalCode: ""
+    },
     password: "123456",
     role: ["ROLE_FORWARDER"],
     status: "PENDING"
@@ -54,7 +78,13 @@ export default [
     country: "Việt Nam",
     phone: "0359049292",
     city: "Hà Nội",
-    address: "abc xyz",
+    address: {
+      street: "",
+      county: "",
+      city: "",
+      country: "",
+      postalCode: ""
+    },
     password: "123456",
     role: ["ROLE_FORWARDER"],
     status: "PENDING"
@@ -66,7 +96,13 @@ export default [
     country: "Việt Nam",
     phone: "0359049292",
     city: "Hà Nội",
-    address: "abc xyz",
+    address: {
+      street: "",
+      county: "",
+      city: "",
+      country: "",
+      postalCode: ""
+    },
     password: "123456",
     role: ["ROLE_FORWARDER"],
     status: "PENDING"
@@ -78,7 +114,13 @@ export default [
     country: "Việt Nam",
     phone: "0359049292",
     city: "Hà Nội",
-    address: "abc xyz",
+    address: {
+      street: "",
+      county: "",
+      city: "",
+      country: "",
+      postalCode: ""
+    },
     password: "123456",
     role: ["ROLE_FORWARDER"],
     status: "PENDING"
@@ -90,7 +132,13 @@ export default [
     country: "Việt Nam",
     phone: "0359049292",
     city: "Hà Nội",
-    address: "abc xyz",
+    address: {
+      street: "",
+      county: "",
+      city: "",
+      country: "",
+      postalCode: ""
+    },
     password: "123456",
     role: ["ROLE_FORWARDER"],
     status: "PENDING"
