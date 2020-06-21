@@ -1,11 +1,9 @@
-export interface ShippingLine {
+import { UserEntity } from '../../../store/definitions/user';
+export interface ShippingLine extends UserEntity {
   id?: number,
-  username: string,
-  shipname: string,
-  namecode: string,
-  email: string,
+  shipName: string,
+  nameCode: string,
   website: string,
-  phone: string,
   icds: Array<string>,
   address: string
 }

@@ -63,8 +63,8 @@ export default class Navigation extends Vue {
     }
     await UserModule.loadProfile();
     if (UserModule.getCurrentUser != null) {
-      console.log(UserModule.getCurrentUser.roles);
-      this.roles = UserModule.getCurrentUser.roles;
+      console.log(UserModule.getCurrentUser.role);
+      this.roles = UserModule.getCurrentUser.role;
       this.username = UserModule.getCurrentUser.username;
     }
   }

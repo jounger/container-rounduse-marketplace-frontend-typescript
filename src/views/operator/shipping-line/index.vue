@@ -16,194 +16,30 @@
         color="primary"
         style="margin-left: 35px;"
         dark
-        @click.stop="dialogAdd = true"
+        @click.stop="addShippingLine"
         v-if="$auth.check(['ROLE_MODERATOR'])"
       >
         Thêm mới
       </v-btn>
-      <v-btn
-        color="red"
-        style="margin-left: 605px;"
-        dark
-        @click.stop="dialogDel = true"
-        v-if="selected.length > 0 && $auth.check(['ROLE_MODERATOR'])"
-      >
-        Xóa hãng tàu
-      </v-btn>
       <v-row justify="center">
-        <v-dialog v-model="dialogDel" persistent max-width="600px">
-          <v-card>
-            <v-toolbar color="primary" light flat>
-              <v-toolbar-title
-                ><span class="headline" style="color:white;">Xóa hãng tàu</span>
-                <v-btn
-                  icon
-                  dark
-                  @click="dialogDel = false"
-                  style="margin-left:379px;"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn></v-toolbar-title
-              >
-            </v-toolbar>
-
-            <v-card-text>
-              <v-form>
-                <v-container>
-                  <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa những hãng tàu này?</span
-                  >
-                  <div class="line"></div>
-                  <v-list>
-                    <v-list-item v-for="(item, i) in selected" :key="i">
-                      <v-list-item-content>
-                        <v-list-item-title
-                          v-text="item.shipname"
-                        ></v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-container>
-                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-              </v-form>
-            </v-card-text>
-            <v-card-actions style="margin-left: 205px;">
-              <v-btn @click="cancelDel()">Hủy</v-btn>
-              <v-btn @click="del()" color="red">Xóa</v-btn>
-            </v-card-actions>
-            <Dialog :dialog.sync="dialog" />
-          </v-card>
-        </v-dialog>
+        <DeleteShippingLine
+          :dialogDel.sync="dialogDel"
+          :checkSuccess.sync="checkSuccess"
+          :success.sync="success"
+          :name="name"
+        />
       </v-row>
       <v-row justify="center">
-        <v-dialog v-model="dialogAdd" persistent max-width="600px">
-          <v-card>
-            <v-toolbar color="primary" light flat>
-              <v-toolbar-title
-                ><span class="headline" style="color:white;"
-                  >Thêm mới hãng tàu</span
-                >
-                <v-btn
-                  icon
-                  dark
-                  @click="dialogAdd = false"
-                  style="margin-left:313px;"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn></v-toolbar-title
-              >
-            </v-toolbar>
-            <v-card-text>
-              <v-form>
-                <v-layout col>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-text-field
-                        label="Tên đăng nhập"
-                        name="username"
-                        prepend-icon="mdi-account"
-                        type="text"
-                        v-model="username"
-                      ></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-text-field
-                        label="Tên hãng tàu"
-                        name="shippingLineName"
-                        prepend-icon="mdi-lock"
-                        type="text"
-                      ></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                </v-layout>
-                <v-layout col>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-text-field
-                        label="Mật khẩu"
-                        name="password"
-                        prepend-icon="mdi-lock"
-                        type="password"
-                        v-model="password"
-                      ></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-text-field
-                        label="Mã tên"
-                        name="namecode"
-                        prepend-icon="mdi-lock"
-                        type="text"
-                      ></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                </v-layout>
-                <v-layout col>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-text-field
-                        label="Email"
-                        name="email"
-                        prepend-icon="mdi-lock"
-                        type="email"
-                        v-model="email"
-                      ></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-text-field
-                        label="Website"
-                        name="website"
-                        prepend-icon="mdi-lock"
-                        type="text"
-                      ></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                </v-layout>
-                <v-layout col>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-text-field
-                        label="Số điện thoại"
-                        name="phone"
-                        prepend-icon="mdi-lock"
-                        type="phone"
-                      ></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                  <v-layout row>
-                    <v-flex xs8>
-                      <v-select :items="icd" attach label="ICD"></v-select>
-                    </v-flex>
-                  </v-layout>
-                </v-layout>
-                <v-layout col>
-                  <v-layout row>
-                    <v-flex xs6>
-                      <v-text-field
-                        label="Địa chỉ"
-                        name="address"
-                        prepend-icon="mdi-lock"
-                        type="text"
-                      ></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                </v-layout>
-                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-              </v-form>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn @click="cancel()">Hủy</v-btn>
-              <v-btn @click="submit()" color="primary">Thêm mới</v-btn>
-            </v-card-actions>
-            <Dialog :dialog.sync="dialog" />
-          </v-card>
-        </v-dialog>
+        <CreateShippingLine
+          :shippingLine.sync="shippingLine"
+          :title="title"
+          :dialogAdd.sync="dialogAdd"
+          :checkSuccess.sync="checkSuccess"
+          :checkAdd="checkAdd"
+          :checkUpdate="checkUpdate"
+          :success.sync="success"
+          :readonly="readonly"
+        />
       </v-row>
       <v-alert
         v-model="checkSuccess"
@@ -214,50 +50,81 @@
         {{ success }}
       </v-alert>
       <v-data-table
-        v-model="selected"
         :headers="headers"
         :items="ships"
         :search="search"
         item-key="namecode"
-        show-select
         :options.sync="options"
         :server-items-length="totalShips"
         :loading="loading"
         :items-per-page="5"
         class="elevation-1"
       >
+        <template v-slot:item.action="{ item }">
+          <v-menu :loading="item.createloading" :disabled="item.createloading">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="secondary" dark v-bind="attrs" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item @click="viewDetail(item)">
+                <v-list-item-title>Xem chi tiết</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="update(item)">
+                <v-list-item-title>Cập nhập</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="delShippingLine(item)">
+                <v-list-item-title>Xóa</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </template>
       </v-data-table>
     </v-card>
   </v-content>
 </template>
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import Dialog from "@/components/Dialog.vue";
 import NavLayout from "@/layouts/NavLayout.vue";
 import data from "../shipping-line/data";
 import { ShippingLine } from "./shipping-line";
+import DeleteShippingLine from "./components/DeleteShippingLine.vue";
+import CreateShippingLine from "./components/CreateShippingLine.vue";
 
 @Component({
   name: "ShippingLineManagement",
   components: {
-    Dialog
+    DeleteShippingLine,
+    CreateShippingLine
   }
 })
 export default class ShippingLineManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
-  selected = [] as Array<ShippingLine>;
-  dialog = false;
-  username = "";
-  password = "";
-  email = "";
-  fullname = "";
-  icd = ["Seaport", "Dryport"];
+
   success = "";
+  name = "";
   checkSuccess = false;
-  roles = [] as Array<string>;
   dialogAdd = false;
   dialogDel = false;
+  readonly = false;
+  checkAdd = false;
+  checkUpdate = false;
+  shippingLine: ShippingLine = {
+    username: "",
+    password: "",
+    email: "",
+    phone: "",
+    role: ["ROLE_SHIPPINGLINE"],
+    status: "ACTIVE",
+    shipName: "",
+    nameCode: "",
+    website: "",
+    icds: [""],
+    address: ""
+  };
   search = "";
+  title = "";
   totalShips = 0;
   ships = [] as Array<ShippingLine>;
   loading = true;
@@ -269,8 +136,8 @@ export default class ShippingLineManagement extends Vue {
       sortable: true,
       value: "username"
     },
-    { text: "Tên hãng tàu", value: "shipname" },
-    { text: "Mã tên", value: "namecode" },
+    { text: "Tên hãng tàu", value: "shipName" },
+    { text: "Mã tên", value: "nameCode" },
     { text: "Email", value: "email" },
     { text: "Website", value: "website" },
     { text: "Số điện thoại", value: "phone" },
@@ -278,7 +145,7 @@ export default class ShippingLineManagement extends Vue {
     { text: "Địa chỉ", value: "address" },
     {
       text: "Hành động",
-      value: "mdi-dots-vertical"
+      value: "action"
     }
   ];
   async created() {
@@ -339,22 +206,41 @@ export default class ShippingLineManagement extends Vue {
   public getShips(): Array<ShippingLine> {
     return data;
   }
-  public submit() {
-    this.success = "Thêm mới thành công!";
-    this.checkSuccess = true;
-    this.dialogAdd = false;
+  public viewDetail(item: ShippingLine) {
+    this.shippingLine = item;
+    this.checkAdd = false;
+    this.checkUpdate = false;
+    this.title = "Thông tin hãng tàu";
+    this.readonly = true;
+    this.dialogAdd = true;
   }
-  public cancel() {
-    this.dialogAdd = false;
+  public update(item: ShippingLine) {
+    this.shippingLine = item;
+    this.checkAdd = false;
+    this.checkUpdate = true;
+    this.title = "Cập nhập hãng tàu";
+    this.readonly = false;
+    this.dialogAdd = true;
   }
-  public del() {
-    this.success = "Xóa thành công!";
-    this.checkSuccess = true;
-    console.log(this.selected);
-    this.dialogDel = false;
-  }
-  public cancelDel() {
-    this.dialogDel = false;
+  public addShippingLine() {
+    this.title = "Thêm mới hãng tàu";
+    this.shippingLine = {
+      username: "",
+      password: "",
+      email: "",
+      phone: "",
+      role: ["ROLE_SHIPPINGLINE"],
+      status: "ACTIVE",
+      shipName: "",
+      nameCode: "",
+      website: "",
+      icds: [""],
+      address: ""
+    };
+    this.checkAdd = true;
+    this.checkUpdate = false;
+    this.readonly = false;
+    this.dialogAdd = true;
   }
 }
 </script>

@@ -1,82 +1,106 @@
 export default [
   {
     username: "Admin",
-    shipname: "ABC",
-    namecode: "A01",
+    shipName: "ABC",
+    nameCode: "A01",
     email: "abc@gmail.com",
     website: "abc.com.vn",
     phone: "0359049292",
     icds: ["Dry port", "Seaport"],
-    address: "abc xyz"
+    address: "abc xyz",
+    password: "123456",
+    role: ["ROLE_SHIPPINGLINE"],
+    status: "ACTIVE"
   },
   {
     username: "Admin",
-    shipname: "ABC",
-    namecode: "A02",
+    shipName: "ABC",
+    nameCode: "A02",
     email: "abc@gmail.com",
     website: "abc.com.vn",
     phone: "0359049292",
     icds: ["Dry port", "Seaport"],
-    address: "abc xyz"
+    address: "abc xyz",
+    password: "123456",
+    role: ["ROLE_SHIPPINGLINE"],
+    status: "ACTIVE"
   },
   {
     username: "Admin",
-    shipname: "ABC",
-    namecode: "A03",
+    shipName: "ABC",
+    nameCode: "A03",
     email: "abc@gmail.com",
     website: "abc.com.vn",
     phone: "0359049292",
     icds: ["Dry port", "Seaport"],
-    address: "abc xyz"
+    address: "abc xyz",
+    password: "123456",
+    role: ["ROLE_SHIPPINGLINE"],
+    status: "ACTIVE"
   },
   {
     username: "Admin",
-    shipname: "ABC",
-    namecode: "A04",
+    shipName: "ABC",
+    nameCode: "A04",
     email: "abc@gmail.com",
     website: "abc.com.vn",
     phone: "0359049292",
     icds: ["Dry port", "Seaport"],
-    address: "abc xyz"
+    address: "abc xyz",
+    password: "123456",
+    role: ["ROLE_SHIPPINGLINE"],
+    status: "ACTIVE"
   },
   {
     username: "Admin",
-    shipname: "ABC",
-    namecode: "A05",
+    shipName: "ABC",
+    nameCode: "A05",
     email: "abc@gmail.com",
     website: "abc.com.vn",
     phone: "0359049292",
     icds: ["Dry port", "Seaport"],
-    address: "abc xyz"
+    address: "abc xyz",
+    password: "123456",
+    role: ["ROLE_SHIPPINGLINE"],
+    status: "ACTIVE"
   },
   {
     username: "Admin1",
-    shipname: "ABC",
-    namecode: "A06",
+    shipName: "ABC",
+    nameCode: "A06",
     email: "abc@gmail.com",
     website: "abc.com.vn",
     phone: "0359049292",
     icds: ["Dry port", "Seaport"],
-    address: "abc xyz"
+    address: "abc xyz",
+    password: "123456",
+    role: ["ROLE_SHIPPINGLINE"],
+    status: "ACTIVE"
   },
   {
     username: "Admin1",
-    shipname: "ABC",
-    namecode: "A07",
+    shipName: "ABC",
+    nameCode: "A07",
     email: "abc@gmail.com",
     website: "abc.com.vn",
     phone: "0359049292",
     icds: ["Dry port", "Seaport"],
-    address: "abc xyz"
+    address: "abc xyz",
+    password: "123456",
+    role: ["ROLE_SHIPPINGLINE"],
+    status: "ACTIVE"
   },
   {
     username: "Admin",
-    shipname: "ABC",
-    namecode: "A08",
+    shipName: "ABC",
+    nameCode: "A08",
     email: "abc@gmail.com",
     website: "abc.com.vn",
     phone: "0359049292",
     icds: ["Dry port", "Seaport"],
-    address: "abc xyz"
+    address: "abc xyz",
+    password: "123456",
+    role: ["ROLE_SHIPPINGLINE"],
+    status: "ACTIVE"
   },
 ];

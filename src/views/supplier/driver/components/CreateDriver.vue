@@ -8,7 +8,7 @@
             icon
             dark
             @click="dialogSync = false"
-            style="margin-left:258px;"
+            style="margin-left:327px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
@@ -20,11 +20,11 @@
             <v-layout row>
               <v-flex xs8>
                 <v-text-field
-                  label="Tên loại Container"
-                  name="name"
+                  label="Tên đăng nhập"
+                  name="username"
                   prepend-icon="mdi-account"
                   type="text"
-                  v-model="containerTypeSync.name"
+                  v-model="driverSync.username"
                   :readonly="readonly"
                 ></v-text-field>
               </v-flex>
@@ -32,11 +32,89 @@
             <v-layout row>
               <v-flex xs8>
                 <v-text-field
-                  label="Chi tiết"
-                  name="description"
+                  label="Tên lái xe"
+                  name="driverName"
+                  prepend-icon="mdi-account"
+                  type="text"
+                  v-model="driverSync.driverName"
+                  :readonly="readonly"
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-layout>
+          <v-layout col>
+            <v-layout row>
+              <v-flex xs8>
+                <v-text-field
+                  label="Mật khẩu"
+                  name="password"
+                  prepend-icon="mdi-lock"
+                  type="password"
+                  v-model="driverSync.password"
+                  :readonly="readonly"
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+            <v-layout row>
+              <v-flex xs8>
+                <v-text-field
+                  label="Số bằng lái"
+                  name="driverLicense"
+                  prepend-icon="mdi-account"
+                  type="text"
+                  v-model="driverSync.driverLicense"
+                  :readonly="readonly"
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-layout>
+          <v-layout col>
+            <v-layout row>
+              <v-flex xs8>
+                <v-select
+                  :items="['ROLE_DRIVER']"
+                  label="Phân quyền*"
+                  prepend-icon="mdi-lock"
+                  required
+                  v-model="driverSync.role"
+                  :readonly="readonly"
+                ></v-select>
+              </v-flex>
+            </v-layout>
+            <v-layout row>
+              <v-flex xs8>
+                <v-select
+                  :items="['PENDING', 'ACTIVE', 'BANNED']"
+                  label="Trạng thái*"
+                  prepend-icon="mdi-lock"
+                  required
+                  v-model="driverSync.status"
+                  :readonly="readonly"
+                ></v-select>
+              </v-flex>
+            </v-layout>
+          </v-layout>
+          <v-layout col>
+            <v-layout row>
+              <v-flex xs8>
+                <v-text-field
+                  label="Email"
+                  name="email"
+                  prepend-icon="mdi-lock"
+                  type="email"
+                  v-model="driverSync.email"
+                  :readonly="readonly"
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+            <v-layout row>
+              <v-flex xs8>
+                <v-text-field
+                  label="Website"
+                  name="website"
                   prepend-icon="mdi-lock"
                   type="text"
-                  v-model="containerTypeSync.description"
+                  v-model="driverSync.website"
                   :readonly="readonly"
                 ></v-text-field>
               </v-flex>
@@ -46,11 +124,11 @@
             <v-layout row>
               <v-flex xs8>
                 <v-text-field
-                  label="Khối lượng vỏ"
-                  name="tareWeight"
+                  label="Số điện thoại"
+                  name="phone"
                   prepend-icon="mdi-lock"
-                  type="number"
-                  v-model="containerTypeSync.tareWeight"
+                  type="phone"
+                  v-model="driverSync.phone"
                   :readonly="readonly"
                 ></v-text-field>
               </v-flex>
@@ -58,104 +136,28 @@
             <v-layout row>
               <v-flex xs8>
                 <v-text-field
-                  label="Trọng tải"
-                  name="payloadCapacity"
+                  label="Địa chỉ"
+                  name="address"
                   prepend-icon="mdi-lock"
-                  type="number"
-                  v-model="containerTypeSync.payloadCapacity"
+                  type="text"
+                  v-model="driverSync.address"
                   :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
-                <v-text-field
-                  label="Công suất khối"
-                  name="cubicCapacity"
-                  prepend-icon="mdi-lock"
-                  type="number"
-                  v-model="containerTypeSync.cubicCapacity"
-                  :readonly="readonly"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout row>
-              <v-flex xs8>
-                <v-text-field
-                  label="Chiều dài trong"
-                  name="internalLength"
-                  prepend-icon="mdi-lock"
-                  type="number"
-                  v-model="containerTypeSync.internalLength"
-                  :readonly="readonly"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
-                <v-text-field
-                  label="Chiều rộng trong"
-                  name="internalWidth"
-                  prepend-icon="mdi-lock"
-                  type="number"
-                  v-model="containerTypeSync.internalWidth"
-                  :readonly="readonly"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout row>
-              <v-flex xs8>
-                <v-text-field
-                  label="Chiều cao trong"
-                  name="internalHeight"
-                  prepend-icon="mdi-lock"
-                  type="number"
-                  v-model="containerTypeSync.internalHeight"
-                  :readonly="readonly"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
-                <v-text-field
-                  label="Chiều rộng cửa mở"
-                  name="doorOpeningWidth"
-                  prepend-icon="mdi-lock"
-                  type="number"
-                  v-model="containerTypeSync.doorOpeningWidth"
-                  :readonly="readonly"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout row>
-              <v-flex xs8>
-                <v-text-field
-                  label="Chiều cao cửa mở"
-                  name="doorOpeningHeight"
-                  prepend-icon="mdi-lock"
-                  type="number"
-                  v-model="containerTypeSync.doorOpeningHeight"
-                  :readonly="readonly"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-layout>
+
+          <small>*Dấu sao là trường bắt buộc</small>
           <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
         <v-btn @click="dialogSync = false">Trở về</v-btn>
         <v-btn @click="submit()" color="primary" v-if="checkAdd"
           >Thêm mới</v-btn
         >
-        <v-btn @click="updateContainerType()" color="primary" v-if="checkUpdate"
+        <v-btn @click="updateDriver()" color="primary" v-if="checkUpdate"
           >Cập nhập</v-btn
         >
       </v-card-actions>
@@ -164,12 +166,12 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, PropSync } from "vue-property-decorator";
-import { ContainerType } from "../container-type";
+import { Driver } from "../driver";
 
 @Component({
-  name: "CreateContainerType"
+  name: "CreateDriver"
 })
-export default class CreateContainerType extends Vue {
+export default class CreateDriver extends Vue {
   // @Prop() selected!: Array<object>;
   @PropSync("dialogAdd", { type: Boolean }) dialogSync!: boolean;
   @PropSync("checkSuccess", { type: Boolean }) checkSuccessSync!: boolean;
@@ -177,8 +179,10 @@ export default class CreateContainerType extends Vue {
   @Prop(Boolean) checkAdd!: boolean;
   @Prop(Boolean) checkUpdate!: boolean;
   @Prop(Boolean) readonly!: boolean;
-  @PropSync("containerType", { type: Object })
-  containerTypeSync!: ContainerType | null;
+  @PropSync("driver", {
+    type: Object
+  })
+  driverSync!: Driver | null;
   @Prop(String) title!: string | null;
 
   public submit() {
@@ -186,7 +190,7 @@ export default class CreateContainerType extends Vue {
     this.checkSuccessSync = true;
     this.dialogSync = false;
   }
-  public updateContainerType() {
+  public updateDriver() {
     this.successSync = "Cập nhập thành công";
     this.checkSuccessSync = true;
     this.dialogSync = false;

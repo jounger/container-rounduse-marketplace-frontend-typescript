@@ -8,7 +8,7 @@
             icon
             dark
             @click="dialogSync = false"
-            style="margin-left:258px;"
+            style="margin-left:296px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
@@ -20,11 +20,11 @@
             <v-layout row>
               <v-flex xs8>
                 <v-text-field
-                  label="Tên loại Container"
-                  name="name"
+                  label="Tên đăng nhập"
+                  name="username"
                   prepend-icon="mdi-account"
                   type="text"
-                  v-model="containerTypeSync.name"
+                  v-model="shippingLineSync.username"
                   :readonly="readonly"
                 ></v-text-field>
               </v-flex>
@@ -32,11 +32,11 @@
             <v-layout row>
               <v-flex xs8>
                 <v-text-field
-                  label="Chi tiết"
-                  name="description"
+                  label="Tên hãng tàu"
+                  name="shippingLineName"
                   prepend-icon="mdi-lock"
                   type="text"
-                  v-model="containerTypeSync.description"
+                  v-model="shippingLineSync.shipName"
                   :readonly="readonly"
                 ></v-text-field>
               </v-flex>
@@ -46,11 +46,11 @@
             <v-layout row>
               <v-flex xs8>
                 <v-text-field
-                  label="Khối lượng vỏ"
-                  name="tareWeight"
+                  label="Mật khẩu"
+                  name="password"
                   prepend-icon="mdi-lock"
-                  type="number"
-                  v-model="containerTypeSync.tareWeight"
+                  type="password"
+                  v-model="shippingLineSync.password"
                   :readonly="readonly"
                 ></v-text-field>
               </v-flex>
@@ -58,11 +58,63 @@
             <v-layout row>
               <v-flex xs8>
                 <v-text-field
-                  label="Trọng tải"
-                  name="payloadCapacity"
+                  label="Mã tên"
+                  name="namecode"
                   prepend-icon="mdi-lock"
-                  type="number"
-                  v-model="containerTypeSync.payloadCapacity"
+                  type="text"
+                  v-model="shippingLineSync.nameCode"
+                  :readonly="readonly"
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-layout>
+          <v-layout col>
+            <v-layout row>
+              <v-flex xs8>
+                <v-select
+                  :items="['ROLE_SHIPPINGLINE']"
+                  label="Phân quyền*"
+                  prepend-icon="mdi-lock"
+                  required
+                  v-model="roles"
+                  :readonly="readonly"
+                ></v-select>
+              </v-flex>
+            </v-layout>
+            <v-layout row>
+              <v-flex xs8>
+                <v-select
+                  :items="['PENDING', 'ACTIVE', 'BANNED']"
+                  label="Trạng thái*"
+                  prepend-icon="mdi-lock"
+                  required
+                  v-model="shippingLineSync.status"
+                  :readonly="readonly"
+                ></v-select>
+              </v-flex>
+            </v-layout>
+          </v-layout>
+          <v-layout col>
+            <v-layout row>
+              <v-flex xs8>
+                <v-text-field
+                  label="Email"
+                  name="email"
+                  prepend-icon="mdi-lock"
+                  type="email"
+                  v-model="shippingLineSync.email"
+                  :readonly="readonly"
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+            <v-layout row>
+              <v-flex xs8>
+                <v-text-field
+                  label="Website"
+                  name="website"
+                  prepend-icon="mdi-lock"
+                  type="text"
+                  v-model="shippingLineSync.website"
                   :readonly="readonly"
                 ></v-text-field>
               </v-flex>
@@ -72,90 +124,52 @@
             <v-layout row>
               <v-flex xs8>
                 <v-text-field
-                  label="Công suất khối"
-                  name="cubicCapacity"
+                  label="Số điện thoại"
+                  name="phone"
                   prepend-icon="mdi-lock"
-                  type="number"
-                  v-model="containerTypeSync.cubicCapacity"
+                  type="phone"
+                  v-model="shippingLineSync.phone"
                   :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
             <v-layout row>
               <v-flex xs8>
-                <v-text-field
-                  label="Chiều dài trong"
-                  name="internalLength"
-                  prepend-icon="mdi-lock"
-                  type="number"
-                  v-model="containerTypeSync.internalLength"
+                <v-select
+                  :items="icd"
+                  attach
+                  label="ICD"
+                  v-model="shippingLineSync.icds"
                   :readonly="readonly"
-                ></v-text-field>
+                ></v-select>
               </v-flex>
             </v-layout>
           </v-layout>
           <v-layout col>
             <v-layout row>
-              <v-flex xs8>
+              <v-flex xs6>
                 <v-text-field
-                  label="Chiều rộng trong"
-                  name="internalWidth"
+                  label="Địa chỉ"
+                  name="address"
                   prepend-icon="mdi-lock"
-                  type="number"
-                  v-model="containerTypeSync.internalWidth"
-                  :readonly="readonly"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout row>
-              <v-flex xs8>
-                <v-text-field
-                  label="Chiều cao trong"
-                  name="internalHeight"
-                  prepend-icon="mdi-lock"
-                  type="number"
-                  v-model="containerTypeSync.internalHeight"
+                  type="text"
+                  v-model="shippingLineSync.address"
                   :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
-                <v-text-field
-                  label="Chiều rộng cửa mở"
-                  name="doorOpeningWidth"
-                  prepend-icon="mdi-lock"
-                  type="number"
-                  v-model="containerTypeSync.doorOpeningWidth"
-                  :readonly="readonly"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout row>
-              <v-flex xs8>
-                <v-text-field
-                  label="Chiều cao cửa mở"
-                  name="doorOpeningHeight"
-                  prepend-icon="mdi-lock"
-                  type="number"
-                  v-model="containerTypeSync.doorOpeningHeight"
-                  :readonly="readonly"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-layout>
+          <small>*Dấu sao là trường bắt buộc</small>
           <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
         <v-btn @click="dialogSync = false">Trở về</v-btn>
         <v-btn @click="submit()" color="primary" v-if="checkAdd"
           >Thêm mới</v-btn
         >
-        <v-btn @click="updateContainerType()" color="primary" v-if="checkUpdate"
+        <v-btn @click="updateShippingLine()" color="primary" v-if="checkUpdate"
           >Cập nhập</v-btn
         >
       </v-card-actions>
@@ -164,12 +178,12 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, PropSync } from "vue-property-decorator";
-import { ContainerType } from "../container-type";
+import { ShippingLine } from "../shipping-line";
 
 @Component({
-  name: "CreateContainerType"
+  name: "CreateShippingLine"
 })
-export default class CreateContainerType extends Vue {
+export default class CreateShippingLine extends Vue {
   // @Prop() selected!: Array<object>;
   @PropSync("dialogAdd", { type: Boolean }) dialogSync!: boolean;
   @PropSync("checkSuccess", { type: Boolean }) checkSuccessSync!: boolean;
@@ -177,16 +191,20 @@ export default class CreateContainerType extends Vue {
   @Prop(Boolean) checkAdd!: boolean;
   @Prop(Boolean) checkUpdate!: boolean;
   @Prop(Boolean) readonly!: boolean;
-  @PropSync("containerType", { type: Object })
-  containerTypeSync!: ContainerType | null;
+  @PropSync("shippingLine", {
+    type: Object
+  })
+  shippingLineSync!: ShippingLine | null;
   @Prop(String) title!: string | null;
+  icd = ["Seaport", "Dryport"];
+  roles = "ROLE_SHIPPINGLINE";
 
   public submit() {
     this.successSync = "Thêm mới thành công!";
     this.checkSuccessSync = true;
     this.dialogSync = false;
   }
-  public updateContainerType() {
+  public updateShippingLine() {
     this.successSync = "Cập nhập thành công";
     this.checkSuccessSync = true;
     this.dialogSync = false;

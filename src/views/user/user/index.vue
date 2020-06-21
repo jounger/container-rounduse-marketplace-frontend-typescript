@@ -2,7 +2,7 @@
   <v-content>
     <v-card>
       <v-card-title>
-        Danh sách Người dùng
+        Danh sách User
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -12,150 +12,22 @@
           hide-details
         ></v-text-field>
       </v-card-title>
-      <v-btn
-        color="primary"
-        style="margin-left: 35px;"
-        dark
-        @click.stop="dialogAdd = true"
-        v-if="$auth.check(['ROLE_ADMIN', 'ROLE_MORDERATOR'])"
-      >
-        Thêm mới
-      </v-btn>
-      <v-btn
-        color="red"
-        style="margin-left: 605px;"
-        dark
-        @click.stop="dialogDel = true"
-        v-if="
-          selected.length > 0 && $auth.check(['ROLE_ADMIN', 'ROLE_MORDERATOR'])
-        "
-      >
-        Xóa người dùng
-      </v-btn>
       <v-row justify="center">
-        <v-dialog v-model="dialogDel" persistent max-width="600px">
-          <v-card>
-            <v-toolbar color="primary" light flat>
-              <v-toolbar-title
-                ><span class="headline" style="color:white;"
-                  >Xóa người dùng</span
-                >
-                <v-btn
-                  icon
-                  dark
-                  @click="dialogDel = false"
-                  style="margin-left:352px;"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn></v-toolbar-title
-              >
-            </v-toolbar>
-
-            <v-card-text>
-              <v-form>
-                <v-container>
-                  <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa những người dùng này?</span
-                  >
-                  <div class="line"></div>
-                  <v-list>
-                    <v-list-item v-for="(item, i) in selected" :key="i">
-                      <v-list-item-content>
-                        <v-list-item-title
-                          v-text="item.username"
-                        ></v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-container>
-                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-              </v-form>
-            </v-card-text>
-            <v-card-actions style="margin-left: 205px;">
-              <v-btn @click="cancelDel()">Hủy</v-btn>
-              <v-btn @click="del()" color="red">Xóa</v-btn>
-            </v-card-actions>
-            <Dialog :dialog.sync="dialog" />
-          </v-card>
-        </v-dialog>
+        <DeleteUser
+          :dialogDel.sync="dialogDel"
+          :checkSuccess.sync="checkSuccess"
+          :success.sync="success"
+          :name="name"
+        />
       </v-row>
       <v-row justify="center">
-        <v-dialog v-model="dialogAdd" persistent max-width="600px">
-          <v-card>
-            <v-toolbar color="primary" light flat>
-              <v-toolbar-title
-                ><span class="headline" style="color:white;"
-                  >Thêm mới người dùng</span
-                >
-                <v-btn
-                  icon
-                  dark
-                  @click="dialogAdd = false"
-                  style="margin-left:285px;"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn></v-toolbar-title
-              >
-            </v-toolbar>
-
-            <v-card-text>
-              <v-form>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="6" md="6">
-                      <v-text-field
-                        label="Tên đăng nhập*"
-                        type="text"
-                        v-model="username"
-                        required
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="6">
-                      <v-text-field
-                        label="Mật khẩu*"
-                        type="password"
-                        v-model="password"
-                        required
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12">
-                      <v-text-field
-                        label="Email*"
-                        type="email"
-                        v-model="email"
-                        required
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12">
-                      <v-text-field
-                        label="Tên đầy đủ"
-                        type="text"
-                        v-model="fullname"
-                        required
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="8">
-                      <v-select
-                        :items="['ROLE_USER']"
-                        label="Phân quyền*"
-                        required
-                        v-model="roles"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-container>
-                <small>*Dấu sao là trường bắt buộc</small>
-                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-              </v-form>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn @click="cancel()">Hủy</v-btn>
-              <v-btn @click="submit()" color="primary">Thêm mới</v-btn>
-            </v-card-actions>
-            <Dialog :dialog.sync="dialog" />
-          </v-card>
-        </v-dialog>
+        <UserDetail
+          :user="user"
+          :title="title"
+          :dialogAdd.sync="dialogAdd"
+          :checkSuccess.sync="checkSuccess"
+          :success.sync="success"
+        />
       </v-row>
       <v-alert
         v-model="checkSuccess"
@@ -166,19 +38,33 @@
         {{ success }}
       </v-alert>
       <v-data-table
-        v-model="selected"
         :headers="headers"
         :items="users"
         :search="search"
         item-key="username"
-        show-select
         :options.sync="options"
         :server-items-length="totalUsers"
         :loading="loading"
         :items-per-page="5"
-        @click:row="handleClick()"
         class="elevation-1"
       >
+        <template v-slot:item.action="{ item }">
+          <v-menu :loading="item.createloading" :disabled="item.createloading">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="secondary" dark v-bind="attrs" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item @click="viewDetail(item)">
+                <v-list-item-title>Xem chi tiết</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="delUser(item)">
+                <v-list-item-title>Xóa</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </template>
       </v-data-table>
     </v-card>
   </v-content>
@@ -186,31 +72,42 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import UserModule from "@/store/modules/user";
-import Dialog from "@/components/Dialog.vue";
 import NavLayout from "@/layouts/NavLayout.vue";
 import { UserEntity } from "@/store/definitions/user";
+import DeleteUser from "./components/DeleteUser.vue";
+import UserDetail from "./components/UserDetail.vue";
+
 @Component({
   name: "UserManagement",
   components: {
-    Dialog
+    DeleteUser,
+    UserDetail
   }
 })
 export default class UserManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
-  selected = [] as Array<any>;
-  dialog = false;
-  username = "";
-  password = "";
-  email = "";
-  fullname = "";
-  success = "";
-  checkSuccess = false;
-  roles = [] as Array<string>;
+
+  title = "";
   dialogAdd = false;
   dialogDel = false;
+  readonly = false;
+  checkAdd = false;
+  user: UserEntity = {
+    username: "",
+    password: "",
+    email: "",
+    phone: "",
+    role: [""],
+    status: "ACTIVE"
+  };
+  checkUpdate = false;
   search = "";
+  success = "";
+  phone = "";
+  name = "";
+  checkSuccess = false;
   totalUsers = 0;
-  users = [] as Array<any>;
+  users = [] as Array<UserEntity>;
   loading = true;
   options = {} as any;
   headers = [
@@ -221,11 +118,12 @@ export default class UserManagement extends Vue {
       value: "username"
     },
     { text: "Email", value: "email" },
-    { text: "Tên đầy đủ", value: "fullname" },
+    { text: "Số điện thoại", value: "phone" },
     { text: "Phân quyền", value: "roles" },
+    { text: "Trạng thái", value: "status" },
     {
       text: "Hành động",
-      value: "mdi-dots-vertical"
+      value: "action"
     }
   ];
   async created() {
@@ -241,7 +139,7 @@ export default class UserManagement extends Vue {
   async mounted() {
     await UserModule.fetchUsers({
       page: 0,
-      limit: 20
+      limit: 5
     }); // -> store.dispatch("user/fetchUsers", {page: 0, limit: 5})
     this.getDataFromApi().then((data: any) => {
       this.users = data.items;
@@ -249,7 +147,6 @@ export default class UserManagement extends Vue {
     });
   }
   public getDataFromApi() {
-    console.log(this.options);
     this.loading = true;
     return new Promise((resolve, reject) => {
       const { sortBy, sortDesc, page, itemsPerPage } = this.options;
@@ -258,7 +155,7 @@ export default class UserManagement extends Vue {
       const total = items.length;
 
       if (sortBy.length === 1 && sortDesc.length === 1) {
-        items = items.sort((a: Array<UserEntity>, b: Array<UserEntity>) => {
+        items = items.sort((a: any, b: any) => {
           const sortA = a[sortBy[0]];
           const sortB = b[sortBy[0]];
 
@@ -287,41 +184,25 @@ export default class UserManagement extends Vue {
       }, 1000);
     });
   }
-  public getUsers(): Array<any> {
+  public getUsers(): Array<UserEntity> {
     if (UserModule.getListUsers != null) {
+      console.log(UserModule.getListUsers);
       return UserModule.getListUsers.filter(
-        (user: any) => user.roles[0] == "ROLE_USER"
+        (user: any) =>
+          user.roles[0] == "ROLE_FORWARDER" || user.roles[0] == "ROLE_MERCHANT"
       );
     } else {
-      return [
-        {
-          username: "",
-          email: "",
-          fullname: "",
-          roles: ""
-        }
-      ];
+      return [];
     }
   }
-  public submit() {
-    this.success = "Thêm mới thành công!";
-    this.checkSuccess = true;
-    this.dialogAdd = false;
-  }
-  public cancel() {
-    this.dialogAdd = false;
-  }
-  public del() {
-    this.success = "Xóa thành công!";
-    this.checkSuccess = true;
-    console.log(this.selected);
-    this.dialogDel = false;
-  }
-  public cancelDel() {
-    this.dialogDel = false;
-  }
-  public handleClick() {
+  public viewDetail(item: UserEntity) {
+    this.user = item;
+    this.title = "Thông tin người dùng";
     this.dialogAdd = true;
+  }
+  public delUser(item: UserEntity) {
+    this.name = item.username;
+    this.dialogDel = true;
   }
 }
 </script>

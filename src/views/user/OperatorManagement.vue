@@ -71,7 +71,6 @@
               <v-btn @click="cancelDel()">Hủy</v-btn>
               <v-btn @click="del()" color="red">Xóa</v-btn>
             </v-card-actions>
-            <Dialog :dialog.sync="dialog" />
           </v-card>
         </v-dialog>
       </v-row>
@@ -149,7 +148,6 @@
               <v-btn @click="cancel()">Hủy</v-btn>
               <v-btn @click="submit()" color="primary">Thêm mới</v-btn>
             </v-card-actions>
-            <Dialog :dialog.sync="dialog" />
           </v-card>
         </v-dialog>
       </v-row>
@@ -181,19 +179,14 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import UserModule from "@/store/modules/user";
-import Dialog from "@/components/Dialog.vue";
 import NavLayout from "@/layouts/NavLayout.vue";
 import { UserEntity } from "@/store/definitions/user";
 @Component({
-  name: "OperatorManagement",
-  components: {
-    Dialog
-  }
+  name: "OperatorManagement"
 })
 export default class OperatorManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
-  selected = [] as Array<any>;
-  dialog = false;
+  selected = [] as Array<UserEntity>;
   username = "";
   password = "";
   email = "";
@@ -205,7 +198,7 @@ export default class OperatorManagement extends Vue {
   dialogDel = false;
   search = "";
   totalUsers = 0;
-  users = [] as Array<any>;
+  users = [] as Array<UserEntity>;
   loading = true;
   options = {} as any;
   headers = [
@@ -253,7 +246,7 @@ export default class OperatorManagement extends Vue {
       const total = items.length;
 
       if (sortBy.length === 1 && sortDesc.length === 1) {
-        items = items.sort((a: Array<UserEntity>, b: Array<UserEntity>) => {
+        items = items.sort((a: any, b: any) => {
           const sortA = a[sortBy[0]];
           const sortB = b[sortBy[0]];
 
@@ -282,20 +275,13 @@ export default class OperatorManagement extends Vue {
       }, 1000);
     });
   }
-  public getUsers(): Array<any> {
+  public getUsers(): Array<UserEntity> {
     if (UserModule.getListUsers != null) {
       return UserModule.getListUsers.filter(
         (user: any) => user.roles[0] == "ROLE_MODERATOR"
       );
     } else {
-      return [
-        {
-          username: "",
-          email: "",
-          fullname: "",
-          roles: ""
-        }
-      ];
+      return [];
     }
   }
   public submit() {

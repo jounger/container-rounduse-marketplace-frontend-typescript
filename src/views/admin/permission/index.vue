@@ -21,161 +21,25 @@
       >
         Thêm mới
       </v-btn>
-      <v-btn
-        color="red"
-        style="margin-left: 20px;"
-        dark
-        @click.stop="dialogDel = true"
-        v-if="selected.length > 0 && $auth.check(['ROLE_ADMIN'])"
-      >
-        Xóa Vai trò
-      </v-btn>
       <v-row justify="center">
-        <v-dialog v-model="dialogDelSingle" persistent max-width="600px">
-          <v-card>
-            <v-toolbar color="primary" light flat>
-              <v-toolbar-title
-                ><span class="headline" style="color:white;">Xóa vai trò</span>
-                <v-btn
-                  icon
-                  dark
-                  @click="dialogDelSingle = false"
-                  style="margin-left:425px;"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn></v-toolbar-title
-              >
-            </v-toolbar>
-
-            <v-card-text>
-              <v-form>
-                <v-container>
-                  <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa vai trò này?</span
-                  >
-                  <div class="line"></div>
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-content>
-                        <v-list-item-title>{{ name }}</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-container>
-                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-              </v-form>
-            </v-card-text>
-            <v-card-actions style="margin-left: 205px;">
-              <v-btn @click="cancelDelSingle()">Hủy</v-btn>
-              <v-btn @click="delSingle(name)" color="red">Xóa</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+        <DeleteICD
+          :dialogDel.sync="dialogDel"
+          :checkSuccess.sync="checkSuccess"
+          :success.sync="success"
+          :name="name"
+        />
       </v-row>
       <v-row justify="center">
-        <v-dialog v-model="dialogDel" persistent max-width="600px">
-          <v-card>
-            <v-toolbar color="primary" light flat>
-              <v-toolbar-title
-                ><span class="headline" style="color:white;">Xóa Vai trò</span>
-                <v-btn
-                  icon
-                  dark
-                  @click="dialogDel = false"
-                  style="margin-left:425px;"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn></v-toolbar-title
-              >
-            </v-toolbar>
-
-            <v-card-text>
-              <v-form>
-                <v-container>
-                  <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa những Vai trò này?</span
-                  >
-                  <div class="line"></div>
-                  <v-list>
-                    <v-list-item v-for="(item, i) in selected" :key="i">
-                      <v-list-item-content>
-                        <v-list-item-title
-                          v-text="item.rolename"
-                        ></v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-container>
-                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-              </v-form>
-            </v-card-text>
-            <v-card-actions style="margin-left: 205px;">
-              <v-btn @click="cancelDel()">Hủy</v-btn>
-              <v-btn @click="del()" color="red">Xóa</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-row>
-      <v-row justify="center">
-        <v-dialog v-model="dialogAdd" persistent max-width="600px">
-          <v-card style="height: 350px;">
-            <v-toolbar color="primary" light flat>
-              <v-toolbar-title
-                ><span class="headline" style="color:white;">{{ title }}</span>
-                <v-btn
-                  icon
-                  dark
-                  @click="dialogAdd = false"
-                  style="margin-left:337px;"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn></v-toolbar-title
-              >
-            </v-toolbar>
-            <v-card-text>
-              <v-form>
-                <v-layout row>
-                  <v-flex xs9>
-                    <v-text-field
-                      label="Tên vai trò"
-                      name="permissionsName"
-                      prepend-icon="mdi-account"
-                      type="text"
-                      v-model="permissionName"
-                      :readonly="readonly"
-                    ></v-text-field>
-                  </v-flex>
-                </v-layout>
-                <v-layout row>
-                  <v-flex xs9>
-                    <v-text-field
-                      label="Mô tả"
-                      name="content"
-                      prepend-icon="mdi-account"
-                      type="text"
-                      v-model="description"
-                      :readonly="readonly"
-                    ></v-text-field>
-                  </v-flex>
-                </v-layout>
-                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-              </v-form>
-            </v-card-text>
-            <v-card-actions style="margin-top: 65px;">
-              <v-spacer></v-spacer>
-              <v-btn @click="cancel()">Trở về</v-btn>
-              <v-btn @click="submit()" color="primary" v-if="checkAdd"
-                >Thêm mới</v-btn
-              >
-              <v-btn
-                @click="updatePermission()"
-                color="primary"
-                v-if="checkUpdate"
-                >Cập nhập</v-btn
-              >
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+        <CreatePermission
+          :permission.sync="permission"
+          :title="title"
+          :dialogAdd.sync="dialogAdd"
+          :checkSuccess.sync="checkSuccess"
+          :checkAdd="checkAdd"
+          :checkUpdate="checkUpdate"
+          :success.sync="success"
+          :readonly="readonly"
+        />
       </v-row>
       <v-alert
         v-model="checkSuccess"
@@ -186,12 +50,10 @@
         {{ success }}
       </v-alert>
       <v-data-table
-        v-model="selected"
         :headers="headers"
         :items="permissions"
         :search="search"
         item-key="permissionName"
-        show-select
         :options.sync="options"
         :server-items-length="totalPermissions"
         :loading="loading"
@@ -226,19 +88,29 @@
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
 import { Permission } from "../permission/permission";
+import DeleteICD from "../../operator/icd/components/DeleteICD.vue";
+import CreatePermission from "./components/CreatePermission.vue";
+import data from "./data";
+
 @Component({
-  name: "PermissionManagement"
+  name: "PermissionManagement",
+  components: {
+    DeleteICD,
+    CreatePermission
+  }
 })
 export default class PermissionManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
-  selected = [] as Array<Permission>;
   permissionName = "";
   description = "";
+  permission: Permission = {
+    permissionName: "",
+    description: ""
+  };
   success = "";
   checkSuccess = false;
   dialogAdd = false;
   dialogDel = false;
-  dialogDelSingle = false;
   checkAdd = false;
   checkUpdate = false;
   title = "";
@@ -319,35 +191,10 @@ export default class PermissionManagement extends Vue {
     });
   }
   public getPermissions(): Array<Permission> {
-    return [
-      {
-        permissionName: "Create",
-        description: "Create new"
-      },
-      {
-        permissionName: "Update",
-        description: "Update content available"
-      },
-      {
-        permissionName: "Delete",
-        description: "Delete somthing"
-      }
-    ];
-  }
-  public submit() {
-    this.success = "Thêm mới thành công!";
-    this.checkSuccess = true;
-    this.dialogAdd = false;
-  }
-  public cancel() {
-    this.checkAdd = false;
-    this.checkUpdate = false;
-    this.readonly = false;
-    this.dialogAdd = false;
+    return data;
   }
   public viewDetail(item: Permission) {
-    this.permissionName = item.permissionName;
-    this.description = item.description;
+    this.permission = item;
     this.checkAdd = false;
     this.checkUpdate = false;
     this.title = "Thông tin vai trò";
@@ -355,7 +202,7 @@ export default class PermissionManagement extends Vue {
     this.dialogAdd = true;
   }
   public update(item: Permission) {
-    this.permissionName = item.permissionName;
+    this.permission = item;
     this.description = item.description;
     this.checkAdd = false;
     this.checkUpdate = true;
@@ -365,42 +212,18 @@ export default class PermissionManagement extends Vue {
   }
   public delPermission(item: Permission) {
     this.name = item.permissionName;
-    this.dialogDelSingle = true;
-  }
-  public delSingle(name: string) {
-    this.permissions = this.permissions.filter(
-      (permission: Permission) => permission.permissionName != name
-    );
-    this.success = "Xóa thành công";
-    this.checkSuccess = true;
-    this.dialogDelSingle = false;
-  }
-  public cancelDelSingle() {
-    this.name = "";
-    this.dialogDelSingle = false;
+    this.dialogDel = true;
   }
   public addPermission() {
     this.title = "Thêm mới Vai trò";
-    this.permissionName = "";
-    this.description = "";
+    this.permission = {
+      permissionName: "",
+      description: ""
+    };
     this.checkAdd = true;
     this.checkUpdate = false;
     this.readonly = false;
     this.dialogAdd = true;
-  }
-  public updatePermission() {
-    this.success = "Cập nhập thành công";
-    this.checkSuccess = true;
-    this.dialogAdd = false;
-  }
-  public del() {
-    this.success = "Xóa thành công!";
-    this.checkSuccess = true;
-    console.log(this.selected);
-    this.dialogDel = false;
-  }
-  public cancelDel() {
-    this.dialogDel = false;
   }
 }
 </script>

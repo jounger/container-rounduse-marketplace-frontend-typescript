@@ -1,16 +1,11 @@
 export interface UserEntity {
   id?: number;
   username: string;
+  password: string;
   email: string;
   phone: string;
-  roles: Set<string>;
+  role: Array<string>;
   status: string;
-  address : {
-    address: string,
-    city: string,
-    country: string,
-    postalCode: string,
-  }
 }
 
 export interface SignUpRequest {
@@ -18,7 +13,7 @@ export interface SignUpRequest {
   password: string;
   email: string;
   phone: string;
-  role: Set<string>;
+  role:  Array<string>;
   address : {
     address: string,
     city: string,

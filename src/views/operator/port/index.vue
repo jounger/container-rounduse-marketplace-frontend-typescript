@@ -21,170 +21,25 @@
       >
         Thêm mới
       </v-btn>
-      <v-btn
-        color="red"
-        style="margin-left: 20px;"
-        dark
-        @click.stop="dialogDel = true"
-        v-if="selected.length > 0 && $auth.check(['ROLE_ADMIN'])"
-      >
-        Xóa bến cảng
-      </v-btn>
       <v-row justify="center">
-        <v-dialog v-model="dialogDelSingle" persistent max-width="600px">
-          <v-card>
-            <v-toolbar color="primary" light flat>
-              <v-toolbar-title
-                ><span class="headline" style="color:white;">Xóa bến cảng</span>
-                <v-btn
-                  icon
-                  dark
-                  @click="dialogDelSingle = false"
-                  style="margin-left:374px;"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn></v-toolbar-title
-              >
-            </v-toolbar>
-
-            <v-card-text>
-              <v-form>
-                <v-container>
-                  <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa bến cảng này?</span
-                  >
-                  <div class="line"></div>
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-content>
-                        <v-list-item-title>{{ name }}</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-container>
-                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-              </v-form>
-            </v-card-text>
-            <v-card-actions style="margin-left: 205px;">
-              <v-btn @click="cancelDelSingle()">Hủy</v-btn>
-              <v-btn @click="delSingle(name)" color="red">Xóa</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+        <DeletePort
+          :dialogDel.sync="dialogDel"
+          :checkSuccess.sync="checkSuccess"
+          :success.sync="success"
+          :name="name"
+        />
       </v-row>
       <v-row justify="center">
-        <v-dialog v-model="dialogDel" persistent max-width="600px">
-          <v-card>
-            <v-toolbar color="primary" light flat>
-              <v-toolbar-title
-                ><span class="headline" style="color:white;">Xóa bến cảng</span>
-                <v-btn
-                  icon
-                  dark
-                  @click="dialogDel = false"
-                  style="margin-left:374px;"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn></v-toolbar-title
-              >
-            </v-toolbar>
-
-            <v-card-text>
-              <v-form>
-                <v-container>
-                  <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa những bến cảng này?</span
-                  >
-                  <div class="line"></div>
-                  <v-list>
-                    <v-list-item v-for="(item, i) in selected" :key="i">
-                      <v-list-item-content>
-                        <v-list-item-title
-                          v-text="item.fullname"
-                        ></v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-container>
-                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-              </v-form>
-            </v-card-text>
-            <v-card-actions style="margin-left: 205px;">
-              <v-btn @click="cancelDel()">Hủy</v-btn>
-              <v-btn @click="del()" color="red">Xóa</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-row>
-      <v-row justify="center">
-        <v-dialog v-model="dialogAdd" persistent max-width="600px">
-          <v-card style="height: 420px;">
-            <v-toolbar color="primary" light flat>
-              <v-toolbar-title
-                ><span class="headline" style="color:white;">{{ title }}</span>
-                <v-btn
-                  icon
-                  dark
-                  @click="dialogAdd = false"
-                  style="margin-left:308px;"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn></v-toolbar-title
-              >
-            </v-toolbar>
-            <v-card-text>
-              <v-form>
-                <v-layout row>
-                  <v-flex xs9>
-                    <v-text-field
-                      label="Tên bến cảng"
-                      name="fullname"
-                      prepend-icon="mdi-account"
-                      type="text"
-                      v-model="fullname"
-                      :readonly="readonly"
-                    ></v-text-field>
-                  </v-flex>
-                </v-layout>
-                <v-layout row>
-                  <v-flex xs9>
-                    <v-text-field
-                      label="Mã bến cảng"
-                      name="nameCode"
-                      prepend-icon="mdi-account"
-                      type="text"
-                      v-model="nameCode"
-                      :readonly="readonly"
-                    ></v-text-field>
-                  </v-flex>
-                </v-layout>
-                <v-layout row>
-                  <v-flex xs9>
-                    <v-text-field
-                      label="Địa chỉ"
-                      name="address"
-                      prepend-icon="mdi-account"
-                      type="text"
-                      v-model="address"
-                      :readonly="readonly"
-                    ></v-text-field>
-                  </v-flex>
-                </v-layout>
-                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-              </v-form>
-            </v-card-text>
-            <v-card-actions style="margin-top: 65px;">
-              <v-spacer></v-spacer>
-              <v-btn @click="cancel()">Trở về</v-btn>
-              <v-btn @click="submit()" color="primary" v-if="checkAdd"
-                >Thêm mới</v-btn
-              >
-              <v-btn @click="updatePort()" color="primary" v-if="checkUpdate"
-                >Cập nhập</v-btn
-              >
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+        <CreatePort
+          :port.sync="port"
+          :title="title"
+          :dialogAdd.sync="dialogAdd"
+          :checkSuccess.sync="checkSuccess"
+          :checkAdd="checkAdd"
+          :checkUpdate="checkUpdate"
+          :success.sync="success"
+          :readonly="readonly"
+        />
       </v-row>
       <v-alert
         v-model="checkSuccess"
@@ -195,12 +50,10 @@
         {{ success }}
       </v-alert>
       <v-data-table
-        v-model="selected"
         :headers="headers"
         :items="ports"
         :search="search"
         item-key="nameCode"
-        show-select
         :options.sync="options"
         :server-items-length="totalPorts"
         :loading="loading"
@@ -236,21 +89,28 @@ import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
 import data from "../port/data";
 import { Port } from "../port/port";
+import DeletePort from "./components/DeletePort.vue";
+import CreatePort from "./components/CreatePort.vue";
 
 @Component({
-  name: "PortManagement"
+  name: "PortManagement",
+  components: {
+    DeletePort,
+    CreatePort
+  }
 })
 export default class PortManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
-  selected = [] as Array<Port>;
-  fullname = "";
-  nameCode = "";
-  address = "";
+
+  port: Port = {
+    fullname: "",
+    nameCode: "",
+    address: ""
+  };
   success = "";
   checkSuccess = false;
   dialogAdd = false;
   dialogDel = false;
-  dialogDelSingle = false;
   checkAdd = false;
   checkUpdate = false;
   title = "";
@@ -334,21 +194,8 @@ export default class PortManagement extends Vue {
   public getPorts(): Array<Port> {
     return data;
   }
-  public submit() {
-    this.success = "Thêm mới thành công!";
-    this.checkSuccess = true;
-    this.dialogAdd = false;
-  }
-  public cancel() {
-    this.checkAdd = false;
-    this.checkUpdate = false;
-    this.readonly = false;
-    this.dialogAdd = false;
-  }
   public viewDetail(item: Port) {
-    this.fullname = item.fullname;
-    this.nameCode = item.nameCode;
-    this.address = item.address;
+    this.port = item;
     this.checkAdd = false;
     this.checkUpdate = false;
     this.title = "Thông tin bến cảng";
@@ -356,9 +203,7 @@ export default class PortManagement extends Vue {
     this.dialogAdd = true;
   }
   public update(item: Port) {
-    this.fullname = item.fullname;
-    this.nameCode = item.nameCode;
-    this.address = item.address;
+    this.port = item;
     this.checkAdd = false;
     this.checkUpdate = true;
     this.title = "Cập nhập bến cảng";
@@ -367,41 +212,19 @@ export default class PortManagement extends Vue {
   }
   public delPort(item: Port) {
     this.name = item.fullname;
-    this.dialogDelSingle = true;
-  }
-  public delSingle(name: string) {
-    this.ports = this.ports.filter((port: Port) => port.fullname != name);
-    this.success = "Xóa thành công";
-    this.checkSuccess = true;
-    this.dialogDelSingle = false;
-  }
-  public cancelDelSingle() {
-    this.name = "";
-    this.dialogDelSingle = false;
+    this.dialogDel = true;
   }
   public addPort() {
     this.title = "Thêm mới bến cảng";
-    this.fullname = "";
-    this.nameCode = "";
-    this.address = "";
+    this.port = {
+      fullname: "",
+      nameCode: "",
+      address: ""
+    };
     this.checkAdd = true;
     this.checkUpdate = false;
     this.readonly = false;
     this.dialogAdd = true;
-  }
-  public updatePort() {
-    this.success = "Cập nhập thành công";
-    this.checkSuccess = true;
-    this.dialogAdd = false;
-  }
-  public del() {
-    this.success = "Xóa thành công!";
-    this.checkSuccess = true;
-    console.log(this.selected);
-    this.dialogDel = false;
-  }
-  public cancelDel() {
-    this.dialogDel = false;
   }
 }
 </script>

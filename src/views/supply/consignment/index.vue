@@ -428,18 +428,17 @@
 </template>
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import Dialog from "@/components/Dialog.vue";
 import NavLayout from "@/layouts/NavLayout.vue";
-import { UserEntity } from "@/store/definitions/user";
+import data from "./data";
+import { Consignment } from "./consignment";
+
 @Component({
   name: "ConsignmentManagement",
-  components: {
-    Dialog
-  }
+  components: {}
 })
 export default class ConsignmentManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
-  selected = [] as Array<any>;
+  selected = [] as Array<Consignment>;
   title = "";
   date1 = false;
   date2 = false;
@@ -455,7 +454,7 @@ export default class ConsignmentManagement extends Vue {
   cutOfTime = "";
   payload = 0 as number;
   UOM = 0 as number | null;
-  categories = [] as any;
+  categories = [] as Array<string>;
   FCL = "";
   port = "";
   type = ["Hard", "Soft"];
@@ -491,7 +490,7 @@ export default class ConsignmentManagement extends Vue {
   dialogDelSingle = false;
   search = "";
   totalConsignments = 0;
-  consignments = [] as Array<any>;
+  consignments = [] as Array<Consignment>;
   loading = true;
   options = {} as any;
   headers = [
@@ -542,7 +541,7 @@ export default class ConsignmentManagement extends Vue {
       const total = items.length;
 
       if (sortBy.length === 1 && sortDesc.length === 1) {
-        items = items.sort((a: Array<UserEntity>, b: Array<UserEntity>) => {
+        items = items.sort((a: any, b: any) => {
           const sortA = a[sortBy[0]];
           const sortB = b[sortBy[0]];
 
@@ -571,87 +570,8 @@ export default class ConsignmentManagement extends Vue {
       }, 1000);
     });
   }
-  public getConsignments(): Array<any> {
-    return [
-      {
-        bookNo: "A01",
-        PIC: "Admin",
-        packingTime: "2020-06-17",
-        packingStation: "Hạ Long",
-        layTime: "2020-06-22",
-        cutOfTime: "2020-06-28",
-        payload: 10,
-        UOM: 23,
-        categories: ["Soft"],
-        FCL: "Có",
-        port: "abc xyz"
-      },
-      {
-        bookNo: "A02",
-        PIC: "Admin",
-        packingTime: "2020-06-17",
-        packingStation: "Hạ Long",
-        layTime: "2020-06-22",
-        cutOfTime: "2020-06-28",
-        payload: 10,
-        UOM: 23,
-        categories: ["Soft"],
-        FCL: "Có",
-        port: "abc xyz"
-      },
-      {
-        bookNo: "A03",
-        PIC: "Admin",
-        packingTime: "2020-06-17",
-        packingStation: "Hạ Long",
-        layTime: "2020-06-22",
-        cutOfTime: "2020-06-28",
-        payload: 10,
-        UOM: 23,
-        categories: ["Soft"],
-        FCL: "Có",
-        port: "abc xyz"
-      },
-      {
-        bookNo: "A04",
-        PIC: "Admin",
-        packingTime: "2020-06-17",
-        packingStation: "Hạ Long",
-        layTime: "2020-06-22",
-        cutOfTime: "2020-06-28",
-        payload: 10,
-        UOM: 23,
-        categories: ["Soft"],
-        FCL: "Có",
-        port: "abc xyz"
-      },
-      {
-        bookNo: "A05",
-        PIC: "Admin",
-        packingTime: "2020-06-17",
-        packingStation: "Hạ Long",
-        layTime: "2020-06-22",
-        cutOfTime: "2020-06-28",
-        payload: 10,
-        UOM: 23,
-        categories: ["Soft"],
-        FCL: "Có",
-        port: "abc xyz"
-      },
-      {
-        bookNo: "A06",
-        PIC: "Admin",
-        packingTime: "2020-06-17",
-        packingStation: "Hạ Long",
-        layTime: "2020-06-22",
-        cutOfTime: "2020-06-28",
-        payload: 10,
-        UOM: 23,
-        categories: ["Soft"],
-        FCL: "Có",
-        port: "abc xyz"
-      }
-    ];
+  public getConsignments(): Array<Consignment> {
+    return data;
   }
   public submit() {
     this.success = "Thêm mới thành công!";
@@ -680,7 +600,7 @@ export default class ConsignmentManagement extends Vue {
     this.layTime = "";
     this.cutOfTime = "";
     this.FCL = "";
-    this.categories = "";
+    this.categories = [""];
     this.UOM = null;
     this.port = "";
     this.title = "Thêm mới hàng";
@@ -689,12 +609,12 @@ export default class ConsignmentManagement extends Vue {
     this.readonly = false;
     this.dialogAdd = true;
   }
-  public viewDetail(item: any) {
+  public viewDetail(item: Consignment) {
     this.bookNo = item.bookNo;
     this.PIC = item.PIC;
     this.packingTime = item.packingTime;
     this.packingStation = item.packingStation;
-    this.layTime = item.laytime;
+    this.layTime = item.layTime;
     this.cutOfTime = item.cutOfTime;
     this.FCL = item.FCL;
     this.categories = item.categories;
@@ -706,12 +626,12 @@ export default class ConsignmentManagement extends Vue {
     this.readonly = true;
     this.dialogAdd = true;
   }
-  public update(item: any) {
+  public update(item: Consignment) {
     this.bookNo = item.bookNo;
     this.PIC = item.PIC;
     this.packingTime = item.packingTime;
     this.packingStation = item.packingStation;
-    this.layTime = item.laytime;
+    this.layTime = item.layTime;
     this.cutOfTime = item.cutOfTime;
     this.FCL = item.FCL;
     this.categories = item.categories;
@@ -723,12 +643,11 @@ export default class ConsignmentManagement extends Vue {
     this.readonly = false;
     this.dialogAdd = true;
   }
-  public delConsignment(item: any) {
+  public delConsignment(item: Consignment) {
     this.name = item.bookNo;
     this.dialogDelSingle = true;
   }
   public delSingle(name: string) {
-    this.consignments = this.consignments.filter(item => item.bookNo != name);
     this.success = "Xóa thành công";
     this.dialogDelSingle = false;
     this.checkSuccess = true;

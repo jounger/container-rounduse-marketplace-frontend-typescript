@@ -21,22 +21,11 @@
       >
         Thêm mới
       </v-btn>
-      <v-btn
-        color="red"
-        style="margin-left: 20px;"
-        dark
-        @click.stop="dialogDel = true"
-        v-if="selected.length > 0 && $auth.check(['ROLE_ADMIN'])"
-      >
-        Xóa loại Container
-      </v-btn>
       <v-row justify="center">
         <DeleteContainerType
-          :selected.sync="selected"
           :dialogDel.sync="dialogDel"
           :checkSuccess.sync="checkSuccess"
           :success.sync="success"
-          :singleDel.sync="singleDel"
           :nameDel="nameDel"
         />
       </v-row>
@@ -61,12 +50,10 @@
         {{ success }}
       </v-alert>
       <v-data-table
-        v-model="selected"
         :headers="headers"
         :items="containerTypes"
         :search="search"
         item-key="name"
-        show-select
         :options.sync="options"
         :server-items-length="totalContainerTypes"
         :loading="loading"
@@ -114,13 +101,22 @@ import data from "./data";
 })
 export default class ContainerTypeManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
-  selected = [] as Array<ContainerType>;
-  containerType: ContainerType | null = null;
+  containerType: ContainerType = {
+    name: "",
+    description: "",
+    tareWeight: 0,
+    payloadCapacity: 0,
+    cubicCapacity: 0,
+    internalLength: 0,
+    internalWidth: 0,
+    internalHeight: 0,
+    doorOpeningWidth: 0,
+    doorOpeningHeight: 0
+  };
   success = "";
   checkSuccess = false;
   dialogAdd = false;
   dialogDel = false;
-  singleDel = false;
   checkAdd = false;
   checkUpdate = false;
   title = "";
@@ -211,13 +207,6 @@ export default class ContainerTypeManagement extends Vue {
   public getContainerTypes(): Array<ContainerType> {
     return data;
   }
-
-  public cancel() {
-    this.checkAdd = false;
-    this.checkUpdate = false;
-    this.readonly = false;
-    this.dialogAdd = false;
-  }
   public viewDetail(item: ContainerType) {
     this.containerType = item;
     this.checkAdd = false;
@@ -236,37 +225,26 @@ export default class ContainerTypeManagement extends Vue {
   }
   public delContainerType(item: ContainerType) {
     this.nameDel = item.name;
-    this.singleDel = true;
     this.dialogDel = true;
   }
-  public delSingle(name: string) {
-    this.containerTypes = this.containerTypes.filter(
-      (containerType: ContainerType) => containerType.name != name
-    );
-    this.success = "Xóa thành công";
-    this.checkSuccess = true;
-    this.singleDel = false;
-  }
-  public cancelDelSingle() {
-    this.nameDel = "";
-    this.singleDel = false;
-  }
   public addContainerType() {
-    this.containerType = null;
+    this.containerType = {
+      name: "",
+      description: "",
+      tareWeight: 0,
+      payloadCapacity: 0,
+      cubicCapacity: 0,
+      internalLength: 0,
+      internalWidth: 0,
+      internalHeight: 0,
+      doorOpeningWidth: 0,
+      doorOpeningHeight: 0
+    };
     this.title = "Thêm mới loại Container";
     this.checkAdd = true;
     this.checkUpdate = false;
     this.readonly = false;
     this.dialogAdd = true;
-  }
-  public del() {
-    this.success = "Xóa thành công!";
-    this.checkSuccess = true;
-    console.log(this.selected);
-    this.dialogDel = false;
-  }
-  public cancelDel() {
-    this.dialogDel = false;
   }
 }
 </script>

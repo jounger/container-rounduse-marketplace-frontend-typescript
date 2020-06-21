@@ -1,7 +1,7 @@
 <template>
   <v-list>
     <v-list-item
-      to="/admin"
+      to="/dashboard"
       v-if="$auth.check(['ROLE_MODERATOR', 'ROLE_ADMIN'])"
     >
       <v-list-item-icon>

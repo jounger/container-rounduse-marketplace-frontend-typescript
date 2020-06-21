@@ -432,18 +432,16 @@
 </template>
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import Dialog from "@/components/Dialog.vue";
 import NavLayout from "@/layouts/NavLayout.vue";
-import { UserEntity } from "@/store/definitions/user";
+import data from "./data";
+import { Container } from "./container";
+
 @Component({
-  name: "ConsignmentManagement",
-  components: {
-    Dialog
-  }
+  name: "ConsignmentManagement"
 })
 export default class ConsignmentManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
-  selected = [] as Array<any>;
+  selected: Array<Container> | null = null;
   title = "";
   date1 = false;
   date2 = false;
@@ -498,7 +496,7 @@ export default class ConsignmentManagement extends Vue {
   dialogDelSingle = false;
   search = "";
   totalContainers = 0;
-  containers = [] as Array<any>;
+  containers: Array<Container> | null = null;
   loading = true;
   options = {} as any;
   headers = [
@@ -549,7 +547,7 @@ export default class ConsignmentManagement extends Vue {
       const total = items.length;
 
       if (sortBy.length === 1 && sortDesc.length === 1) {
-        items = items.sort((a: Array<UserEntity>, b: Array<UserEntity>) => {
+        items = items.sort((a: any, b: any) => {
           const sortA = a[sortBy[0]];
           const sortB = b[sortBy[0]];
 
@@ -578,87 +576,8 @@ export default class ConsignmentManagement extends Vue {
       }, 1000);
     });
   }
-  public getContainers(): Array<any> {
-    return [
-      {
-        containerNumber: "A01",
-        containerTrailer: "Dài",
-        containerTractor: "To",
-        blNumber: "123ass",
-        driver: "An",
-        licensePlate: "26914648763",
-        emptyTime: "2020-06-17",
-        pickUpTime: "2020-06-28",
-        returnStation: "Hà Nội",
-        freeTime: "2020-06-22",
-        port: "Hải Phòng"
-      },
-      {
-        containerNumber: "A02",
-        containerTrailer: "Dài",
-        containerTractor: "To",
-        blNumber: "123ass",
-        driver: "An",
-        licensePlate: "26914648763",
-        emptyTime: "2020-06-17",
-        pickUpTime: "2020-06-28",
-        returnStation: "Hà Nội",
-        freeTime: "2020-06-22",
-        port: "Hải Phòng"
-      },
-      {
-        containerNumber: "A03",
-        containerTrailer: "Dài",
-        containerTractor: "To",
-        blNumber: "123ass",
-        driver: "An",
-        licensePlate: "26914648763",
-        emptyTime: "2020-06-17",
-        pickUpTime: "2020-06-28",
-        returnStation: "Hà Nội",
-        freeTime: "2020-06-22",
-        port: "Hải Phòng"
-      },
-      {
-        containerNumber: "A04",
-        containerTrailer: "Dài",
-        containerTractor: "To",
-        blNumber: "123ass",
-        driver: "An",
-        licensePlate: "26914648763",
-        emptyTime: "2020-06-17",
-        pickUpTime: "2020-06-28",
-        returnStation: "Hà Nội",
-        freeTime: "2020-06-22",
-        port: "Hải Phòng"
-      },
-      {
-        containerNumber: "A05",
-        containerTrailer: "Dài",
-        containerTractor: "To",
-        blNumber: "123ass",
-        driver: "An",
-        licensePlate: "26914648763",
-        emptyTime: "2020-06-17",
-        pickUpTime: "2020-06-28",
-        returnStation: "Hà Nội",
-        freeTime: "2020-06-22",
-        port: "Hải Phòng"
-      },
-      {
-        containerNumber: "A06",
-        containerTrailer: "Dài",
-        containerTractor: "To",
-        blNumber: "123ass",
-        driver: "An",
-        licensePlate: "26914648763",
-        emptyTime: "2020-06-17",
-        pickUpTime: "2020-06-28",
-        returnStation: "Hà Nội",
-        freeTime: "2020-06-22",
-        port: "Hải Phòng"
-      }
-    ];
+  public getContainers(): Array<Container> {
+    return data;
   }
   public submit() {
     this.success = "Thêm mới thành công!";
@@ -697,7 +616,7 @@ export default class ConsignmentManagement extends Vue {
     this.readonly = false;
     this.dialogAdd = true;
   }
-  public viewDetail(item: any) {
+  public viewDetail(item: Container) {
     this.containerNumber = item.containerNumber;
     this.containerTrailer = item.containerTrailer;
     this.containerTractor = item.containerTractor;
@@ -716,7 +635,7 @@ export default class ConsignmentManagement extends Vue {
     this.readonly = true;
     this.dialogAdd = true;
   }
-  public update(item: any) {
+  public update(item: Container) {
     this.containerNumber = item.containerNumber;
     this.containerTrailer = item.containerTrailer;
     this.containerTractor = item.containerTractor;
@@ -734,14 +653,11 @@ export default class ConsignmentManagement extends Vue {
     this.readonly = false;
     this.dialogAdd = true;
   }
-  public delContainer(item: any) {
+  public delContainer(item: Container) {
     this.name = item.containerNumber;
     this.dialogDelSingle = true;
   }
   public delSingle(name: string) {
-    this.containers = this.containers.filter(
-      item => item.containerNumber != name
-    );
     this.success = "Xóa thành công";
     this.dialogDelSingle = false;
     this.checkSuccess = true;

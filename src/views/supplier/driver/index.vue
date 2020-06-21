@@ -17,174 +17,29 @@
         style="margin-left: 35px;"
         dark
         @click.stop="addDriver"
-        v-if="$auth.check(['ROLE_ADMIN'])"
+        v-if="$auth.check(['ROLE_FORWARDER'])"
       >
         Thêm mới
       </v-btn>
-      <v-btn
-        color="red"
-        style="margin-left: 20px;"
-        dark
-        @click.stop="dialogDel = true"
-        v-if="selected.length > 0 && $auth.check(['ROLE_ADMIN'])"
-      >
-        Xóa lái xe
-      </v-btn>
       <v-row justify="center">
-        <v-dialog v-model="dialogDelSingle" persistent max-width="600px">
-          <v-card>
-            <v-toolbar color="primary" light flat>
-              <v-toolbar-title
-                ><span class="headline" style="color:white;">Xóa lái xe</span>
-                <v-btn
-                  icon
-                  dark
-                  @click="dialogDelSingle = false"
-                  style="margin-left:417px;"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn></v-toolbar-title
-              >
-            </v-toolbar>
-
-            <v-card-text>
-              <v-form>
-                <v-container>
-                  <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa lái xe này?</span
-                  >
-                  <div class="line"></div>
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-content>
-                        <v-list-item-title>{{ name }}</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-container>
-                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-              </v-form>
-            </v-card-text>
-            <v-card-actions style="margin-left: 205px;">
-              <v-btn @click="cancelDelSingle()">Hủy</v-btn>
-              <v-btn @click="delSingle(name)" color="red">Xóa</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+        <DeleteDriver
+          :dialogDel.sync="dialogDel"
+          :checkSuccess.sync="checkSuccess"
+          :success.sync="success"
+          :name="name"
+        />
       </v-row>
       <v-row justify="center">
-        <v-dialog v-model="dialogDel" persistent max-width="600px">
-          <v-card>
-            <v-toolbar color="primary" light flat>
-              <v-toolbar-title
-                ><span class="headline" style="color:white;">Xóa lái xe</span>
-                <v-btn
-                  icon
-                  dark
-                  @click="dialogDel = false"
-                  style="margin-left:417px;"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn></v-toolbar-title
-              >
-            </v-toolbar>
-
-            <v-card-text>
-              <v-form>
-                <v-container>
-                  <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa những lái xe này?</span
-                  >
-                  <div class="line"></div>
-                  <v-list>
-                    <v-list-item v-for="(item, i) in selected" :key="i">
-                      <v-list-item-content>
-                        <v-list-item-title
-                          v-text="item.driverName"
-                        ></v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-container>
-                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-              </v-form>
-            </v-card-text>
-            <v-card-actions style="margin-left: 205px;">
-              <v-btn @click="cancelDel()">Hủy</v-btn>
-              <v-btn @click="del()" color="red">Xóa</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-row>
-      <v-row justify="center">
-        <v-dialog v-model="dialogAdd" persistent max-width="600px">
-          <v-card style="height: 420px;">
-            <v-toolbar color="primary" light flat>
-              <v-toolbar-title
-                ><span class="headline" style="color:white;">{{ title }}</span>
-                <v-btn
-                  icon
-                  dark
-                  @click="dialogAdd = false"
-                  style="margin-left:344px;"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn></v-toolbar-title
-              >
-            </v-toolbar>
-            <v-card-text>
-              <v-form>
-                <v-layout row>
-                  <v-flex xs9>
-                    <v-text-field
-                      label="Tên lái xe"
-                      name="driverName"
-                      prepend-icon="mdi-account"
-                      type="text"
-                      v-model="driverName"
-                      :readonly="readonly"
-                    ></v-text-field>
-                  </v-flex>
-                </v-layout>
-                <v-layout row>
-                  <v-flex xs9>
-                    <v-text-field
-                      label="Số bằng lái"
-                      name="driverLicense"
-                      prepend-icon="mdi-account"
-                      type="text"
-                      v-model="driverLicense"
-                      :readonly="readonly"
-                    ></v-text-field>
-                  </v-flex>
-                </v-layout>
-                <v-layout row>
-                  <v-flex xs9>
-                    <v-text-field
-                      label="Vị trí hiện tại"
-                      name="location"
-                      prepend-icon="mdi-account"
-                      type="text"
-                      v-model="location"
-                      :readonly="readonly"
-                    ></v-text-field>
-                  </v-flex>
-                </v-layout>
-                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-              </v-form>
-            </v-card-text>
-            <v-card-actions style="margin-top: 65px;">
-              <v-spacer></v-spacer>
-              <v-btn @click="cancel()">Trở về</v-btn>
-              <v-btn @click="submit()" color="primary" v-if="checkAdd"
-                >Thêm mới</v-btn
-              >
-              <v-btn @click="updateDriver()" color="primary" v-if="checkUpdate"
-                >Cập nhập</v-btn
-              >
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+        <CreateDriver
+          :driver.sync="driver"
+          :title="title"
+          :dialogAdd.sync="dialogAdd"
+          :checkSuccess.sync="checkSuccess"
+          :checkAdd="checkAdd"
+          :checkUpdate="checkUpdate"
+          :success.sync="success"
+          :readonly="readonly"
+        />
       </v-row>
       <v-alert
         v-model="checkSuccess"
@@ -195,12 +50,10 @@
         {{ success }}
       </v-alert>
       <v-data-table
-        v-model="selected"
         :headers="headers"
         :items="drivers"
         :search="search"
         item-key="driverLicense"
-        show-select
         :options.sync="options"
         :server-items-length="totalDrivers"
         :loading="loading"
@@ -236,21 +89,36 @@ import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
 import data from "../driver/data";
 import { Driver } from "../driver/driver";
+import DeleteDriver from "./components/DeleteDriver.vue";
+import CreateDriver from "./components/CreateDriver.vue";
 
 @Component({
-  name: "DriverManagement"
+  name: "DriverManagement",
+  components: {
+    DeleteDriver,
+    CreateDriver
+  }
 })
 export default class DriverManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
-  selected = [] as Array<Driver>;
   driverName = "";
   driverLicense = "";
   location = "";
   success = "";
+  driver: Driver = {
+    driverName: "",
+    driverLicense: "",
+    location: "",
+    username: "",
+    password: "",
+    email: "",
+    phone: "",
+    role: ["ROLE_DRIVER"],
+    status: "ACTIVE"
+  };
   checkSuccess = false;
   dialogAdd = false;
   dialogDel = false;
-  dialogDelSingle = false;
   checkAdd = false;
   checkUpdate = false;
   title = "";
@@ -345,9 +213,7 @@ export default class DriverManagement extends Vue {
     this.dialogAdd = false;
   }
   public viewDetail(item: Driver) {
-    this.driverName = item.driverName;
-    this.driverLicense = item.driverLicense;
-    this.location = item.location;
+    this.driver = item;
     this.checkAdd = false;
     this.checkUpdate = false;
     this.title = "Thông tin lái xe";
@@ -355,9 +221,7 @@ export default class DriverManagement extends Vue {
     this.dialogAdd = true;
   }
   public update(item: Driver) {
-    this.driverName = item.driverName;
-    this.driverLicense = item.driverLicense;
-    this.location = item.location;
+    this.driver = item;
     this.checkAdd = false;
     this.checkUpdate = true;
     this.title = "Cập nhập lái xe";
@@ -366,7 +230,7 @@ export default class DriverManagement extends Vue {
   }
   public delDriver(item: Driver) {
     this.name = item.driverName;
-    this.dialogDelSingle = true;
+    this.dialogDel = true;
   }
   public delSingle(name: string) {
     this.drivers = this.drivers.filter(
@@ -374,17 +238,23 @@ export default class DriverManagement extends Vue {
     );
     this.success = "Xóa thành công";
     this.checkSuccess = true;
-    this.dialogDelSingle = false;
   }
   public cancelDelSingle() {
     this.name = "";
-    this.dialogDelSingle = false;
   }
   public addDriver() {
     this.title = "Thêm mới Lái xe";
-    this.driverName = "";
-    this.driverLicense = "";
-    this.location = "";
+    this.driver = {
+      driverName: "",
+      driverLicense: "",
+      location: "",
+      username: "",
+      password: "",
+      email: "",
+      phone: "",
+      role: ["ROLE_DRIVER"],
+      status: "ACTIVE"
+    };
     this.checkAdd = true;
     this.checkUpdate = false;
     this.readonly = false;
@@ -398,7 +268,6 @@ export default class DriverManagement extends Vue {
   public del() {
     this.success = "Xóa thành công!";
     this.checkSuccess = true;
-    console.log(this.selected);
     this.dialogDel = false;
   }
   public cancelDel() {

@@ -1,0 +1,80 @@
+export default [
+  {
+    containerNumber: "A01",
+    containerTrailer: "Dài",
+    containerTractor: "To",
+    blNumber: "123ass",
+    driver: ["An"],
+    licensePlate: "26914648763",
+    emptyTime: "2020-06-17",
+    pickUpTime: "2020-06-28",
+    returnStation: "Hà Nội",
+    freeTime: "2020-06-22",
+    port: "Hải Phòng"
+  },
+  {
+    containerNumber: "A02",
+    containerTrailer: "Dài",
+    containerTractor: "To",
+    blNumber: "123ass",
+    driver: ["An"],
+    licensePlate: "26914648763",
+    emptyTime: "2020-06-17",
+    pickUpTime: "2020-06-28",
+    returnStation: "Hà Nội",
+    freeTime: "2020-06-22",
+    port: "Hải Phòng"
+  },
+  {
+    containerNumber: "A03",
+    containerTrailer: "Dài",
+    containerTractor: "To",
+    blNumber: "123ass",
+    driver: ["An"],
+    licensePlate: "26914648763",
+    emptyTime: "2020-06-17",
+    pickUpTime: "2020-06-28",
+    returnStation: "Hà Nội",
+    freeTime: "2020-06-22",
+    port: "Hải Phòng"
+  },
+  {
+    containerNumber: "A04",
+    containerTrailer: "Dài",
+    containerTractor: "To",
+    blNumber: "123ass",
+    driver: ["An"],
+    licensePlate: "26914648763",
+    emptyTime: "2020-06-17",
+    pickUpTime: "2020-06-28",
+    returnStation: "Hà Nội",
+    freeTime: "2020-06-22",
+    port: "Hải Phòng"
+  },
+  {
+    containerNumber: "A05",
+    containerTrailer: "Dài",
+    containerTractor: "To",
+    blNumber: "123ass",
+    driver: ["An"],
+    licensePlate: "26914648763",
+    emptyTime: "2020-06-17",
+    pickUpTime: "2020-06-28",
+    returnStation: "Hà Nội",
+    freeTime: "2020-06-22",
+    port: "Hải Phòng"
+  },
+  {
+    containerNumber: "A06",
+    containerTrailer: "Dài",
+    containerTractor: "To",
+    blNumber: "123ass",
+    driver: ["An"],
+    licensePlate: "26914648763",
+    emptyTime: "2020-06-17",
+    pickUpTime: "2020-06-28",
+    returnStation: "Hà Nội",
+    freeTime: "2020-06-22",
+    port: "Hải Phòng"
+  }
+];

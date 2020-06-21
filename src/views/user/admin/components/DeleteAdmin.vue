@@ -3,12 +3,12 @@
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">Xóa loại Container</span>
+          ><span class="headline" style="color:white;">Xóa Admin</span>
           <v-btn
             icon
             dark
             @click="dialogSync = false"
-            style="margin-left:324px;"
+            style="margin-left:403px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
@@ -19,13 +19,13 @@
         <v-form>
           <v-container>
             <span style="color: black; font-size:22px;"
-              >Bạn có chắc chắn muốn xóa loại Container này?</span
+              >Bạn có chắc chắn muốn xóa Admin này?</span
             >
             <div class="line"></div>
             <v-list>
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title>{{ nameDelSync }}</v-list-item-title>
+                  <v-list-item-title>{{ nameSync }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -44,14 +44,14 @@
 import { Component, Vue, PropSync } from "vue-property-decorator";
 
 @Component({
-  name: "DeleteContainerType"
+  name: "DeleteAdmin"
 })
-export default class DeleteContainerType extends Vue {
+export default class DeleteAdmin extends Vue {
   // @Prop() selected!: Array<object>;
   @PropSync("dialogDel", { type: Boolean }) dialogSync!: boolean;
   @PropSync("checkSuccess", { type: Boolean }) checkSuccessSync!: boolean;
   @PropSync("success", { type: String }) successSync!: string | null;
-  @PropSync("nameDel", { type: String }) nameDelSync!: string | null;
+  @PropSync("name", { type: String }) nameSync!: string | null;
 
   public del() {
     this.successSync = "Xóa thành công!";

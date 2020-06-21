@@ -16,142 +16,30 @@
         color="primary"
         style="margin-left: 35px;"
         dark
-        @click.stop="dialogAdd = true"
+        @click.stop="addAdmin()"
         v-if="$auth.check(['ROLE_ADMIN'])"
       >
         Thêm mới
       </v-btn>
-      <v-btn
-        color="red"
-        style="margin-left: 605px;"
-        dark
-        @click.stop="dialogDel = true"
-        v-if="selected.length > 0 && $auth.check(['ROLE_ADMIN'])"
-      >
-        Xóa Admin
-      </v-btn>
       <v-row justify="center">
-        <v-dialog v-model="dialogDel" persistent max-width="600px">
-          <v-card>
-            <v-toolbar color="primary" light flat>
-              <v-toolbar-title
-                ><span class="headline" style="color:white;">Xóa Admin</span>
-                <v-btn
-                  icon
-                  dark
-                  @click="dialogDel = false"
-                  style="margin-left:403px;"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn></v-toolbar-title
-              >
-            </v-toolbar>
-
-            <v-card-text>
-              <v-form>
-                <v-container>
-                  <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa những Admin này?</span
-                  >
-                  <div class="line"></div>
-                  <v-list>
-                    <v-list-item v-for="(item, i) in selected" :key="i">
-                      <v-list-item-content>
-                        <v-list-item-title
-                          v-text="item.username"
-                        ></v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-container>
-                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-              </v-form>
-            </v-card-text>
-            <v-card-actions style="margin-left: 205px;">
-              <v-btn @click="cancelDel()">Hủy</v-btn>
-              <v-btn @click="del()" color="red">Xóa</v-btn>
-            </v-card-actions>
-            <Dialog :dialog.sync="dialog" />
-          </v-card>
-        </v-dialog>
+        <DeleteAdmin
+          :dialogDel.sync="dialogDel"
+          :checkSuccess.sync="checkSuccess"
+          :success.sync="success"
+          :name="name"
+        />
       </v-row>
       <v-row justify="center">
-        <v-dialog v-model="dialogAdd" persistent max-width="600px">
-          <v-card>
-            <v-toolbar color="primary" light flat>
-              <v-toolbar-title
-                ><span class="headline" style="color:white;"
-                  >Thêm mới Admin</span
-                >
-                <v-btn
-                  icon
-                  dark
-                  @click="dialogAdd = false"
-                  style="margin-left:336px;"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn></v-toolbar-title
-              >
-            </v-toolbar>
-
-            <v-card-text>
-              <v-form>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="6" md="6">
-                      <v-text-field
-                        label="Tên đăng nhập*"
-                        type="text"
-                        v-model="username"
-                        required
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="6">
-                      <v-text-field
-                        label="Mật khẩu*"
-                        type="password"
-                        v-model="password"
-                        required
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12">
-                      <v-text-field
-                        label="Email*"
-                        type="email"
-                        v-model="email"
-                        required
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12">
-                      <v-text-field
-                        label="Tên đầy đủ"
-                        type="text"
-                        v-model="fullname"
-                        required
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="8">
-                      <v-select
-                        :items="['ROLE_ADMIN']"
-                        label="Phân quyền*"
-                        required
-                        v-model="roles"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-container>
-                <small>*Dấu sao là trường bắt buộc</small>
-                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-              </v-form>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn @click="cancel()">Hủy</v-btn>
-              <v-btn @click="submit()" color="primary">Thêm mới</v-btn>
-            </v-card-actions>
-            <Dialog :dialog.sync="dialog" />
-          </v-card>
-        </v-dialog>
+        <CreateAdmin
+          :admin.sync="admin"
+          :title="title"
+          :dialogAdd.sync="dialogAdd"
+          :checkSuccess.sync="checkSuccess"
+          :checkAdd="checkAdd"
+          :checkUpdate="checkUpdate"
+          :success.sync="success"
+          :readonly="readonly"
+        />
       </v-row>
       <v-alert
         v-model="checkSuccess"
@@ -162,18 +50,36 @@
         {{ success }}
       </v-alert>
       <v-data-table
-        v-model="selected"
         :headers="headers"
         :items="users"
         :search="search"
         item-key="username"
-        show-select
         :options.sync="options"
         :server-items-length="totalUsers"
         :loading="loading"
         :items-per-page="5"
         class="elevation-1"
       >
+        <template v-slot:item.action="{ item }">
+          <v-menu :loading="item.createloading" :disabled="item.createloading">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="secondary" dark v-bind="attrs" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item @click="viewDetail(item)">
+                <v-list-item-title>Xem chi tiết</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="update(item)">
+                <v-list-item-title>Cập nhập</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="delAdmin(item)">
+                <v-list-item-title>Xóa</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </template>
       </v-data-table>
     </v-card>
   </v-content>
@@ -181,31 +87,42 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import UserModule from "@/store/modules/user";
-import Dialog from "@/components/Dialog.vue";
 import NavLayout from "@/layouts/NavLayout.vue";
 import { UserEntity } from "@/store/definitions/user";
+import DeleteAdmin from "./components/DeleteAdmin.vue";
+import CreateAdmin from "./components/CreateAdmin.vue";
+
 @Component({
   name: "AdminManagement",
   components: {
-    Dialog
+    DeleteAdmin,
+    CreateAdmin
   }
 })
 export default class AdminManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
-  selected = [] as Array<any>;
-  dialog = false;
-  username = "";
-  password = "";
-  email = "";
-  fullname = "";
-  roles = [] as Array<string>;
+
+  title = "";
   dialogAdd = false;
   dialogDel = false;
+  readonly = false;
+  checkAdd = false;
+  admin: UserEntity = {
+    username: "",
+    password: "",
+    email: "",
+    phone: "",
+    role: ["ROLE_ADMIN"],
+    status: "ACTIVE"
+  };
+  checkUpdate = false;
   search = "";
   success = "";
+  phone = "";
+  name = "";
   checkSuccess = false;
   totalUsers = 0;
-  users = [] as Array<any>;
+  users = [] as Array<UserEntity>;
   loading = true;
   options = {} as any;
   headers = [
@@ -221,7 +138,7 @@ export default class AdminManagement extends Vue {
     { text: "Trạng thái", value: "status" },
     {
       text: "Hành động",
-      value: "mdi-dots-vertical"
+      value: "action"
     }
   ];
   async created() {
@@ -243,10 +160,8 @@ export default class AdminManagement extends Vue {
       this.users = data.items;
       this.totalUsers = data.total;
     });
-    console.log(this.users);
   }
   public getDataFromApi() {
-    console.log(this.options);
     this.loading = true;
     return new Promise((resolve, reject) => {
       const { sortBy, sortDesc, page, itemsPerPage } = this.options;
@@ -255,7 +170,7 @@ export default class AdminManagement extends Vue {
       const total = items.length;
 
       if (sortBy.length === 1 && sortDesc.length === 1) {
-        items = items.sort((a: Array<UserEntity>, b: Array<UserEntity>) => {
+        items = items.sort((a: any, b: any) => {
           const sortA = a[sortBy[0]];
           const sortB = b[sortBy[0]];
 
@@ -284,34 +199,50 @@ export default class AdminManagement extends Vue {
       }, 1000);
     });
   }
-  public getUsers(): Array<any> {
+  public getUsers(): Array<UserEntity> {
     if (UserModule.getListUsers != null) {
-      console.log(1);
+      console.log(UserModule.getListUsers);
       return UserModule.getListUsers.filter(
         (user: any) => user.roles[0] == "ROLE_ADMIN"
       );
     } else {
-      console.log(0);
-      return [{}];
+      return [];
     }
   }
-  public submit() {
-    this.success = "Thêm mới thành công!";
-    this.checkSuccess = true;
-    this.dialogAdd = false;
+  public viewDetail(item: UserEntity) {
+    this.admin = item;
+    this.checkAdd = false;
+    this.checkUpdate = false;
+    this.title = "Thông tin Admin";
+    this.readonly = true;
+    this.dialogAdd = true;
   }
-  public cancel() {
-    this.dialogAdd = false;
+  public update(item: UserEntity) {
+    this.admin = item;
+    this.checkAdd = false;
+    this.checkUpdate = true;
+    this.title = "Cập nhập Admin";
+    this.readonly = false;
+    this.dialogAdd = true;
   }
-  public del() {
-    this.success = "Xóa thành công!";
-    this.checkSuccess = true;
-
-    console.log(this.selected);
-    this.dialogDel = false;
+  public delAdmin(item: UserEntity) {
+    this.name = item.username;
+    this.dialogDel = true;
   }
-  public cancelDel() {
-    this.dialogDel = false;
+  public addAdmin() {
+    this.title = "Thêm mới Admin";
+    this.admin = {
+      username: "",
+      password: "",
+      email: "",
+      role: ["ROLE_ADMIN"],
+      phone: "",
+      status: "ACTIVE"
+    };
+    this.checkAdd = true;
+    this.checkUpdate = false;
+    this.readonly = false;
+    this.dialogAdd = true;
   }
 }
 </script>

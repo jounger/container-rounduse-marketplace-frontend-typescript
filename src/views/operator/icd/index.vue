@@ -21,170 +21,25 @@
       >
         Thêm mới
       </v-btn>
-      <v-btn
-        color="red"
-        style="margin-left: 20px;"
-        dark
-        @click.stop="dialogDel = true"
-        v-if="selected.length > 0 && $auth.check(['ROLE_ADMIN'])"
-      >
-        Xóa ICD
-      </v-btn>
       <v-row justify="center">
-        <v-dialog v-model="dialogDelSingle" persistent max-width="600px">
-          <v-card>
-            <v-toolbar color="primary" light flat>
-              <v-toolbar-title
-                ><span class="headline" style="color:white;">Xóa ICD</span>
-                <v-btn
-                  icon
-                  dark
-                  @click="dialogDelSingle = false"
-                  style="margin-left:417px;"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn></v-toolbar-title
-              >
-            </v-toolbar>
-
-            <v-card-text>
-              <v-form>
-                <v-container>
-                  <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa ICD này?</span
-                  >
-                  <div class="line"></div>
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-content>
-                        <v-list-item-title>{{ name }}</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-container>
-                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-              </v-form>
-            </v-card-text>
-            <v-card-actions style="margin-left: 205px;">
-              <v-btn @click="cancelDelSingle()">Hủy</v-btn>
-              <v-btn @click="delSingle(name)" color="red">Xóa</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+        <DeleteICD
+          :dialogDel.sync="dialogDel"
+          :checkSuccess.sync="checkSuccess"
+          :success.sync="success"
+          :name="name"
+        />
       </v-row>
       <v-row justify="center">
-        <v-dialog v-model="dialogDel" persistent max-width="600px">
-          <v-card>
-            <v-toolbar color="primary" light flat>
-              <v-toolbar-title
-                ><span class="headline" style="color:white;">Xóa ICD</span>
-                <v-btn
-                  icon
-                  dark
-                  @click="dialogDel = false"
-                  style="margin-left:417px;"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn></v-toolbar-title
-              >
-            </v-toolbar>
-
-            <v-card-text>
-              <v-form>
-                <v-container>
-                  <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa những ICD này?</span
-                  >
-                  <div class="line"></div>
-                  <v-list>
-                    <v-list-item v-for="(item, i) in selected" :key="i">
-                      <v-list-item-content>
-                        <v-list-item-title
-                          v-text="item.fullname"
-                        ></v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-container>
-                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-              </v-form>
-            </v-card-text>
-            <v-card-actions style="margin-left: 205px;">
-              <v-btn @click="cancelDel()">Hủy</v-btn>
-              <v-btn @click="del()" color="red">Xóa</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-row>
-      <v-row justify="center">
-        <v-dialog v-model="dialogAdd" persistent max-width="600px">
-          <v-card style="height: 420px;">
-            <v-toolbar color="primary" light flat>
-              <v-toolbar-title
-                ><span class="headline" style="color:white;">{{ title }}</span>
-                <v-btn
-                  icon
-                  dark
-                  @click="dialogAdd = false"
-                  style="margin-left:368px;"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn></v-toolbar-title
-              >
-            </v-toolbar>
-            <v-card-text>
-              <v-form>
-                <v-layout row>
-                  <v-flex xs9>
-                    <v-text-field
-                      label="Tên ICD"
-                      name="fullname"
-                      prepend-icon="mdi-account"
-                      type="text"
-                      v-model="fullname"
-                      :readonly="readonly"
-                    ></v-text-field>
-                  </v-flex>
-                </v-layout>
-                <v-layout row>
-                  <v-flex xs9>
-                    <v-text-field
-                      label="Mã ICD"
-                      name="nameCode"
-                      prepend-icon="mdi-account"
-                      type="text"
-                      v-model="nameCode"
-                      :readonly="readonly"
-                    ></v-text-field>
-                  </v-flex>
-                </v-layout>
-                <v-layout row>
-                  <v-flex xs9>
-                    <v-text-field
-                      label="Vị trí"
-                      name="address"
-                      prepend-icon="mdi-account"
-                      type="text"
-                      v-model="address"
-                      :readonly="readonly"
-                    ></v-text-field>
-                  </v-flex>
-                </v-layout>
-                <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-              </v-form>
-            </v-card-text>
-            <v-card-actions style="margin-top: 65px;">
-              <v-spacer></v-spacer>
-              <v-btn @click="cancel()">Trở về</v-btn>
-              <v-btn @click="submit()" color="primary" v-if="checkAdd"
-                >Thêm mới</v-btn
-              >
-              <v-btn @click="updateICD()" color="primary" v-if="checkUpdate"
-                >Cập nhập</v-btn
-              >
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+        <CreateICD
+          :icd.sync="icd"
+          :title="title"
+          :dialogAdd.sync="dialogAdd"
+          :checkSuccess.sync="checkSuccess"
+          :checkAdd="checkAdd"
+          :checkUpdate="checkUpdate"
+          :success.sync="success"
+          :readonly="readonly"
+        />
       </v-row>
       <v-alert
         v-model="checkSuccess"
@@ -195,12 +50,10 @@
         {{ success }}
       </v-alert>
       <v-data-table
-        v-model="selected"
         :headers="headers"
         :items="ICDs"
         :search="search"
         item-key="nameCode"
-        show-select
         :options.sync="options"
         :server-items-length="totalICDs"
         :loading="loading"
@@ -236,21 +89,28 @@ import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
 import data from "../icd/data";
 import { Icd } from "../icd/icd";
+import DeleteICD from "./components/DeleteICD.vue";
+import CreateICD from "./components/CreateICD.vue";
 
 @Component({
-  name: "ICDManagement"
+  name: "ICDManagement",
+  components: {
+    DeleteICD,
+    CreateICD
+  }
 })
 export default class ICDManagement extends Vue {
   @PropSync("layout") layoutSync!: object;
-  selected = [] as Array<Icd>;
-  fullname = "";
-  nameCode = "";
-  address = "";
+  icd: Icd = {
+    fullname: "",
+    nameCode: "",
+    address: ""
+  };
   success = "";
+  icds = [] as Array<Icd>;
   checkSuccess = false;
   dialogAdd = false;
   dialogDel = false;
-  dialogDelSingle = false;
   checkAdd = false;
   checkUpdate = false;
   title = "";
@@ -334,21 +194,8 @@ export default class ICDManagement extends Vue {
   public getICDs(): Array<Icd> {
     return data;
   }
-  public submit() {
-    this.success = "Thêm mới thành công!";
-    this.checkSuccess = true;
-    this.dialogAdd = false;
-  }
-  public cancel() {
-    this.checkAdd = false;
-    this.checkUpdate = false;
-    this.readonly = false;
-    this.dialogAdd = false;
-  }
   public viewDetail(item: Icd) {
-    this.fullname = item.fullname;
-    this.nameCode = item.nameCode;
-    this.address = item.address;
+    this.icd = item;
     this.checkAdd = false;
     this.checkUpdate = false;
     this.title = "Thông tin ICD";
@@ -356,9 +203,7 @@ export default class ICDManagement extends Vue {
     this.dialogAdd = true;
   }
   public update(item: Icd) {
-    this.fullname = item.fullname;
-    this.nameCode = item.nameCode;
-    this.address = item.address;
+    this.icd = item;
     this.checkAdd = false;
     this.checkUpdate = true;
     this.title = "Cập nhập ICD";
@@ -367,41 +212,19 @@ export default class ICDManagement extends Vue {
   }
   public delICD(item: Icd) {
     this.name = item.fullname;
-    this.dialogDelSingle = true;
-  }
-  public delSingle(name: string) {
-    this.ICDs = this.ICDs.filter((ICD: Icd) => ICD.fullname != name);
-    this.success = "Xóa thành công";
-    this.checkSuccess = true;
-    this.dialogDelSingle = false;
-  }
-  public cancelDelSingle() {
-    this.name = "";
-    this.dialogDelSingle = false;
+    this.dialogDel = true;
   }
   public addICD() {
     this.title = "Thêm mới ICD";
-    this.fullname = "";
-    this.nameCode = "";
-    this.address = "";
+    this.icd = {
+      fullname: "",
+      nameCode: "",
+      address: ""
+    };
     this.checkAdd = true;
     this.checkUpdate = false;
     this.readonly = false;
     this.dialogAdd = true;
-  }
-  public updateICD() {
-    this.success = "Cập nhập thành công";
-    this.checkSuccess = true;
-    this.dialogAdd = false;
-  }
-  public del() {
-    this.success = "Xóa thành công!";
-    this.checkSuccess = true;
-    console.log(this.selected);
-    this.dialogDel = false;
-  }
-  public cancelDel() {
-    this.dialogDel = false;
   }
 }
 </script>
