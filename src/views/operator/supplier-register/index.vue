@@ -128,7 +128,7 @@ export default class RequestUserManagement extends Vue {
   }
 
   @Watch("options", { deep: true })
-  getOptions() {
+  onOptionsChange() {
     getSuppliers({
       page: this.options.page - 1,
       limit: this.options.itemsPerPage
@@ -141,6 +141,14 @@ export default class RequestUserManagement extends Vue {
       })
       .catch(err => console.log(err))
       .finally(() => (this.loading = false));
+  }
+
+  @Watch("supplier", { deep: true })
+  onSupplierChange(val: SupplierEntity, oldVal: SupplierEntity) {
+    if (val.status !== oldVal.status) {
+      const index = this.suppliers.findIndex(x => x.id === this.supplier.id);
+      this.suppliers.splice(index, 1, val);
+    }
   }
 
   async mounted() {

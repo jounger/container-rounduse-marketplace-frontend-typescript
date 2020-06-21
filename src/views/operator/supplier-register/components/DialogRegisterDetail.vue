@@ -122,6 +122,7 @@ export default class DialogRegisterDetail extends Vue {
         .then(res => {
           console.log(res.data);
           const response: SupplierEntity = res.data;
+          this.supplierSync = response;
           this.messageSync =
             "Success " + response.status + " for user: " + response.username;
         })
