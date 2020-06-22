@@ -1,6 +1,5 @@
 import Vue from "vue";
-import { PaginationRequest, PaginationResponse } from './payload';
-import { SupplierEntity } from '../views/operator/supplier-register/supplier-register';
+import { PaginationRequest } from './payload';
 
 const config = {
   Authorization: "Bearer {auth_token}"

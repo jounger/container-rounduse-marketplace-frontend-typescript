@@ -28,6 +28,8 @@
         :loading="loading"
         :options.sync="options"
         :server-items-length="options.totalItems"
+        :items-per-page="options.itemsPerPageItems[0]"
+        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
         :actions-append="options.page"
         class="elevation-1"
       >
@@ -52,11 +54,11 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
-import { SupplierEntity } from "../supplier-register/supplier-register";
+import { SupplierEntity } from "../supplier-register/supplier";
 import DialogRegisterDetail from "./components/DialogRegisterDetail.vue";
-import { getSuppliers } from "../../../api/supplier-request";
+import { getSuppliers } from "../../../api/supplier";
 import { PaginationResponse } from "../../../api/payload";
-import Snackbar from "../../../components/Snackbar.vue";
+import Snackbar from "@/components/Snackbar.vue";
 
 @Component({
   name: "RequestUserManagement",
@@ -101,7 +103,7 @@ export default class RequestUserManagement extends Vue {
     page: 1,
     itemsPerPage: 5,
     totalItems: 0,
-    itemsPerPageItems: [5, 10, 15, 20]
+    itemsPerPageItems: [5, 10, 20, 50, -1]
   };
   headers = [
     {
@@ -118,7 +120,7 @@ export default class RequestUserManagement extends Vue {
       align: "center"
     }
   ];
-  async created() {
+  created() {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
   }
 
@@ -128,19 +130,21 @@ export default class RequestUserManagement extends Vue {
   }
 
   @Watch("options", { deep: true })
-  onOptionsChange() {
-    getSuppliers({
-      page: this.options.page - 1,
-      limit: this.options.itemsPerPage
-    })
-      .then(res => {
-        const response: PaginationResponse<SupplierEntity> = res.data;
-        console.log(response);
-        this.suppliers = response.data;
-        this.options.totalItems = response.total_elements;
+  onOptionsChange(val: object, oldVal: object) {
+    if (val !== oldVal) {
+      getSuppliers({
+        page: this.options.page - 1,
+        limit: this.options.itemsPerPage
       })
-      .catch(err => console.log(err))
-      .finally(() => (this.loading = false));
+        .then(res => {
+          const response: PaginationResponse<SupplierEntity> = res.data;
+          console.log("watch", this.options);
+          this.suppliers = response.data;
+          this.options.totalItems = response.total_elements;
+        })
+        .catch(err => console.log(err))
+        .finally(() => (this.loading = false));
+    }
   }
 
   @Watch("supplier", { deep: true })
@@ -153,14 +157,17 @@ export default class RequestUserManagement extends Vue {
 
   async mounted() {
     console.log("--- get supplier ----");
+    /*
     getSuppliers({ page: 0, limit: 5 })
       .then(res => {
         const response: PaginationResponse<SupplierEntity> = res.data;
+        console.log("mounted", response);
         this.suppliers = response.data;
         this.options.totalItems = response.total_elements;
       })
       .catch(err => console.log(err))
       .finally(() => (this.loading = false));
+      */
   }
 }
 </script>

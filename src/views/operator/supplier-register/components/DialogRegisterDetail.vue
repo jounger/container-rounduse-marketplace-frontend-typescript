@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogSync" persistent max-width="600px">
+  <v-dialog v-model="dialogDetailSync" max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
@@ -9,7 +9,7 @@
           <v-btn
             icon
             dark
-            @click="dialogSync = false"
+            @click="dialogDetailSync = false"
             style="margin-left:308px;"
           >
             <v-icon>mdi-close</v-icon>
@@ -89,7 +89,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn @click="dialogDetail = false">Trở về</v-btn>
+        <v-btn @click="dialogDetailSync = false">Trở về</v-btn>
         <v-btn @click="reviewRegister(false)" color="red"
           ><span style="color:white;">Từ chối</span></v-btn
         >
@@ -102,14 +102,14 @@
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
-import { SupplierEntity } from "../supplier-register";
-import { reviewSupplier } from "../../../../api/supplier-request";
+import { SupplierEntity } from "../supplier";
+import { reviewSupplier } from "../../../../api/supplier";
 
 @Component({
   name: "DialogRegisterDetail"
 })
 export default class DialogRegisterDetail extends Vue {
-  @PropSync("dialogDetail", { type: Boolean }) dialogSync!: boolean;
+  @PropSync("dialogDetail", { type: Boolean }) dialogDetailSync!: boolean;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("supplier", { type: Object }) supplierSync!: SupplierEntity;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
