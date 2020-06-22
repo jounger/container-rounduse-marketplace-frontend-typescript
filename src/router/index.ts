@@ -14,15 +14,7 @@ const routes: Array<RouteConfig> = [
     name: "Dashboard",
     component: () => import("@/views/user/dashboard/index.vue"),
     meta: {
-      auth: ["ROLE_ADMIN"]
-    }
-  },
-  {
-    path: "/user",
-    name: "User",
-    component: () => import("@/views/user/User.vue"),
-    meta: {
-      auth: ["ROLE_ADMIN", "ROLE_MODERATOR"]
+      auth: true
     }
   },
   {
@@ -39,94 +31,121 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/auth/Login.vue")
   },
   {
-    path: "/logout",
-    name: "Logout",
-    component: () => import("@/views/auth/Logout.vue")
-  },
-  {
     path: "/register",
     name: "Register",
     component: () => import("@/views/auth/Register.vue")
   },
   {
-    path: "/user-management",
-    name: "UserManagement",
-    component: () => import("@/views/user/user/index.vue")
+    path: "/operator",
+    name: "Operator",
+    component: () => import("@/views/admin/operator/index.vue"),
+    meta: {
+      auth: ["ROLE_ADMIN"]
+    }
   },
   {
-    path: "/admin-management",
-    name: "AdminManagement",
-    component: () => import("@/views/user/admin/index.vue")
+    path: "/shipping-line",
+    name: "ShippingLine",
+    component: () => import("@/views/operator/shipping-line/index.vue"),
+    meta: {
+      auth: ["ROLE_MODERATOR"]
+    }
   },
   {
-    path: "/moderator-management",
-    name: "ModeratorManagement",
-    component: () => import("@/views/user/moderator/index.vue")
-  },
-  {
-    path: "/shipping-line-management",
-    name: "ShippingLineManagement",
-    component: () => import("@/views/operator/shipping-line/index.vue")
-  },
-  {
-    path: "/roles-management",
-    name: "RolesManagement",
+    path: "/roles",
+    name: "Roles",
     component: () => import("@/views/admin/roles/index.vue"),
+    meta: {
+      auth: ["ROLE_ADMIN"]
+    }
   },
   {
-    path: "/permission-management",
-    name: "PermissionManagement",
-    component: () => import("@/views/admin/permission/index.vue")
+    path: "/permission",
+    name: "Permission",
+    component: () => import("@/views/admin/permission/index.vue"),
+    meta: {
+      auth: ["ROLE_ADMIN"]
+    }
   },
   {
-    path: "/consignment-management",
-    name: "ConsignmentManagement",
-    component: () => import("@/views/supply/consignment/index.vue")
+    path: "/consignment",
+    name: "Consignment",
+    component: () => import("@/views/supply/consignment/index.vue"),
+    meta: {
+      auth: ["ROLE_MERCHANT"]
+    }
   },
   {
-    path: "/request-user-management",
-    name: "RequestUserManagement",
-    component: () => import("@/views/operator/supplier-register/index.vue")
+    path: "/container",
+    name: "Container",
+    component: () => import("@/views/supply/container/index.vue"),
+    meta: {
+      auth: ["ROLE_FORWARDER"]
+    }
   },
   {
-    path: "/request-status",
-    name: "RequestStatus",
-    component: () => import("@/views/supplier/request-status/index.vue")
+    path: "/supplier",
+    name: "Supplier",
+    component: () => import("@/views/operator/supplier/index.vue"),
+    meta: {
+      auth: ["ROLE_MODERATOR"]
+    }
   },
   {
-    path: "/container-management",
-    name: "ContainerManagement",
-    component: () => import("@/views/supply/container/index.vue")
+    path: "/application",
+    name: "Application",
+    component: () => import("@/views/supplier/application/index.vue"),
+    meta: {
+      auth: ["ROLE_FORWARDER", "ROLE_MERCHANT"]
+    }
   },
   {
-    path: "/driver-management",
-    name: "DriverManagement",
-    component: () => import("@/views/supplier/driver/index.vue")
+    path: "/driver",
+    name: "Driver",
+    component: () => import("@/views/supplier/driver/index.vue"),
+    meta: {
+      auth: ["ROLE_FORWARDER"]
+    }
   },
   {
-    path: "/icd-management",
-    name: "ICDManagement",
-    component: () => import("@/views/operator/icd/index.vue")
+    path: "/icd",
+    name: "ICD",
+    component: () => import("@/views/operator/icd/index.vue"),
+    meta: {
+      auth: ["ROLE_MODERATOR"]
+    }
   },
   {
-    path: "/port-management",
-    name: "PortManagement",
-    component: () => import("@/views/operator/port/index.vue")
+    path: "/port",
+    name: "Port",
+    component: () => import("@/views/operator/port/index.vue"),
+    meta: {
+      auth: ["ROLE_MODERATOR"]
+    }
   },
   {
-    path: "/container-type-management",
-    name: "ContainerTypeManagement",
-    component: () => import("@/views/operator/container-type/index.vue")
+    path: "/container-type",
+    name: "ContainerType",
+    component: () => import("@/views/operator/container-type/index.vue"),
+    meta: {
+      auth: ["ROLE_MODERATOR"]
+    }
   },
   {
-    path: "/bidding-document-management",
-    name: "BiddingDocumentManagement",
-    component: () => import("@/views/supplier/bidding-document/index.vue")
+    path: "/bidding-document",
+    name: "Bidding Document",
+    component: () => import("@/views/supplier/bidding-document/index.vue"),
+    meta: {
+      auth: ["ROLE_MERCHANT"]
+    }
   },
   {
-    path: "/consignment-management-new",
-    name: "ConsignmentManagementNew",
-    component: () => import("@/views/supply/consignment/ConsignmentManagementNew.vue")
+    path: "/consignment-new",
+    name: "Consignment New",
+    component: () => import("@/views/supply/consignment/ConsignmentNew.vue"),
+    meta: {
+      auth: true
+    }
   }
 ];
 

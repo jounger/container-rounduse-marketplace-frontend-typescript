@@ -3,38 +3,35 @@
     <v-app-bar-nav-icon @click.stop="changeDrawer()"></v-app-bar-nav-icon>
     <v-toolbar-title>CRM</v-toolbar-title>
     <v-btn text to="/">Trang chủ</v-btn>
-    <div v-if="$auth.check('ROLE_ADMIN')">
-      <v-btn text to="/admin">Quản trị viên</v-btn>
-    </div>
-    <div v-if="$auth.check(['ROLE_ADMIN', 'ROLE_MODERATOR'])">
-      <v-btn text to="/user-management">Danh sách người dùng</v-btn>
-    </div>
-    <div>
-      <v-btn text to="/request-status">Trạng thái đơn đăng ký</v-btn>
-    </div>
-    <div v-if="!$auth.check()">
-      <v-btn text to="/login">Đăng nhập</v-btn>
-    </div>
-    <div v-if="!$auth.check()">
-      <v-btn text to="/register">Đăng ký</v-btn>
-    </div>
-    <div v-if="$auth.check()">
-      <v-btn text to="/logout">Đăng xuất</v-btn>
-    </div>
-    <div style="margin-left:400px;">
-      <v-badge :content="messages" :value="messages" color="green" overlap>
-        <v-btn icon @click="seeNotify"><v-icon>mdi-email</v-icon></v-btn>
-      </v-badge>
-    </div>
-    <div style="margin-top: 50px;" v-if="notify">
-      <v-card class="mb-6" style="margin-top: 120px;">
-        <v-card-title>abc</v-card-title>
-      </v-card>
-    </div>
+    <v-btn text v-if="isSupplier" to="/application">Đơn đăng ký</v-btn>
+    <v-btn v-if="$auth.check()" text to="/dashboard">Dashboard</v-btn>
 
-    <div style="margin-left:50px;">
-      <v-icon>mdi-dots-vertical</v-icon>
-    </div>
+    <v-spacer></v-spacer>
+
+    <v-btn icon>
+      <v-icon>mdi-heart</v-icon>
+    </v-btn>
+    <v-btn icon>
+      <v-icon>mdi-magnify</v-icon>
+    </v-btn>
+    <v-menu left bottom>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn icon v-bind="attrs" v-on="on">
+          <v-icon>mdi-dots-vertical</v-icon>
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item v-if="!$auth.check()" to="/login">
+          <v-list-item-title>Đăng nhập</v-list-item-title>
+        </v-list-item>
+        <v-list-item v-if="!$auth.check()" to="/register">
+          <v-list-item-title>Đăng ký</v-list-item-title>
+        </v-list-item>
+        <v-list-item v-else @click="$auth.logout()">
+          <v-list-item-title>Đăng xuất</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </v-app-bar>
 </template>
 <script lang="ts">
@@ -50,6 +47,16 @@ export default class Appbar extends Vue {
   create() {
     this.messages = 3;
   }
+
+  get isSupplier() {
+    if (
+      this.$auth.check(["ROLE_FORWARDER", "ROLE_MERCHANT"]) &&
+      this.$auth.user().userInfo.status
+    )
+      return true;
+    else return false;
+  }
+
   public seeNotify() {
     this.messages = 0;
     this.notify = !this.notify;

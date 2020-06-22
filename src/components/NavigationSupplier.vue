@@ -1,6 +1,6 @@
 <template>
   <v-list>
-    <v-list-item to="/consignment-management">
+    <v-list-item to="/consignment">
       <v-list-item-icon>
         <v-icon>mdi-help-box</v-icon>
       </v-list-item-icon>
@@ -8,7 +8,7 @@
         <v-list-item-title>Quản lý hàng</v-list-item-title>
       </v-list-item-content>
     </v-list-item>
-    <v-list-item to="/consignment-management-new">
+    <v-list-item to="/consignment-new">
       <v-list-item-icon>
         <v-icon>mdi-help-box</v-icon>
       </v-list-item-icon>
@@ -16,7 +16,7 @@
         <v-list-item-title>Quản lý hàng (bản mới)</v-list-item-title>
       </v-list-item-content>
     </v-list-item>
-    <v-list-item to="/container-management">
+    <v-list-item to="/container">
       <v-list-item-icon>
         <v-icon>mdi-image</v-icon>
       </v-list-item-icon>
@@ -24,7 +24,7 @@
         <v-list-item-title>Quản lý Container</v-list-item-title>
       </v-list-item-content>
     </v-list-item>
-    <v-list-item to="/driver-management">
+    <v-list-item to="/driver">
       <v-list-item-icon>
         <v-icon>mdi-image</v-icon>
       </v-list-item-icon>
@@ -32,7 +32,7 @@
         <v-list-item-title>Quản lý Lái xe</v-list-item-title>
       </v-list-item-content>
     </v-list-item>
-    <v-list-item to="/bidding-document-management">
+    <v-list-item to="/bidding-document">
       <v-list-item-icon>
         <v-icon>mdi-help-box</v-icon>
       </v-list-item-icon>

@@ -2,22 +2,17 @@
   <v-navigation-drawer v-model="drawerSync" app clipped>
     <v-list dense nav>
       <v-list-item two-line :class="'px-0'">
-        <v-list-item-avatar size="90">
+        <v-list-item-avatar>
           <v-img src="@/assets/images/ava.jpg" />
         </v-list-item-avatar>
 
         <v-list-item-content>
-          <v-list-item-title class="title" style="margin-left: 5px;"
-            ><router-link to="/profile">{{
-              username
-            }}</router-link></v-list-item-title
+          <v-list-item-title to="/profile">{{
+            capitalizeUsername
+          }}</v-list-item-title>
+          <v-list-item-subtitle style="margin-top:10px;">
+            {{ getUserRole }}</v-list-item-subtitle
           >
-          <v-list-item-subtitle style="margin-top:10px;"
-            ><v-list-item v-for="(item, i) in roles" :key="i">
-              <v-list-item-title
-                v-text="item"
-              ></v-list-item-title> </v-list-item
-          ></v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
     </v-list>
@@ -34,14 +29,19 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
+    <template v-slot:append>
+      <div class="pa-2" v-if="$auth.check()">
+        <v-btn block @click="$auth.logout()">Đăng xuất</v-btn>
+      </div>
+    </template>
   </v-navigation-drawer>
 </template>
 
 <script lang="ts">
 import { Vue, Component, PropSync } from "vue-property-decorator";
-import UserModule from "@/store/modules/user";
 import NavigationOperator from "./NavigationOperator.vue";
 import NavigationSupplier from "./NavigationSupplier.vue";
+import { toCapitalize } from "@/utils/tool";
 
 @Component({
   name: "Navigation",
@@ -51,29 +51,26 @@ import NavigationSupplier from "./NavigationSupplier.vue";
   }
 })
 export default class Navigation extends Vue {
-  @PropSync("drawer", { type: Boolean }) drawerSync!: boolean | null;
-  check = false;
-  fullname = "";
-  username = "";
-  roles = [] as any;
+  @PropSync("drawer", { type: Boolean }) drawerSync!: boolean;
+
   protected navigation = NavigationSupplier;
-  async created() {
-    if (this.$auth.check(["ROLE_MODERATOR", "ROLE_ADMIN"])) {
+
+  get capitalizeUsername() {
+    return toCapitalize(this.$auth.user().username);
+  }
+
+  get getUserRole() {
+    return this.$auth
+      .user()
+      .roles[0].toLowerCase()
+      .substring(5);
+  }
+
+  created() {
+    if (this.$auth.check(["ROLE_ADMIN", "ROLE_MODERATOR"])) {
       this.navigation = NavigationOperator;
-    }
-    await UserModule.loadProfile();
-    if (UserModule.getCurrentUser != null) {
-      console.log(UserModule.getCurrentUser.role);
-      this.roles = UserModule.getCurrentUser.role;
-      this.username = UserModule.getCurrentUser.username;
     }
   }
 }
 </script>
-<style>
-.ava {
-  border-radius: 50% !important;
-  height: 110px !important;
-  width: 0px !important;
-}
-</style>
+<style></style>

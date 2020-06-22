@@ -110,7 +110,7 @@ import { Component, Vue, PropSync } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
 
 @Component
-export default class Admin extends Vue {
+export default class Dashboard extends Vue {
   @PropSync("layout") layoutSync!: object;
   private users = [];
   items = [
@@ -150,11 +150,6 @@ export default class Admin extends Vue {
       user: "ICSA",
       action: "tạo một vỏ rỗng",
       time: "5h30p"
-    },
-    {
-      user: "Hoang Hai",
-      action: "tạo một yêu cầu ghép",
-      time: "6h"
     },
     {
       user: "SEA2",

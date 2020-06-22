@@ -2,7 +2,7 @@
   <v-content>
     <v-card>
       <v-card-title>
-        Danh sách Container
+        Danh sách IContainer
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -45,7 +45,7 @@
         color="primary"
         style="margin-left: 35px;"
         dark
-        @click.stop="addContainer"
+        @click.stop="addIContainer"
       >
         Thêm mới
       </v-btn>
@@ -56,7 +56,7 @@
         @click.stop="dialogDel = true"
         v-if="selected.length > 0"
       >
-        Xóa Container
+        Xóa IContainer
       </v-btn>
       <v-row justify="center">
         <v-dialog v-model="dialogDelSingle" persistent max-width="600px">
@@ -64,7 +64,7 @@
             <v-toolbar color="primary" light flat>
               <v-toolbar-title
                 ><span class="headline" style="color:white;"
-                  >Xóa Container</span
+                  >Xóa IContainer</span
                 >
                 <v-btn
                   icon
@@ -81,7 +81,7 @@
               <v-form>
                 <v-container>
                   <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa Container này?</span
+                    >Bạn có chắc chắn muốn xóa IContainer này?</span
                   >
                   <div class="line"></div>
                   <v-list>
@@ -108,7 +108,7 @@
             <v-toolbar color="primary" light flat>
               <v-toolbar-title
                 ><span class="headline" style="color:white;"
-                  >Xóa Container</span
+                  >Xóa IContainer</span
                 >
                 <v-btn
                   icon
@@ -125,7 +125,7 @@
               <v-form>
                 <v-container>
                   <span style="color: black; font-size:22px;"
-                    >Bạn có chắc chắn muốn xóa những Container này?</span
+                    >Bạn có chắc chắn muốn xóa những IContainer này?</span
                   >
                   <div class="line"></div>
                   <v-list>
@@ -165,7 +165,7 @@
                   <v-layout row>
                     <v-flex xs8>
                       <v-text-field
-                        label="Mã Container"
+                        label="Mã IContainer"
                         name="containerNumber"
                         prepend-icon="mdi-account"
                         type="text"
@@ -376,7 +376,7 @@
                 >Thêm mới</v-btn
               >
               <v-btn
-                @click="updateContainer()"
+                @click="updateIContainer()"
                 color="primary"
                 v-if="checkUpdate"
                 >Cập nhập</v-btn
@@ -401,7 +401,7 @@
         item-key="containerNumber"
         show-select
         :options.sync="options"
-        :server-items-length="totalContainers"
+        :server-items-length="totalIContainers"
         :loading="loading"
         :items-per-page="5"
         class="elevation-1"
@@ -420,7 +420,7 @@
               <v-list-item @click="update(item)">
                 <v-list-item-title>Cập nhập</v-list-item-title>
               </v-list-item>
-              <v-list-item @click="delContainer(item)">
+              <v-list-item @click="delIContainer(item)">
                 <v-list-item-title>Xóa</v-list-item-title>
               </v-list-item>
             </v-list>
@@ -434,14 +434,12 @@
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
 import data from "./data";
-import { Container } from "./container";
+import { IContainer } from "@/entity/container";
 
-@Component({
-  name: "ConsignmentManagement"
-})
-export default class ConsignmentManagement extends Vue {
+@Component
+export default class Consignment extends Vue {
   @PropSync("layout") layoutSync!: object;
-  selected: Array<Container> | null = null;
+  selected: Array<IContainer> | null = null;
   title = "";
   date1 = false;
   date2 = false;
@@ -463,7 +461,7 @@ export default class ConsignmentManagement extends Vue {
   drivers = ["Duy", "An", "Quyền", "Minh", "Dương"];
   items = [
     {
-      name: "Tổng số Container",
+      name: "Tổng số IContainer",
       content: "53",
       icon: "mdi-domain"
     },
@@ -473,17 +471,17 @@ export default class ConsignmentManagement extends Vue {
       icon: "mdi-dialpad"
     },
     {
-      name: "Container rỗng",
+      name: "IContainer rỗng",
       content: "18",
       icon: "mdi-call-split"
     },
     {
-      name: "Container đang chạy",
+      name: "IContainer đang chạy",
       content: "6",
       icon: "mdi-arrow-up-bold-box-outline"
     },
     {
-      name: "Container đang thầu",
+      name: "IContainer đang thầu",
       content: "8",
       icon: "mdi-arrow-up-bold-box-outline"
     }
@@ -495,13 +493,13 @@ export default class ConsignmentManagement extends Vue {
   dialogDel = false;
   dialogDelSingle = false;
   search = "";
-  totalContainers = 0;
-  containers: Array<Container> | null = null;
+  totalIContainers = 0;
+  containers: Array<IContainer> | null = null;
   loading = true;
   options = {} as any;
   headers = [
     {
-      text: "Mã Container",
+      text: "Mã IContainer",
       align: "start",
       sortable: true,
       value: "containerNumber"
@@ -528,13 +526,13 @@ export default class ConsignmentManagement extends Vue {
   getOptions() {
     this.getDataFromApi().then((data: any) => {
       this.containers = data.items;
-      this.totalContainers = data.total;
+      this.totalIContainers = data.total;
     });
   }
   async mounted() {
     this.getDataFromApi().then((data: any) => {
       this.containers = data.items;
-      this.totalContainers = data.total;
+      this.totalIContainers = data.total;
     });
   }
   public getDataFromApi() {
@@ -543,7 +541,7 @@ export default class ConsignmentManagement extends Vue {
     return new Promise((resolve, reject) => {
       const { sortBy, sortDesc, page, itemsPerPage } = this.options;
 
-      let items = this.getContainers();
+      let items = this.getIContainers();
       const total = items.length;
 
       if (sortBy.length === 1 && sortDesc.length === 1) {
@@ -576,7 +574,7 @@ export default class ConsignmentManagement extends Vue {
       }, 1000);
     });
   }
-  public getContainers(): Array<Container> {
+  public getIContainers(): Array<IContainer> {
     return data;
   }
   public submit() {
@@ -598,7 +596,7 @@ export default class ConsignmentManagement extends Vue {
     this.readonly = false;
     this.dialogDel = false;
   }
-  public addContainer() {
+  public addIContainer() {
     this.containerNumber = "";
     this.containerTrailer = "";
     this.containerTractor = "";
@@ -616,7 +614,7 @@ export default class ConsignmentManagement extends Vue {
     this.readonly = false;
     this.dialogAdd = true;
   }
-  public viewDetail(item: Container) {
+  public viewDetail(item: IContainer) {
     this.containerNumber = item.containerNumber;
     this.containerTrailer = item.containerTrailer;
     this.containerTractor = item.containerTractor;
@@ -635,7 +633,7 @@ export default class ConsignmentManagement extends Vue {
     this.readonly = true;
     this.dialogAdd = true;
   }
-  public update(item: Container) {
+  public update(item: IContainer) {
     this.containerNumber = item.containerNumber;
     this.containerTrailer = item.containerTrailer;
     this.containerTractor = item.containerTractor;
@@ -653,7 +651,7 @@ export default class ConsignmentManagement extends Vue {
     this.readonly = false;
     this.dialogAdd = true;
   }
-  public delContainer(item: Container) {
+  public delIContainer(item: IContainer) {
     this.name = item.containerNumber;
     this.dialogDelSingle = true;
   }
@@ -666,7 +664,7 @@ export default class ConsignmentManagement extends Vue {
     this.name = "";
     this.dialogDelSingle = false;
   }
-  public updateContainer() {
+  public updateIContainer() {
     this.success = "Cập nhập thành công!";
     this.checkSuccess = true;
     this.dialogAdd = false;

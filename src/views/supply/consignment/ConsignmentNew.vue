@@ -12,40 +12,11 @@
           hide-details
         ></v-text-field>
       </v-card-title>
-      <v-card
-        class="d-flex flex-row mb-6"
-        color="lighten-2"
-        flat
-        tile
-        style="margin-left: 20px;"
-      >
-        <v-card
-          v-for="n in items"
-          :key="n.name"
-          class="pa-2"
-          outlined
-          tile
-          style="width: 210px; height: 130px;"
-        >
-          <v-card-title>{{ n.name }}</v-card-title>
-          <v-list-item two-line :class="'px-0'">
-            <v-btn icon>
-              <v-icon>{{ n.icon }}</v-icon>
-            </v-btn>
-
-            <v-list-item-content style="margin-left: 40px;">
-              <v-list-item-title class="title" style="margin-left: 5px;">{{
-                n.content
-              }}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-card>
-      </v-card>
       <v-btn
         color="primary"
-        style="margin-left: 35px;"
+        style="margin-left: 35px; margin-bottom: 10px;"
         dark
-        @click.stop="addIConsignment"
+        @click.stop="addConsignment"
       >
         Thêm mới
       </v-btn>
@@ -372,7 +343,7 @@
                 >Thêm mới</v-btn
               >
               <v-btn
-                @click="updateIConsignment()"
+                @click="updateConsignment()"
                 color="primary"
                 v-if="checkUpdate"
                 >Cập nhập</v-btn
@@ -389,38 +360,158 @@
       >
         {{ success }}
       </v-alert>
+
       <v-data-table
+        id="mytable"
         v-model="selected"
         :headers="headers"
         :items="consignments"
         :search="search"
         item-key="bookNo"
-        show-select
         :options.sync="options"
-        :server-items-length="totalIConsignments"
+        :server-items-length="totalConsignments"
         :loading="loading"
         :items-per-page="5"
         class="elevation-1"
       >
+        <template v-slot:item.create="{ item }">
+          <v-list
+            style="margin-top: -110px;
+    margin-left: -20px;"
+          >
+            <v-list-item>
+              <v-list-item-title
+                ><v-icon>mdi-lock</v-icon
+                >{{ item.dateCreated }}</v-list-item-title
+              >
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-title
+                ><v-icon>mdi-lock</v-icon
+                >{{ item.timeCreated }}</v-list-item-title
+              >
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-title
+                ><v-icon>mdi-lock</v-icon>{{ item.status }}</v-list-item-title
+              >
+            </v-list-item>
+          </v-list>
+        </template>
+        <template v-slot:item.request="{ item }">
+          <v-list style="margin-left:-20px;">
+            <v-list-item>
+              <v-list-item-title
+                ><v-icon>mdi-lock</v-icon>Hãng tàu:
+                {{ item.shippingLine }}</v-list-item-title
+              >
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-title
+                ><v-icon>mdi-lock</v-icon>Loại cont:
+                {{ item.containerType }}</v-list-item-title
+              >
+            </v-list-item>
+            <v-list-item two-line>
+              <v-list-item-content>
+                <v-list-item-title
+                  ><v-icon>mdi-lock</v-icon>Mooc:
+                  {{ item.mooc }}</v-list-item-title
+                >
+              </v-list-item-content>
+              <v-list-item-content style="margin-left:-20px;">
+                <v-list-item-title
+                  ><v-icon>mdi-lock</v-icon>Đầu kéo:
+                  {{ item.trailer }}</v-list-item-title
+                >
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-title
+                ><v-icon>mdi-lock</v-icon>Đóng hàng:
+                {{ item.packingTime }}</v-list-item-title
+              >
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-title
+                ><v-icon>mdi-lock</v-icon>Nơi đóng:
+                {{ item.packingStation }}</v-list-item-title
+              >
+            </v-list-item>
+          </v-list>
+        </template>
+        <template v-slot:item.detail="{ item }">
+          <v-list
+            style="margin-top: -110px;
+    margin-left: -20px;"
+          >
+            <v-list-item>
+              <v-list-item-title
+                ><v-icon>mdi-lock</v-icon>Trọng tải:
+                {{ item.payloadWeight }}</v-list-item-title
+              >
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-title
+                ><v-icon>mdi-lock</v-icon>Booking:
+                {{ item.bookNo }}</v-list-item-title
+              >
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-title
+                ><v-icon>mdi-lock</v-icon>Cut-off:
+                {{ item.cutOffTime }}</v-list-item-title
+              >
+            </v-list-item>
+          </v-list>
+        </template>
+        <template v-slot:item.contact="{ item }">
+          <v-list
+            style="margin-top: -110px;
+    margin-left: -20px;"
+          >
+            <v-list-item>
+              <v-list-item-title
+                ><v-icon>mdi-lock</v-icon>Chủ hàng:
+                {{ item.merchant }}</v-list-item-title
+              >
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-title
+                ><v-icon>mdi-lock</v-icon>SĐT:
+                {{ item.phone }}</v-list-item-title
+              >
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-title
+                ><v-icon>mdi-lock</v-icon>Phụ trách:
+                {{ item.PIC }}</v-list-item-title
+              >
+            </v-list-item>
+          </v-list>
+        </template>
         <template v-slot:item.action="{ item }">
-          <v-menu :loading="item.createloading" :disabled="item.createloading">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn color="secondary" dark v-bind="attrs" v-on="on">
-                <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item @click="viewDetail(item)">
-                <v-list-item-title>Xem chi tiết</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="update(item)">
-                <v-list-item-title>Cập nhập</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="delIConsignment(item)">
-                <v-list-item-title>Xóa</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+          <v-list style="margin-top: -130px; margin-left: -20px;">
+            <v-list-item two-line style="margin-top:-10px;">
+              <v-list-item-content>
+                <v-list-item-title>
+                  <v-btn @click="updateConsignment(item)"
+                    >Sửa<v-icon>edit</v-icon></v-btn
+                  >
+                </v-list-item-title>
+              </v-list-item-content>
+              <v-list-item-content style="margin-left: -25px;">
+                <v-list-item-title>
+                  <v-btn @click="delConsignment(item)"
+                    >Xóa<v-icon>delete</v-icon></v-btn
+                  >
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item style="margin-top:-10px;">
+              <v-btn color="green">Tìm vỏ<v-icon>search</v-icon></v-btn>
+            </v-list-item>
+          </v-list>
         </template>
       </v-data-table>
     </v-card>
@@ -429,13 +520,13 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
-import data from "./data";
 import { IConsignment } from "@/entity/consignment";
-
-@Component
-export default class Consignment extends Vue {
+@Component({
+  name: "ConsignmentManagementNew"
+})
+export default class ConsignmentManagementNew extends Vue {
   @PropSync("layout") layoutSync!: object;
-  selected = [] as Array<IConsignment>;
+  selected = [] as Array<any>;
   title = "";
   date1 = false;
   date2 = false;
@@ -447,37 +538,17 @@ export default class Consignment extends Vue {
   packingStation = "";
   PIC = "";
   bookNo = "";
-  layTime = "";
-  cutOfTime = "";
-  payload = 0 as number;
-  UOM = 0 as number | null;
-  categories = [] as Array<string>;
-  FCL = "";
-  port = "";
-  type = ["Hard", "Soft"];
-  items = [
-    {
-      name: "Tổng số hàng",
-      content: "53",
-      icon: "mdi-domain"
-    },
-    {
-      name: "Hàng đang thầu",
-      content: "75",
-      icon: "mdi-dialpad"
-    },
-    {
-      name: "Đang đợi ghép",
-      content: "18",
-      icon: "mdi-call-split"
-    },
-    {
-      name: "Ghép thành công",
-      content: "6",
-      icon: "mdi-arrow-up-bold-box-outline"
-    }
-  ];
-  yesno = ["Có", "Không"];
+  status = "";
+  cutOffTime = "";
+  payloadWeight = "";
+  dateCreated = "";
+  timeCreated = "";
+  shippingLine = "";
+  containerType = "";
+  mooc = "";
+  trailer = "";
+  merchant = "";
+  phone = "";
   success = "";
   name = "";
   checkSuccess = false;
@@ -486,30 +557,24 @@ export default class Consignment extends Vue {
   dialogDel = false;
   dialogDelSingle = false;
   search = "";
-  totalIConsignments = 0;
-  consignments = [] as Array<IConsignment>;
+  totalConsignments = 0;
+  consignments = [] as Array<any>;
   loading = true;
   options = {} as any;
   headers = [
     {
-      text: "Mã hàng",
+      text: "Ngày tạo",
       align: "start",
-      sortable: true,
-      value: "bookNo"
+      sortable: false,
+      value: "create"
     },
-    { text: "Người liên hệ", value: "PIC" },
-    { text: "Thời gian đóng hàng", value: "packingTime" },
-    { text: "Nơi đóng hàng", value: "packingStation" },
-    { text: "Thời gian làm hàng", value: "layTime" },
-    { text: "Thời gian tàu chạy", value: "cutOfTime" },
-    { text: "Trọng lượng", value: "payload" },
-    { text: "Khối lượng", value: "UOM" },
-    { text: "Loại hàng", value: "categories" },
-    { text: "FCL", value: "FCL" },
-    { text: "Bến cảng", value: "port" },
+    { text: "Yêu cầu ghép", value: "request", sortable: false },
+    { text: "Thông tin hàng", value: "detail", sortable: false },
+    { text: "Liên hệ", value: "contact", sortable: false },
     {
-      text: "Hành động",
-      value: "action"
+      text: "",
+      value: "action",
+      sortable: false
     }
   ];
   async created() {
@@ -519,13 +584,13 @@ export default class Consignment extends Vue {
   getOptions() {
     this.getDataFromApi().then((data: any) => {
       this.consignments = data.items;
-      this.totalIConsignments = data.total;
+      this.totalConsignments = data.total;
     });
   }
   async mounted() {
     this.getDataFromApi().then((data: any) => {
       this.consignments = data.items;
-      this.totalIConsignments = data.total;
+      this.totalConsignments = data.total;
     });
   }
   public getDataFromApi() {
@@ -534,11 +599,11 @@ export default class Consignment extends Vue {
     return new Promise((resolve, reject) => {
       const { sortBy, sortDesc, page, itemsPerPage } = this.options;
 
-      let items = this.getIConsignments();
+      let items = this.getConsignments();
       const total = items.length;
 
       if (sortBy.length === 1 && sortDesc.length === 1) {
-        items = items.sort((a: any, b: any) => {
+        items = items.sort((a: Array<IConsignment>, b: Array<IConsignment>) => {
           const sortA = a[sortBy[0]];
           const sortB = b[sortBy[0]];
 
@@ -567,8 +632,111 @@ export default class Consignment extends Vue {
       }, 1000);
     });
   }
-  public getIConsignments(): Array<IConsignment> {
-    return data;
+  public getConsignments(): Array<any> {
+    return [
+      {
+        dateCreated: "2019-12-20",
+        timeCreated: "15:03",
+        status: "Mới tạo",
+        shippingLine: "Maersk",
+        containerType: "40HC",
+        mooc: "2 giàn",
+        trailer: "1 cầu",
+        packingTime: "2019-12-20",
+        packingStation: "KCN Yên Phong - BN",
+        payloadWeight: "12 tấn",
+        bookNo: "COSU4512563240",
+        cutOffTime: "2019-12-20",
+        merchant: "Mr. An",
+        phone: "0967390098",
+        PIC: "Mr. Nam"
+      },
+      {
+        dateCreated: "2019-12-20",
+        timeCreated: "15:03",
+        status: "Mới tạo",
+        shippingLine: "Maersk",
+        containerType: "40HC",
+        mooc: "2 giàn",
+        trailer: "1 cầu",
+        packingTime: "2019-12-20",
+        packingStation: "KCN Yên Phong - BN",
+        payloadWeight: "12 tấn",
+        bookNo: "COSU4512563241",
+        cutOffTime: "2019-12-20",
+        merchant: "Mr. An",
+        phone: "0967390098",
+        PIC: "Mr. Nam"
+      },
+      {
+        dateCreated: "2019-12-20",
+        timeCreated: "15:03",
+        status: "Mới tạo",
+        shippingLine: "Maersk",
+        containerType: "40HC",
+        mooc: "2 giàn",
+        trailer: "1 cầu",
+        packingTime: "2019-12-20",
+        packingStation: "KCN Yên Phong - BN",
+        payloadWeight: "12 tấn",
+        bookNo: "COSU4512563242",
+        cutOffTime: "2019-12-20",
+        merchant: "Mr. An",
+        phone: "0967390098",
+        PIC: "Mr. Nam"
+      },
+      {
+        dateCreated: "2019-12-20",
+        timeCreated: "15:03",
+        status: "Mới tạo",
+        shippingLine: "Maersk",
+        containerType: "40HC",
+        mooc: "2 giàn",
+        trailer: "1 cầu",
+        packingTime: "2019-12-20",
+        packingStation: "KCN Yên Phong - BN",
+        payloadWeight: "12 tấn",
+        bookNo: "COSU4512563243",
+        cutOffTime: "2019-12-20",
+        merchant: "Mr. An",
+        phone: "0967390098",
+        PIC: "Mr. Nam"
+      },
+      {
+        dateCreated: "2019-12-20",
+        timeCreated: "15:03",
+        status: "Mới tạo",
+        shippingLine: "Maersk",
+        containerType: "40HC",
+        mooc: "2 giàn",
+        trailer: "1 cầu",
+        packingTime: "2019-12-20",
+        packingStation: "KCN Yên Phong - BN",
+        payloadWeight: "12 tấn",
+        bookNo: "COSU4512563244",
+        cutOffTime: "2019-12-20",
+        merchant: "Mr. An",
+        phone: "0967390098",
+        PIC: "Mr. Nam"
+      },
+      {
+        dateCreated: "2019-12-20",
+        timeCreated: "15:03",
+        status: "Mới tạo",
+        shippingLine: "Maersk",
+        containerType: "40HC",
+        mooc: "2 giàn",
+        trailer: "1 cầu",
+        packingTime: "2019-12-20",
+        packingStation: "KCN Yên Phong - BN",
+        payloadWeight: "12 tấn",
+        bookNo: "COSU4512563245",
+        cutOffTime: "2019-12-20",
+        merchant: "Mr. An",
+        phone: "0967390098",
+        PIC: "Mr. Nam"
+      }
+    ];
   }
   public submit() {
     this.success = "Thêm mới thành công!";
@@ -589,62 +757,33 @@ export default class Consignment extends Vue {
     this.readonly = false;
     this.dialogDel = false;
   }
-  public addIConsignment() {
-    this.bookNo = "";
-    this.PIC = "";
-    this.packingTime = "";
-    this.packingStation = "";
-    this.layTime = "";
-    this.cutOfTime = "";
-    this.FCL = "";
-    this.categories = [""];
-    this.UOM = null;
-    this.port = "";
+  public addConsignment() {
     this.title = "Thêm mới hàng";
     this.checkAdd = true;
     this.checkUpdate = false;
     this.readonly = false;
     this.dialogAdd = true;
   }
-  public viewDetail(item: IConsignment) {
-    this.bookNo = item.bookNo;
-    this.PIC = item.PIC;
-    this.packingTime = item.packingTime;
-    this.packingStation = item.packingStation;
-    this.layTime = item.layTime;
-    this.cutOfTime = item.cutOfTime;
-    this.FCL = item.FCL;
-    this.categories = item.categories;
-    this.UOM = item.UOM;
-    this.port = item.port;
+  public viewDetail(item: any) {
     this.checkAdd = false;
     this.checkUpdate = false;
     this.title = "Thông tin hàng";
     this.readonly = true;
     this.dialogAdd = true;
   }
-  public update(item: IConsignment) {
-    this.bookNo = item.bookNo;
-    this.PIC = item.PIC;
-    this.packingTime = item.packingTime;
-    this.packingStation = item.packingStation;
-    this.layTime = item.layTime;
-    this.cutOfTime = item.cutOfTime;
-    this.FCL = item.FCL;
-    this.categories = item.categories;
-    this.UOM = item.UOM;
-    this.port = item.port;
+  public update(item: any) {
     this.checkAdd = false;
     this.checkUpdate = true;
     this.title = "Cập nhập hàng";
     this.readonly = false;
     this.dialogAdd = true;
   }
-  public delIConsignment(item: IConsignment) {
+  public delConsignment(item: any) {
     this.name = item.bookNo;
     this.dialogDelSingle = true;
   }
   public delSingle(name: string) {
+    this.consignments = this.consignments.filter(item => item.bookNo != name);
     this.success = "Xóa thành công";
     this.dialogDelSingle = false;
     this.checkSuccess = true;
@@ -653,7 +792,7 @@ export default class Consignment extends Vue {
     this.name = "";
     this.dialogDelSingle = false;
   }
-  public updateIConsignment() {
+  public updateConsignment() {
     this.success = "Cập nhập thành công!";
     this.checkSuccess = true;
     this.dialogAdd = false;
@@ -672,5 +811,11 @@ export default class Consignment extends Vue {
   width: 520px;
   border-bottom: 1px solid black;
   position: absolute;
+}
+#mytable table tr {
+  background: white;
+}
+#mytable table thead tr th {
+  background: whitesmoke;
 }
 </style>

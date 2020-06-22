@@ -1,4 +1,4 @@
-import { UserEntity } from '../store/definitions/user';
+import { UserEntity } from '../entity/user';
 export interface JwtResponse {
   id_token: string;
   userInfo: UserEntity

@@ -26,7 +26,7 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn @click.prevent="submit()" color="primary">Đăng nhập</v-btn>
+      <v-btn @click.prevent="login()" color="primary">Đăng nhập</v-btn>
       <v-btn @click.prevent="register()" color="white">Đăng ký</v-btn>
     </v-card-actions>
   </v-card>
@@ -45,20 +45,20 @@ export default class Login extends Vue {
   }
   public mounted() {
     if (this.$auth.check()) {
-      this.$router.push({ name: "Home" });
+      this.$router.push("/dashboard");
     }
   }
   public register() {
     this.$router.push("/register");
   }
-  public submit() {
+  public login() {
     this.$auth
       .login({
         username: this.username,
         password: this.password
       })
-      .then(response => {
-        console.warn("SUCCESS login", response);
+      .then(res => {
+        console.warn("SUCCESS login", res);
       })
       .catch(err => {
         console.error("ERROR! in login", err);

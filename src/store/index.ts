@@ -1,7 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import { UserEntity } from "@/store/definitions/user";
-// import UserModule from "@/store/modules/user"
+import { UserEntity } from "@/entity/user";
 
 Vue.use(Vuex);
 

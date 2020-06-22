@@ -87,23 +87,22 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
-import { Permission } from "../permission/permission";
+import { IPermission } from "@/entity/permission";
 import DeleteICD from "../../operator/icd/components/DeleteICD.vue";
 import CreatePermission from "./components/CreatePermission.vue";
 import data from "./data";
 
 @Component({
-  name: "PermissionManagement",
   components: {
     DeleteICD,
     CreatePermission
   }
 })
-export default class PermissionManagement extends Vue {
+export default class Permission extends Vue {
   @PropSync("layout") layoutSync!: object;
   permissionName = "";
   description = "";
-  permission: Permission = {
+  permission: IPermission = {
     permissionName: "",
     description: ""
   };
@@ -190,7 +189,7 @@ export default class PermissionManagement extends Vue {
       }, 1000);
     });
   }
-  public getPermissions(): Array<Permission> {
+  public getPermissions(): Array<IPermission> {
     return data;
   }
   public viewDetail(item: Permission) {

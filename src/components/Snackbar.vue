@@ -10,11 +10,9 @@
     :top="true"
     :vertical="false"
     >{{ text }}
-    <template v-slot:action="{ attrs }">
-      <v-btn dark text v-bind="attrs" @click="snackbarSync = false">
-        Close
-      </v-btn>
-    </template>
+    <v-btn dark text @click="snackbarSync = false">
+      Close
+    </v-btn>
   </v-snackbar>
 </template>
 <script lang="ts">
