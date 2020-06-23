@@ -2,7 +2,7 @@
   <v-content>
     <v-card>
       <v-card-title>
-        Danh sách hàng
+        Danh sách loại hàng
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -16,21 +16,25 @@
         color="primary"
         style="margin-left: 35px;"
         dark
-        @click="addConsignment()"
+        @click="addCategory()"
       >
         Thêm mới
       </v-btn>
       <v-row justify="center">
-        <DialogDeleteConsignment
+        <DialogDeleteCategory
           :dialogDel.sync="dialogDel"
-          :consignment.sync="consignment"
+          :category.sync="category"
+          :categories.sync="categories"
+          :options.sync="options"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
       </v-row>
       <v-row justify="center">
-        <DialogCreateConsignment
-          :consignment.sync="consignment"
+        <DialogCreateCategory
+          :category.sync="category"
+          :categories.sync="categories"
+          :options.sync="options"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
           :snackbar.sync="snackbar"
@@ -39,7 +43,7 @@
       <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-data-table
         :headers="headers"
-        :items="consignments"
+        :items="categories"
         item-key="id"
         :search="search"
         :loading="loading"
@@ -60,7 +64,7 @@
               <v-list-item @click="viewDetail(item)">
                 <v-list-item-title>Chi tiết</v-list-item-title>
               </v-list-item>
-              <v-list-item @click="removeConsignment(item)">
+              <v-list-item @click="removeCategory(item)">
                 <v-list-item-title>Xóa</v-list-item-title>
               </v-list-item>
             </v-list>
@@ -73,45 +77,26 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
-import { IConsignment } from "@/entity/consignment";
-import DialogCreateConsignment from "./components/DialogCreateConsignment.vue";
-import DialogDeleteConsignment from "./components/DialogDeleteConsignment.vue";
-import { getConsignmentByMerchant } from "@/api/consignment";
+import { ICategory } from "@/entity/category";
+import { getCategories } from "@/api/category";
 import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
+import DialogDeleteCategory from "./components/DialogDeleteCategory.vue";
+import DialogCreateCategory from "./components/DialogCreateCategory.vue";
 
 @Component({
   components: {
-    DialogCreateConsignment,
-    DialogDeleteConsignment,
+    DialogCreateCategory,
+    DialogDeleteCategory,
     Snackbar
   }
 })
-export default class Consignment extends Vue {
+export default class Category extends Vue {
   @PropSync("layout") layoutSync!: object;
-
-  consignments: Array<IConsignment> = [];
-  consignment: IConsignment = {
-    merchantId: "",
-    categories: new Set("abc"),
-    packingTime: "",
-    packingStation: {
-      street: "",
-      county: "",
-      city: "",
-      country: "",
-      postalCode: ""
-    },
-    bookingNumber: "",
-    cutOffTime: "",
-    laytime: "",
-    payload: 0,
-    unitOfMeasurement: "KG",
-    portOfLoading: "",
-    fcl: true,
-    shippingLine: "",
-    containerType: "",
-    status: ""
+  categories: Array<ICategory> = [];
+  category: ICategory = {
+    name: "",
+    description: ""
   };
   dialogAdd = false;
   dialogDel = false;
@@ -128,23 +113,12 @@ export default class Consignment extends Vue {
   };
   headers = [
     {
-      text: "Mã hàng",
+      text: "Tên vai trò",
       align: "start",
       sortable: true,
-      value: "merchantId"
+      value: "name"
     },
-    { text: "Mã booking", value: "bookingNumber" },
-    { text: "Loại hàng", value: "categoryList" },
-    { text: "Hãng tàu", value: "shippingLine" },
-    { text: "Bến cảng", value: "portOfLoading" },
-    { text: "Thời gian đóng hàng", value: "packingTime" },
-    { text: "Thời gian làm hàng", value: "laytime" },
-    { text: "Thời gian tàu chạy", value: "cutOffTime" },
-    { text: "Loại cont", value: "containerType" },
-    { text: "Khối lượng", value: "payload" },
-    { text: "Đơn vị", value: "unitOfMeasurement" },
-    { text: "Full container loaded", value: "fcl" },
-    { text: "Trạng thái", value: "status" },
+    { text: "Mô tả", value: "description" },
     {
       text: "Hành động",
       value: "action"
@@ -154,54 +128,35 @@ export default class Consignment extends Vue {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
   }
 
-  addConsignment() {
-    this.consignment = {
-      merchantId: "",
-      categories: new Set("abc"),
-      packingTime: "2020-06-23T20:20",
-      packingStation: {
-        street: "abc",
-        county: "xyz",
-        city: "Hà Nội",
-        country: "VN",
-        postalCode: "03132"
-      },
-      bookingNumber: "12356",
-      cutOffTime: "2020-06-27T20:20",
-      laytime: "2020-06-23T20:20",
-      payload: 2000,
-      unitOfMeasurement: "KG",
-      portOfLoading: "HAIPHONGPORT",
-      fcl: true,
-      shippingLine: "apl",
-      containerType: "40HC",
-      status: "CREATED"
+  addCategory() {
+    this.category = {
+      name: "",
+      description: ""
     };
     this.dialogAdd = true;
   }
 
-  viewDetail(item: IConsignment) {
-    this.consignment = item;
+  viewDetail(item: ICategory) {
+    this.category = item;
     this.dialogAdd = true;
   }
 
-  removeConsignment(item: IConsignment) {
-    this.consignment = item;
+  removeCategory(item: ICategory) {
+    this.category = item;
     this.dialogDel = true;
   }
 
   @Watch("options", { deep: true })
   onOptionsChange(val: object, oldVal: object) {
-    console.log(this.$auth.user());
     if (val !== oldVal) {
-      getConsignmentByMerchant(this.$auth.user().id, {
+      getCategories({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })
         .then(res => {
-          const response: PaginationResponse<IConsignment> = res.data;
+          const response: PaginationResponse<ICategory> = res.data;
           console.log("watch", this.options);
-          this.consignments = response.data;
+          this.categories = response.data;
           this.options.totalItems = response.total_elements;
         })
         .catch(err => console.log(err))

@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogSync" persistent max-width="600px">
+  <v-dialog v-model="dialogAddSync" max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
@@ -7,8 +7,8 @@
           <v-btn
             icon
             dark
-            @click="dialogSync = false"
-            style="margin-left:258px;"
+            @click="dialogAddSync = false"
+            style="margin-left:395px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
@@ -25,7 +25,6 @@
                   prepend-icon="mdi-account"
                   type="text"
                   v-model="containerTypeSync.name"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -37,7 +36,6 @@
                   prepend-icon="mdi-lock"
                   type="text"
                   v-model="containerTypeSync.description"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -51,7 +49,6 @@
                   prepend-icon="mdi-lock"
                   type="number"
                   v-model="containerTypeSync.tareWeight"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -63,7 +60,6 @@
                   prepend-icon="mdi-lock"
                   type="number"
                   v-model="containerTypeSync.payloadCapacity"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -77,7 +73,6 @@
                   prepend-icon="mdi-lock"
                   type="number"
                   v-model="containerTypeSync.cubicCapacity"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -89,7 +84,6 @@
                   prepend-icon="mdi-lock"
                   type="number"
                   v-model="containerTypeSync.internalLength"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -103,7 +97,6 @@
                   prepend-icon="mdi-lock"
                   type="number"
                   v-model="containerTypeSync.internalWidth"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -115,7 +108,6 @@
                   prepend-icon="mdi-lock"
                   type="number"
                   v-model="containerTypeSync.internalHeight"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -129,7 +121,6 @@
                   prepend-icon="mdi-lock"
                   type="number"
                   v-model="containerTypeSync.doorOpeningWidth"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -141,7 +132,6 @@
                   prepend-icon="mdi-lock"
                   type="number"
                   v-model="containerTypeSync.doorOpeningHeight"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -149,47 +139,112 @@
           <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
-        <v-btn @click="dialogSync = false">Trở về</v-btn>
-        <v-btn @click="submit()" color="primary" v-if="checkAdd"
-          >Thêm mới</v-btn
-        >
-        <v-btn @click="updateContainerType()" color="primary" v-if="checkUpdate"
+        <v-btn @click="dialogAddSync = false">Trở về</v-btn>
+        <v-btn
+          @click="updateContainerType()"
+          color="primary"
+          v-if="containerTypeSync.id"
           >Cập nhập</v-btn
+        >
+        <v-btn @click="addContainerType()" color="primary" v-else
+          >Thêm mới</v-btn
         >
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, Prop, PropSync } from "vue-property-decorator";
-import { ContainerType } from "../container-type";
+import { Component, Vue, PropSync } from "vue-property-decorator";
+import { IContainerType } from "@/entity/container-type";
+import {
+  createContainerType,
+  updateContainerType,
+  getContainerTypes
+} from "@/api/container-type";
+import { PaginationResponse } from "@/api/payload";
 
-@Component({
-  name: "CreateContainerType"
-})
-export default class CreateContainerType extends Vue {
-  // @Prop() selected!: Array<object>;
-  @PropSync("dialogAdd", { type: Boolean }) dialogSync!: boolean;
-  @PropSync("checkSuccess", { type: Boolean }) checkSuccessSync!: boolean;
-  @PropSync("success", { type: String }) successSync!: string | null;
-  @Prop(Boolean) checkAdd!: boolean;
-  @Prop(Boolean) checkUpdate!: boolean;
-  @Prop(Boolean) readonly!: boolean;
+@Component
+export default class DialogCreateContainerType extends Vue {
+  @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("containerType", { type: Object })
-  containerTypeSync!: ContainerType | null;
-  @Prop(String) title!: string | null;
+  containerTypeSync!: IContainerType;
+  @PropSync("containerTypes", { type: Array }) containerTypesSync!: Array<
+    IContainerType
+  >;
+  @PropSync("options", { type: Object }) optionsSync!: {
+    descending: true;
+    page: number;
+    itemsPerPage: number;
+    totalItems: number;
+    itemsPerPageItems: Array<number>;
+  };
+  @PropSync("message", { type: String }) messageSync!: string;
+  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
-  public submit() {
-    this.successSync = "Thêm mới thành công!";
-    this.checkSuccessSync = true;
-    this.dialogSync = false;
+  title = this.containerTypeSync ? "Cập nhập" : "Thêm mới";
+  addContainerType() {
+    if (this.containerTypeSync) {
+      createContainerType(this.containerTypeSync)
+        .then(res => {
+          console.log(res.data);
+          const response: IContainerType = res.data;
+          this.containerTypeSync = response;
+          this.messageSync =
+            "Thêm mới thành công loại Container: " +
+            this.containerTypeSync.name;
+          getContainerTypes({
+            page: 0,
+            limit: 5
+          })
+            .then(res => {
+              const response: PaginationResponse<IContainerType> = res.data;
+              this.containerTypesSync = response.data;
+              this.optionsSync.totalItems = response.total_elements;
+            })
+            .catch(err => console.log(err))
+            .finally();
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(
+          () => ((this.snackbarSync = true), (this.dialogAddSync = false))
+        );
+    }
   }
-  public updateContainerType() {
-    this.successSync = "Cập nhập thành công";
-    this.checkSuccessSync = true;
-    this.dialogSync = false;
+  updateContainerType() {
+    if (this.containerTypeSync.id) {
+      updateContainerType(this.containerTypeSync)
+        .then(res => {
+          console.log(res.data);
+          const response: IContainerType = res.data;
+          this.containerTypeSync = response;
+          this.messageSync =
+            "Cập nhập thành công loại Container: " +
+            this.containerTypeSync.name;
+          getContainerTypes({
+            page: 0,
+            limit: 5
+          })
+            .then(res => {
+              const response: PaginationResponse<IContainerType> = res.data;
+              this.containerTypesSync = response.data;
+              this.optionsSync.totalItems = response.total_elements;
+            })
+            .catch(err => console.log(err))
+            .finally();
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(
+          () => ((this.snackbarSync = true), (this.dialogAddSync = false))
+        );
+    }
   }
 }
 </script>

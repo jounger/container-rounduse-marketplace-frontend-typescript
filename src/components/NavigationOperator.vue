@@ -83,6 +83,14 @@
           <v-list-item-title>Loại Container</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
+      <v-list-item to="/category">
+        <v-list-item-icon>
+          <v-icon>mdi-help-box</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title>Loại hàng</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
     </v-list-group>
   </v-list>
 </template>

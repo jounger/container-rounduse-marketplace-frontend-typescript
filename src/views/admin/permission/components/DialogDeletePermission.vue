@@ -3,12 +3,12 @@
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">Xóa loại Container</span>
+          ><span class="headline" style="color:white;">Xóa vai trò</span>
           <v-btn
             icon
             dark
             @click="dialogDelSync = false"
-            style="margin-left:324px;"
+            style="margin-left:403px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
@@ -19,14 +19,14 @@
         <v-form>
           <v-container>
             <span style="color: black; font-size:22px;"
-              >Bạn có chắc chắn muốn xóa loại Container này?</span
+              >Bạn có chắc chắn muốn xóa vai trò này?</span
             >
             <div class="line"></div>
             <v-list>
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title>{{
-                    containerTypeSync.name
+                    permissionSync.name
                   }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -37,27 +37,26 @@
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
         <v-btn @click="dialogDelSync = false">Hủy</v-btn>
-        <v-btn @click="removeContainerType()" color="red">Xóa</v-btn>
+        <v-btn @click="removePermission()" color="red">Xóa</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
-import { IContainerType } from "@/entity/container-type";
-import { removeContainerType } from "@/api/container-type";
-import { getContainerTypes } from "@/api/container-type";
+import { IPermission } from "@/entity/permission";
+import { removePermission } from "@/api/permission";
+import { getPermissions } from "@/api/permission";
 import { PaginationResponse } from "@/api/payload";
 
 @Component
-export default class DialogDeleteContainerType extends Vue {
+export default class DialogDeletePermission extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("containerType", { type: Object })
-  containerTypeSync!: IContainerType;
+  @PropSync("permission", { type: Object }) permissionSync!: IPermission;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @PropSync("containerTypes", { type: Array }) containerTypesSync!: Array<
-    IContainerType
+  @PropSync("permissions", { type: Array }) permissionsSync!: Array<
+    IPermission
   >;
   @PropSync("options", { type: Object }) optionsSync!: {
     descending: true;
@@ -67,22 +66,22 @@ export default class DialogDeleteContainerType extends Vue {
     itemsPerPageItems: Array<number>;
   };
 
-  removeContainerType() {
-    if (this.containerTypeSync.id) {
-      removeContainerType(this.containerTypeSync.id)
+  removePermission() {
+    if (this.permissionSync.id) {
+      removePermission(this.permissionSync.id)
         .then(res => {
           console.log(res.data);
-          const response: IContainerType = res.data;
-          this.containerTypeSync = response;
+          const response: IPermission = res.data;
+          this.permissionSync = response;
           this.messageSync =
-            "Xóa thành công loại Container: " + this.containerTypeSync.name;
-          getContainerTypes({
+            "Xóa thành công vai trò: " + this.permissionSync.name;
+          getPermissions({
             page: 0,
             limit: 5
           })
             .then(res => {
-              const response: PaginationResponse<IContainerType> = res.data;
-              this.containerTypesSync = response.data;
+              const response: PaginationResponse<IPermission> = res.data;
+              this.permissionsSync = response.data;
               this.optionsSync.totalItems = response.total_elements;
             })
             .catch(err => console.log(err))

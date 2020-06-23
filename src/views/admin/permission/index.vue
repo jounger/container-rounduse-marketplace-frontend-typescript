@@ -2,7 +2,7 @@
   <v-content>
     <v-card>
       <v-card-title>
-        Danh sách Vai trò
+        Danh sách vai trò
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -16,48 +16,41 @@
         color="primary"
         style="margin-left: 35px;"
         dark
-        @click.stop="addPermission"
-        v-if="$auth.check(['ROLE_ADMIN'])"
+        @click="addPermission()"
       >
         Thêm mới
       </v-btn>
       <v-row justify="center">
-        <DeleteICD
+        <DialogDeletePermission
           :dialogDel.sync="dialogDel"
-          :checkSuccess.sync="checkSuccess"
-          :success.sync="success"
-          :name="name"
+          :permission.sync="permission"
+          :permissions.sync="permissions"
+          :options.sync="options"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
         />
       </v-row>
       <v-row justify="center">
-        <CreatePermission
+        <DialogCreatePermission
           :permission.sync="permission"
-          :title="title"
+          :permissions.sync="permissions"
+          :options.sync="options"
           :dialogAdd.sync="dialogAdd"
-          :checkSuccess.sync="checkSuccess"
-          :checkAdd="checkAdd"
-          :checkUpdate="checkUpdate"
-          :success.sync="success"
-          :readonly="readonly"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
         />
       </v-row>
-      <v-alert
-        v-model="checkSuccess"
-        dismissible
-        close-icon="mdi-delete"
-        type="success"
-      >
-        {{ success }}
-      </v-alert>
+      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-data-table
         :headers="headers"
         :items="permissions"
+        item-key="id"
         :search="search"
-        item-key="permissionName"
-        :options.sync="options"
-        :server-items-length="totalPermissions"
         :loading="loading"
-        :items-per-page="5"
+        :options.sync="options"
+        :server-items-length="options.totalItems"
+        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :actions-append="options.page"
         class="elevation-1"
       >
         <template v-slot:item.action="{ item }">
@@ -69,12 +62,9 @@
             </template>
             <v-list>
               <v-list-item @click="viewDetail(item)">
-                <v-list-item-title>Xem chi tiết</v-list-item-title>
+                <v-list-item-title>Chi tiết</v-list-item-title>
               </v-list-item>
-              <v-list-item @click="update(item)">
-                <v-list-item-title>Cập nhập</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="delPermission(item)">
+              <v-list-item @click="removePermission(item)">
                 <v-list-item-title>Xóa</v-list-item-title>
               </v-list-item>
             </v-list>
@@ -88,44 +78,45 @@
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
 import { IPermission } from "@/entity/permission";
-import DeleteICD from "../../operator/icd/components/DeleteICD.vue";
-import CreatePermission from "./components/CreatePermission.vue";
-import data from "./data";
+import { getPermissions } from "@/api/permission";
+import { PaginationResponse } from "@/api/payload";
+import Snackbar from "@/components/Snackbar.vue";
+import DialogDeletePermission from "./components/DialogDeletePermission.vue";
+import DialogCreatePermission from "./components/DialogCreatePermission.vue";
 
 @Component({
   components: {
-    DeleteICD,
-    CreatePermission
+    DialogCreatePermission,
+    DialogDeletePermission,
+    Snackbar
   }
 })
 export default class Permission extends Vue {
   @PropSync("layout") layoutSync!: object;
-  permissionName = "";
-  description = "";
+  permissions: Array<IPermission> = [];
   permission: IPermission = {
-    permissionName: "",
+    name: "",
     description: ""
   };
-  success = "";
-  checkSuccess = false;
   dialogAdd = false;
   dialogDel = false;
-  checkAdd = false;
-  checkUpdate = false;
-  title = "";
-  name = "";
   search = "";
-  readonly = false;
-  totalPermissions = 0;
-  permissions = [] as Array<Permission>;
+  message = "";
+  snackbar = false;
   loading = true;
-  options = {} as any;
+  options = {
+    descending: true,
+    page: 1,
+    itemsPerPage: 5,
+    totalItems: 0,
+    itemsPerPageItems: [5, 10, 20, 50]
+  };
   headers = [
     {
       text: "Tên vai trò",
       align: "start",
       sortable: true,
-      value: "permissionName"
+      value: "name"
     },
     { text: "Mô tả", value: "description" },
     {
@@ -133,96 +124,44 @@ export default class Permission extends Vue {
       value: "action"
     }
   ];
-  async created() {
+  created() {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
   }
-  @Watch("options", { deep: true })
-  getOptions() {
-    this.getDataFromApi().then((data: any) => {
-      this.permissions = data.items;
-      this.totalPermissions = data.total;
-    });
-  }
-  async mounted() {
-    this.getDataFromApi().then((data: any) => {
-      this.permissions = data.items;
-      this.totalPermissions = data.total;
-    });
-  }
-  public getDataFromApi() {
-    console.log(this.options);
-    this.loading = true;
-    return new Promise((resolve, reject) => {
-      const { sortBy, sortDesc, page, itemsPerPage } = this.options;
 
-      let items = this.getPermissions();
-      console.log(this.getPermissions());
-      const total = items.length;
-
-      if (sortBy.length === 1 && sortDesc.length === 1) {
-        items = items.sort((a: any, b: any) => {
-          const sortA = a[sortBy[0]];
-          const sortB = b[sortBy[0]];
-
-          if (sortDesc[0]) {
-            if (sortA < sortB) return 1;
-            if (sortA > sortB) return -1;
-            return 0;
-          } else {
-            if (sortA < sortB) return -1;
-            if (sortA > sortB) return 1;
-            return 0;
-          }
-        });
-      }
-
-      if (itemsPerPage > 0) {
-        items = items.slice((page - 1) * itemsPerPage, page * itemsPerPage);
-      }
-
-      setTimeout(() => {
-        this.loading = false;
-        resolve({
-          items,
-          total
-        });
-      }, 1000);
-    });
-  }
-  public getPermissions(): Array<IPermission> {
-    return data;
-  }
-  public viewDetail(item: Permission) {
-    this.permission = item;
-    this.checkAdd = false;
-    this.checkUpdate = false;
-    this.title = "Thông tin vai trò";
-    this.readonly = true;
-    this.dialogAdd = true;
-  }
-  public update(item: Permission) {
-    this.permission = item;
-    this.description = item.description;
-    this.checkAdd = false;
-    this.checkUpdate = true;
-    this.title = "Cập nhập vai trò";
-    this.readonly = false;
-    this.dialogAdd = true;
-  }
-  public delPermission(item: Permission) {
-    this.name = item.permissionName;
-    this.dialogDel = true;
-  }
-  public addPermission() {
-    this.title = "Thêm mới Vai trò";
+  addPermission() {
     this.permission = {
-      permissionName: "",
+      name: "",
       description: ""
     };
-    this.checkAdd = true;
-    this.checkUpdate = false;
-    this.readonly = false;
     this.dialogAdd = true;
+  }
+
+  viewDetail(item: IPermission) {
+    this.permission = item;
+    this.dialogAdd = true;
+  }
+
+  removePermission(item: IPermission) {
+    this.permission = item;
+    this.dialogDel = true;
+  }
+
+  @Watch("options", { deep: true })
+  onOptionsChange(val: object, oldVal: object) {
+    if (val !== oldVal) {
+      getPermissions({
+        page: this.options.page - 1,
+        limit: this.options.itemsPerPage
+      })
+        .then(res => {
+          const response: PaginationResponse<IPermission> = res.data;
+          console.log("watch", this.options);
+          this.permissions = response.data;
+          this.options.totalItems = response.total_elements;
+        })
+        .catch(err => console.log(err))
+        .finally(() => (this.loading = false));
+    }
   }
 }
 </script>

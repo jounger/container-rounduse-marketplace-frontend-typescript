@@ -87,10 +87,10 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
-import { Roles } from "../roles/roles";
 import data from "./data";
 import DeleteRoles from "./components/DeleteRoles.vue";
 import CreateRoles from "./components/CreateRoles.vue";
+import { IRole } from '@/entity/roles';
 
 @Component({
   name: "RolesManagement",
@@ -107,13 +107,13 @@ export default class RolesManagement extends Vue {
   dialogDel = false;
   rolename = "";
   permissions = [] as Array<string>;
-  role: Roles = {
+  role: IRole = {
     rolename: "",
     permissions: [] as Array<string>
   };
   name = "";
 
-  roles = [] as Array<Roles>;
+  roles = [] as Array<IRole>;
   search = "";
   totalRoles = 0;
   loading = true;
@@ -190,10 +190,10 @@ export default class RolesManagement extends Vue {
       }, 1000);
     });
   }
-  public getRoles(): Array<Roles> {
+  public getRoles(): Array<IRole> {
     return data;
   }
-  public viewDetail(item: Roles) {
+  public viewDetail(item: IRole) {
     this.role = item;
     this.checkAdd = false;
     this.checkUpdate = false;
@@ -201,7 +201,7 @@ export default class RolesManagement extends Vue {
     this.readonly = true;
     this.dialogAdd = true;
   }
-  public update(item: Roles) {
+  public update(item: IRole) {
     this.role = item;
     this.checkAdd = false;
     this.checkUpdate = true;
@@ -209,7 +209,7 @@ export default class RolesManagement extends Vue {
     this.readonly = false;
     this.dialogAdd = true;
   }
-  public delRoles(item: Roles) {
+  public delRoles(item: IRole) {
     this.name = item.rolename;
     this.dialogDel = true;
   }

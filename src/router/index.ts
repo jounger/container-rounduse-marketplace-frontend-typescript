@@ -146,6 +146,14 @@ const routes: Array<RouteConfig> = [
     meta: {
       auth: true
     }
+  },
+  {
+    path: "/category",
+    name: "ConsignmentCategory",
+    component: () => import("@/views/operator/consignment-category/index.vue"),
+    meta: {
+      auth: true
+    }
   }
 ];
 

@@ -16,48 +16,41 @@
         color="primary"
         style="margin-left: 35px;"
         dark
-        @click.stop="addContainerType"
-        v-if="$auth.check(['ROLE_ADMIN'])"
+        @click="addContainerType()"
       >
         Thêm mới
       </v-btn>
       <v-row justify="center">
-        <DeleteContainerType
+        <DialogDeleteContainerType
           :dialogDel.sync="dialogDel"
-          :checkSuccess.sync="checkSuccess"
-          :success.sync="success"
-          :nameDel="nameDel"
+          :containerType.sync="containerType"
+          :containerTypes.sync="containerTypes"
+          :options.sync="options"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
         />
       </v-row>
       <v-row justify="center">
-        <CreateContainerType
+        <DialogCreateContainerType
           :containerType.sync="containerType"
-          :title="title"
+          :containerTypes.sync="containerTypes"
+          :options.sync="options"
           :dialogAdd.sync="dialogAdd"
-          :checkSuccess.sync="checkSuccess"
-          :checkAdd="checkAdd"
-          :checkUpdate="checkUpdate"
-          :success.sync="success"
-          :readonly="readonly"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
         />
       </v-row>
-      <v-alert
-        v-model="checkSuccess"
-        dismissible
-        close-icon="mdi-delete"
-        type="success"
-      >
-        {{ success }}
-      </v-alert>
+      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-data-table
         :headers="headers"
         :items="containerTypes"
+        item-key="id"
         :search="search"
-        item-key="name"
-        :options.sync="options"
-        :server-items-length="totalContainerTypes"
         :loading="loading"
-        :items-per-page="5"
+        :options.sync="options"
+        :server-items-length="options.totalItems"
+        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :actions-append="options.page"
         class="elevation-1"
       >
         <template v-slot:item.action="{ item }">
@@ -69,12 +62,9 @@
             </template>
             <v-list>
               <v-list-item @click="viewDetail(item)">
-                <v-list-item-title>Xem chi tiết</v-list-item-title>
+                <v-list-item-title>Chi tiết</v-list-item-title>
               </v-list-item>
-              <v-list-item @click="update(item)">
-                <v-list-item-title>Cập nhập</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="delContainerType(item)">
+              <v-list-item @click="removeContainerType(item)">
                 <v-list-item-title>Xóa</v-list-item-title>
               </v-list-item>
             </v-list>
@@ -87,21 +77,24 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
-import DeleteContainerType from "../container-type/components/DeleteContainerType.vue";
-import CreateContainerType from "./components/CreateContainerType.vue";
-import { ContainerType } from "./container-type";
-import data from "./data";
+import { IContainerType } from "@/entity/container-type";
+import { getContainerTypes } from "@/api/container-type";
+import { PaginationResponse } from "@/api/payload";
+import Snackbar from "@/components/Snackbar.vue";
+import DialogCreateContainerType from "./components/CreateContainerType.vue";
+import DialogDeleteContainerType from "./components/DeleteContainerType.vue";
 
 @Component({
-  name: "ContainerTypeManagement",
   components: {
-    DeleteContainerType,
-    CreateContainerType
+    DialogCreateContainerType,
+    DialogDeleteContainerType,
+    Snackbar
   }
 })
-export default class ContainerTypeManagement extends Vue {
+export default class ContainerType extends Vue {
   @PropSync("layout") layoutSync!: object;
-  containerType: ContainerType = {
+  containerTypes: Array<IContainerType> = [];
+  containerType: IContainerType = {
     name: "",
     description: "",
     tareWeight: 0,
@@ -113,20 +106,19 @@ export default class ContainerTypeManagement extends Vue {
     doorOpeningWidth: 0,
     doorOpeningHeight: 0
   };
-  success = "";
-  checkSuccess = false;
   dialogAdd = false;
   dialogDel = false;
-  checkAdd = false;
-  checkUpdate = false;
-  title = "";
-  nameDel = "";
   search = "";
-  readonly = false;
-  totalContainerTypes = 0;
-  containerTypes = [] as Array<ContainerType>;
+  message = "";
+  snackbar = false;
   loading = true;
-  options = {} as any;
+  options = {
+    descending: true,
+    page: 1,
+    itemsPerPage: 5,
+    totalItems: 0,
+    itemsPerPageItems: [5, 10, 20, 50]
+  };
   headers = [
     {
       text: "Tên loại Container",
@@ -134,9 +126,9 @@ export default class ContainerTypeManagement extends Vue {
       sortable: true,
       value: "name"
     },
-    { text: "Chi tiết", value: "description" },
+    { text: "Mô tả", value: "description" },
     { text: "Khối lượng vỏ", value: "tareWeight" },
-    { text: "Trọng tải", value: "payloadCapacity" },
+    { text: "Sức chứa", value: "payloadCapacity" },
     { text: "Công suất khối", value: "cubicCapacity" },
     { text: "Chiều dài trong", value: "internalLength" },
     { text: "Chiều rộng trong", value: "internalWidth" },
@@ -148,86 +140,11 @@ export default class ContainerTypeManagement extends Vue {
       value: "action"
     }
   ];
-  async created() {
-    console.log(1);
+  created() {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
   }
-  @Watch("options", { deep: true })
-  getOptions() {
-    this.getDataFromApi().then((data: any) => {
-      this.containerTypes = data.items;
-      this.totalContainerTypes = data.total;
-    });
-  }
-  async mounted() {
-    this.getDataFromApi().then((data: any) => {
-      this.containerTypes = data.items;
-      this.totalContainerTypes = data.total;
-    });
-  }
-  public getDataFromApi() {
-    console.log(this.options);
-    this.loading = true;
-    return new Promise((resolve, reject) => {
-      const { sortBy, sortDesc, page, itemsPerPage } = this.options;
 
-      let items = this.getContainerTypes();
-      const total = items.length;
-
-      if (sortBy.length === 1 && sortDesc.length === 1) {
-        items = items.sort((a: any, b: any) => {
-          const sortA = a[sortBy[0]];
-          const sortB = b[sortBy[0]];
-
-          if (sortDesc[0]) {
-            if (sortA < sortB) return 1;
-            if (sortA > sortB) return -1;
-            return 0;
-          } else {
-            if (sortA < sortB) return -1;
-            if (sortA > sortB) return 1;
-            return 0;
-          }
-        });
-      }
-
-      if (itemsPerPage > 0) {
-        items = items.slice((page - 1) * itemsPerPage, page * itemsPerPage);
-      }
-
-      setTimeout(() => {
-        this.loading = false;
-        resolve({
-          items,
-          total
-        });
-      }, 1000);
-    });
-  }
-  public getContainerTypes(): Array<ContainerType> {
-    return data;
-  }
-  public viewDetail(item: ContainerType) {
-    this.containerType = item;
-    this.checkAdd = false;
-    this.checkUpdate = false;
-    this.title = "Thông tin containerType";
-    this.readonly = true;
-    this.dialogAdd = true;
-  }
-  public update(item: ContainerType) {
-    this.containerType = item;
-    this.checkAdd = false;
-    this.checkUpdate = true;
-    this.title = "Cập nhập containerType";
-    this.readonly = false;
-    this.dialogAdd = true;
-  }
-  public delContainerType(item: ContainerType) {
-    this.nameDel = item.name;
-    this.dialogDel = true;
-  }
-  public addContainerType() {
+  addContainerType() {
     this.containerType = {
       name: "",
       description: "",
@@ -240,11 +157,35 @@ export default class ContainerTypeManagement extends Vue {
       doorOpeningWidth: 0,
       doorOpeningHeight: 0
     };
-    this.title = "Thêm mới loại Container";
-    this.checkAdd = true;
-    this.checkUpdate = false;
-    this.readonly = false;
     this.dialogAdd = true;
+  }
+
+  viewDetail(item: IContainerType) {
+    this.containerType = item;
+    this.dialogAdd = true;
+  }
+
+  removeContainerType(item: IContainerType) {
+    this.containerType = item;
+    this.dialogDel = true;
+  }
+
+  @Watch("options", { deep: true })
+  onOptionsChange(val: object, oldVal: object) {
+    if (val !== oldVal) {
+      getContainerTypes({
+        page: this.options.page - 1,
+        limit: this.options.itemsPerPage
+      })
+        .then(res => {
+          const response: PaginationResponse<IContainerType> = res.data;
+          console.log("watch", this.options);
+          this.containerTypes = response.data;
+          this.options.totalItems = response.total_elements;
+        })
+        .catch(err => console.log(err))
+        .finally(() => (this.loading = false));
+    }
   }
 }
 </script>

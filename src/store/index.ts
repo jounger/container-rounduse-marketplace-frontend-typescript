@@ -1,6 +1,5 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import { UserEntity } from "@/entity/user";
 
 Vue.use(Vuex);
 

@@ -12,52 +12,40 @@
           hide-details
         ></v-text-field>
       </v-card-title>
-      <v-btn
-        color="primary"
-        style="margin-left: 35px;"
-        dark
-        @click.stop="addICD"
-        v-if="$auth.check(['ROLE_ADMIN'])"
-      >
+      <v-btn color="primary" style="margin-left: 35px;" dark @click="addIcd()">
         Thêm mới
       </v-btn>
       <v-row justify="center">
-        <DeleteICD
+        <DialogDeleteIcd
           :dialogDel.sync="dialogDel"
-          :checkSuccess.sync="checkSuccess"
-          :success.sync="success"
-          :name="name"
+          :icd.sync="icd"
+          :icds.sync="icds"
+          :options.sync="options"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
         />
       </v-row>
       <v-row justify="center">
-        <CreateICD
+        <DialogCreateIcd
           :icd.sync="icd"
-          :title="title"
+          :icds.sync="icds"
+          :options.sync="options"
           :dialogAdd.sync="dialogAdd"
-          :checkSuccess.sync="checkSuccess"
-          :checkAdd="checkAdd"
-          :checkUpdate="checkUpdate"
-          :success.sync="success"
-          :readonly="readonly"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
         />
       </v-row>
-      <v-alert
-        v-model="checkSuccess"
-        dismissible
-        close-icon="mdi-delete"
-        type="success"
-      >
-        {{ success }}
-      </v-alert>
+      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-data-table
         :headers="headers"
-        :items="ICDs"
-        :search="search"
+        :items="icds"
         item-key="nameCode"
-        :options.sync="options"
-        :server-items-length="totalICDs"
+        :search="search"
         :loading="loading"
-        :items-per-page="5"
+        :options.sync="options"
+        :server-items-length="options.totalItems"
+        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :actions-append="options.page"
         class="elevation-1"
       >
         <template v-slot:item.action="{ item }">
@@ -69,12 +57,9 @@
             </template>
             <v-list>
               <v-list-item @click="viewDetail(item)">
-                <v-list-item-title>Xem chi tiết</v-list-item-title>
+                <v-list-item-title>Chi tiết</v-list-item-title>
               </v-list-item>
-              <v-list-item @click="update(item)">
-                <v-list-item-title>Cập nhập</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="delICD(item)">
+              <v-list-item @click="removeIcd(item)">
                 <v-list-item-title>Xóa</v-list-item-title>
               </v-list-item>
             </v-list>
@@ -87,144 +72,94 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
-import data from "../icd/data";
-import { Icd } from "../icd/icd";
-import DeleteICD from "./components/DeleteICD.vue";
-import CreateICD from "./components/CreateICD.vue";
+import { IIcd } from "@/entity/icd";
+import { getIcds } from "@/api/icd";
+import { PaginationResponse } from "@/api/payload";
+import Snackbar from "@/components/Snackbar.vue";
+import DialogCreateIcd from "./components/DialogCreateICD.vue";
+import DialogDeleteIcd from "./components/DialogDeleteICD.vue";
 
 @Component({
-  name: "ICDManagement",
   components: {
-    DeleteICD,
-    CreateICD
+    DialogCreateIcd,
+    DialogDeleteIcd,
+    Snackbar
   }
 })
-export default class ICDManagement extends Vue {
+export default class Icd extends Vue {
   @PropSync("layout") layoutSync!: object;
-  icd: Icd = {
+  icds: Array<IIcd> = [];
+  icd: IIcd = {
     fullname: "",
     nameCode: "",
     address: ""
   };
-  success = "";
-  icds = [] as Array<Icd>;
-  checkSuccess = false;
   dialogAdd = false;
   dialogDel = false;
-  checkAdd = false;
-  checkUpdate = false;
-  title = "";
-  name = "";
   search = "";
-  readonly = false;
-  totalICDs = 0;
-  ICDs = [] as Array<Icd>;
+  message = "";
+  snackbar = false;
   loading = true;
-  options = {} as any;
+  options = {
+    descending: true,
+    page: 1,
+    itemsPerPage: 5,
+    totalItems: 0,
+    itemsPerPageItems: [5, 10, 20, 50]
+  };
   headers = [
     {
-      text: "Tên ICD",
+      text: "Mã code",
       align: "start",
       sortable: true,
-      value: "fullname"
+      value: "nameCode"
     },
-    { text: "Số bằng lái", value: "nameCode" },
-    { text: "Vị trí hiện tại", value: "address" },
+    { text: "Tên ICD", value: "fullname" },
+    { text: "Địa chỉ", value: "address" },
     {
       text: "Hành động",
       value: "action"
     }
   ];
-  async created() {
-    console.log(1);
+  created() {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
   }
-  @Watch("options", { deep: true })
-  getOptions() {
-    this.getDataFromApi().then((data: any) => {
-      this.ICDs = data.items;
-      this.totalICDs = data.total;
-    });
-  }
-  async mounted() {
-    this.getDataFromApi().then((data: any) => {
-      this.ICDs = data.items;
-      this.totalICDs = data.total;
-    });
-  }
-  public getDataFromApi() {
-    console.log(this.options);
-    this.loading = true;
-    return new Promise((resolve, reject) => {
-      const { sortBy, sortDesc, page, itemsPerPage } = this.options;
 
-      let items = this.getICDs();
-      const total = items.length;
-
-      if (sortBy.length === 1 && sortDesc.length === 1) {
-        items = items.sort((a: any, b: any) => {
-          const sortA = a[sortBy[0]];
-          const sortB = b[sortBy[0]];
-
-          if (sortDesc[0]) {
-            if (sortA < sortB) return 1;
-            if (sortA > sortB) return -1;
-            return 0;
-          } else {
-            if (sortA < sortB) return -1;
-            if (sortA > sortB) return 1;
-            return 0;
-          }
-        });
-      }
-
-      if (itemsPerPage > 0) {
-        items = items.slice((page - 1) * itemsPerPage, page * itemsPerPage);
-      }
-
-      setTimeout(() => {
-        this.loading = false;
-        resolve({
-          items,
-          total
-        });
-      }, 1000);
-    });
-  }
-  public getICDs(): Array<Icd> {
-    return data;
-  }
-  public viewDetail(item: Icd) {
-    this.icd = item;
-    this.checkAdd = false;
-    this.checkUpdate = false;
-    this.title = "Thông tin ICD";
-    this.readonly = true;
-    this.dialogAdd = true;
-  }
-  public update(item: Icd) {
-    this.icd = item;
-    this.checkAdd = false;
-    this.checkUpdate = true;
-    this.title = "Cập nhập ICD";
-    this.readonly = false;
-    this.dialogAdd = true;
-  }
-  public delICD(item: Icd) {
-    this.name = item.fullname;
-    this.dialogDel = true;
-  }
-  public addICD() {
-    this.title = "Thêm mới ICD";
+  addIcd() {
     this.icd = {
       fullname: "",
       nameCode: "",
       address: ""
     };
-    this.checkAdd = true;
-    this.checkUpdate = false;
-    this.readonly = false;
     this.dialogAdd = true;
+  }
+
+  viewDetail(item: IIcd) {
+    this.icd = item;
+    this.dialogAdd = true;
+  }
+
+  removeIcd(item: IIcd) {
+    this.icd = item;
+    this.dialogDel = true;
+  }
+
+  @Watch("options", { deep: true })
+  onOptionsChange(val: object, oldVal: object) {
+    if (val !== oldVal) {
+      getIcds({
+        page: this.options.page - 1,
+        limit: this.options.itemsPerPage
+      })
+        .then(res => {
+          const response: PaginationResponse<IIcd> = res.data;
+          console.log("watch", this.options);
+          this.icds = response.data;
+          this.options.totalItems = response.total_elements;
+        })
+        .catch(err => console.log(err))
+        .finally(() => (this.loading = false));
+    }
   }
 }
 </script>

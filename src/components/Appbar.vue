@@ -51,7 +51,7 @@ export default class Appbar extends Vue {
   get isSupplier() {
     if (
       this.$auth.check(["ROLE_FORWARDER", "ROLE_MERCHANT"]) &&
-      this.$auth.user().userInfo.status
+      this.$auth.user().status
     )
       return true;
     else return false;

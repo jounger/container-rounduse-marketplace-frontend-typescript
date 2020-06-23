@@ -60,7 +60,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, PropSync } from "vue-property-decorator";
-import { Roles } from "../roles";
+import { IRole } from "@/entity/roles";
 
 @Component({
   name: "CreateRoles"
@@ -74,7 +74,7 @@ export default class CreateRoles extends Vue {
   @Prop(Boolean) checkUpdate!: boolean;
   @Prop(Boolean) readonly!: boolean;
   @PropSync("role", { type: Object })
-  roleSync!: Roles | null;
+  roleSync!: IRole | null;
   @Prop(String) title!: string | null;
   permission = ["Create", "Update", "Delete"];
 

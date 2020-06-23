@@ -1,14 +1,15 @@
-export interface IConsignment {
-  id?: number,
-  bookNo: string,
-  PIC: string,
-  packingTime: string,
-  packingStation: string,
-  layTime: string,
-  cutOfTime: string,
-  payload: number,
-  UOM: number,
-  categories: Array<string>,
-  FCL: string,
-  port: string
+import { IAddress } from './address';
+import { ISupply } from './supply';
+export interface IConsignment extends ISupply{
+  merchantId: string;
+  categories: Set<string>;
+  packingTime: string;
+  packingStation: IAddress;
+  bookingNumber: string;
+  cutOffTime: string;
+  laytime: string;
+  payload: number;
+  unitOfMeasurement: string;
+  portOfLoading: string;
+  fcl?: boolean;
 }
