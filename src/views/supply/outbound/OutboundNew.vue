@@ -365,7 +365,7 @@
         id="mytable"
         v-model="selected"
         :headers="headers"
-        :items="consignments"
+        :items="outbounds"
         :search="search"
         item-key="bookNo"
         :options.sync="options"
@@ -520,11 +520,9 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
-import { IConsignment } from "@/entity/consignment";
-@Component({
-  name: "ConsignmentManagementNew"
-})
-export default class ConsignmentManagementNew extends Vue {
+import { IOutbound } from "@/entity/outbound";
+@Component
+export default class OutboundNew extends Vue {
   @PropSync("layout") layoutSync!: object;
   selected = [] as Array<any>;
   title = "";
@@ -558,7 +556,7 @@ export default class ConsignmentManagementNew extends Vue {
   dialogDelSingle = false;
   search = "";
   totalConsignments = 0;
-  consignments = [] as Array<any>;
+  outbounds = [] as Array<any>;
   loading = true;
   options = {} as any;
   headers = [
@@ -583,13 +581,13 @@ export default class ConsignmentManagementNew extends Vue {
   @Watch("options", { deep: true })
   getOptions() {
     this.getDataFromApi().then((data: any) => {
-      this.consignments = data.items;
+      this.outbounds = data.items;
       this.totalConsignments = data.total;
     });
   }
   async mounted() {
     this.getDataFromApi().then((data: any) => {
-      this.consignments = data.items;
+      this.outbounds = data.items;
       this.totalConsignments = data.total;
     });
   }
@@ -603,7 +601,7 @@ export default class ConsignmentManagementNew extends Vue {
       const total = items.length;
 
       if (sortBy.length === 1 && sortDesc.length === 1) {
-        items = items.sort((a: Array<IConsignment>, b: Array<IConsignment>) => {
+        items = items.sort((a: Array<IOutbound>, b: Array<IOutbound>) => {
           const sortA = a[sortBy[0]];
           const sortB = b[sortBy[0]];
 
@@ -783,7 +781,7 @@ export default class ConsignmentManagementNew extends Vue {
     this.dialogDelSingle = true;
   }
   public delSingle(name: string) {
-    this.consignments = this.consignments.filter(item => item.bookNo != name);
+    this.outbounds = this.outbounds.filter(item => item.bookNo != name);
     this.success = "Xóa thành công";
     this.dialogDelSingle = false;
     this.checkSuccess = true;

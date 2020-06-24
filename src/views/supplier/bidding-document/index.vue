@@ -480,14 +480,12 @@
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import Dialog from "@/components/Dialog.vue";
 import NavLayout from "@/layouts/NavLayout.vue";
-import { UserEntity } from "@/store/definitions/user";
 @Component({
-  name: "BiddingDocumentManagement",
   components: {
     Dialog
   }
 })
-export default class BiddingDocumentManagement extends Vue {
+export default class BiddingDocument extends Vue {
   @PropSync("layout") layoutSync!: object;
   selected = [] as Array<any>;
   title = "";
@@ -675,7 +673,7 @@ export default class BiddingDocumentManagement extends Vue {
             status: "PENDING",
             createdAt: "2020-06-18",
             updatedAt: "2020-06-18"
-          },
+          }
         ]
       },
       {
@@ -724,7 +722,7 @@ export default class BiddingDocumentManagement extends Vue {
             status: "PENDING",
             createdAt: "2020-06-18",
             updatedAt: "2020-06-18"
-          },
+          }
         ]
       },
       {
@@ -773,7 +771,7 @@ export default class BiddingDocumentManagement extends Vue {
             status: "PENDING",
             createdAt: "2020-06-18",
             updatedAt: "2020-06-18"
-          },
+          }
         ]
       },
       {
@@ -822,7 +820,7 @@ export default class BiddingDocumentManagement extends Vue {
             status: "PENDING",
             createdAt: "2020-06-18",
             updatedAt: "2020-06-18"
-          },
+          }
         ]
       },
       {
@@ -871,7 +869,7 @@ export default class BiddingDocumentManagement extends Vue {
             status: "PENDING",
             createdAt: "2020-06-18",
             updatedAt: "2020-06-18"
-          },
+          }
         ]
       },
       {
@@ -920,9 +918,9 @@ export default class BiddingDocumentManagement extends Vue {
             status: "PENDING",
             createdAt: "2020-06-18",
             updatedAt: "2020-06-18"
-          },
+          }
         ]
-      },
+      }
     ];
   }
   public add() {

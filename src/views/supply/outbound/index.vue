@@ -16,21 +16,21 @@
         color="primary"
         style="margin-left: 35px;"
         dark
-        @click="addConsignment()"
+        @click="addOutbound()"
       >
         Thêm mới
       </v-btn>
       <v-row justify="center">
-        <DialogDeleteConsignment
+        <DialogDeleteOutbound
           :dialogDel.sync="dialogDel"
-          :consignment.sync="consignment"
+          :outbound.sync="outbound"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
       </v-row>
       <v-row justify="center">
-        <DialogCreateConsignment
-          :consignment.sync="consignment"
+        <DialogCreateOutbound
+          :outbound.sync="outbound"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
           :snackbar.sync="snackbar"
@@ -39,7 +39,7 @@
       <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-data-table
         :headers="headers"
-        :items="consignments"
+        :items="outbounds"
         item-key="id"
         :search="search"
         :loading="loading"
@@ -60,7 +60,7 @@
               <v-list-item @click="viewDetail(item)">
                 <v-list-item-title>Chi tiết</v-list-item-title>
               </v-list-item>
-              <v-list-item @click="removeConsignment(item)">
+              <v-list-item @click="removeOutbound(item)">
                 <v-list-item-title>Xóa</v-list-item-title>
               </v-list-item>
             </v-list>
@@ -73,46 +73,25 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
-import { IConsignment } from "@/entity/consignment";
-import DialogCreateConsignment from "./components/DialogCreateConsignment.vue";
-import DialogDeleteConsignment from "./components/DialogDeleteConsignment.vue";
-import { getConsignmentByMerchant } from "@/api/consignment";
+import { IOutbound } from "@/entity/outbound";
+import DialogCreateOutbound from "./components/DialogCreateOutbound.vue";
+import DialogDeleteOutbound from "./components/DialogDeleteOutbound.vue";
+import { getOutboundByMerchant } from "@/api/outbound";
 import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 
 @Component({
   components: {
-    DialogCreateConsignment,
-    DialogDeleteConsignment,
+    DialogCreateOutbound,
+    DialogDeleteOutbound,
     Snackbar
   }
 })
-export default class Consignment extends Vue {
+export default class Outbound extends Vue {
   @PropSync("layout") layoutSync!: object;
 
-  consignments: Array<IConsignment> = [];
-  consignment: IConsignment = {
-    merchantId: "",
-    categories: new Set("abc"),
-    packingTime: "",
-    packingStation: {
-      street: "",
-      county: "",
-      city: "",
-      country: "",
-      postalCode: ""
-    },
-    bookingNumber: "",
-    cutOffTime: "",
-    laytime: "",
-    payload: 0,
-    unitOfMeasurement: "KG",
-    portOfLoading: "",
-    fcl: true,
-    shippingLine: "",
-    containerType: "",
-    status: ""
-  };
+  outbounds: Array<IOutbound> = [];
+  outbound = {} as IOutbound;
   dialogAdd = false;
   dialogDel = false;
   search = "";
@@ -154,39 +133,17 @@ export default class Consignment extends Vue {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
   }
 
-  addConsignment() {
-    this.consignment = {
-      merchantId: "",
-      categories: new Set("abc"),
-      packingTime: "2020-06-23T20:20",
-      packingStation: {
-        street: "abc",
-        county: "xyz",
-        city: "Hà Nội",
-        country: "VN",
-        postalCode: "03132"
-      },
-      bookingNumber: "12356",
-      cutOffTime: "2020-06-27T20:20",
-      laytime: "2020-06-23T20:20",
-      payload: 2000,
-      unitOfMeasurement: "KG",
-      portOfLoading: "HAIPHONGPORT",
-      fcl: true,
-      shippingLine: "apl",
-      containerType: "40HC",
-      status: "CREATED"
-    };
+  addOutbound() {
     this.dialogAdd = true;
   }
 
-  viewDetail(item: IConsignment) {
-    this.consignment = item;
+  viewDetail(item: IOutbound) {
+    this.outbound = item;
     this.dialogAdd = true;
   }
 
-  removeConsignment(item: IConsignment) {
-    this.consignment = item;
+  removeOutbound(item: IOutbound) {
+    this.outbound = item;
     this.dialogDel = true;
   }
 
@@ -194,14 +151,14 @@ export default class Consignment extends Vue {
   onOptionsChange(val: object, oldVal: object) {
     console.log(this.$auth.user());
     if (val !== oldVal) {
-      getConsignmentByMerchant(this.$auth.user().id, {
+      getOutboundByMerchant(this.$auth.user().id, {
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })
         .then(res => {
-          const response: PaginationResponse<IConsignment> = res.data;
+          const response: PaginationResponse<IOutbound> = res.data;
           console.log("watch", this.options);
-          this.consignments = response.data;
+          this.outbounds = response.data;
           this.options.totalItems = response.total_elements;
         })
         .catch(err => console.log(err))

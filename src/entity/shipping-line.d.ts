@@ -1,4 +1,2 @@
-import { IUser } from './user';
-export interface IShippingLine extends IUser {
-
-}
+import { IUser } from "./user";
+export type IShippingLine = IUser;

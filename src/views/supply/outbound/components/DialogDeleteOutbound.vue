@@ -26,7 +26,7 @@
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title>{{
-                    consignmentSync.bookingNumber
+                    outboundSync.bookingNumber
                   }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -37,31 +37,31 @@
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
         <v-btn @click="dialogDelSync = false">Hủy</v-btn>
-        <v-btn @click="removeConsignment()" color="red">Xóa</v-btn>
+        <v-btn @click="removeOutbound()" color="red">Xóa</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
-import { IConsignment } from "@/entity/consignment";
-import { removeConsignment } from "@/api/consignment";
+import { IOutbound } from "@/entity/outbound";
+import { removeOutbound } from "@/api/outbound";
 
 @Component
-export default class DialogDeleteConsignment extends Vue {
+export default class DialogDeleteOutbound extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("consignment", { type: Object }) consignmentSync!: IConsignment;
+  @PropSync("outbound", { type: Object }) outboundSync!: IOutbound;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
-  removeConsignment() {
-    if (this.consignmentSync.id) {
-      removeConsignment(this.consignmentSync.id)
+  removeOutbound() {
+    if (this.outboundSync.id) {
+      removeOutbound(this.outboundSync.id)
         .then(res => {
           console.log(res.data);
-          const response: IConsignment = res.data;
-          this.consignmentSync = response;
-          this.messageSync = "Xóa thành công mặt hàng: " + this.consignmentSync.bookingNumber;
+          const response: IOutbound = res.data;
+          this.outboundSync = response;
+          this.messageSync = "Xóa thành công mặt hàng: " + this.outboundSync.id;
         })
         .catch(err => {
           console.log(err);

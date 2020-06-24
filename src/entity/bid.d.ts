@@ -1,4 +1,4 @@
-import { IContainer } from './container';
+import { IContainer } from "./container";
 export interface IBid {
   id?: number;
   containers: Set<IContainer>;

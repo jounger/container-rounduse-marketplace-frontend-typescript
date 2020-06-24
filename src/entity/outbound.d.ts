@@ -1,5 +1,5 @@
-import { ISupply } from './supply';
-import { IBooking } from './booking';
+import { ISupply } from "./supply";
+import { IBooking } from "./booking";
 export interface IOutbound extends ISupply {
   goodsDescription: string;
   packingTime: string;

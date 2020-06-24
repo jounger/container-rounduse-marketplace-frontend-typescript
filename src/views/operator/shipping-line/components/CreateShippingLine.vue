@@ -178,7 +178,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, PropSync } from "vue-property-decorator";
-import { ShippingLine } from "../shipping-line";
+import { IShippingLine } from "@/entity/shipping-line";
 
 @Component({
   name: "CreateShippingLine"
@@ -194,7 +194,7 @@ export default class CreateShippingLine extends Vue {
   @PropSync("shippingLine", {
     type: Object
   })
-  shippingLineSync!: ShippingLine | null;
+  shippingLineSync!: IShippingLine | null;
   @Prop(String) title!: string | null;
   icd = ["Seaport", "Dryport"];
   roles = "ROLE_SHIPPINGLINE";

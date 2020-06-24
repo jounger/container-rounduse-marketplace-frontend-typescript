@@ -102,5 +102,5 @@ export default [
     password: "123456",
     role: ["ROLE_SHIPPINGLINE"],
     status: "ACTIVE"
-  },
+  }
 ];

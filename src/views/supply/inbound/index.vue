@@ -2,7 +2,7 @@
   <v-content>
     <v-card>
       <v-card-title>
-        Danh sách Operator
+        Danh sách hàng
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -16,31 +16,31 @@
         color="primary"
         style="margin-left: 35px;"
         dark
-        @click="addOperator()"
+        @click="addInbound()"
       >
         Thêm mới
       </v-btn>
       <v-row justify="center">
-        <DialogDeleteOperator
+        <!-- <DialogDeleteInbound
           :dialogDel.sync="dialogDel"
-          :operator.sync="operator"
+          :inbound.sync="inbound"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
       </v-row>
       <v-row justify="center">
-        <DialogCreateOperator
-          :operator.sync="operator"
+        <DialogCreateInbound
+          :inbound.sync="inbound"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
           :snackbar.sync="snackbar"
-        />
+        /> -->
       </v-row>
       <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-data-table
         :headers="headers"
-        :items="operators"
-        item-key="username"
+        :items="inbounds"
+        item-key="id"
         :search="search"
         :loading="loading"
         :options.sync="options"
@@ -60,7 +60,7 @@
               <v-list-item @click="viewDetail(item)">
                 <v-list-item-title>Chi tiết</v-list-item-title>
               </v-list-item>
-              <v-list-item @click="removeOperator(item)">
+              <v-list-item @click="removeInbound(item)">
                 <v-list-item-title>Xóa</v-list-item-title>
               </v-list-item>
             </v-list>
@@ -73,24 +73,25 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
-import { IOperator } from "@/entity/operator";
-import DialogCreateOperator from "./components/DialogCreateOperator.vue";
-import DialogDeleteOperator from "./components/DialogDeleteOperator.vue";
-import { getOperators } from "@/api/operator";
+import { IInbound } from "@/entity/inbound";
+// import DialogCreateInbound from "./components/DialogCreateInbound.vue";
+// import DialogDeleteInbound from "./components/DialogDeleteInbound.vue";
+import { getInboundByForwarder } from "@/api/inbound";
 import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 
 @Component({
   components: {
-    DialogCreateOperator,
-    DialogDeleteOperator,
+    // DialogCreateInbound,
+    // DialogDeleteInbound,
     Snackbar
   }
 })
-export default class Operator extends Vue {
+export default class Inbound extends Vue {
   @PropSync("layout") layoutSync!: object;
-  operators: Array<IOperator> = [];
-  operator = {} as IOperator;
+
+  inbounds: Array<IInbound> = [];
+  inbound = {} as IInbound;
   dialogAdd = false;
   dialogDel = false;
   search = "";
@@ -106,14 +107,22 @@ export default class Operator extends Vue {
   };
   headers = [
     {
-      text: "Tên đăng nhập",
+      text: "Mã hàng",
       align: "start",
       sortable: true,
-      value: "username"
+      value: "merchantId"
     },
-    { text: "Email", value: "email" },
-    { text: "Số điện thoại", value: "phone" },
-    { text: "Phân quyền", value: "roles" },
+    { text: "Mã booking", value: "bookingNumber" },
+    { text: "Loại hàng", value: "categoryList" },
+    { text: "Hãng tàu", value: "shippingLine" },
+    { text: "Bến cảng", value: "portOfLoading" },
+    { text: "Thời gian đóng hàng", value: "packingTime" },
+    { text: "Thời gian làm hàng", value: "laytime" },
+    { text: "Thời gian tàu chạy", value: "cutOffTime" },
+    { text: "Loại cont", value: "containerType" },
+    { text: "Khối lượng", value: "payload" },
+    { text: "Đơn vị", value: "unitOfMeasurement" },
+    { text: "Full container loaded", value: "fcl" },
     { text: "Trạng thái", value: "status" },
     {
       text: "Hành động",
@@ -124,31 +133,32 @@ export default class Operator extends Vue {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
   }
 
-  addOperator() {
+  addInbound() {
     this.dialogAdd = true;
   }
 
-  viewDetail(item: IOperator) {
-    this.operator = item;
+  viewDetail(item: IInbound) {
+    this.inbound = item;
     this.dialogAdd = true;
   }
 
-  removeOperator(item: IOperator) {
-    this.operator = item;
+  removeInbound(item: IInbound) {
+    this.inbound = item;
     this.dialogDel = true;
   }
 
   @Watch("options", { deep: true })
   onOptionsChange(val: object, oldVal: object) {
+    console.log(this.$auth.user());
     if (val !== oldVal) {
-      getOperators({
+      getInboundByForwarder(this.$auth.user().id, {
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })
         .then(res => {
-          const response: PaginationResponse<IOperator> = res.data;
+          const response: PaginationResponse<IInbound> = res.data;
           console.log("watch", this.options);
-          this.operators = response.data;
+          this.inbounds = response.data;
           this.options.totalItems = response.total_elements;
         })
         .catch(err => console.log(err))

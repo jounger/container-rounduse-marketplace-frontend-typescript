@@ -1,7 +1,7 @@
-import { IUser } from '@/entity/user';
+import { IUser } from "@/entity/user";
 export interface JwtResponse {
   id_token: string;
-  userInfo: IUser
+  userInfo: IUser;
 }
 
 export interface PaginationRequest {

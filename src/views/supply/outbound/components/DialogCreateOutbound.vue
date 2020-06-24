@@ -13,14 +13,10 @@
         <v-toolbar-title>{{ title }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-          <v-btn
-            dark
-            text
-            @click="updateConsignment()"
-            v-if="consignmentSync.id"
+          <v-btn dark text @click="updateOutbound()" v-if="outboundSync.id"
             >Cập nhập</v-btn
           >
-          <v-btn dark text @click="addConsignment()" v-else>Thêm mới</v-btn>
+          <v-btn dark text @click="addOutbound()" v-else>Thêm mới</v-btn>
         </v-toolbar-items>
       </v-toolbar>
       <v-card-text>
@@ -33,7 +29,7 @@
                   name="bookingNumber"
                   prepend-icon="mdi-lock"
                   type="text"
-                  v-model="consignmentSync.bookingNumber"
+                  v-model="outboundSync.bookingNumber"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -45,7 +41,7 @@
                   label="Loại hàng"
                   multiple
                   chips
-                  v-model="consignmentSync.categories"
+                  v-model="outboundSync.categories"
                 ></v-select>
               </v-flex>
             </v-layout>
@@ -59,7 +55,7 @@
                   label="Hãng tàu"
                   multiple
                   chips
-                  v-model="consignmentSync.shippingLine"
+                  v-model="outboundSync.shippingLine"
                 ></v-select>
               </v-flex>
             </v-layout>
@@ -71,7 +67,7 @@
                   label="Bến cảng"
                   multiple
                   chips
-                  v-model="consignmentSync.portOfLoading"
+                  v-model="outboundSync.portOfLoading"
                 ></v-select>
               </v-flex>
             </v-layout>
@@ -90,7 +86,7 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
-                      v-model="consignmentSync.packingTime"
+                      v-model="outboundSync.packingTime"
                       label="Thời gian xếp hàng"
                       hint="YYYY/MM/DD"
                       persistent-hint
@@ -100,7 +96,7 @@
                     ></v-text-field>
                   </template>
                   <v-date-picker
-                    v-model="consignmentSync.packingTime"
+                    v-model="outboundSync.packingTime"
                     no-title
                     @input="packingTimePicker = false"
                   ></v-date-picker>
@@ -142,7 +138,7 @@
                   name="country"
                   prepend-icon="mdi-lock"
                   type="text"
-                  v-model="consignmentSync.packingStation.country"
+                  v-model="outboundSync.packingStation.country"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -155,7 +151,7 @@
                   name="city"
                   prepend-icon="mdi-account"
                   type="text"
-                  v-model="consignmentSync.packingStation.city"
+                  v-model="outboundSync.packingStation.city"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -166,7 +162,7 @@
                   name="county"
                   prepend-icon="mdi-lock"
                   type="text"
-                  v-model="consignmentSync.packingStation.county"
+                  v-model="outboundSync.packingStation.county"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -179,7 +175,7 @@
                   name="street"
                   prepend-icon="mdi-account"
                   type="text"
-                  v-model="consignmentSync.packingStation.street"
+                  v-model="outboundSync.packingStation.street"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -190,7 +186,7 @@
                   name="postalCode"
                   prepend-icon="mdi-lock"
                   type="text"
-                  v-model="consignmentSync.packingStation.postalCode"
+                  v-model="outboundSync.packingStation.postalCode"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -209,7 +205,7 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
-                      v-model="consignmentSync.laytime"
+                      v-model="outboundSync.laytime"
                       label="Thời gian làm hàng"
                       hint="YYYY/MM/DD"
                       persistent-hint
@@ -219,7 +215,7 @@
                     ></v-text-field>
                   </template>
                   <v-date-picker
-                    v-model="consignmentSync.laytime"
+                    v-model="outboundSync.laytime"
                     no-title
                     @input="laytimePicker = false"
                   ></v-date-picker>
@@ -239,7 +235,7 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
-                      v-model="consignmentSync.cutOffTime"
+                      v-model="outboundSync.cutOffTime"
                       label="Thời gian tàu chạy"
                       hint="YYYY/MM/DD"
                       persistent-hint
@@ -249,7 +245,7 @@
                     ></v-text-field>
                   </template>
                   <v-date-picker
-                    v-model="consignmentSync.cutOffTime"
+                    v-model="outboundSync.cutOffTime"
                     no-title
                     @input="cutOfTimePicker = false"
                   ></v-date-picker>
@@ -265,7 +261,7 @@
                   name="containerType"
                   prepend-icon="mdi-lock"
                   type="text"
-                  v-model="consignmentSync.containerType"
+                  v-model="outboundSync.containerType"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -278,7 +274,7 @@
                   name="payload"
                   prepend-icon="mdi-lock"
                   type="number"
-                  v-model="consignmentSync.payload"
+                  v-model="outboundSync.payload"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -289,7 +285,7 @@
                   name="unitOfMeasurement"
                   prepend-icon="mdi-lock"
                   type="text"
-                  v-model="consignmentSync.unitOfMeasurement"
+                  v-model="outboundSync.unitOfMeasurement"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -298,7 +294,7 @@
             <v-layout row>
               <v-flex xs8>
                 <v-checkbox
-                  v-model="consignmentSync.fcl"
+                  v-model="outboundSync.fcl"
                   label="Full container loaded"
                 ></v-checkbox>
               </v-flex>
@@ -311,7 +307,7 @@
                   label="Trạng thái"
                   multiple
                   chips
-                  v-model="consignmentSync.status"
+                  v-model="outboundSync.status"
                 ></v-select>
               </v-flex>
             </v-layout>
@@ -324,17 +320,17 @@
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
-import { IConsignment } from "@/entity/consignment";
-import { createConsignment, updateConsignment } from "@/api/consignment";
+import { IOutbound } from "@/entity/outbound";
+import { createOutbound, updateOutbound } from "@/api/outbound";
 
 @Component
-export default class DialogCreateConsignment extends Vue {
+export default class DialogCreateOutbound extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("consignment", { type: Object }) consignmentSync!: IConsignment;
+  @PropSync("outbound", { type: Object }) outboundSync!: IOutbound;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
-  title = this.consignmentSync ? "Cập nhập" : "Thêm mới";
+  title = this.outboundSync ? "Cập nhập" : "Thêm mới";
   packingTimePicker = false;
   laytimePicker = false;
   cutOfTimePicker = false;
@@ -346,20 +342,18 @@ export default class DialogCreateConsignment extends Vue {
   menu2 = false;
   dialog = false;
   modal2 = false;
-  addConsignment() {
+  addOutbound() {
     console.log(this.time);
-    console.log(this.consignmentSync.packingTime);
-    if (this.consignmentSync) {
-      this.consignmentSync.merchantId = this.$auth.user().id;
-      console.log(this.consignmentSync);
-      createConsignment(this.consignmentSync)
+    console.log(this.outboundSync.packingTime);
+    if (this.outboundSync) {
+      const merchant = this.$auth.user().id;
+      createOutbound(merchant, this.outboundSync)
         .then(res => {
           console.log(res.data);
-          const response: IConsignment = res.data;
-          this.consignmentSync = response;
+          const response: IOutbound = res.data;
+          this.outboundSync = response;
           this.messageSync =
-            "Thêm mới thành công mặt hàng: " +
-            this.consignmentSync.bookingNumber;
+            "Thêm mới thành công mặt hàng: " + this.outboundSync.id;
         })
         .catch(err => {
           console.log(err);
@@ -368,16 +362,15 @@ export default class DialogCreateConsignment extends Vue {
         .finally(() => (this.snackbarSync = true));
     }
   }
-  updateConsignment() {
-    if (this.consignmentSync.id) {
-      updateConsignment(this.consignmentSync)
+  updateOutbound() {
+    if (this.outboundSync.id) {
+      updateOutbound(this.outboundSync)
         .then(res => {
           console.log(res.data);
-          const response: IConsignment = res.data;
-          this.consignmentSync = response;
+          const response: IOutbound = res.data;
+          this.outboundSync = response;
           this.messageSync =
-            "Cập nhập thành công mặt hàng: " +
-            this.consignmentSync.bookingNumber;
+            "Cập nhập thành công mặt hàng: " + this.outboundSync.id;
         })
         .catch(err => {
           console.log(err);

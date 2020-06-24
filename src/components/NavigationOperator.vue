@@ -22,7 +22,7 @@
           <v-icon>mdi-view-dashboard</v-icon>
         </v-list-item-icon>
       </v-list-item>
-      <v-list-item to="/roles">
+      <v-list-item to="/role">
         <v-list-item-title>Phân quyền</v-list-item-title>
         <v-list-item-icon>
           <v-icon>mdi-image</v-icon>
@@ -59,14 +59,6 @@
           <v-list-item-title>Hãng tàu</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item to="/icd">
-        <v-list-item-icon>
-          <v-icon>mdi-help-box</v-icon>
-        </v-list-item-icon>
-        <v-list-item-content>
-          <v-list-item-title>ICD</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
       <v-list-item to="/port">
         <v-list-item-icon>
           <v-icon>mdi-help-box</v-icon>
@@ -81,14 +73,6 @@
         </v-list-item-icon>
         <v-list-item-content>
           <v-list-item-title>Loại Container</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item to="/category">
-        <v-list-item-icon>
-          <v-icon>mdi-help-box</v-icon>
-        </v-list-item-icon>
-        <v-list-item-content>
-          <v-list-item-title>Loại hàng</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
     </v-list-group>

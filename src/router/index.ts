@@ -3,28 +3,9 @@ import VueRouter, { RouteConfig } from "vue-router";
 
 Vue.use(VueRouter);
 
+// DIVICE BY PERMISSION
 const routes: Array<RouteConfig> = [
-  {
-    path: "/",
-    name: "Home",
-    component: () => import("@/views/Home.vue")
-  },
-  {
-    path: "/dashboard",
-    name: "Dashboard",
-    component: () => import("@/views/user/dashboard/index.vue"),
-    meta: {
-      auth: true
-    }
-  },
-  {
-    path: "/profile",
-    name: "Profile",
-    component: () => import("@/views/user/profile/index.vue"),
-    meta: {
-      auth: true
-    }
-  },
+  // AUTH
   {
     path: "/login",
     name: "Login",
@@ -35,26 +16,33 @@ const routes: Array<RouteConfig> = [
     name: "Register",
     component: () => import("@/views/auth/Register.vue")
   },
+  // GENERAL
   {
-    path: "/operator",
-    name: "Operator",
-    component: () => import("@/views/admin/operator/index.vue"),
+    path: "/",
+    name: "Home",
+    component: () => import("@/views/Home.vue")
+  },
+  {
+    path: "/profile",
+    name: "Profile",
+    component: () => import("@/views/user/profile/index.vue"),
     meta: {
-      auth: ["ROLE_ADMIN"]
+      auth: true
     }
   },
   {
-    path: "/shipping-line",
-    name: "ShippingLine",
-    component: () => import("@/views/operator/shipping-line/index.vue"),
+    path: "/dashboard",
+    name: "Dashboard",
+    component: () => import("@/views/user/dashboard/index.vue"),
     meta: {
-      auth: ["ROLE_MODERATOR"]
+      auth: true
     }
   },
+  // ADMIN
   {
-    path: "/roles",
-    name: "Roles",
-    component: () => import("@/views/admin/roles/index.vue"),
+    path: "/role",
+    name: "Role",
+    component: () => import("@/views/admin/role/index.vue"),
     meta: {
       auth: ["ROLE_ADMIN"]
     }
@@ -68,49 +56,26 @@ const routes: Array<RouteConfig> = [
     }
   },
   {
-    path: "/consignment",
-    name: "Consignment",
-    component: () => import("@/views/supply/consignment/index.vue"),
+    path: "/operator",
+    name: "Operator",
+    component: () => import("@/views/admin/operator/index.vue"),
     meta: {
-      auth: ["ROLE_MERCHANT"]
+      auth: ["ROLE_ADMIN"]
     }
   },
+  // MODERATOR
   {
-    path: "/container",
-    name: "Container",
-    component: () => import("@/views/supply/container/index.vue"),
+    path: "/shipping-line",
+    name: "Shipping Line",
+    component: () => import("@/views/operator/shipping-line/index.vue"),
     meta: {
-      auth: ["ROLE_FORWARDER"]
+      auth: ["ROLE_MODERATOR"]
     }
   },
   {
     path: "/supplier",
     name: "Supplier",
     component: () => import("@/views/operator/supplier/index.vue"),
-    meta: {
-      auth: ["ROLE_MODERATOR"]
-    }
-  },
-  {
-    path: "/application",
-    name: "Application",
-    component: () => import("@/views/supplier/application/index.vue"),
-    meta: {
-      auth: ["ROLE_FORWARDER", "ROLE_MERCHANT"]
-    }
-  },
-  {
-    path: "/driver",
-    name: "Driver",
-    component: () => import("@/views/supplier/driver/index.vue"),
-    meta: {
-      auth: ["ROLE_FORWARDER"]
-    }
-  },
-  {
-    path: "/icd",
-    name: "ICD",
-    component: () => import("@/views/operator/icd/index.vue"),
     meta: {
       auth: ["ROLE_MODERATOR"]
     }
@@ -125,10 +90,28 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: "/container-type",
-    name: "ContainerType",
+    name: "Container Type",
     component: () => import("@/views/operator/container-type/index.vue"),
     meta: {
       auth: ["ROLE_MODERATOR"]
+    }
+  },
+  // SUPPLIER
+  {
+    path: "/application",
+    name: "Application",
+    component: () => import("@/views/supplier/application/index.vue"),
+    meta: {
+      auth: ["ROLE_FORWARDER", "ROLE_MERCHANT"]
+    }
+  },
+  // merchant
+  {
+    path: "/outbound",
+    name: "Outbound",
+    component: () => import("@/views/supply/outbound/index.vue"),
+    meta: {
+      auth: ["ROLE_MERCHANT"]
     }
   },
   {
@@ -140,21 +123,31 @@ const routes: Array<RouteConfig> = [
     }
   },
   {
-    path: "/consignment-new",
-    name: "Consignment New",
-    component: () => import("@/views/supply/consignment/ConsignmentNew.vue"),
+    path: "/outbound-new",
+    name: "Outbound New",
+    component: () => import("@/views/supply/outbound/OutboundNew.vue"),
     meta: {
       auth: true
     }
   },
+  // forwarder
   {
-    path: "/category",
-    name: "ConsignmentCategory",
-    component: () => import("@/views/operator/consignment-category/index.vue"),
+    path: "/inbound",
+    name: "Inbound",
+    component: () => import("@/views/supply/inbound/index.vue"),
     meta: {
-      auth: true
+      auth: ["ROLE_FORWARDER"]
+    }
+  },
+  {
+    path: "/driver",
+    name: "Driver",
+    component: () => import("@/views/supplier/driver/index.vue"),
+    meta: {
+      auth: ["ROLE_FORWARDER"]
     }
   }
+  // DRIVER
 ];
 
 const router = new VueRouter({

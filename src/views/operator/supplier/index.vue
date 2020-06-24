@@ -69,28 +69,7 @@ import Snackbar from "@/components/Snackbar.vue";
 export default class Supplier extends Vue {
   @PropSync("layout") layoutSync!: object;
   suppliers: Array<ISupplier> = [];
-  supplier: ISupplier = {
-    username: "",
-    password: "",
-    email: "",
-    phone: "",
-    role: [],
-    status: "",
-    address: {
-      street: "",
-      county: "",
-      city: "",
-      country: "",
-      postalCode: ""
-    },
-    website: "",
-    contactPerson: "",
-    companyName: "",
-    shortName: "",
-    companyDescription: "",
-    tin: "",
-    tax: ""
-  };
+  supplier = {} as ISupplier;
 
   dialogDetail = false;
   loading = true;
@@ -152,21 +131,6 @@ export default class Supplier extends Vue {
       const index = this.suppliers.findIndex(x => x.id === this.supplier.id);
       this.suppliers.splice(index, 1, val);
     }
-  }
-
-  async mounted() {
-    console.log("--- get supplier ----");
-    /*
-    getSuppliers({ page: 0, limit: 5 })
-      .then(res => {
-        const response: PaginationResponse<ISupplier> = res.data;
-        console.log("mounted", response);
-        this.suppliers = response.data;
-        this.options.totalItems = response.total_elements;
-      })
-      .catch(err => console.log(err))
-      .finally(() => (this.loading = false));
-      */
   }
 }
 </script>

@@ -60,7 +60,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, PropSync } from "vue-property-decorator";
-import { IRole } from "@/entity/roles";
+import { IRole } from "@/entity/role";
 
 @Component({
   name: "CreateRoles"

@@ -13,7 +13,7 @@ export interface ISignUpRequest {
   password: string;
   email: string;
   phone: string;
-  roles:  Array<string>;
+  roles: Array<string>;
   address?: string;
 }
 

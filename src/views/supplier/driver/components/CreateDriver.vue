@@ -166,7 +166,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, PropSync } from "vue-property-decorator";
-import { Driver } from "../driver";
+import { IDriver } from "@/entity/driver";
 
 @Component({
   name: "CreateDriver"
@@ -182,7 +182,7 @@ export default class CreateDriver extends Vue {
   @PropSync("driver", {
     type: Object
   })
-  driverSync!: Driver | null;
+  driverSync!: IDriver | null;
   @Prop(String) title!: string | null;
 
   public submit() {

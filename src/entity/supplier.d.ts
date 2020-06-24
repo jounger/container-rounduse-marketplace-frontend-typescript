@@ -1,4 +1,4 @@
-import { IUser } from './user';
+import { IUser } from "./user";
 export interface ISupplier extends IUser {
   website: string;
   contactPerson: string;

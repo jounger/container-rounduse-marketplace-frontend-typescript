@@ -1,4 +1,4 @@
-import { IPort } from './port';
+import { IPort } from "./port";
 export interface IBooking {
   id?: number;
   bookingNumber: string;

@@ -1,9 +1,9 @@
-import { IContainer } from './container';
-import { IPort } from './port';
+import { IContainer } from "./container";
+import { IPort } from "./port";
 export interface IBillOfLading {
   id?: number;
   billOfLadingNumber: string;
-  containers: Set<IContainer>
+  containers: Set<IContainer>;
   portOfDelivery: IPort;
   freeTime: string;
 }

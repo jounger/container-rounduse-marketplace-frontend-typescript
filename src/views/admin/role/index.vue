@@ -90,16 +90,15 @@ import NavLayout from "@/layouts/NavLayout.vue";
 import data from "./data";
 import DeleteRoles from "./components/DeleteRoles.vue";
 import CreateRoles from "./components/CreateRoles.vue";
-import { IRole } from '@/entity/roles';
+import { IRole } from "@/entity/role";
 
 @Component({
-  name: "RolesManagement",
   components: {
     DeleteRoles,
     CreateRoles
   }
 })
-export default class RolesManagement extends Vue {
+export default class Role extends Vue {
   @PropSync("layout") layoutSync!: object;
   success = "";
   checkSuccess = false;

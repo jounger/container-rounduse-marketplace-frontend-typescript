@@ -1,6 +1,6 @@
-import { IDriver } from './driver';
+import { IDriver } from "./driver";
 export interface IContainer {
-  id?:number;
+  id?: number;
   containerNumber: string;
   trailer: string;
   tractor: string;

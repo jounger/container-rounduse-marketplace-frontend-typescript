@@ -88,7 +88,7 @@
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
 import data from "../shipping-line/data";
-import { ShippingLineEntity } from "./shipping-line";
+import { IShippingLine } from "@/entity/shipping-line";
 import DeleteShippingLine from "./components/DeleteShippingLine.vue";
 import CreateShippingLine from "./components/CreateShippingLine.vue";
 
@@ -110,23 +110,11 @@ export default class ShippingLineManagement extends Vue {
   readonly = false;
   checkAdd = false;
   checkUpdate = false;
-  shippingLine: ShippingLineEntity = {
-    username: "",
-    password: "",
-    email: "",
-    phone: "",
-    role: ["ROLE_SHIPPINGLINE"],
-    status: "ACTIVE",
-    shipName: "",
-    nameCode: "",
-    website: "",
-    icds: [""],
-    address: ""
-  };
+  shippingLine = {} as IShippingLine;
   search = "";
   title = "";
   totalShips = 0;
-  ships = [] as Array<ShippingLineEntity>;
+  ships = [] as Array<IShippingLine>;
   loading = true;
   options = {} as any;
   headers = [
@@ -150,97 +138,6 @@ export default class ShippingLineManagement extends Vue {
   ];
   async created() {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
-  }
-  @Watch("options", { deep: true })
-  getOptions() {
-    this.getDataFromApi().then((data: any) => {
-      this.ships = data.items;
-      this.totalShips = data.total;
-    });
-  }
-  async mounted() {
-    this.getDataFromApi().then((data: any) => {
-      this.ships = data.items;
-      this.totalShips = data.total;
-    });
-  }
-  public getDataFromApi() {
-    console.log(this.options);
-    this.loading = true;
-    return new Promise((resolve, reject) => {
-      const { sortBy, sortDesc, page, itemsPerPage } = this.options;
-
-      let items = this.getShips();
-      const total = items.length;
-
-      if (sortBy.length === 1 && sortDesc.length === 1) {
-        items = items.sort((a: any, b: any) => {
-          const sortA = a[sortBy[0]];
-          const sortB = b[sortBy[0]];
-
-          if (sortDesc[0]) {
-            if (sortA < sortB) return 1;
-            if (sortA > sortB) return -1;
-            return 0;
-          } else {
-            if (sortA < sortB) return -1;
-            if (sortA > sortB) return 1;
-            return 0;
-          }
-        });
-      }
-
-      if (itemsPerPage > 0) {
-        items = items.slice((page - 1) * itemsPerPage, page * itemsPerPage);
-      }
-
-      setTimeout(() => {
-        this.loading = false;
-        resolve({
-          items,
-          total
-        });
-      }, 1000);
-    });
-  }
-  public getShips(): Array<ShippingLineEntity> {
-    return data;
-  }
-  public viewDetail(item: ShippingLineEntity) {
-    this.shippingLine = item;
-    this.checkAdd = false;
-    this.checkUpdate = false;
-    this.title = "Thông tin hãng tàu";
-    this.readonly = true;
-    this.dialogAdd = true;
-  }
-  public update(item: ShippingLineEntity) {
-    this.shippingLine = item;
-    this.checkAdd = false;
-    this.checkUpdate = true;
-    this.title = "Cập nhập hãng tàu";
-    this.readonly = false;
-    this.dialogAdd = true;
-  }
-  public addShippingLine() {
-    this.title = "Thêm mới hãng tàu";
-    this.shippingLine = {
-      username: "",
-      password: "",
-      email: "",
-      phone: "",
-      role: ["ROLE_SHIPPINGLINE"],
-      status: "ACTIVE",
-      shipName: "",
-      nameCode: "",
-      website: "",
-      icds: [""],
-      address: ""
-    };
-    this.checkAdd = true;
-    this.checkUpdate = false;
-    this.readonly = false;
-    this.dialogAdd = true;
   }
 }
 </script>
