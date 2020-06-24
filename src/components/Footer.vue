@@ -1,5 +1,5 @@
 <template>
-  <v-footer app>
+  <v-footer app style="margin-top:20px;">
     <span>&copy; 2020</span>
   </v-footer>
 </template>

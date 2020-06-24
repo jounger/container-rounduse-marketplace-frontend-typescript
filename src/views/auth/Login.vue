@@ -1,12 +1,12 @@
 <template>
   <v-card class="elevation-12">
     <v-toolbar color="primary" light flat>
-      <v-toolbar-title>Login form</v-toolbar-title>
+      <v-toolbar-title>Đăng nhập</v-toolbar-title>
     </v-toolbar>
     <v-card-text>
       <v-form>
         <v-text-field
-          label="Login"
+          label="Tên đăng nhập"
           name="login"
           prepend-icon="mdi-account"
           type="text"
@@ -15,17 +15,19 @@
 
         <v-text-field
           id="password"
-          label="Password"
+          label="Mật khẩu"
           name="password"
-          prepend-icon="mdi-lock"
+          prepend-icon="mdi-key"
           type="password"
           v-model="password"
         ></v-text-field>
+        <v-checkbox class="mx-2" label="Ghi nhớ đăng nhập"></v-checkbox>
       </v-form>
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn @click.prevent="submit()" color="primary">Login</v-btn>
+      <v-btn @click.prevent="login()" color="primary">Đăng nhập</v-btn>
+      <v-btn @click.prevent="register()" color="white">Đăng ký</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -36,24 +38,27 @@ import AuthLayout from "@/layouts/AuthLayout.vue";
 @Component
 export default class Login extends Vue {
   @PropSync("layout") layoutSync!: object;
-  public username = "annv";
+  public username = "admin";
   public password = "123456";
   created() {
     this.layoutSync = AuthLayout;
   }
   public mounted() {
     if (this.$auth.check()) {
-      this.$router.push({ name: "Home" });
+      this.$router.push("/dashboard");
     }
   }
-  public submit() {
+  public register() {
+    this.$router.push("/register");
+  }
+  public login() {
     this.$auth
       .login({
         username: this.username,
         password: this.password
       })
-      .then(response => {
-        console.warn("SUCCESS login", response);
+      .then(res => {
+        console.warn("SUCCESS login", res);
       })
       .catch(err => {
         console.error("ERROR! in login", err);
@@ -62,4 +67,8 @@ export default class Login extends Vue {
 }
 </script>
 
-<style></style>
+<style>
+.mdi-key {
+  transform: rotate(45deg);
+}
+</style>

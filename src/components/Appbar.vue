@@ -2,19 +2,36 @@
   <v-app-bar app clipped-left>
     <v-app-bar-nav-icon @click.stop="changeDrawer()"></v-app-bar-nav-icon>
     <v-toolbar-title>CRM</v-toolbar-title>
-    <v-btn text to="/">Home</v-btn>
-    <div v-if="$auth.check('ROLE_ADMIN')">
-      <v-btn text to="/admin">Admin</v-btn>
-    </div>
-    <div v-if="$auth.check(['ROLE_ADMIN', 'ROLE_USER'])">
-      <v-btn text to="/user">User</v-btn>
-    </div>
-    <div v-if="!$auth.check()">
-      <v-btn text to="/login">Login</v-btn>
-    </div>
-    <div v-if="$auth.check()">
-      <v-btn text to="/logout">Logout</v-btn>
-    </div>
+    <v-btn text to="/">Trang chủ</v-btn>
+    <v-btn text v-if="isSupplier" to="/application">Đơn đăng ký</v-btn>
+    <v-btn v-if="$auth.check()" text to="/dashboard">Dashboard</v-btn>
+
+    <v-spacer></v-spacer>
+
+    <v-btn icon>
+      <v-icon>mdi-heart</v-icon>
+    </v-btn>
+    <v-btn icon>
+      <v-icon>mdi-magnify</v-icon>
+    </v-btn>
+    <v-menu left bottom>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn icon v-bind="attrs" v-on="on">
+          <v-icon>mdi-dots-vertical</v-icon>
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item v-if="!$auth.check()" to="/login">
+          <v-list-item-title>Đăng nhập</v-list-item-title>
+        </v-list-item>
+        <v-list-item v-if="!$auth.check()" to="/register">
+          <v-list-item-title>Đăng ký</v-list-item-title>
+        </v-list-item>
+        <v-list-item v-else @click="$auth.logout()">
+          <v-list-item-title>Đăng xuất</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </v-app-bar>
 </template>
 <script lang="ts">
@@ -22,8 +39,27 @@ import { Component, Vue, PropSync } from "vue-property-decorator";
 @Component
 export default class Appbar extends Vue {
   @PropSync("drawer", { type: Boolean }) drawerSync!: boolean | null;
+  messages = 3;
+  notify = false;
   changeDrawer(): boolean {
     return (this.drawerSync = !this.drawerSync);
+  }
+  create() {
+    this.messages = 3;
+  }
+
+  get isSupplier() {
+    if (
+      this.$auth.check(["ROLE_FORWARDER", "ROLE_MERCHANT"]) &&
+      this.$auth.user().status
+    )
+      return true;
+    else return false;
+  }
+
+  public seeNotify() {
+    this.messages = 0;
+    this.notify = !this.notify;
   }
 }
 </script>

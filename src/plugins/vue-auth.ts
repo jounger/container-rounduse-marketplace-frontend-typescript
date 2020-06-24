@@ -16,7 +16,7 @@ const options = {
   loginData: {
     url: "/auth/signin",
     method: "POST",
-    redirect: "/user",
+    redirect: "/dashboard",
     headerToken: "Authorization",
     fetchUser: true,
     fetchData: (response: any) => response.data.userInfo
