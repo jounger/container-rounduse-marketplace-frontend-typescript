@@ -3,8 +3,10 @@ export interface ISupplier extends IUser {
   website: string;
   contactPerson: string;
   companyName: string;
-  shortName: string;
+  companyCode: string;
   companyDescription?: string;
+  companyAddress: string;
   tin: string;
-  tax: string;
+  fax: string;
+  ratingValue: number;
 }

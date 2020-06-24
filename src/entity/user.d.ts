@@ -1,13 +1,11 @@
-import { IAddress } from './address';
 export interface IUser {
   id?: number;
   username: string;
-  password?: string;
   email: string;
   phone: string;
-  role: Array<string>;
+  roles: Array<string>;
   status: string;
-  address?: IAddress;
+  address?: string;
 }
 
 export interface ISignUpRequest {
@@ -15,9 +13,8 @@ export interface ISignUpRequest {
   password: string;
   email: string;
   phone: string;
-  role:  Array<string>;
-  address?: IAddress
-  status?: string;
+  roles:  Array<string>;
+  address?: string;
 }
 
 export interface ISignInRequest {
