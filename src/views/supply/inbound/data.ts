@@ -19,12 +19,7 @@ export const InboundData: IInbound[] = [
           licensePlate: "90A-H0923",
         }
       ],
-      portOfDelivery: {
-        id: 0,
-        fullname: "Hai Phong Port",
-        nameCode: "HPH",
-        address: "Hai Phong, Vietnam",
-      },
+      portOfDelivery: "HPH",
       freeTime: "2020-12-05T20:20",
     },
   }

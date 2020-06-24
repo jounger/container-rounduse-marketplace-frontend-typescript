@@ -1,6 +1,6 @@
 export interface ISupply {
   id?: number;
-  shippingLine: string;
-  containerType: string;
+  shippingLine: string; // companyCode
+  containerType: string; // name
   status: string;
 }

@@ -2,7 +2,7 @@ import { IMerchant } from "./merchant";
 import { IOutbound } from "./outbound";
 export interface IBiddingDocument {
   id?: number;
-  offeree: IMerchant;
+  offeree: string; // IMerchant username
   outbound: IOutbound;
   bidDiscountCode: string;
   isMultipleAward: boolean;

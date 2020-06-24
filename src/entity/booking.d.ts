@@ -5,5 +5,5 @@ export interface IBooking {
   unit: number;
   cutOffTime: string;
   isFcl: boolean;
-  portOfLoading: IPort;
+  portOfLoading: string; // nameCode
 }

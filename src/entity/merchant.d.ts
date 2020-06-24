@@ -1,3 +1,5 @@
 import { ISupplier } from "./supplier";
 
-export type IMerchant = ISupplier;
+export interface IMerchant extends ISupplier {
+
+}
