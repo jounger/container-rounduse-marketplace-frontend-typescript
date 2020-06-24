@@ -2,7 +2,7 @@
   <v-content>
     <v-card>
       <v-card-title>
-        Danh sách hàng
+        Danh sách hàng nhập
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -79,6 +79,7 @@ import { IInbound } from "@/entity/inbound";
 import { getInboundByForwarder } from "@/api/inbound";
 import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
+import { InboundData } from "./data";
 
 @Component({
   components: {
@@ -107,23 +108,17 @@ export default class Inbound extends Vue {
   };
   headers = [
     {
-      text: "Mã hàng",
+      text: "Mã",
       align: "start",
-      sortable: true,
-      value: "merchantId"
+      value: "id"
     },
-    { text: "Mã booking", value: "bookingNumber" },
-    { text: "Loại hàng", value: "categoryList" },
     { text: "Hãng tàu", value: "shippingLine" },
-    { text: "Bến cảng", value: "portOfLoading" },
-    { text: "Thời gian đóng hàng", value: "packingTime" },
-    { text: "Thời gian làm hàng", value: "laytime" },
-    { text: "Thời gian tàu chạy", value: "cutOffTime" },
     { text: "Loại cont", value: "containerType" },
-    { text: "Khối lượng", value: "payload" },
-    { text: "Đơn vị", value: "unitOfMeasurement" },
-    { text: "Full container loaded", value: "fcl" },
     { text: "Trạng thái", value: "status" },
+    { text: "Lấy cont đặc", value: "pickUpTime" },
+    // { text: "Thời gian đóng hàng", value: "billOfLading.billOfLadingNumber" },
+    // { text: "Thời gian làm hàng", value: "portOfDelivery.nameCode" },
+    // { text: "Thời gian tàu chạy", value: "freeTime" },
     {
       text: "Hành động",
       value: "action"
@@ -131,6 +126,8 @@ export default class Inbound extends Vue {
   ];
   created() {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
+    this.inbounds = InboundData as Array<IInbound>;
+    this.loading = false;
   }
 
   addInbound() {
@@ -151,6 +148,11 @@ export default class Inbound extends Vue {
   onOptionsChange(val: object, oldVal: object) {
     console.log(this.$auth.user());
     if (val !== oldVal) {
+      console.log(InboundData);
+      this.inbounds = InboundData;
+      this.loading = false;
+      this.options.totalItems = 10;
+      /*
       getInboundByForwarder(this.$auth.user().id, {
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
@@ -163,6 +165,7 @@ export default class Inbound extends Vue {
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
+        */
     }
   }
 }

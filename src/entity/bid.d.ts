@@ -1,7 +1,7 @@
 import { IContainer } from "./container";
 export interface IBid {
   id?: number;
-  containers: Set<IContainer>;
+  containers: Array<IContainer>;
   bidPrice: number;
   bidDate: string;
   bidValidityPeriod: string;

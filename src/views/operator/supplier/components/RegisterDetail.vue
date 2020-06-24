@@ -84,7 +84,6 @@
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
       <v-card-actions>
@@ -105,10 +104,8 @@ import { Component, Vue, PropSync } from "vue-property-decorator";
 import { ISupplier } from "@/entity/supplier";
 import { reviewSupplier } from "@/api/supplier";
 
-@Component({
-  name: "DialogRegisterDetail"
-})
-export default class DialogRegisterDetail extends Vue {
+@Component
+export default class RegisterDetail extends Vue {
   @PropSync("dialogDetail", { type: Boolean }) dialogDetailSync!: boolean;
   @PropSync("supplier", { type: Object }) supplierSync!: ISupplier;
   @PropSync("message", { type: String }) messageSync!: string;

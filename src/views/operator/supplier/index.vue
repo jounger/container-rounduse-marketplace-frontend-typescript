@@ -2,7 +2,7 @@
   <v-content>
     <v-card>
       <v-row justify="center">
-        <DialogRegisterDetail
+        <RegisterDetail
           :dialogDetail.sync="dialogDetail"
           :supplier.sync="supplier"
           :message.sync="message"
@@ -57,12 +57,12 @@ import NavLayout from "@/layouts/NavLayout.vue";
 import { ISupplier } from "@/entity/supplier";
 import { getSuppliers } from "@/api/supplier";
 import { PaginationResponse } from "@/api/payload";
-import DialogRegisterDetail from "./components/DialogRegisterDetail.vue";
+import RegisterDetail from "./components/RegisterDetail.vue";
 import Snackbar from "@/components/Snackbar.vue";
 
 @Component({
   components: {
-    DialogRegisterDetail,
+    RegisterDetail,
     Snackbar
   }
 })
@@ -117,7 +117,9 @@ export default class Supplier extends Vue {
         .then(res => {
           const response: PaginationResponse<ISupplier> = res.data;
           console.log("watch", this.options);
-          this.suppliers = response.data;
+          this.suppliers = response.data.filter(
+            x => x.roles[0] == "ROLE_FORWARDER" || x.roles[0] == "ROLE_MERCHANT"
+          );
           this.options.totalItems = response.total_elements;
         })
         .catch(err => console.log(err))

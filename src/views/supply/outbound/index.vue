@@ -21,7 +21,7 @@
         Thêm mới
       </v-btn>
       <v-row justify="center">
-        <DialogDeleteOutbound
+        <DeleteOutbound
           :dialogDel.sync="dialogDel"
           :outbound.sync="outbound"
           :message.sync="message"
@@ -29,7 +29,7 @@
         />
       </v-row>
       <v-row justify="center">
-        <DialogCreateOutbound
+        <CreateOutbound
           :outbound.sync="outbound"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
@@ -74,16 +74,16 @@
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
 import { IOutbound } from "@/entity/outbound";
-import DialogCreateOutbound from "./components/DialogCreateOutbound.vue";
-import DialogDeleteOutbound from "./components/DialogDeleteOutbound.vue";
+import CreateOutbound from "./components/CreateOutbound.vue";
+import DeleteOutbound from "./components/DeleteOutbound.vue";
 import { getOutboundByMerchant } from "@/api/outbound";
 import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 
 @Component({
   components: {
-    DialogCreateOutbound,
-    DialogDeleteOutbound,
+    CreateOutbound,
+    DeleteOutbound,
     Snackbar
   }
 })

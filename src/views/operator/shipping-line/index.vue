@@ -1,8 +1,17 @@
 <template>
   <v-content>
     <v-card>
+      <v-row justify="center">
+        <CreateShippingLine
+          :dialogAdd.sync="dialogAdd"
+          :shippingLine.sync="shippingLine"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
+        />
+      </v-row>
+      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-card-title>
-        Danh sách hãng tàu
+        Danh sách đơn đăng ký
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -12,52 +21,16 @@
           hide-details
         ></v-text-field>
       </v-card-title>
-      <v-btn
-        color="primary"
-        style="margin-left: 35px;"
-        dark
-        @click.stop="addShippingLine"
-        v-if="$auth.check(['ROLE_MODERATOR'])"
-      >
-        Thêm mới
-      </v-btn>
-      <v-row justify="center">
-        <DeleteShippingLine
-          :dialogDel.sync="dialogDel"
-          :checkSuccess.sync="checkSuccess"
-          :success.sync="success"
-          :name="name"
-        />
-      </v-row>
-      <v-row justify="center">
-        <CreateShippingLine
-          :shippingLine.sync="shippingLine"
-          :title="title"
-          :dialogAdd.sync="dialogAdd"
-          :checkSuccess.sync="checkSuccess"
-          :checkAdd="checkAdd"
-          :checkUpdate="checkUpdate"
-          :success.sync="success"
-          :readonly="readonly"
-        />
-      </v-row>
-      <v-alert
-        v-model="checkSuccess"
-        dismissible
-        close-icon="mdi-delete"
-        type="success"
-      >
-        {{ success }}
-      </v-alert>
       <v-data-table
         :headers="headers"
-        :items="ships"
+        :items="shippingLines"
+        item-key="username"
         :search="search"
-        item-key="namecode"
-        :options.sync="options"
-        :server-items-length="totalShips"
         :loading="loading"
-        :items-per-page="5"
+        :options.sync="options"
+        :server-items-length="options.totalItems"
+        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :actions-append="options.page"
         class="elevation-1"
       >
         <template v-slot:item.action="{ item }">
@@ -68,14 +41,8 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item @click="viewDetail(item)">
-                <v-list-item-title>Xem chi tiết</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="update(item)">
-                <v-list-item-title>Cập nhập</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="delShippingLine(item)">
-                <v-list-item-title>Xóa</v-list-item-title>
+              <v-list-item @click="updateShippingLine(item)">
+                <v-list-item-title>Sửa</v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -87,57 +54,86 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
-import data from "../shipping-line/data";
 import { IShippingLine } from "@/entity/shipping-line";
-import DeleteShippingLine from "./components/DeleteShippingLine.vue";
+import { getShippingLines } from "@/api/shipping-line";
+import { PaginationResponse } from "@/api/payload";
 import CreateShippingLine from "./components/CreateShippingLine.vue";
+import Snackbar from "@/components/Snackbar.vue";
 
 @Component({
-  name: "ShippingLineManagement",
   components: {
-    DeleteShippingLine,
-    CreateShippingLine
+    CreateShippingLine,
+    Snackbar
   }
 })
-export default class ShippingLineManagement extends Vue {
+export default class ShippingLine extends Vue {
   @PropSync("layout") layoutSync!: object;
-
-  success = "";
-  name = "";
-  checkSuccess = false;
-  dialogAdd = false;
-  dialogDel = false;
-  readonly = false;
-  checkAdd = false;
-  checkUpdate = false;
+  shippingLines: Array<IShippingLine> = [];
   shippingLine = {} as IShippingLine;
-  search = "";
-  title = "";
-  totalShips = 0;
-  ships = [] as Array<IShippingLine>;
+
+  dialogAdd = false;
   loading = true;
-  options = {} as any;
+  message = "";
+  snackbar = false;
+  search = "";
+  options = {
+    descending: true,
+    page: 1,
+    itemsPerPage: 5,
+    totalItems: 0,
+    itemsPerPageItems: [5, 10, 20, 50]
+  };
   headers = [
     {
       text: "Tên đăng nhập",
-      align: "start",
-      sortable: true,
       value: "username"
     },
-    { text: "Tên hãng tàu", value: "shipName" },
-    { text: "Mã tên", value: "nameCode" },
     { text: "Email", value: "email" },
-    { text: "Website", value: "website" },
-    { text: "Số điện thoại", value: "phone" },
-    { text: "ICD", value: "icds" },
-    { text: "Địa chỉ", value: "address" },
+    { text: "Trạng thái", value: "status" },
+    { text: "Phân quyền", value: "roles" },
     {
       text: "Hành động",
-      value: "action"
+      value: "action",
+      sortable: false,
+      align: "center"
     }
   ];
-  async created() {
+  created() {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
+  }
+
+  updateShippingLine(item: IShippingLine) {
+    this.shippingLine = item;
+    this.dialogAdd = true;
+  }
+
+  @Watch("options", { deep: true })
+  onOptionsChange(val: object, oldVal: object) {
+    if (val !== oldVal) {
+      getShippingLines({
+        page: this.options.page - 1,
+        limit: this.options.itemsPerPage
+      })
+        .then(res => {
+          const response: PaginationResponse<IShippingLine> = res.data;
+          this.shippingLines = response.data.filter(
+            x => x.roles[0] == "ROLE_SHIPPINGLINE"
+          );
+          this.options.totalItems = response.total_elements;
+        })
+        .catch(err => console.log(err))
+        .finally(() => (this.loading = false));
+    }
+  }
+
+  @Watch("shippingLine", { deep: true })
+  onShippingLineChange(val: IShippingLine, oldVal: IShippingLine) {
+    if (val.status !== oldVal.status) {
+      const index = this.shippingLines.findIndex(
+        x => x.id === this.shippingLine.id
+      );
+      this.shippingLines.splice(index, 1, val);
+    }
   }
 }
 </script>

@@ -3,7 +3,7 @@ import { IPort } from "./port";
 export interface IBillOfLading {
   id?: number;
   billOfLadingNumber: string;
-  containers: Set<IContainer>;
+  containers: Array<IContainer>;
   portOfDelivery: IPort;
   freeTime: string;
 }

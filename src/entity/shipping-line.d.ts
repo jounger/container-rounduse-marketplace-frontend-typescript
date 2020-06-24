@@ -1,2 +1,4 @@
-import { IUser } from "./user";
-export type IShippingLine = IUser;
+import { ISupplier } from './supplier';
+export interface IShippingLine extends ISupplier {
+
+}

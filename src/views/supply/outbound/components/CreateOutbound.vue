@@ -324,7 +324,7 @@ import { IOutbound } from "@/entity/outbound";
 import { createOutbound, updateOutbound } from "@/api/outbound";
 
 @Component
-export default class DialogCreateOutbound extends Vue {
+export default class CreateOutbound extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("outbound", { type: Object }) outboundSync!: IOutbound;
   @PropSync("message", { type: String }) messageSync!: string;
