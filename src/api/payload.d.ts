@@ -13,7 +13,7 @@ export interface PaginationRequest {
 export interface PaginationResponse<T> {
   page: number;
   limit: number;
-  total_elements: number;
-  total_pages: number;
+  totalElements: number;
+  totalPages: number;
   data: T[];
 }

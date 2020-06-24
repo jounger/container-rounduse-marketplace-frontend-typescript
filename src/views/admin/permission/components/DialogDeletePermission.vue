@@ -82,7 +82,7 @@ export default class DialogDeletePermission extends Vue {
             .then(res => {
               const response: PaginationResponse<IPermission> = res.data;
               this.permissionsSync = response.data;
-              this.optionsSync.totalItems = response.total_elements;
+              this.optionsSync.totalItems = response.totalElements;
             })
             .catch(err => console.log(err))
             .finally();

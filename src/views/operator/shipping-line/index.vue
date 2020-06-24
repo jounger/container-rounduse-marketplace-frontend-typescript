@@ -119,7 +119,7 @@ export default class ShippingLine extends Vue {
           this.shippingLines = response.data.filter(
             x => x.roles[0] == "ROLE_SHIPPINGLINE"
           );
-          this.options.totalItems = response.total_elements;
+          this.options.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));

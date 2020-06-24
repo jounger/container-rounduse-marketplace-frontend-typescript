@@ -76,8 +76,8 @@ import NavLayout from "@/layouts/NavLayout.vue";
 import { IInbound } from "@/entity/inbound";
 // import DialogCreateInbound from "./components/DialogCreateInbound.vue";
 // import DialogDeleteInbound from "./components/DialogDeleteInbound.vue";
-import { getInboundByForwarder } from "@/api/inbound";
-import { PaginationResponse } from "@/api/payload";
+// import { getInboundByForwarder } from "@/api/inbound";
+// import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 import { InboundData } from "./data";
 
@@ -161,7 +161,7 @@ export default class Inbound extends Vue {
           const response: PaginationResponse<IInbound> = res.data;
           console.log("watch", this.options);
           this.inbounds = response.data;
-          this.options.totalItems = response.total_elements;
+          this.options.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));

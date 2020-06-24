@@ -181,7 +181,7 @@ export default class ContainerType extends Vue {
           const response: PaginationResponse<IContainerType> = res.data;
           console.log("watch", this.options);
           this.containerTypes = response.data;
-          this.options.totalItems = response.total_elements;
+          this.options.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));

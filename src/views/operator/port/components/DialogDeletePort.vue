@@ -78,7 +78,7 @@ export default class DialogDeletePort extends Vue {
             .then(res => {
               const response: PaginationResponse<IPort> = res.data;
               this.portsSync = response.data;
-              this.optionsSync.totalItems = response.total_elements;
+              this.optionsSync.totalItems = response.totalElements;
             })
             .catch(err => console.log(err))
             .finally();

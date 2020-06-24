@@ -149,7 +149,7 @@ export default class Operator extends Vue {
           const response: PaginationResponse<IOperator> = res.data;
           console.log("watch", response);
           this.operators = response.data;
-          this.options.totalItems = response.total_elements;
+          this.options.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));

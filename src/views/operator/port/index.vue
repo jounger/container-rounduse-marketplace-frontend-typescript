@@ -155,7 +155,7 @@ export default class Port extends Vue {
           const response: PaginationResponse<IPort> = res.data;
           console.log("watch", this.options);
           this.ports = response.data;
-          this.options.totalItems = response.total_elements;
+          this.options.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));

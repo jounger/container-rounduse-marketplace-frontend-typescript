@@ -120,7 +120,7 @@ export default class Supplier extends Vue {
           this.suppliers = response.data.filter(
             x => x.roles[0] == "ROLE_FORWARDER" || x.roles[0] == "ROLE_MERCHANT"
           );
-          this.options.totalItems = response.total_elements;
+          this.options.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
