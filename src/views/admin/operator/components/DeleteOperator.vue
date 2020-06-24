@@ -3,12 +3,12 @@
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">Xóa loại Container</span>
+          ><span class="headline" style="color:white;">Xóa Moderator</span>
           <v-btn
             icon
             dark
             @click="dialogDelSync = false"
-            style="margin-left:324px;"
+            style="margin-left:403px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
@@ -19,14 +19,14 @@
         <v-form>
           <v-container>
             <span style="color: black; font-size:22px;"
-              >Bạn có chắc chắn muốn xóa loại Container này?</span
+              >Bạn có chắc chắn muốn xóa Moderator này?</span
             >
             <div class="line"></div>
             <v-list>
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title>{{
-                    containerTypeSync.name
+                    operatorSync.username
                   }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -37,48 +37,37 @@
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
         <v-btn @click="dialogDelSync = false">Hủy</v-btn>
-        <v-btn @click="removeContainerType()" color="red">Xóa</v-btn>
+        <v-btn @click="removeOperator()" color="red">Xóa</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
-import { IContainerType } from "@/entity/container-type";
-import { removeContainerType } from "@/api/container-type";
+import { IOperator } from "@/entity/operator";
+import { removeOperator } from "@/api/operator";
 
 @Component
-export default class DeleteContainerType extends Vue {
+export default class DeleteOperator extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("containerType", { type: Object })
-  containerTypeSync!: IContainerType;
+  @PropSync("operator", { type: Object }) operatorSync!: IOperator;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @PropSync("containerTypes", { type: Array }) containerTypesSync!: Array<
-    IContainerType
-  >;
-  removeContainerType() {
-    console.log(this.containerTypeSync);
-    if (this.containerTypeSync.id) {
-      removeContainerType(this.containerTypeSync.id)
+
+  removeOperator() {
+    if (this.operatorSync.id) {
+      removeOperator(this.operatorSync.id)
         .then(res => {
           console.log(res.data);
-          const response: IContainerType = res.data;
-          this.containerTypeSync = response;
-          this.messageSync =
-            "Xóa thành công loại Container: " + this.containerTypeSync.name;
-          const index = this.containerTypesSync.findIndex(
-            x => x.id === this.containerTypeSync.id
-          );
-          this.containerTypesSync.splice(index, 1);
+          const response: IOperator = res.data;
+          this.operatorSync = response;
+          this.messageSync = "Success delete user: " + response.username;
         })
         .catch(err => {
           console.log(err);
           this.messageSync = "Error happend";
         })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
-        );
+        .finally(() => (this.snackbarSync = true));
     }
   }
 }

@@ -46,11 +46,9 @@
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import { IPermission } from "@/entity/permission";
 import { removePermission } from "@/api/permission";
-import { getPermissions } from "@/api/permission";
-import { PaginationResponse } from "@/api/payload";
 
 @Component
-export default class DialogDeletePermission extends Vue {
+export default class DeletePermission extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
   @PropSync("permission", { type: Object }) permissionSync!: IPermission;
   @PropSync("message", { type: String }) messageSync!: string;
@@ -58,13 +56,6 @@ export default class DialogDeletePermission extends Vue {
   @PropSync("permissions", { type: Array }) permissionsSync!: Array<
     IPermission
   >;
-  @PropSync("options", { type: Object }) optionsSync!: {
-    descending: true;
-    page: number;
-    itemsPerPage: number;
-    totalItems: number;
-    itemsPerPageItems: Array<number>;
-  };
 
   removePermission() {
     if (this.permissionSync.id) {
@@ -75,17 +66,10 @@ export default class DialogDeletePermission extends Vue {
           this.permissionSync = response;
           this.messageSync =
             "Xóa thành công vai trò: " + this.permissionSync.name;
-          getPermissions({
-            page: 0,
-            limit: 5
-          })
-            .then(res => {
-              const response: PaginationResponse<IPermission> = res.data;
-              this.permissionsSync = response.data;
-              this.optionsSync.totalItems = response.totalElements;
-            })
-            .catch(err => console.log(err))
-            .finally();
+          const index = this.permissionsSync.findIndex(
+            x => x.id === this.permissionSync.id
+          );
+          this.permissionsSync.splice(index, 1);
         })
         .catch(err => {
           console.log(err);

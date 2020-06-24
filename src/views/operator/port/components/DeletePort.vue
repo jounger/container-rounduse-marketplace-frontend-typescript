@@ -44,23 +44,14 @@
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import { IPort } from "@/entity/port";
 import { removePort } from "@/api/port";
-import { getPorts } from "@/api/port";
-import { PaginationResponse } from "@/api/payload";
 
 @Component
-export default class DialogDeletePort extends Vue {
+export default class DeletePort extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
   @PropSync("port", { type: Object }) portSync!: IPort;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("ports", { type: Array }) portsSync!: Array<IPort>;
-  @PropSync("options", { type: Object }) optionsSync!: {
-    descending: true;
-    page: number;
-    itemsPerPage: number;
-    totalItems: number;
-    itemsPerPageItems: Array<number>;
-  };
 
   removePort() {
     if (this.portSync.id) {
@@ -71,17 +62,10 @@ export default class DialogDeletePort extends Vue {
           this.portSync = response;
           this.messageSync =
             "Xóa thành công bến cảng: " + this.portSync.fullname;
-          getPorts({
-            page: 0,
-            limit: 5
-          })
-            .then(res => {
-              const response: PaginationResponse<IPort> = res.data;
-              this.portsSync = response.data;
-              this.optionsSync.totalItems = response.totalElements;
-            })
-            .catch(err => console.log(err))
-            .finally();
+          const index = this.portsSync.findIndex(
+            x => x.id === this.portSync.id
+          );
+          this.portsSync.splice(index, 1);
         })
         .catch(err => {
           console.log(err);

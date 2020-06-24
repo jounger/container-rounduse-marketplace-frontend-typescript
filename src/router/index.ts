@@ -96,6 +96,14 @@ const routes: Array<RouteConfig> = [
       auth: ["ROLE_MODERATOR"]
     }
   },
+  {
+    path: "/discount",
+    name: "Mã giảm giá",
+    component: () => import("@/views/operator/discount/index.vue"),
+    meta: {
+      auth: ["ROLE_MODERATOR"]
+    }
+  },
   // SUPPLIER
   {
     path: "/application",

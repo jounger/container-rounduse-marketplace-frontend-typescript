@@ -3,7 +3,9 @@
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">{{ title }}</span>
+          ><span class="headline" style="color:white;">{{
+            isUpdate ? "Cập nhập" : "Thêm mới"
+          }}</span>
           <v-btn
             icon
             dark
@@ -55,7 +57,7 @@
       <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn @click="updatePort()" color="primary" v-if="portSync.id"
+        <v-btn @click="updatePort()" color="primary" v-if="isUpdate"
           >Cập nhập</v-btn
         >
         <v-btn @click="addPort()" color="primary" v-else>Thêm mới</v-btn>
@@ -66,25 +68,20 @@
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import { IPort } from "@/entity/port";
-import { createPort, updatePort, getPorts } from "@/api/port";
-import { PaginationResponse } from "@/api/payload";
+import { createPort, updatePort } from "@/api/port";
 
 @Component
-export default class DialogCreatePort extends Vue {
+export default class CreatePort extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("port", { type: Object }) portSync!: IPort;
   @PropSync("ports", { type: Array }) portsSync!: Array<IPort>;
-  @PropSync("options", { type: Object }) optionsSync!: {
-    descending: true;
-    page: number;
-    itemsPerPage: number;
-    totalItems: number;
-    itemsPerPageItems: Array<number>;
-  };
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
-  title = this.portSync ? "Cập nhập" : "Thêm mới";
+  get isUpdate() {
+    if (typeof this.portSync.id !== "undefined") return true;
+    return false;
+  }
   addPort() {
     if (this.portSync) {
       createPort(this.portSync)
@@ -94,17 +91,7 @@ export default class DialogCreatePort extends Vue {
           this.portSync = response;
           this.messageSync =
             "Thêm mới thành công bến tàu: " + this.portSync.fullname;
-          getPorts({
-            page: 0,
-            limit: 5
-          })
-            .then(res => {
-              const response: PaginationResponse<IPort> = res.data;
-              this.portsSync = response.data;
-              this.optionsSync.totalItems = response.totalElements;
-            })
-            .catch(err => console.log(err))
-            .finally();
+          this.portsSync.push(this.portSync);
         })
         .catch(err => {
           console.log(err);
@@ -124,17 +111,6 @@ export default class DialogCreatePort extends Vue {
           this.portSync = response;
           this.messageSync =
             "Cập nhập thành công bến cảng: " + this.portSync.fullname;
-          getPorts({
-            page: 0,
-            limit: 5
-          })
-            .then(res => {
-              const response: PaginationResponse<IPort> = res.data;
-              this.portsSync = response.data;
-              this.optionsSync.totalItems = response.totalElements;
-            })
-            .catch(err => console.log(err))
-            .finally();
         })
         .catch(err => {
           console.log(err);

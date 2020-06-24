@@ -3,12 +3,12 @@
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">Xóa loại Container</span>
+          ><span class="headline" style="color:white;">Xóa quyền</span>
           <v-btn
             icon
             dark
             @click="dialogDelSync = false"
-            style="margin-left:324px;"
+            style="margin-left:403px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
@@ -19,15 +19,13 @@
         <v-form>
           <v-container>
             <span style="color: black; font-size:22px;"
-              >Bạn có chắc chắn muốn xóa loại Container này?</span
+              >Bạn có chắc chắn muốn xóa quyền này?</span
             >
             <div class="line"></div>
             <v-list>
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title>{{
-                    containerTypeSync.name
-                  }}</v-list-item-title>
+                  <v-list-item-title>{{ roleSync.name }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -37,48 +35,45 @@
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
         <v-btn @click="dialogDelSync = false">Hủy</v-btn>
-        <v-btn @click="removeContainerType()" color="red">Xóa</v-btn>
+        <v-btn @click="removeRole()" color="red">Xóa</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
-import { IContainerType } from "@/entity/container-type";
-import { removeContainerType } from "@/api/container-type";
+import { IRole } from "@/entity/role";
+import { removeRole } from "@/api/role";
 
 @Component
-export default class DeleteContainerType extends Vue {
+export default class DeleteRole extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("containerType", { type: Object })
-  containerTypeSync!: IContainerType;
+  @PropSync("role", { type: Object }) roleSync!: IRole;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @PropSync("containerTypes", { type: Array }) containerTypesSync!: Array<
-    IContainerType
-  >;
-  removeContainerType() {
-    console.log(this.containerTypeSync);
-    if (this.containerTypeSync.id) {
-      removeContainerType(this.containerTypeSync.id)
+  @PropSync("roles", { type: Array }) rolesSync!: Array<IRole>;
+
+  removeRole() {
+    console.log(1);
+    if (this.roleSync.id) {
+      console.log(0);
+      removeRole(this.roleSync.id)
         .then(res => {
           console.log(res.data);
-          const response: IContainerType = res.data;
-          this.containerTypeSync = response;
-          this.messageSync =
-            "Xóa thành công loại Container: " + this.containerTypeSync.name;
-          const index = this.containerTypesSync.findIndex(
-            x => x.id === this.containerTypeSync.id
+          const response: IRole = res.data;
+          this.roleSync = response;
+          this.messageSync = "Xóa thành công quyền: " + this.roleSync.name;
+          const index = this.rolesSync.findIndex(
+            x => x.id === this.roleSync.id
           );
-          this.containerTypesSync.splice(index, 1);
+          this.rolesSync.splice(index, 1);
+          this.dialogDelSync = false;
         })
         .catch(err => {
           console.log(err);
           this.messageSync = "Error happend";
         })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
-        );
+        .finally(() => (this.snackbarSync = true));
     }
   }
 }

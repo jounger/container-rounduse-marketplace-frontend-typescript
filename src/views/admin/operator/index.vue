@@ -1,36 +1,19 @@
 <template>
   <v-content>
     <v-card>
-      <v-card-title>
-        Danh sách Operator
-        <v-spacer></v-spacer>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>
-      </v-card-title>
-      <v-btn
-        color="primary"
-        style="margin-left: 35px;"
-        dark
-        @click="addOperator()"
-      >
-        Thêm mới
-      </v-btn>
       <v-row justify="center">
-        <DialogDeleteOperator
+        <DeleteOperator
           :dialogDel.sync="dialogDel"
           :operator.sync="operator"
+          :operators.sync="operators"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
       </v-row>
       <v-row justify="center">
-        <DialogCreateOperator
+        <CreateOperator
           :operator.sync="operator"
+          :operators.sync="operators"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
           :snackbar.sync="snackbar"
@@ -40,7 +23,7 @@
       <v-data-table
         :headers="headers"
         :items="operators"
-        item-key="username"
+        item-key="id"
         :search="search"
         :loading="loading"
         :options.sync="options"
@@ -49,22 +32,25 @@
         :actions-append="options.page"
         class="elevation-1"
       >
-        <template v-slot:item.action="{ item }">
-          <v-menu :loading="item.createloading" :disabled="item.createloading">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn color="secondary" dark v-bind="attrs" v-on="on">
-                <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item @click="viewDetail(item)">
-                <v-list-item-title>Chi tiết</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="removeOperator(item)">
-                <v-list-item-title>Xóa</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+        <template v-slot:top>
+          <v-toolbar flat color="white">
+            <v-toolbar-title style="font-weight:bold; font-size: 25px;"
+              >Danh sách Quản trị viên</v-toolbar-title
+            >
+            <v-divider class="mx-4" inset vertical></v-divider>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" dark class="mb-2" @click="addOperator()"
+              >Thêm mới</v-btn
+            >
+          </v-toolbar>
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <v-icon small class="mr-2" @click="viewDetail(item)">
+            mdi-pencil
+          </v-icon>
+          <v-icon small @click="removeOperator(item)">
+            mdi-delete
+          </v-icon>
         </template>
       </v-data-table>
     </v-card>
@@ -74,16 +60,16 @@
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
 import { IOperator } from "@/entity/operator";
-import DialogCreateOperator from "./components/DialogCreateOperator.vue";
-import DialogDeleteOperator from "./components/DialogDeleteOperator.vue";
+import CreateOperator from "./components/CreateOperator.vue";
+import DeleteOperator from "./components/DeleteOperator.vue";
 import { getOperators } from "@/api/operator";
 import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 
 @Component({
   components: {
-    DialogCreateOperator,
-    DialogDeleteOperator,
+    CreateOperator,
+    DeleteOperator,
     Snackbar
   }
 })
@@ -117,7 +103,7 @@ export default class Operator extends Vue {
     { text: "Trạng thái", value: "status" },
     {
       text: "Hành động",
-      value: "action"
+      value: "actions"
     }
   ];
   created() {

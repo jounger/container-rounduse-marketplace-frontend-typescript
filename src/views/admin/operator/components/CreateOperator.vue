@@ -85,7 +85,7 @@ import { IOperator } from "@/entity/operator";
 import { createOperator, updateOperator } from "@/api/operator";
 
 @Component
-export default class DialogCreateOperator extends Vue {
+export default class CreateOperator extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("operator", { type: Object }) operatorSync!: IOperator;
   @PropSync("message", { type: String }) messageSync!: string;

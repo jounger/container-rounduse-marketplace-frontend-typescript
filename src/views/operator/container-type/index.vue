@@ -1,31 +1,11 @@
 <template>
   <v-content>
     <v-card>
-      <v-card-title>
-        Danh sách loại Container
-        <v-spacer></v-spacer>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>
-      </v-card-title>
-      <v-btn
-        color="primary"
-        style="margin-left: 35px;"
-        dark
-        @click="addContainerType()"
-      >
-        Thêm mới
-      </v-btn>
       <v-row justify="center">
         <DialogDeleteContainerType
           :dialogDel.sync="dialogDel"
           :containerType.sync="containerType"
           :containerTypes.sync="containerTypes"
-          :options.sync="options"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
@@ -34,7 +14,6 @@
         <DialogCreateContainerType
           :containerType.sync="containerType"
           :containerTypes.sync="containerTypes"
-          :options.sync="options"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
           :snackbar.sync="snackbar"
@@ -45,7 +24,6 @@
         :headers="headers"
         :items="containerTypes"
         item-key="id"
-        :search="search"
         :loading="loading"
         :options.sync="options"
         :server-items-length="options.totalItems"
@@ -53,22 +31,25 @@
         :actions-append="options.page"
         class="elevation-1"
       >
-        <template v-slot:item.action="{ item }">
-          <v-menu :loading="item.createloading" :disabled="item.createloading">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn color="secondary" dark v-bind="attrs" v-on="on">
-                <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item @click="viewDetail(item)">
-                <v-list-item-title>Chi tiết</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="removeContainerType(item)">
-                <v-list-item-title>Xóa</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+        <template v-slot:top>
+          <v-toolbar flat color="white">
+            <v-toolbar-title style="font-weight:bold; font-size: 25px;"
+              >Danh sách loại Container</v-toolbar-title
+            >
+            <v-divider class="mx-4" inset vertical></v-divider>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" dark class="mb-2" @click="addContainerType()"
+              >Thêm mới</v-btn
+            >
+          </v-toolbar>
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <v-icon small class="mr-2" @click="viewDetail(item)">
+            mdi-pencil
+          </v-icon>
+          <v-icon small @click="removeContainerType(item)">
+            mdi-delete
+          </v-icon>
         </template>
       </v-data-table>
     </v-card>
@@ -94,18 +75,7 @@ import DialogDeleteContainerType from "./components/DeleteContainerType.vue";
 export default class ContainerType extends Vue {
   @PropSync("layout") layoutSync!: object;
   containerTypes: Array<IContainerType> = [];
-  containerType: IContainerType = {
-    name: "",
-    description: "",
-    tareWeight: 0,
-    payloadCapacity: 0,
-    cubicCapacity: 0,
-    internalLength: 0,
-    internalWidth: 0,
-    internalHeight: 0,
-    doorOpeningWidth: 0,
-    doorOpeningHeight: 0
-  };
+  containerType = {} as IContainerType;
   dialogAdd = false;
   dialogDel = false;
   search = "";
@@ -137,7 +107,7 @@ export default class ContainerType extends Vue {
     { text: "Chiều cao cửa mở", value: "doorOpeningHeight" },
     {
       text: "Hành động",
-      value: "action"
+      value: "actions"
     }
   ];
   created() {
@@ -145,18 +115,7 @@ export default class ContainerType extends Vue {
   }
 
   addContainerType() {
-    this.containerType = {
-      name: "",
-      description: "",
-      tareWeight: 0,
-      payloadCapacity: 0,
-      cubicCapacity: 0,
-      internalLength: 0,
-      internalWidth: 0,
-      internalHeight: 0,
-      doorOpeningWidth: 0,
-      doorOpeningHeight: 0
-    };
+    this.containerType = {} as IContainerType;
     this.dialogAdd = true;
   }
 

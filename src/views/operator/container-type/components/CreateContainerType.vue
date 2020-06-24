@@ -3,7 +3,9 @@
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">{{ title }}</span>
+          ><span class="headline" style="color:white;">{{
+            isUpdate ? "Cập nhập" : "Thêm mới"
+          }}</span>
           <v-btn
             icon
             dark
@@ -142,10 +144,7 @@
       <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn
-          @click="updateContainerType()"
-          color="primary"
-          v-if="containerTypeSync.id"
+        <v-btn @click="updateContainerType()" color="primary" v-if="isUpdate"
           >Cập nhập</v-btn
         >
         <v-btn @click="addContainerType()" color="primary" v-else
@@ -158,32 +157,23 @@
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import { IContainerType } from "@/entity/container-type";
-import {
-  createContainerType,
-  updateContainerType,
-  getContainerTypes
-} from "@/api/container-type";
-import { PaginationResponse } from "@/api/payload";
+import { createContainerType, updateContainerType } from "@/api/container-type";
 
 @Component
-export default class DialogCreateContainerType extends Vue {
+export default class CreateContainerType extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("containerType", { type: Object })
   containerTypeSync!: IContainerType;
   @PropSync("containerTypes", { type: Array }) containerTypesSync!: Array<
     IContainerType
   >;
-  @PropSync("options", { type: Object }) optionsSync!: {
-    descending: true;
-    page: number;
-    itemsPerPage: number;
-    totalItems: number;
-    itemsPerPageItems: Array<number>;
-  };
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
-  title = this.containerTypeSync ? "Cập nhập" : "Thêm mới";
+  get isUpdate() {
+    if (typeof this.containerTypeSync.id !== "undefined") return true;
+    return false;
+  }
   addContainerType() {
     if (this.containerTypeSync) {
       createContainerType(this.containerTypeSync)
@@ -194,17 +184,7 @@ export default class DialogCreateContainerType extends Vue {
           this.messageSync =
             "Thêm mới thành công loại Container: " +
             this.containerTypeSync.name;
-          getContainerTypes({
-            page: 0,
-            limit: 5
-          })
-            .then(res => {
-              const response: PaginationResponse<IContainerType> = res.data;
-              this.containerTypesSync = response.data;
-              this.optionsSync.totalItems = response.totalElements;
-            })
-            .catch(err => console.log(err))
-            .finally();
+          this.containerTypesSync.push(this.containerTypeSync);
         })
         .catch(err => {
           console.log(err);
@@ -225,17 +205,6 @@ export default class DialogCreateContainerType extends Vue {
           this.messageSync =
             "Cập nhập thành công loại Container: " +
             this.containerTypeSync.name;
-          getContainerTypes({
-            page: 0,
-            limit: 5
-          })
-            .then(res => {
-              const response: PaginationResponse<IContainerType> = res.data;
-              this.containerTypesSync = response.data;
-              this.optionsSync.totalItems = response.totalElements;
-            })
-            .catch(err => console.log(err))
-            .finally();
         })
         .catch(err => {
           console.log(err);

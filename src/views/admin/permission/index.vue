@@ -1,40 +1,19 @@
 <template>
   <v-content>
     <v-card>
-      <v-card-title>
-        Danh sách vai trò
-        <v-spacer></v-spacer>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>
-      </v-card-title>
-      <v-btn
-        color="primary"
-        style="margin-left: 35px;"
-        dark
-        @click="addPermission()"
-      >
-        Thêm mới
-      </v-btn>
       <v-row justify="center">
-        <DialogDeletePermission
+        <DeletePermission
           :dialogDel.sync="dialogDel"
           :permission.sync="permission"
           :permissions.sync="permissions"
-          :options.sync="options"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
       </v-row>
       <v-row justify="center">
-        <DialogCreatePermission
+        <CreatePermission
           :permission.sync="permission"
           :permissions.sync="permissions"
-          :options.sync="options"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
           :snackbar.sync="snackbar"
@@ -45,7 +24,6 @@
         :headers="headers"
         :items="permissions"
         item-key="id"
-        :search="search"
         :loading="loading"
         :options.sync="options"
         :server-items-length="options.totalItems"
@@ -53,22 +31,25 @@
         :actions-append="options.page"
         class="elevation-1"
       >
-        <template v-slot:item.action="{ item }">
-          <v-menu :loading="item.createloading" :disabled="item.createloading">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn color="secondary" dark v-bind="attrs" v-on="on">
-                <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item @click="viewDetail(item)">
-                <v-list-item-title>Chi tiết</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="removePermission(item)">
-                <v-list-item-title>Xóa</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+        <template v-slot:top>
+          <v-toolbar flat color="white">
+            <v-toolbar-title style="font-weight:bold; font-size: 25px;"
+              >Danh sách vai trò</v-toolbar-title
+            >
+            <v-divider class="mx-4" inset vertical></v-divider>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" dark class="mb-2" @click="addPermission()"
+              >Thêm mới</v-btn
+            >
+          </v-toolbar>
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <v-icon small class="mr-2" @click="viewDetail(item)">
+            mdi-pencil
+          </v-icon>
+          <v-icon small @click="removePermission(item)">
+            mdi-delete
+          </v-icon>
         </template>
       </v-data-table>
     </v-card>
@@ -81,23 +62,20 @@ import { IPermission } from "@/entity/permission";
 import { getPermissions } from "@/api/permission";
 import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
-import DialogDeletePermission from "./components/DialogDeletePermission.vue";
-import DialogCreatePermission from "./components/DialogCreatePermission.vue";
+import DeletePermission from "./components/DeletePermission.vue";
+import CreatePermission from "./components/CreatePermission.vue";
 
 @Component({
   components: {
-    DialogCreatePermission,
-    DialogDeletePermission,
+    CreatePermission,
+    DeletePermission,
     Snackbar
   }
 })
 export default class Permission extends Vue {
   @PropSync("layout") layoutSync!: object;
   permissions: Array<IPermission> = [];
-  permission: IPermission = {
-    name: "",
-    description: ""
-  };
+  permission = {} as IPermission;
   dialogAdd = false;
   dialogDel = false;
   search = "";
@@ -121,7 +99,7 @@ export default class Permission extends Vue {
     { text: "Mô tả", value: "description" },
     {
       text: "Hành động",
-      value: "action"
+      value: "actions"
     }
   ];
   created() {
@@ -129,10 +107,7 @@ export default class Permission extends Vue {
   }
 
   addPermission() {
-    this.permission = {
-      name: "",
-      description: ""
-    };
+    this.permission = {} as IPermission;
     this.dialogAdd = true;
   }
 
@@ -155,7 +130,7 @@ export default class Permission extends Vue {
       })
         .then(res => {
           const response: PaginationResponse<IPermission> = res.data;
-          console.log("watch", this.options);
+          console.log("watch", response);
           this.permissions = response.data;
           this.options.totalItems = response.totalElements;
         })

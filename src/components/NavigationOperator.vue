@@ -75,6 +75,14 @@
           <v-list-item-title>Loại Container</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
+      <v-list-item to="/discount">
+        <v-list-item-icon>
+          <v-icon>mdi-help-box</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title>Mã giảm giá</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
     </v-list-group>
   </v-list>
 </template>

@@ -3,7 +3,9 @@
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">{{ title }}</span>
+          ><span class="headline" style="color:white;">{{
+            isUpdate ? "Cập nhập" : "Thêm mới"
+          }}</span>
           <v-btn
             icon
             dark
@@ -44,10 +46,7 @@
       <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn
-          @click="updatePermission()"
-          color="primary"
-          v-if="permissionSync.id"
+        <v-btn @click="updatePermission()" color="primary" v-if="isUpdate"
           >Cập nhập</v-btn
         >
         <v-btn @click="addPermission()" color="primary" v-else>Thêm mới</v-btn>
@@ -58,31 +57,22 @@
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import { IPermission } from "@/entity/permission";
-import {
-  createPermission,
-  updatePermission,
-  getPermissions
-} from "@/api/permission";
-import { PaginationResponse } from "@/api/payload";
+import { createPermission, updatePermission } from "@/api/permission";
 
 @Component
-export default class DialogCreatePermission extends Vue {
+export default class CreatePermission extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("permission", { type: Object }) permissionSync!: IPermission;
   @PropSync("permissions", { type: Array }) permissionsSync!: Array<
     IPermission
   >;
-  @PropSync("options", { type: Object }) optionsSync!: {
-    descending: true;
-    page: number;
-    itemsPerPage: number;
-    totalItems: number;
-    itemsPerPageItems: Array<number>;
-  };
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
-  title = this.permissionSync ? "Cập nhập" : "Thêm mới";
+  get isUpdate() {
+    if (typeof this.permissionSync.id !== "undefined") return true;
+    return false;
+  }
   addPermission() {
     if (this.permissionSync) {
       createPermission(this.permissionSync)
@@ -92,17 +82,7 @@ export default class DialogCreatePermission extends Vue {
           this.permissionSync = response;
           this.messageSync =
             "Thêm mới thành công vai trò: " + this.permissionSync.name;
-          getPermissions({
-            page: 0,
-            limit: 5
-          })
-            .then(res => {
-              const response: PaginationResponse<IPermission> = res.data;
-              this.permissionsSync = response.data;
-              this.optionsSync.totalItems = response.totalElements;
-            })
-            .catch(err => console.log(err))
-            .finally();
+          this.permissionsSync.push(this.permissionSync);
         })
         .catch(err => {
           console.log(err);
@@ -122,17 +102,6 @@ export default class DialogCreatePermission extends Vue {
           this.permissionSync = response;
           this.messageSync =
             "Cập nhập thành công vai trò: " + this.permissionSync.name;
-          getPermissions({
-            page: 0,
-            limit: 5
-          })
-            .then(res => {
-              const response: PaginationResponse<IPermission> = res.data;
-              this.permissionsSync = response.data;
-              this.optionsSync.totalItems = response.totalElements;
-            })
-            .catch(err => console.log(err))
-            .finally();
         })
         .catch(err => {
           console.log(err);

@@ -2,19 +2,20 @@
   <v-content>
     <v-card>
       <v-row justify="center">
-        <DeleteRole
+        <DeleteDiscount
           :dialogDel.sync="dialogDel"
-          :role.sync="role"
-          :roles.sync="roles"
+          :discount.sync="discount"
+          :discounts.sync="discounts"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
       </v-row>
       <v-row justify="center">
-        <CreateRole
-          :role.sync="role"
-          :roles.sync="roles"
+        <CreateDiscount
+          :discount.sync="discount"
+          :discounts.sync="discounts"
           :dialogAdd.sync="dialogAdd"
+          :expiredDate.sync="expiredDate"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
@@ -22,7 +23,7 @@
       <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-data-table
         :headers="headers"
-        :items="roles"
+        :items="discounts"
         item-key="id"
         :loading="loading"
         :options.sync="options"
@@ -34,20 +35,23 @@
         <template v-slot:top>
           <v-toolbar flat color="white">
             <v-toolbar-title style="font-weight:bold; font-size: 25px;"
-              >Danh sách quyền</v-toolbar-title
+              >Danh sách vai trò</v-toolbar-title
             >
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
-            <v-btn color="primary" dark class="mb-2" @click="addRole()"
+            <v-btn color="primary" dark class="mb-2" @click="addDiscount()"
               >Thêm mới</v-btn
             >
           </v-toolbar>
+        </template>
+        <template v-slot:item.expired="{ item }">
+          {{ convertExpiredDate(item.expiredDate) }}
         </template>
         <template v-slot:item.actions="{ item }">
           <v-icon small class="mr-2" @click="viewDetail(item)">
             mdi-pencil
           </v-icon>
-          <v-icon small @click="removeRole(item)">
+          <v-icon small @click="removeDiscount(item)">
             mdi-delete
           </v-icon>
         </template>
@@ -58,28 +62,29 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
-import { IRole } from "@/entity/role";
-import { getRoles } from "@/api/role";
+import { IDiscount } from "@/entity/discount";
+import { getDiscounts } from "@/api/discount";
 import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
-import DeleteRole from "./components/DeleteRole.vue";
-import CreateRole from "./components/CreateRole.vue";
+import DeleteDiscount from "./components/DeleteDiscount.vue";
+import CreateDiscount from "./components/CreateDiscount.vue";
 
 @Component({
   components: {
-    CreateRole,
-    DeleteRole,
+    CreateDiscount,
+    DeleteDiscount,
     Snackbar
   }
 })
-export default class Role extends Vue {
+export default class Discount extends Vue {
   @PropSync("layout") layoutSync!: object;
-  roles: Array<IRole> = [];
-  role = {} as IRole;
+  discounts: Array<IDiscount> = [];
+  discount = {} as IDiscount;
   dialogAdd = false;
   dialogDel = false;
   search = "";
   message = "";
+  expiredDate = "";
   snackbar = false;
   loading = true;
   options = {
@@ -91,12 +96,16 @@ export default class Role extends Vue {
   };
   headers = [
     {
-      text: "Tên quyền",
+      text: "Mã giảm giá",
       align: "start",
       sortable: true,
-      value: "name"
+      value: "code"
     },
-    { text: "Vai trò", value: "permissions" },
+    { text: "Chi tiết", value: "detail" },
+    { text: "Loại tiền tệ", value: "currency" },
+    { text: "Phần trăm", value: "percent" },
+    { text: "Giảm giá nhiều nhất", value: "maximumDiscount" },
+    { text: "Ngày hết hạn", value: "expired" },
     {
       text: "Hành động",
       value: "actions"
@@ -105,32 +114,43 @@ export default class Role extends Vue {
   created() {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
   }
-
-  addRole() {
+  convertExpiredDate(expiredDate: string) {
+    const index = expiredDate.indexOf("T");
+    return (
+      expiredDate.slice(0, index) +
+      " " +
+      expiredDate.slice(index + 1, expiredDate.length)
+    );
+  }
+  addDiscount() {
+    this.discount = {} as IDiscount;
+    this.expiredDate = "";
     this.dialogAdd = true;
   }
 
-  viewDetail(item: IRole) {
-    this.role = item;
+  viewDetail(item: IDiscount) {
+    const index = item.expiredDate.indexOf("T");
+    this.expiredDate = item.expiredDate.slice(0, index);
+    this.discount = item;
     this.dialogAdd = true;
   }
 
-  removeRole(item: IRole) {
-    this.role = item;
+  removeDiscount(item: IDiscount) {
+    this.discount = item;
     this.dialogDel = true;
   }
 
   @Watch("options", { deep: true })
   onOptionsChange(val: object, oldVal: object) {
     if (val !== oldVal) {
-      getRoles({
+      getDiscounts({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })
         .then(res => {
-          const response: PaginationResponse<IRole> = res.data;
+          const response: PaginationResponse<IDiscount> = res.data;
           console.log("watch", response);
-          this.roles = response.data;
+          this.discounts = response.data;
           this.options.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))

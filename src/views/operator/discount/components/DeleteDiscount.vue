@@ -3,7 +3,7 @@
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">Xóa Moderator</span>
+          ><span class="headline" style="color:white;">Xóa mã giảm giá</span>
           <v-btn
             icon
             dark
@@ -19,15 +19,13 @@
         <v-form>
           <v-container>
             <span style="color: black; font-size:22px;"
-              >Bạn có chắc chắn muốn xóa Moderator này?</span
+              >Bạn có chắc chắn muốn xóa mã giảm giá này?</span
             >
             <div class="line"></div>
             <v-list>
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title>{{
-                    operatorSync.username
-                  }}</v-list-item-title>
+                  <v-list-item-title>{{ discountSync.code }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -37,37 +35,45 @@
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
         <v-btn @click="dialogDelSync = false">Hủy</v-btn>
-        <v-btn @click="removeOperator()" color="red">Xóa</v-btn>
+        <v-btn @click="removeDiscount()" color="red">Xóa</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
-import { IOperator } from "@/entity/operator";
-import { removeOperator } from "@/api/operator";
+import { IDiscount } from "@/entity/discount";
+import { removeDiscount } from "@/api/discount";
 
 @Component
-export default class DialogDeleteOperator extends Vue {
+export default class DeleteDiscount extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("operator", { type: Object }) operatorSync!: IOperator;
+  @PropSync("discount", { type: Object }) discountSync!: IDiscount;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("discounts", { type: Array }) discountsSync!: Array<IDiscount>;
 
-  removeOperator() {
-    if (this.operatorSync.id) {
-      removeOperator(this.operatorSync.id)
+  removeDiscount() {
+    if (this.discountSync.id) {
+      removeDiscount(this.discountSync.id)
         .then(res => {
           console.log(res.data);
-          const response: IOperator = res.data;
-          this.operatorSync = response;
-          this.messageSync = "Success delete user: " + response.username;
+          const response: IDiscount = res.data;
+          this.discountSync = response;
+          this.messageSync =
+            "Xóa thành công mã giảm giá: " + this.discountSync.code;
+          const index = this.discountsSync.findIndex(
+            x => x.id === this.discountSync.id
+          );
+          this.discountsSync.splice(index, 1);
         })
         .catch(err => {
           console.log(err);
           this.messageSync = "Error happend";
         })
-        .finally(() => (this.snackbarSync = true));
+        .finally(
+          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
+        );
     }
   }
 }
