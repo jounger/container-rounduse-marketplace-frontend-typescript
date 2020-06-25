@@ -1,47 +1,18 @@
 <template>
   <v-content>
     <v-card>
-      <v-card-title>
-        Danh sách hàng nhập
-        <v-spacer></v-spacer>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>
-      </v-card-title>
-      <v-btn
-        color="primary"
-        style="margin-left: 35px;"
-        dark
-        @click="addInbound()"
-      >
-        Thêm mới
-      </v-btn>
-      <v-row justify="center">
-        <!-- <DialogDeleteInbound
-          :dialogDel.sync="dialogDel"
-          :inbound.sync="inbound"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
-        />
-      </v-row>
-      <v-row justify="center">
-        <DialogCreateInbound
-          :inbound.sync="inbound"
-          :dialogAdd.sync="dialogAdd"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
-        /> -->
-      </v-row>
       <Snackbar :text="message" :snackbar.sync="snackbar" />
+      <CreateInbound
+        v-if="dialogAdd"
+        :inbound.sync="inbound"
+        :dialogAdd.sync="dialogAdd"
+        :message.sync="message"
+        :snackbar.sync="snackbar"
+      />
       <v-data-table
         :headers="headers"
         :items="inbounds"
         item-key="id"
-        :search="search"
         :loading="loading"
         :options.sync="options"
         :server-items-length="options.totalItems"
@@ -49,19 +20,45 @@
         :actions-append="options.page"
         class="elevation-1"
       >
-        <template v-slot:item.action="{ item }">
-          <v-menu :loading="item.createloading" :disabled="item.createloading">
+        <!--  -->
+        <template v-slot:top>
+          <v-toolbar flat color="white">
+            <v-toolbar-title>Danh sách hàng nhập</v-toolbar-title>
+            <v-divider class="mx-4" inset vertical></v-divider>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" dark class="mb-2" @click="addInbound()">
+              Thêm mới
+            </v-btn>
+          </v-toolbar>
+        </template>
+        <!--  -->
+        <template v-slot:item.pickUpTime="{ item }">
+          {{ formatDatetime(item.pickUpTime) }}
+        </template>
+
+        <template v-slot:item.actions="{ item }">
+          <v-menu :close-on-click="true">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn color="secondary" dark v-bind="attrs" v-on="on">
+              <v-btn color="pink" icon outlined v-bind="attrs" v-on="on">
                 <v-icon>mdi-dots-vertical</v-icon>
               </v-btn>
             </template>
             <v-list>
               <v-list-item @click="viewDetail(item)">
-                <v-list-item-title>Chi tiết</v-list-item-title>
+                <v-list-item-icon>
+                  <v-icon small>edit</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Chỉnh sửa</v-list-item-title>
+                </v-list-item-content>
               </v-list-item>
               <v-list-item @click="removeInbound(item)">
-                <v-list-item-title>Xóa</v-list-item-title>
+                <v-list-item-icon>
+                  <v-icon small>delete</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Xoa</v-list-item-title>
+                </v-list-item-content>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -74,7 +71,7 @@
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
 import { IInbound } from "@/entity/inbound";
-// import DialogCreateInbound from "./components/DialogCreateInbound.vue";
+import CreateInbound from "./components/CreateInbound.vue";
 // import DialogDeleteInbound from "./components/DialogDeleteInbound.vue";
 // import { getInboundByForwarder } from "@/api/inbound";
 // import { PaginationResponse } from "@/api/payload";
@@ -83,7 +80,7 @@ import { InboundData } from "./data";
 
 @Component({
   components: {
-    // DialogCreateInbound,
+    CreateInbound,
     // DialogDeleteInbound,
     Snackbar
   }
@@ -99,6 +96,7 @@ export default class Inbound extends Vue {
   message = "";
   snackbar = false;
   loading = true;
+  dateInit = new Date().toISOString().substr(0, 10);
   options = {
     descending: true,
     page: 1,
@@ -110,20 +108,26 @@ export default class Inbound extends Vue {
     {
       text: "Mã",
       align: "start",
+      sortable: false,
       value: "id"
     },
     { text: "Hãng tàu", value: "shippingLine" },
     { text: "Loại cont", value: "containerType" },
     { text: "Trạng thái", value: "status" },
-    { text: "Lấy cont đặc", value: "pickUpTime" },
-    // { text: "Thời gian đóng hàng", value: "billOfLading.billOfLadingNumber" },
-    // { text: "Thời gian làm hàng", value: "portOfDelivery.nameCode" },
-    // { text: "Thời gian tàu chạy", value: "freeTime" },
+    { text: "Time lấy cont", value: "pickUpTime" },
+    { text: "B/L No.", value: "billOfLading.billOfLadingNumber" },
+    { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery" },
+    { text: "Số lượng cont", value: "billOfLading.containers.length" },
     {
       text: "Hành động",
-      value: "action"
+      value: "actions"
     }
   ];
+
+  formatDatetime(date: string) {
+    return date.substring(0, 10);
+  }
+
   created() {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
     this.inbounds = InboundData as Array<IInbound>;
@@ -131,6 +135,20 @@ export default class Inbound extends Vue {
   }
 
   addInbound() {
+    this.inbound = {
+      shippingLine: "",
+      containerType: "",
+      status: "",
+      emptyTime: this.dateInit,
+      pickUpTime: this.dateInit,
+      billOfLading: {
+        id: 0,
+        billOfLadingNumber: "",
+        containers: [],
+        portOfDelivery: "",
+        freeTime: this.dateInit
+      }
+    };
     this.dialogAdd = true;
   }
 
