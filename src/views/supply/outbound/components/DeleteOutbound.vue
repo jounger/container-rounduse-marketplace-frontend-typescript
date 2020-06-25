@@ -19,14 +19,14 @@
         <v-form>
           <v-container>
             <span style="color: black; font-size:22px;"
-              >Bạn có chắc chắn muốn xóa mặt hàng này?</span
+              >Bạn có chắc chắn muốn xóa hàng xuất này?</span
             >
             <div class="line"></div>
             <v-list>
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title>{{
-                    outboundSync.bookingNumber
+                    outboundSync.booking.bookingNumber
                   }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -48,7 +48,7 @@ import { IOutbound } from "@/entity/outbound";
 import { removeOutbound } from "@/api/outbound";
 
 @Component
-export default class DialogDeleteOutbound extends Vue {
+export default class DeleteOutbound extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
   @PropSync("outbound", { type: Object }) outboundSync!: IOutbound;
   @PropSync("message", { type: String }) messageSync!: string;

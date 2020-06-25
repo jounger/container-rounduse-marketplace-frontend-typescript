@@ -1,47 +1,35 @@
 <template>
   <v-content>
     <v-card>
-      <v-card-title>
-        Danh sách hàng
-        <v-spacer></v-spacer>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>
-      </v-card-title>
-      <v-btn
-        color="primary"
-        style="margin-left: 35px;"
-        dark
-        @click="addOutbound()"
-      >
-        Thêm mới
-      </v-btn>
+      <Snackbar :text="message" :snackbar.sync="snackbar" />
+      <CreateOutbound
+        v-if="dialogAdd"
+        :outbound.sync="outbound"
+        :dialogAdd.sync="dialogAdd"
+        :message.sync="message"
+        :snackbar.sync="snackbar"
+      />
+      <UpdateOutbound
+        v-if="dialogEdit"
+        :outbound.sync="outbound"
+        :dialogEdit.sync="dialogEdit"
+        :message.sync="message"
+        :snackbar.sync="snackbar"
+      />
       <v-row justify="center">
         <DeleteOutbound
+          v-if="dialogDel"
           :dialogDel.sync="dialogDel"
           :outbound.sync="outbound"
+          :outbounds.sync="outbounds"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
       </v-row>
-      <v-row justify="center">
-        <CreateOutbound
-          :outbound.sync="outbound"
-          :dialogAdd.sync="dialogAdd"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
-        />
-      </v-row>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-data-table
         :headers="headers"
         :items="outbounds"
         item-key="id"
-        :search="search"
         :loading="loading"
         :options.sync="options"
         :server-items-length="options.totalItems"
@@ -49,19 +37,56 @@
         :actions-append="options.page"
         class="elevation-1"
       >
-        <template v-slot:item.action="{ item }">
-          <v-menu :loading="item.createloading" :disabled="item.createloading">
+        <!--  -->
+        <template v-slot:top>
+          <v-toolbar flat color="white">
+            <v-toolbar-title>Danh sách hàng xuất</v-toolbar-title>
+            <v-divider class="mx-4" inset vertical></v-divider>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" dark class="mb-2" @click="dialogAdd = true">
+              Thêm mới
+            </v-btn>
+          </v-toolbar>
+        </template>
+        <!--  -->
+        <template v-slot:item.packingTime="{ item }">
+          {{ formatDatetime(item.packingTime) }}
+        </template>
+        <template v-slot:item.cutOffTime="{ item }">
+          {{ formatDatetime(item.booking.cutOffTime) }}
+        </template>
+        <template v-slot:item.grossWeight="{ item }">
+          {{ item.grossWeight }} {{ item.unitOfMesurement }}
+        </template>
+        <template v-slot:item.fcl="{ item }">
+          {{ item.booking.isFcl ? "Có" : "Không" }}
+        </template>
+        <template v-slot:item.unit="{ item }">
+          {{ item.booking.unit }} x {{ item.containerType }}
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <v-menu :close-on-click="true">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn color="secondary" dark v-bind="attrs" v-on="on">
+              <v-btn color="pink" icon outlined v-bind="attrs" v-on="on">
                 <v-icon>mdi-dots-vertical</v-icon>
               </v-btn>
             </template>
             <v-list>
-              <v-list-item @click="viewDetail(item)">
-                <v-list-item-title>Chi tiết</v-list-item-title>
+              <v-list-item @click="openEditDialog(item)">
+                <v-list-item-icon>
+                  <v-icon small>edit</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Chỉnh sửa</v-list-item-title>
+                </v-list-item-content>
               </v-list-item>
-              <v-list-item @click="removeOutbound(item)">
-                <v-list-item-title>Xóa</v-list-item-title>
+              <v-list-item @click="openDeleteDialog(item)">
+                <v-list-item-icon>
+                  <v-icon small>delete</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Xóa</v-list-item-title>
+                </v-list-item-content>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -75,14 +100,18 @@ import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
 import { IOutbound } from "@/entity/outbound";
 import CreateOutbound from "./components/CreateOutbound.vue";
-import DeleteOutbound from "./components/DeleteOutbound.vue";
-import { getOutboundByMerchant } from "@/api/outbound";
-import { PaginationResponse } from "@/api/payload";
+import UpdateOutbound from "./components/UpdateOutbound.vue";
+// import { getOutboundByForwarder } from "@/api/outbound";
+// import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
+import { OutboundData } from "./data";
+import { convertFromDateTime } from "@/utils/tool";
+import DeleteOutbound from "./components/DeleteOutbound.vue";
 
 @Component({
   components: {
     CreateOutbound,
+    UpdateOutbound,
     DeleteOutbound,
     Snackbar
   }
@@ -93,11 +122,13 @@ export default class Outbound extends Vue {
   outbounds: Array<IOutbound> = [];
   outbound = {} as IOutbound;
   dialogAdd = false;
+  dialogEdit = false;
   dialogDel = false;
   search = "";
   message = "";
   snackbar = false;
   loading = true;
+  dateInit = new Date().toISOString().substr(0, 10);
   options = {
     descending: true,
     page: 1,
@@ -107,42 +138,43 @@ export default class Outbound extends Vue {
   };
   headers = [
     {
-      text: "Mã hàng",
+      text: "Mã",
       align: "start",
-      sortable: true,
-      value: "merchantId"
+      sortable: false,
+      value: "id"
     },
-    { text: "Mã booking", value: "bookingNumber" },
-    { text: "Loại hàng", value: "categoryList" },
+    { text: "Booking No.", value: "booking.bookingNumber" },
     { text: "Hãng tàu", value: "shippingLine" },
-    { text: "Bến cảng", value: "portOfLoading" },
-    { text: "Thời gian đóng hàng", value: "packingTime" },
-    { text: "Thời gian làm hàng", value: "laytime" },
-    { text: "Thời gian tàu chạy", value: "cutOffTime" },
-    { text: "Loại cont", value: "containerType" },
-    { text: "Khối lượng", value: "payload" },
-    { text: "Đơn vị", value: "unitOfMeasurement" },
-    { text: "Full container loaded", value: "fcl" },
     { text: "Trạng thái", value: "status" },
+    { text: "Thời gian đóng hàng", value: "packingTime" },
+    { text: "Thời gian tàu chạy", value: "cutOffTime" },
+    { text: "Nơi đóng hàng", value: "packingStation" },
+    { text: "Cảng đóng hàng", value: "booking.portOfLoading" },
+    { text: "Khối lượng hàng", value: "grossWeight" },
+    { text: "Số cont", value: "unit" },
+    { text: "FCL", value: "fcl" },
     {
       text: "Hành động",
-      value: "action"
+      value: "actions"
     }
   ];
+
+  formatDatetime(date: string) {
+    return convertFromDateTime(date);
+  }
+
   created() {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
+    this.outbounds = OutboundData as Array<IOutbound>;
+    this.loading = false;
   }
 
-  addOutbound() {
-    this.dialogAdd = true;
-  }
-
-  viewDetail(item: IOutbound) {
+  openEditDialog(item: IOutbound) {
     this.outbound = item;
-    this.dialogAdd = true;
+    this.dialogEdit = true;
   }
 
-  removeOutbound(item: IOutbound) {
+  openDeleteDialog(item: IOutbound) {
     this.outbound = item;
     this.dialogDel = true;
   }
@@ -151,7 +183,12 @@ export default class Outbound extends Vue {
   onOptionsChange(val: object, oldVal: object) {
     console.log(this.$auth.user());
     if (val !== oldVal) {
-      getOutboundByMerchant(this.$auth.user().id, {
+      console.log(OutboundData);
+      this.outbounds = OutboundData;
+      this.loading = false;
+      this.options.totalItems = 10;
+      /*
+      getOutboundByForwarder(this.$auth.user().id, {
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })
@@ -163,6 +200,7 @@ export default class Outbound extends Vue {
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
+        */
     }
   }
 }

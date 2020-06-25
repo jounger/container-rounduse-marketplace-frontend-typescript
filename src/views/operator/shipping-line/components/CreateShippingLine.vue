@@ -162,7 +162,7 @@
               <v-flex xs6>
                 <v-select
                   :items="['PENDING', 'ACTIVE', 'BANNED']"
-                  label="Trạng thái*"
+                  label="Trạng thái"
                   prepend-icon="mdi-lock"
                   required
                   v-model="shippingLineSync.status"
@@ -170,7 +170,6 @@
               </v-flex>
             </v-layout>
           </v-layout>
-          <small>*Dấu sao là trường bắt buộc</small>
         </v-form>
       </v-card-text>
     </v-card>
@@ -180,13 +179,14 @@
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import { IShippingLine } from "@/entity/shipping-line";
 import { createShippingLine, updateShippingLine } from "@/api/shipping-line";
-import { convertToDateTime } from "@/utils/tool";
 
 @Component
 export default class CreateShippingLine extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("shippingLine", { type: Object }) shippingLineSync!: IShippingLine;
-  @PropSync("shippingLines", { type: Array }) shippingLinesSync!: Array<IShippingLine>;
+  @PropSync("shippingLines", { type: Array }) shippingLinesSync!: Array<
+    IShippingLine
+  >;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("expiredDate", { type: String }) expiredDateSync!: string;
@@ -206,7 +206,8 @@ export default class CreateShippingLine extends Vue {
           const response: IShippingLine = res.data;
           this.shippingLineSync = response;
           this.messageSync =
-            "Thêm mới thành công mã giảm giá: " + this.shippingLineSync.username;
+            "Thêm mới thành công mã giảm giá: " +
+            this.shippingLineSync.username;
           this.shippingLinesSync.push(this.shippingLineSync);
         })
         .catch(err => {
@@ -226,7 +227,8 @@ export default class CreateShippingLine extends Vue {
           const response: IShippingLine = res.data;
           this.shippingLineSync = response;
           this.messageSync =
-            "Cập nhập thành công mã giảm giá: " + this.shippingLineSync.username;
+            "Cập nhập thành công mã giảm giá: " +
+            this.shippingLineSync.username;
         })
         .catch(err => {
           console.log(err);
@@ -239,4 +241,3 @@ export default class CreateShippingLine extends Vue {
   }
 }
 </script>
-

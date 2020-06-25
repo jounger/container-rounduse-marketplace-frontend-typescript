@@ -1,6 +1,6 @@
 <template>
   <v-dialog
-    v-model="dialogAddSync"
+    v-model="dialogEditSync"
     fullscreen
     hide-overlay
     transition="dialog-bottom-transition"
@@ -8,34 +8,34 @@
     <v-card tile>
       <!-- TITLE -->
       <v-toolbar dark color="primary">
-        <v-btn icon dark @click="dialogAddSync = false">
+        <v-btn icon dark @click="dialogEditSync = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title>Thêm mới</v-toolbar-title>
+        <v-toolbar-title>Chỉnh sửa</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-          <v-btn dark text @click="dialogAddSync = false">Save</v-btn>
+          <v-btn dark text @click="dialogEditSync = false">Save</v-btn>
         </v-toolbar-items>
       </v-toolbar>
       <!-- START CONTENT -->
       <v-list three-line subheader>
         <v-stepper v-model="stepper" vertical>
           <v-stepper-step :complete="stepper > 1" step="1" :editable="editable">
-            Tạo hàng xuất
+            Thông tin hàng xuất
             <small>Thông tin chung</small>
           </v-stepper-step>
 
           <v-stepper-content step="1">
             <v-form ref="outboundForm" v-model="valid" lazy-validation>
               <v-select
-                v-model="outboundLocal.shippingLine"
+                v-model="outboundSync.shippingLine"
                 :items="shippingLines"
                 :rules="[required('shipping line')]"
                 label="Hãng tàu"
                 required
               ></v-select>
               <v-select
-                v-model="outboundLocal.containerType"
+                v-model="outboundSync.containerType"
                 :items="containerTypes"
                 :rules="[required('container type')]"
                 label="Loại container"
@@ -45,14 +45,14 @@
                 ref="datePickerMenu"
                 v-model="datePickerMenu"
                 :close-on-content-click="false"
-                :return-value.sync="outboundLocal.packingTime"
+                :return-value.sync="outboundSync.packingTime"
                 transition="scale-transition"
                 offset-y
                 min-width="290px"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    v-model="outboundLocal.packingTime"
+                    v-model="outboundSync.packingTime"
                     label="Thời gian đóng hàng"
                     prepend-icon="event"
                     v-bind="attrs"
@@ -62,7 +62,7 @@
                   ></v-text-field>
                 </template>
                 <v-date-picker
-                  v-model="outboundLocal.packingTime"
+                  v-model="outboundSync.packingTime"
                   no-title
                   scrollable
                 >
@@ -73,52 +73,50 @@
                   <v-btn
                     text
                     color="primary"
-                    @click="
-                      $refs.datePickerMenu.save(outboundLocal.packingTime)
-                    "
+                    @click="$refs.datePickerMenu.save(outboundSync.packingTime)"
                     >OK</v-btn
                   >
                 </v-date-picker>
               </v-menu>
               <v-text-field
-                v-model="outboundLocal.packingStation"
+                v-model="outboundSync.packingStation"
                 :rules="[required('packing station')]"
                 type="text"
                 label="Nơi đóng hàng"
                 required
               ></v-text-field>
               <v-text-field
-                v-model="outboundLocal.grossWeight"
+                v-model="outboundSync.grossWeight"
                 :rules="[required('gross weight')]"
                 type="number"
                 label="Khối lượng hàng"
                 required
               ></v-text-field>
               <v-select
-                v-model="outboundLocal.unitOfMesurement"
-                :items="unitOfMesurements"
+                v-model="outboundSync.unitOfMesurement"
+                :items="UOMS"
                 :rules="[required('unit of mesurement')]"
                 label="Đơn vị đo"
                 required
               ></v-select>
               <v-btn
                 color="primary"
-                @click="valid ? (stepper = 2) : (stepper = 1)"
+                @click="updateOutbound()"
                 :disabled="!valid"
-                >Tiếp tục</v-btn
+                >Lưu và tiếp tục</v-btn
               >
-              <!-- <v-btn text @click="dialogAddSync = false">Hủy</v-btn> -->
+              <!-- <v-btn text @click="dialogEditSync = false">Hủy</v-btn> -->
             </v-form>
           </v-stepper-content>
 
           <v-stepper-step :complete="stepper > 2" step="2" :editable="editable"
-            >Điền Booking</v-stepper-step
+            >Thông tin Booking</v-stepper-step
           >
 
           <v-stepper-content step="2">
             <v-form ref="bookingForm" v-model="valid" lazy-validation>
               <v-text-field
-                v-model="outboundLocal.booking.bookingNumber"
+                v-model="outboundSync.booking.bookingNumber"
                 :counter="50"
                 :rules="[
                   minLength('Booking number', 5),
@@ -129,7 +127,7 @@
               ></v-text-field>
 
               <v-select
-                v-model="outboundLocal.booking.portOfLoading"
+                v-model="outboundSync.booking.portOfLoading"
                 :items="ports"
                 :rules="[required('port of loading')]"
                 label="Cảng nhận container rỗng"
@@ -140,14 +138,14 @@
                 ref="datePickerMenu2"
                 v-model="datePickerMenu2"
                 :close-on-content-click="false"
-                :return-value.sync="outboundLocal.booking.cutOffTime"
+                :return-value.sync="outboundSync.booking.cutOffTime"
                 transition="scale-transition"
                 offset-y
                 min-width="290px"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    v-model="outboundLocal.booking.cutOffTime"
+                    v-model="outboundSync.booking.cutOffTime"
                     label="Thời gian tàu chạy"
                     prepend-icon="event"
                     v-bind="attrs"
@@ -157,7 +155,7 @@
                   ></v-text-field>
                 </template>
                 <v-date-picker
-                  v-model="outboundLocal.booking.cutOffTime"
+                  v-model="outboundSync.booking.cutOffTime"
                   no-title
                   scrollable
                 >
@@ -170,7 +168,7 @@
                     color="primary"
                     @click="
                       $refs.datePickerMenu2.save(
-                        outboundLocal.booking.cutOffTime
+                        outboundSync.booking.cutOffTime
                       )
                     "
                     >OK</v-btn
@@ -178,41 +176,26 @@
                 </v-date-picker>
               </v-menu>
               <v-text-field
-                v-model="outboundLocal.booking.unit"
+                v-model="outboundSync.booking.unit"
                 :rules="[required('unit')]"
                 label="Số lượng Container"
                 type="number"
                 required
               ></v-text-field>
-              <v-checkbox
-                v-model="outboundLocal.booking.isFcl"
-                label="Hàng nguyên cont"
-              ></v-checkbox>
-              <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
-                >Tiếp tục</v-btn
-              >
-              <v-btn text @click="stepper = 1">Quay lại</v-btn>
-            </v-form>
-          </v-stepper-content>
-
-          <v-stepper-step :complete="stepper > 3" step="3" :editable="editable"
-            >Hoàn thành</v-stepper-step
-          >
-
-          <v-stepper-content step="3">
-            <v-form ref="finishForm" v-model="valid" lazy-validation>
-              <v-checkbox
-                v-model="checkbox"
-                :rules="[required('agree term')]"
-                label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
-              ></v-checkbox>
+              <v-select
+                v-model="outboundSync.booking.isFcl"
+                :items="fcls"
+                :rules="[required('fcl')]"
+                label="Full container loaded"
+                required
+              ></v-select>
               <v-btn
                 color="primary"
-                @click="createOutbound()"
+                @click="dialogEditSync = false"
                 :disabled="!valid"
                 >Hoàn tất</v-btn
               >
-              <v-btn text @click="stepper = 2">Quay lại</v-btn>
+              <v-btn text @click="stepper = 1">Quay lại</v-btn>
             </v-form>
           </v-stepper-content>
         </v-stepper>
@@ -229,50 +212,39 @@ import FormValidate from "@/mixin/form-validate";
 @Component({
   mixins: [FormValidate]
 })
-export default class CreateOutbound extends Vue {
-  @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
+export default class UpdateOutbound extends Vue {
+  @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
   @PropSync("outbound", { type: Object }) outboundSync!: IOutbound;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
-  dateInit = new Date().toISOString().substr(0, 10);
-  outboundLocal = {
-    shippingLine: "",
-    containerType: "",
-    status: "",
-    packingTime: this.dateInit,
-    goodsDescription: "",
-    packingStation: "",
-    grossWeight: 0,
-    unitOfMesurement: "KG",
-    booking: {
-      bookingNumber: "",
-      unit: 0,
-      cutOffTime: this.dateInit,
-      isFcl: true,
-      portOfLoading: ""
-    }
-  } as IOutbound;
   // Form validate
   checkbox = false;
-  editable = false;
+  editable = true;
   stepper = 1;
   valid = true;
   // API list
   ports: Array<string> = [];
   shippingLines: Array<string> = [];
   containerTypes: Array<string> = [];
-  unitOfMesurements: Array<string> = [];
-  // outboundLocal form
+  UOMS: Array<string> = [];
+  fcls: Array<boolean> = [];
+
+  // inbound form
   datePickerMenu = false;
 
-  // B/L form
+  // Booking form
   datePickerMenu2 = false;
 
-  // Outbound
-  createOutbound() {
-    // TODO: API create outbound
-    this.outboundSync = this.outboundLocal;
+  // Outbound Update
+  updateOutbound() {
+    // TODO
+    this.stepper = 2;
+  }
+
+  updateBooking() {
+    // TODO
+    this.stepper = 3;
   }
 
   mounted() {
@@ -283,7 +255,8 @@ export default class CreateOutbound extends Vue {
     // TODO: API get Container Type
     this.containerTypes = ["40HC", "20DC"];
     //TODO: API get unit of mesurement
-    this.unitOfMesurements = ["KG", "tấn"];
+    this.UOMS = ["KG", "tấn"];
+    this.fcls = [true, false];
   }
 }
 </script>
