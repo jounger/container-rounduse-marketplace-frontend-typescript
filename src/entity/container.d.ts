@@ -4,6 +4,6 @@ export interface IContainer {
   containerNumber: string;
   trailer: string;
   tractor: string;
-  driver?: IDriver;
+  driver?: string; // driver username
   licensePlate: string;
 }
