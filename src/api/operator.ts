@@ -37,7 +37,7 @@ export function updateOperator(operator: IOperator) {
   });
 }
 
-export function editOperator(id: number, updates: Map<string, object>) {
+export function editOperator(id: number, updates: IOperator) {
   return Vue.axios.patch(`/operator/${id}`, updates, {
     headers: config
   });

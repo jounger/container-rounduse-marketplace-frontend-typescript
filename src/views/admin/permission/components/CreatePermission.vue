@@ -87,9 +87,7 @@ export default class CreatePermission extends Vue {
           console.log(err);
           this.messageSync = "Đã có lỗi xảy ra";
         })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogAddSync = false))
-        );
+        .finally(() => (this.snackbarSync = true));
     }
   }
   updatePermission() {
@@ -106,9 +104,7 @@ export default class CreatePermission extends Vue {
           console.log(err);
           this.messageSync = "Đã có lỗi xảy ra";
         })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogAddSync = false))
-        );
+        .finally(() => (this.snackbarSync = true));
     }
   }
 }

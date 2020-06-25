@@ -5,7 +5,7 @@ export interface IUser {
   phone: string;
   roles: Array<string>;
   status: string;
-  address?: string;
+  address: string;
   password: string;
 }
 

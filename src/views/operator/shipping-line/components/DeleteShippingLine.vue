@@ -1,14 +1,14 @@
 <template>
-  <v-dialog v-model="dialogSync" persistent max-width="600px">
+  <v-dialog v-model="dialogDelSync" persistent max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">Xóa hãng tàu</span>
+          ><span class="headline" style="color:white;">Xóa mã giảm giá</span>
           <v-btn
             icon
             dark
-            @click="dialogSync = false"
-            style="margin-left:379px;"
+            @click="dialogDelSync = false"
+            style="margin-left:403px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
@@ -25,7 +25,9 @@
             <v-list>
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title>{{ nameSync }}</v-list-item-title>
+                  <v-list-item-title>{{
+                    shippingLineSync.companyCode
+                  }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -34,29 +36,49 @@
         </v-form>
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
-        <v-btn @click="dialogSync = false">Hủy</v-btn>
-        <v-btn @click="del()" color="red">Xóa</v-btn>
+        <v-btn @click="dialogDelSync = false">Hủy</v-btn>
+        <v-btn @click="removeShippingLine()" color="red">Xóa</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
+import { IShippingLine } from "@/entity/shipping-line";
+import { removeShippingLine } from "@/api/shipping-line";
 
-@Component({
-  name: "DeleteShippingLine"
-})
+@Component
 export default class DeleteShippingLine extends Vue {
-  // @Prop() selected!: Array<object>;
-  @PropSync("dialogDel", { type: Boolean }) dialogSync!: boolean;
-  @PropSync("checkSuccess", { type: Boolean }) checkSuccessSync!: boolean;
-  @PropSync("success", { type: String }) successSync!: string | null;
-  @PropSync("name", { type: String }) nameSync!: string | null;
+  @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
+  @PropSync("shippingLine", { type: Object }) shippingLineSync!: IShippingLine;
+  @PropSync("message", { type: String }) messageSync!: string;
+  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("shippingLines", { type: Array }) shippingLinesSync!: Array<
+    IShippingLine
+  >;
 
-  public del() {
-    this.successSync = "Xóa thành công!";
-    this.checkSuccessSync = true;
-    this.dialogSync = false;
+  removeShippingLine() {
+    if (this.shippingLineSync.id) {
+      removeShippingLine(this.shippingLineSync.id)
+        .then(res => {
+          console.log(res.data);
+          const response: IShippingLine = res.data;
+          this.shippingLineSync = response;
+          this.messageSync =
+            "Xóa thành công hãng tàu: " + this.shippingLineSync.companyCode;
+          const index = this.shippingLinesSync.findIndex(
+            x => x.id === this.shippingLineSync.id
+          );
+          this.shippingLinesSync.splice(index, 1);
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Error happend";
+        })
+        .finally(
+          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
+        );
+    }
   }
 }
 </script>

@@ -162,9 +162,7 @@ export default class CreateDiscount extends Vue {
           console.log(err);
           this.messageSync = "Đã có lỗi xảy ra";
         })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogAddSync = false))
-        );
+        .finally(() => (this.snackbarSync = true));
     }
   }
   updateDiscount() {
@@ -182,9 +180,7 @@ export default class CreateDiscount extends Vue {
           console.log(err);
           this.messageSync = "Đã có lỗi xảy ra";
         })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogAddSync = false))
-        );
+        .finally(() => (this.snackbarSync = true));
     }
   }
 }

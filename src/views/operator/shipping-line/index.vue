@@ -1,8 +1,26 @@
 <template>
   <v-content>
     <v-card>
+      <Snackbar :text="message" :snackbar.sync="snackbar" />
+      <CreateShippingLine
+        v-if="dialogAdd"
+        :shippingLine.sync="shippingLine"
+        :shippingLines.sync="shippingLines"
+        :dialogAdd.sync="dialogAdd"
+        :message.sync="message"
+        :snackbar.sync="snackbar"
+      />
+      <UpdateShippingLine
+        v-if="dialogEdit"
+        :shippingLine.sync="shippingLine"
+        :shippingLines.sync="shippingLines"
+        :dialogEdit.sync="dialogEdit"
+        :message.sync="message"
+        :snackbar.sync="snackbar"
+      />
       <v-row justify="center">
         <DeleteShippingLine
+          v-if="dialogDel"
           :dialogDel.sync="dialogDel"
           :shippingLine.sync="shippingLine"
           :shippingLines.sync="shippingLines"
@@ -10,16 +28,6 @@
           :snackbar.sync="snackbar"
         />
       </v-row>
-      <v-row justify="center">
-        <CreateShippingLine
-          :shippingLine.sync="shippingLine"
-          :shippingLines.sync="shippingLines"
-          :dialogAdd.sync="dialogAdd"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
-        />
-      </v-row>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-data-table
         :headers="headers"
         :items="shippingLines"
@@ -31,25 +39,43 @@
         :actions-append="options.page"
         class="elevation-1"
       >
+        <!--  -->
         <template v-slot:top>
           <v-toolbar flat color="white">
-            <v-toolbar-title style="font-weight:bold; font-size: 25px;"
-              >Danh sách hãng tàu</v-toolbar-title
-            >
+            <v-toolbar-title>Danh sách hãng tàu</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
-            <v-btn color="primary" dark class="mb-2" @click="addShippingLine()"
-              >Thêm mới</v-btn
-            >
+            <v-btn color="primary" dark class="mb-2" @click="openAddDialog()">
+              Thêm mới
+            </v-btn>
           </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon small class="mr-2" @click="viewDetail(item)">
-            mdi-pencil
-          </v-icon>
-          <v-icon small @click="removeShippingLine(item)">
-            mdi-delete
-          </v-icon>
+          <v-menu :close-on-click="true">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="pink" icon outlined v-bind="attrs" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item @click="openEditDialog(item)">
+                <v-list-item-icon>
+                  <v-icon small>edit</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Chỉnh sửa</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item @click="openDeleteDialog(item)">
+                <v-list-item-icon>
+                  <v-icon small>delete</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Xóa</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </template>
       </v-data-table>
     </v-card>
@@ -64,11 +90,13 @@ import { PaginationResponse } from "@/api/payload";
 import CreateShippingLine from "./components/CreateShippingLine.vue";
 import Snackbar from "@/components/Snackbar.vue";
 import DeleteShippingLine from "./components/DeleteShippingLine.vue";
+import UpdateShippingLine from "./components/UpdateShippingLine.vue";
 
 @Component({
   components: {
     CreateShippingLine,
     DeleteShippingLine,
+    UpdateShippingLine,
     Snackbar
   }
 })
@@ -79,6 +107,7 @@ export default class ShippingLine extends Vue {
 
   dialogAdd = false;
   dialogDel = false;
+  dialogEdit = false;
   loading = true;
   message = "";
   snackbar = false;
@@ -108,13 +137,18 @@ export default class ShippingLine extends Vue {
   created() {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
   }
-  addShippingLine() {
+  openAddDialog() {
     this.shippingLine = {} as IShippingLine;
     this.dialogAdd = true;
   }
-  viewDetail(item: IShippingLine) {
+  openEditDialog(item: IShippingLine) {
+    console.log(item);
     this.shippingLine = item;
-    this.dialogAdd = true;
+    this.dialogEdit = true;
+  }
+  openDeleteDialog(item: IShippingLine) {
+    this.shippingLine = item;
+    this.dialogDel = true;
   }
 
   @Watch("options", { deep: true })

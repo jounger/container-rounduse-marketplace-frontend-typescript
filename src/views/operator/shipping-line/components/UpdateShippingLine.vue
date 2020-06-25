@@ -1,6 +1,6 @@
 <template>
   <v-dialog
-    v-model="dialogAddSync"
+    v-model="dialogEditSync"
     fullscreen
     hide-overlay
     transition="dialog-bottom-transition"
@@ -8,62 +8,57 @@
     <v-card tile>
       <!-- TITLE -->
       <v-toolbar dark color="primary">
-        <v-btn icon dark @click="dialogAddSync = false">
+        <v-btn icon dark @click="dialogEditSync = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title>Thêm mới</v-toolbar-title>
+        <v-toolbar-title>Chỉnh sửa</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-          <v-btn dark text @click="addShippingLine()">Save</v-btn>
+          <v-btn dark text @click="dialogEditSync = false">Trở về</v-btn>
         </v-toolbar-items>
       </v-toolbar>
       <!-- START CONTENT -->
       <v-list three-line subheader>
         <v-stepper v-model="stepper" vertical>
           <v-stepper-step :complete="stepper > 1" step="1" :editable="editable">
-            Thêm mới hãng tàu
+            Thông tin hãng tàu
             <small>Thông tin chung</small>
           </v-stepper-step>
 
           <v-stepper-content step="1">
             <v-form ref="shippingLineForm" v-model="valid" lazy-validation>
               <v-text-field
-                v-model="shippingLineLocal.username"
+                v-model="shippingLineSync.username"
                 :rules="[required('username')]"
                 type="text"
                 label="Tên đăng nhập"
+                readonly
               ></v-text-field>
               <v-text-field
-                v-model="shippingLineLocal.password"
-                :rules="[minLength('password', 6)]"
-                type="text"
-                label="Mật khẩu"
-              ></v-text-field>
-              <v-text-field
-                v-model="shippingLineLocal.email"
+                v-model="shippingLineSync.email"
                 :rules="[email('email')]"
                 type="text"
                 label="Email"
               ></v-text-field>
               <v-text-field
-                v-model="shippingLineLocal.phone"
+                v-model="shippingLineSync.phone"
                 :rules="[minLength('phone', 10), maxLength('phone', 11)]"
                 type="text"
                 label="Số điện thoại"
               ></v-text-field>
               <v-text-field
-                v-model="shippingLineLocal.address"
+                v-model="shippingLineSync.address"
                 type="text"
                 :rules="[required('address')]"
                 label="Địa chỉ"
               ></v-text-field>
               <v-btn
                 color="primary"
-                @click="valid ? (stepper = 2) : (stepper = 1)"
+                @click="updateShippingLine()"
                 :disabled="!valid"
-                >Tiếp tục</v-btn
+                >Lưu và tiếp tục</v-btn
               >
-              <!-- <v-btn text @click="dialogAddSync = false">Hủy</v-btn> -->
+              <!-- <v-btn text @click="dialogEditSync = false">Hủy</v-btn> -->
             </v-form>
           </v-stepper-content>
 
@@ -77,7 +72,7 @@
                 <v-layout row>
                   <v-flex xs8>
                     <v-text-field
-                      v-model="shippingLineLocal.companyCode"
+                      v-model="shippingLineSync.companyCode"
                       :counter="50"
                       :rules="[
                         minLength('Company code', 5),
@@ -85,13 +80,14 @@
                       ]"
                       label="Mã công ty"
                       type="text"
+                      readonly
                     ></v-text-field>
                   </v-flex>
                 </v-layout>
                 <v-layout row>
                   <v-flex xs8>
                     <v-text-field
-                      v-model="shippingLineLocal.companyName"
+                      v-model="shippingLineSync.companyName"
                       :rules="[required('tên công ty')]"
                       label="Tên công ty"
                       type="text"
@@ -103,7 +99,7 @@
                 <v-layout row>
                   <v-flex xs8>
                     <v-text-field
-                      v-model="shippingLineLocal.contactPerson"
+                      v-model="shippingLineSync.contactPerson"
                       :rules="[required('người liên hệ')]"
                       label="Người liên hệ"
                       type="text"
@@ -113,7 +109,7 @@
                 <v-layout row>
                   <v-flex xs8>
                     <v-text-field
-                      v-model="shippingLineLocal.website"
+                      v-model="shippingLineSync.website"
                       :rules="[required('website')]"
                       label="website"
                       type="text"
@@ -125,7 +121,7 @@
                 <v-layout row>
                   <v-flex xs8>
                     <v-text-field
-                      v-model="shippingLineLocal.companyDescription"
+                      v-model="shippingLineSync.companyDescription"
                       label="Mô tả"
                       type="text"
                     ></v-text-field>
@@ -134,7 +130,7 @@
                 <v-layout row>
                   <v-flex xs8>
                     <v-text-field
-                      v-model="shippingLineLocal.companyAddress"
+                      v-model="shippingLineSync.companyAddress"
                       :rules="[required('companyAddress')]"
                       label="Địa chỉ công ty"
                       type="text"
@@ -146,7 +142,7 @@
                 <v-layout row>
                   <v-flex xs8>
                     <v-text-field
-                      v-model="shippingLineLocal.tin"
+                      v-model="shippingLineSync.tin"
                       :rules="[required('tin')]"
                       label="Tin"
                       type="text"
@@ -156,7 +152,7 @@
                 <v-layout row>
                   <v-flex xs8>
                     <v-text-field
-                      v-model="shippingLineLocal.fax"
+                      v-model="shippingLineSync.fax"
                       :rules="[required('fax')]"
                       label="fax"
                       type="text"
@@ -164,31 +160,19 @@
                   </v-flex>
                 </v-layout>
               </v-layout>
-              <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
-                >Tiếp tục</v-btn
-              >
-              <v-btn text @click="stepper = 1">Quay lại</v-btn>
-            </v-form>
-          </v-stepper-content>
-
-          <v-stepper-step :complete="stepper > 3" step="3" :editable="editable"
-            >Hoàn thành</v-stepper-step
-          >
-
-          <v-stepper-content step="3">
-            <v-form ref="finishForm" v-model="valid" lazy-validation>
-              <v-checkbox
-                v-model="checkbox"
-                :rules="[required('agree term')]"
-                label="Bạn đồng ý muốn thêm hãng tàu với những thông tin trên?"
-              ></v-checkbox>
+              <v-select
+                v-model="shippingLineSync.status"
+                :items="allStatus"
+                :rules="[required('status')]"
+                label="Trạng thái"
+              ></v-select>
               <v-btn
                 color="primary"
-                @click="addShippingLine()"
-                :disabled="!valid || !checkbox"
+                @click="updateShippingLine()"
+                :disabled="!valid"
                 >Hoàn tất</v-btn
               >
-              <v-btn text @click="stepper = 2">Quay lại</v-btn>
+              <v-btn text @click="stepper = 1">Quay lại</v-btn>
             </v-form>
           </v-stepper-content>
         </v-stepper>
@@ -200,59 +184,37 @@
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import { IShippingLine } from "@/entity/shipping-line";
-import { createShippingLine } from "@/api/shipping-line";
 import FormValidate from "@/mixin/form-validate";
+import { editShippingLine } from "@/api/shipping-line";
 
 @Component({
   mixins: [FormValidate]
 })
-export default class CreateShippingLine extends Vue {
-  @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
+export default class UpdateShippingLine extends Vue {
+  @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
   @PropSync("shippingLine", { type: Object }) shippingLineSync!: IShippingLine;
-  @PropSync("shippingLines", { type: Array }) shippingLinesSync!: Array<
-    IShippingLine
-  >;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
-  shippingLineLocal = {
-    username: "",
-    password: "",
-    email: "",
-    phone: "",
-    roles: ["ROLE_SHIPPINGLINE"],
-    status: "ACTIVE",
-    address: "",
-    website: "",
-    contactPerson: "",
-    companyName: "",
-    companyCode: "",
-    companyDescription: "",
-    companyAddress: "",
-    tin: "",
-    fax: "",
-    ratingValue: 0
-  } as IShippingLine;
-
+  // Form validate
   checkbox = false;
-  editable = false;
+  editable = true;
   stepper = 1;
   valid = true;
+  allStatus = ["PENDING", "ACTIVE", "BANNED"];
 
-  addShippingLine() {
-    if (this.shippingLineLocal) {
-      console.log(this.shippingLineSync);
-      console.log(this.shippingLineLocal);
-      this.shippingLineSync = this.shippingLineLocal;
-      console.log(this.shippingLineSync);
-      createShippingLine(this.shippingLineSync)
+  // ShippingLine Update
+  updateShippingLine() {
+    if (this.shippingLineSync.id) {
+      editShippingLine(this.shippingLineSync.id, this.shippingLineSync)
         .then(res => {
+          console.log(res.data);
           const response: IShippingLine = res.data;
-          console.log(response);
+          this.shippingLineSync = response;
           this.messageSync =
-            "Thêm mới thành công hãng tàu: " +
+            "Cập nhập thành công hãng tàu: " +
             this.shippingLineSync.companyCode;
-          this.shippingLinesSync.push(this.shippingLineSync);
+          this.stepper = 2;
         })
         .catch(err => {
           console.log(err);

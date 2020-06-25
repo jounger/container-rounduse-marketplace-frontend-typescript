@@ -190,9 +190,7 @@ export default class CreateContainerType extends Vue {
           console.log(err);
           this.messageSync = "Đã có lỗi xảy ra";
         })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogAddSync = false))
-        );
+        .finally(() => (this.snackbarSync = true));
     }
   }
   updateContainerType() {
@@ -210,9 +208,7 @@ export default class CreateContainerType extends Vue {
           console.log(err);
           this.messageSync = "Đã có lỗi xảy ra";
         })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogAddSync = false))
-        );
+        .finally(() => (this.snackbarSync = true));
     }
   }
 }

@@ -91,7 +91,6 @@ export default class CreateRole extends Vue {
   }
   addRole() {
     if (this.roleSync) {
-      console.log(this.roleSync);
       createRole(this.roleSync)
         .then(res => {
           console.log(res.data);

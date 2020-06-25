@@ -12,6 +12,7 @@
       </v-row>
       <v-row justify="center">
         <CreateOperator
+          v-if="dialogAdd"
           :operator.sync="operator"
           :operators.sync="operators"
           :dialogAdd.sync="dialogAdd"
@@ -39,16 +40,20 @@
             >
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
-            <v-btn color="primary" dark class="mb-2" @click="addOperator()"
+            <v-btn
+              color="primary"
+              dark
+              class="mb-2"
+              @click="openCreateOperator()"
               >Thêm mới</v-btn
             >
           </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon small class="mr-2" @click="viewDetail(item)">
+          <v-icon small class="mr-2" @click="openUpdateOperator(item)">
             mdi-pencil
           </v-icon>
-          <v-icon small @click="removeOperator(item)">
+          <v-icon small @click="openDeleteOperator(item)">
             mdi-delete
           </v-icon>
         </template>
@@ -110,16 +115,18 @@ export default class Operator extends Vue {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
   }
 
-  addOperator() {
+  openCreateOperator() {
+    this.operator = {} as IOperator;
     this.dialogAdd = true;
   }
 
-  viewDetail(item: IOperator) {
+  openUpdateOperator(item: IOperator) {
+    console.log(item);
     this.operator = item;
     this.dialogAdd = true;
   }
 
-  removeOperator(item: IOperator) {
+  openDeleteOperator(item: IOperator) {
     this.operator = item;
     this.dialogDel = true;
   }

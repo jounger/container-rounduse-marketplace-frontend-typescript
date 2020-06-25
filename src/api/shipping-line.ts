@@ -7,45 +7,45 @@ const config = {
 };
 
 export function getShippingLines(paging: PaginationRequest) {
-  return Vue.axios.get("/supplier", {
+  return Vue.axios.get("/shipping-line", {
     params: paging,
     headers: config
   });
 }
 
 export function getShippingLine(id: number) {
-  return Vue.axios.get(`/supplier/${id}`, {
+  return Vue.axios.get(`/shipping-line/${id}`, {
     headers: config
   });
 }
 
 export function getShippingLineByUsername(username: string) {
-  return Vue.axios.get(`/supplier/${username}`, {
+  return Vue.axios.get(`/shipping-line/${username}`, {
     headers: config
   });
 }
 
 
 export function createShippingLine(shippingLine: IShippingLine) {
-  return Vue.axios.post("/supplier", shippingLine, {
+  return Vue.axios.post("/shipping-line", shippingLine, {
     headers: config
   });
 }
 
 export function updateShippingLine(shippingLine: IShippingLine) {
-  return Vue.axios.put("/supplier", shippingLine, {
+  return Vue.axios.put("/shipping-line", shippingLine, {
     headers: config
   });
 }
 
-export function editShippingLine(id: number, updates: Map<string, object>) {
-  return Vue.axios.patch(`/supplier/${id}`, updates, {
+export function editShippingLine(id: number, updates: IShippingLine) {
+  return Vue.axios.patch(`/shipping-line/${id}`, updates, {
     headers: config
   });
 }
 
 export function removeShippingLine(id: number) {
-  return Vue.axios.delete(`/supplier/${id}`, {
+  return Vue.axios.delete(`/shipping-line/${id}`, {
     headers: config
   });
 }

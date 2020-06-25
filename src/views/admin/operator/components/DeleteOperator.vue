@@ -3,7 +3,7 @@
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">Xóa Moderator</span>
+          ><span class="headline" style="color:white;">Xóa quản trị viên</span>
           <v-btn
             icon
             dark
@@ -19,7 +19,7 @@
         <v-form>
           <v-container>
             <span style="color: black; font-size:22px;"
-              >Bạn có chắc chắn muốn xóa Moderator này?</span
+              >Bạn có chắc chắn muốn xóa quản trị viên này?</span
             >
             <div class="line"></div>
             <v-list>
@@ -53,6 +53,7 @@ export default class DeleteOperator extends Vue {
   @PropSync("operator", { type: Object }) operatorSync!: IOperator;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("operators", { type: Array }) operatorsSync!: Array<IOperator>;
 
   removeOperator() {
     if (this.operatorSync.id) {
@@ -61,13 +62,20 @@ export default class DeleteOperator extends Vue {
           console.log(res.data);
           const response: IOperator = res.data;
           this.operatorSync = response;
-          this.messageSync = "Success delete user: " + response.username;
+          this.messageSync =
+            "Xóa thành công quản trị viên: " + this.operatorSync.username;
+          const index = this.operatorsSync.findIndex(
+            x => x.id === this.operatorSync.id
+          );
+          this.operatorsSync.splice(index, 1);
         })
         .catch(err => {
           console.log(err);
           this.messageSync = "Error happend";
         })
-        .finally(() => (this.snackbarSync = true));
+        .finally(
+          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
+        );
     }
   }
 }
