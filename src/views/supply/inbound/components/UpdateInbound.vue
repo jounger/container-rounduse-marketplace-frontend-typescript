@@ -1,6 +1,6 @@
 <template>
   <v-dialog
-    v-model="dialogAddSync"
+    v-model="dialogEditSync"
     fullscreen
     hide-overlay
     transition="dialog-bottom-transition"
@@ -8,34 +8,34 @@
     <v-card tile>
       <!-- TITLE -->
       <v-toolbar dark color="primary">
-        <v-btn icon dark @click="dialogAddSync = false">
+        <v-btn icon dark @click="dialogEditSync = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title>Thêm mới</v-toolbar-title>
+        <v-toolbar-title>Chỉnh sửa</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-          <v-btn dark text @click="dialogAddSync = false">Save</v-btn>
+          <v-btn dark text @click="dialogEditSync = false">Save</v-btn>
         </v-toolbar-items>
       </v-toolbar>
       <!-- START CONTENT -->
       <v-list three-line subheader>
         <v-stepper v-model="stepper" vertical>
           <v-stepper-step :complete="stepper > 1" step="1" :editable="editable">
-            Tạo hàng nhập
+            Thông tin hàng nhập
             <small>Thông tin chung</small>
           </v-stepper-step>
 
           <v-stepper-content step="1">
             <v-form ref="inboundForm" v-model="valid" lazy-validation>
               <v-select
-                v-model="inboundLocal.shippingLine"
+                v-model="inboundSync.shippingLine"
                 :items="shippingLines"
                 :rules="[required('shipping line')]"
                 label="Hãng tàu"
                 required
               ></v-select>
               <v-select
-                v-model="inboundLocal.containerType"
+                v-model="inboundSync.containerType"
                 :items="containerTypes"
                 :rules="[required('container type')]"
                 label="Loại container"
@@ -45,14 +45,14 @@
                 ref="datePickerMenu"
                 v-model="datePickerMenu"
                 :close-on-content-click="false"
-                :return-value.sync="inboundLocal.pickUpTime"
+                :return-value.sync="inboundSync.pickUpTime"
                 transition="scale-transition"
                 offset-y
                 min-width="290px"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    v-model="inboundLocal.pickUpTime"
+                    v-model="inboundSync.pickUpTime"
                     label="Thời gian lấy containers đặc từ cảng"
                     prepend-icon="event"
                     v-bind="attrs"
@@ -62,7 +62,7 @@
                   ></v-text-field>
                 </template>
                 <v-date-picker
-                  v-model="inboundLocal.pickUpTime"
+                  v-model="inboundSync.pickUpTime"
                   no-title
                   scrollable
                 >
@@ -73,29 +73,26 @@
                   <v-btn
                     text
                     color="primary"
-                    @click="$refs.datePickerMenu.save(inboundLocal.pickUpTime)"
+                    @click="$refs.datePickerMenu.save(inboundSync.pickUpTime)"
                     >OK</v-btn
                   >
                 </v-date-picker>
               </v-menu>
-              <v-btn
-                color="primary"
-                @click="valid ? (stepper = 2) : (stepper = 1)"
-                :disabled="!valid"
-                >Tiếp tục</v-btn
+              <v-btn color="primary" @click="updateInbound()" :disabled="!valid"
+                >Lưu và tiếp tục</v-btn
               >
-              <!-- <v-btn text @click="dialogAddSync = false">Hủy</v-btn> -->
+              <!-- <v-btn text @click="dialogEditSync = false">Hủy</v-btn> -->
             </v-form>
           </v-stepper-content>
 
           <v-stepper-step :complete="stepper > 2" step="2" :editable="editable"
-            >Điền B/L</v-stepper-step
+            >Thông tin B/L</v-stepper-step
           >
 
           <v-stepper-content step="2">
             <v-form ref="billOfLadingForm" v-model="valid" lazy-validation>
               <v-text-field
-                v-model="inboundLocal.billOfLading.billOfLadingNumber"
+                v-model="inboundSync.billOfLading.billOfLadingNumber"
                 :counter="50"
                 :rules="[
                   minLength('B/L number', 5),
@@ -105,7 +102,7 @@
               ></v-text-field>
 
               <v-select
-                v-model="inboundLocal.billOfLading.portOfDelivery"
+                v-model="inboundSync.billOfLading.portOfDelivery"
                 :items="ports"
                 :rules="[required('port of loading')]"
                 label="Cảng lấy container đặc"
@@ -115,14 +112,14 @@
                 ref="datePickerMenu2"
                 v-model="datePickerMenu2"
                 :close-on-content-click="false"
-                :return-value.sync="inboundLocal.billOfLading.freeTime"
+                :return-value.sync="inboundSync.billOfLading.freeTime"
                 transition="scale-transition"
                 offset-y
                 min-width="290px"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    v-model="inboundLocal.billOfLading.freeTime"
+                    v-model="inboundSync.billOfLading.freeTime"
                     label="Free Time (DEM/DET)"
                     prepend-icon="event"
                     v-bind="attrs"
@@ -131,7 +128,7 @@
                   ></v-text-field>
                 </template>
                 <v-date-picker
-                  v-model="inboundLocal.billOfLading.freeTime"
+                  v-model="inboundSync.billOfLading.freeTime"
                   no-title
                   scrollable
                 >
@@ -144,15 +141,18 @@
                     color="primary"
                     @click="
                       $refs.datePickerMenu2.save(
-                        inboundLocal.billOfLading.freeTime
+                        inboundSync.billOfLading.freeTime
                       )
                     "
                     >OK</v-btn
                   >
                 </v-date-picker>
               </v-menu>
-              <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
-                >Tiếp tục</v-btn
+              <v-btn
+                color="primary"
+                @click="updateBillOfLading()"
+                :disabled="!valid"
+                >Lưu và tiếp tục</v-btn
               >
               <v-btn text @click="stepper = 1">Quay lại</v-btn>
             </v-form>
@@ -165,7 +165,7 @@
           <v-stepper-content step="3">
             <v-data-table
               :headers="containerHeaders"
-              :items="inboundLocal.billOfLading.containers"
+              :items="inboundSync.billOfLading.containers"
               sort-by="calories"
               class="elevation-1 my-1"
             >
@@ -261,25 +261,13 @@
                 </v-icon>
               </template>
             </v-data-table>
-            <v-btn color="primary" @click="stepper = 4" :disabled="!valid"
-              >Tiếp tục</v-btn
+            <v-btn
+              color="primary"
+              @click="dialogEditSync = false"
+              :disabled="!valid"
+              >Hoàn tất</v-btn
             >
             <v-btn text @click="stepper = 2">Quay lại</v-btn>
-          </v-stepper-content>
-
-          <v-stepper-step step="4">Hoàn thành</v-stepper-step>
-          <v-stepper-content step="4">
-            <v-form ref="finishForm" v-model="valid" lazy-validation>
-              <v-checkbox
-                v-model="checkbox"
-                :rules="[required('agree term')]"
-                label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
-              ></v-checkbox>
-              <v-btn color="primary" @click="createInbound()" :disabled="!valid"
-                >Hoàn tất</v-btn
-              >
-              <v-btn text @click="stepper = 3">Quay lại</v-btn>
-            </v-form>
           </v-stepper-content>
         </v-stepper>
       </v-list>
@@ -296,30 +284,15 @@ import FormValidate from "@/mixin/form-validate";
 @Component({
   mixins: [FormValidate]
 })
-export default class CreateInbound extends Vue {
-  @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
+export default class UpdateInbound extends Vue {
+  @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
   @PropSync("inbound", { type: Object }) inboundSync!: IInbound;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
-  dateInit = new Date().toISOString().substr(0, 10);
-  inboundLocal = {
-    shippingLine: "",
-    containerType: "",
-    status: "",
-    emptyTime: this.dateInit,
-    pickUpTime: this.dateInit,
-    billOfLading: {
-      id: 0,
-      billOfLadingNumber: "",
-      containers: [],
-      portOfDelivery: "",
-      freeTime: this.dateInit
-    }
-  } as IInbound;
   // Form validate
   checkbox = false;
-  editable = false;
+  editable = true;
   stepper = 1;
   valid = true;
   // API list
@@ -329,7 +302,7 @@ export default class CreateInbound extends Vue {
   trailers: Array<string> = [];
   tractors: Array<string> = [];
 
-  // inboundLocal form
+  // inbound form
   datePickerMenu = false;
 
   // B/L form
@@ -365,7 +338,7 @@ export default class CreateInbound extends Vue {
   addContainer(item: IContainer) {
     // TODO: API create Container
     const copyItem = Object.assign({}, item);
-    this.inboundLocal.billOfLading.containers.push(copyItem);
+    this.inboundSync.billOfLading.containers.push(copyItem);
   }
 
   editContainer(item: IContainer) {
@@ -380,10 +353,15 @@ export default class CreateInbound extends Vue {
     console.log(item);
   }
 
-  // Inbound
-  createInbound() {
-    // TODO: API create inbound
-    this.inboundSync = this.inboundLocal;
+  // Inbound Update
+  updateInbound() {
+    // TODO
+    this.stepper = 2;
+  }
+
+  updateBillOfLading() {
+    // TODO
+    this.stepper = 3;
   }
 
   mounted() {
