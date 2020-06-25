@@ -9,6 +9,13 @@
         :message.sync="message"
         :snackbar.sync="snackbar"
       />
+      <UpdateInbound
+        v-if="dialogEdit"
+        :inbound.sync="inbound"
+        :dialogEdit.sync="dialogEdit"
+        :message.sync="message"
+        :snackbar.sync="snackbar"
+      />
       <v-data-table
         :headers="headers"
         :items="inbounds"
@@ -26,7 +33,7 @@
             <v-toolbar-title>Danh sách hàng nhập</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
-            <v-btn color="primary" dark class="mb-2" @click="addInbound()">
+            <v-btn color="primary" dark class="mb-2" @click="dialogAdd = true">
               Thêm mới
             </v-btn>
           </v-toolbar>
@@ -44,7 +51,7 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item @click="viewDetail(item)">
+              <v-list-item @click="openEditDialog(item)">
                 <v-list-item-icon>
                   <v-icon small>edit</v-icon>
                 </v-list-item-icon>
@@ -52,7 +59,7 @@
                   <v-list-item-title>Chỉnh sửa</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item @click="removeInbound(item)">
+              <v-list-item @click="openDeleteDialog(item)">
                 <v-list-item-icon>
                   <v-icon small>delete</v-icon>
                 </v-list-item-icon>
@@ -72,7 +79,7 @@ import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
 import { IInbound } from "@/entity/inbound";
 import CreateInbound from "./components/CreateInbound.vue";
-// import DialogDeleteInbound from "./components/DialogDeleteInbound.vue";
+import UpdateInbound from "./components/UpdateInbound.vue";
 // import { getInboundByForwarder } from "@/api/inbound";
 // import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
@@ -81,7 +88,7 @@ import { InboundData } from "./data";
 @Component({
   components: {
     CreateInbound,
-    // DialogDeleteInbound,
+    UpdateInbound,
     Snackbar
   }
 })
@@ -91,6 +98,7 @@ export default class Inbound extends Vue {
   inbounds: Array<IInbound> = [];
   inbound = {} as IInbound;
   dialogAdd = false;
+  dialogEdit = false;
   dialogDel = false;
   search = "";
   message = "";
@@ -134,30 +142,12 @@ export default class Inbound extends Vue {
     this.loading = false;
   }
 
-  addInbound() {
-    this.inbound = {
-      shippingLine: "",
-      containerType: "",
-      status: "",
-      emptyTime: this.dateInit,
-      pickUpTime: this.dateInit,
-      billOfLading: {
-        id: 0,
-        billOfLadingNumber: "",
-        containers: [],
-        portOfDelivery: "",
-        freeTime: this.dateInit
-      }
-    };
-    this.dialogAdd = true;
-  }
-
-  viewDetail(item: IInbound) {
+  openEditDialog(item: IInbound) {
     this.inbound = item;
-    this.dialogAdd = true;
+    this.dialogEdit = true;
   }
 
-  removeInbound(item: IInbound) {
+  openDeleteDialog(item: IInbound) {
     this.inbound = item;
     this.dialogDel = true;
   }
