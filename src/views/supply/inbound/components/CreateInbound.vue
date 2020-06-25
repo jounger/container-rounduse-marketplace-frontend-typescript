@@ -11,7 +11,7 @@
         <v-btn icon dark @click="dialogAddSync = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title>Settings</v-toolbar-title>
+        <v-toolbar-title>Thêm mới</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
           <v-btn dark text @click="dialogAddSync = false">Save</v-btn>
@@ -20,13 +20,27 @@
       <!-- START CONTENT -->
       <v-list three-line subheader>
         <v-stepper v-model="stepper" vertical>
-          <v-stepper-step :complete="stepper > 1" step="1" :editable="true">
+          <v-stepper-step :complete="stepper > 1" step="1" :editable="editable">
             Tạo hàng nhập
             <small>Thông tin chung</small>
           </v-stepper-step>
 
           <v-stepper-content step="1">
             <v-form ref="inboundForm" v-model="valid" lazy-validation>
+              <v-select
+                v-model="inboundSync.shippingLine"
+                :items="shippingLines"
+                :rules="[required('shipping line')]"
+                label="Hãng tàu"
+                required
+              ></v-select>
+              <v-select
+                v-model="inboundSync.containerType"
+                :items="containerTypes"
+                :rules="[required('container type')]"
+                label="Loại container"
+                required
+              ></v-select>
               <v-menu
                 ref="datePickerMenu"
                 v-model="datePickerMenu"
@@ -44,6 +58,7 @@
                     v-bind="attrs"
                     v-on="on"
                     required
+                    :rules="[required('pickup time')]"
                   ></v-text-field>
                 </template>
                 <v-date-picker
@@ -63,14 +78,17 @@
                   >
                 </v-date-picker>
               </v-menu>
+              <v-btn
+                color="primary"
+                @click="valid ? (stepper = 2) : (stepper = 1)"
+                :disabled="!valid"
+                >Tiếp tục</v-btn
+              >
+              <!-- <v-btn text @click="dialogAddSync = false">Hủy</v-btn> -->
             </v-form>
-            <v-btn color="primary" @click="stepper = 2" :disabled="!valid"
-              >Tiếp tục</v-btn
-            >
-            <v-btn text @click="dialogAddSync = false">Hủy</v-btn>
           </v-stepper-content>
 
-          <v-stepper-step :complete="stepper > 2" step="2" :editable="true"
+          <v-stepper-step :complete="stepper > 2" step="2" :editable="editable"
             >Điền B/L</v-stepper-step
           >
 
@@ -78,18 +96,19 @@
             <v-form ref="billOfLadingForm" v-model="valid" lazy-validation>
               <v-text-field
                 v-model="inboundSync.billOfLading.billOfLadingNumber"
-                :counter="10"
-                :rules="maxRules"
+                :counter="50"
+                :rules="[
+                  minLength('B/L number', 5),
+                  maxLength('B/L number', 50)
+                ]"
                 label="B/L No."
-                required
               ></v-text-field>
 
               <v-select
                 v-model="inboundSync.billOfLading.portOfDelivery"
                 :items="ports"
-                :rules="[v => !!v || 'Port is required']"
+                :rules="[required('port of loading')]"
                 label="Cảng lấy container đặc"
-                required
               ></v-select>
 
               <v-menu
@@ -108,7 +127,7 @@
                     prepend-icon="event"
                     v-bind="attrs"
                     v-on="on"
-                    required
+                    :rules="[required('det')]"
                   ></v-text-field>
                 </template>
                 <v-date-picker
@@ -132,15 +151,15 @@
                   >
                 </v-date-picker>
               </v-menu>
+              <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
+                >Tiếp tục</v-btn
+              >
+              <v-btn text @click="stepper = 1">Quay lại</v-btn>
             </v-form>
-            <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
-              >Tiếp tục</v-btn
-            >
-            <v-btn text @click="dialogAddSync = false">Hủy</v-btn>
           </v-stepper-content>
 
-          <v-stepper-step :complete="stepper > 3" step="3" :editable="true"
-            >Thêm các container hàng nhập</v-stepper-step
+          <v-stepper-step :complete="stepper > 3" step="3" :editable="editable"
+            >Containers hàng nhập</v-stepper-step
           >
           <!-- CREATE CONTAINER -->
           <v-stepper-content step="3">
@@ -190,27 +209,24 @@
                               <v-select
                                 v-model="container.driver"
                                 :items="drivers"
-                                :rules="[v => !!v || 'Driver is required']"
+                                :rules="[required('driver')]"
                                 label="Tài xế"
-                                required
                               ></v-select>
                             </v-col>
                             <v-col cols="12" sm="6" md="4">
                               <v-select
                                 v-model="container.trailer"
                                 :items="trailers"
-                                :rules="[v => !!v || 'Trailer is required']"
+                                :rules="[required('trailer')]"
                                 label="Loại rờ mọt"
-                                required
                               ></v-select>
                             </v-col>
                             <v-col cols="12" sm="6" md="4">
                               <v-select
                                 v-model="container.tractor"
                                 :items="tractors"
-                                :rules="[v => !!v || 'Tractor is required']"
+                                :rules="[required('tractor')]"
                                 label="Loại đầu kéo"
-                                required
                               ></v-select>
                             </v-col>
                           </v-row>
@@ -248,7 +264,7 @@
             <v-btn color="primary" @click="stepper = 4" :disabled="!valid"
               >Tiếp tục</v-btn
             >
-            <v-btn text @click="dialogAddSync = false">Hủy</v-btn>
+            <v-btn text @click="stepper = 2">Quay lại</v-btn>
           </v-stepper-content>
 
           <v-stepper-step step="4">Hoàn thành</v-stepper-step>
@@ -256,18 +272,17 @@
             <v-form ref="finishForm" v-model="valid" lazy-validation>
               <v-checkbox
                 v-model="checkbox"
-                :rules="[v => !!v || 'You must agree to continue!']"
+                :rules="[required('agree term')]"
                 label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
-                required
               ></v-checkbox>
+              <v-btn
+                color="primary"
+                @click="dialogAddSync = false"
+                :disabled="!valid"
+                >Hoàn tất</v-btn
+              >
+              <v-btn text @click="stepper = 3">Quay lại</v-btn>
             </v-form>
-            <v-btn
-              color="primary"
-              @click="dialogAddSync = false"
-              :disabled="!valid"
-              >Hoàn tất</v-btn
-            >
-            <v-btn text @click="dialogAddSync = false">Hủy</v-btn>
           </v-stepper-content>
         </v-stepper>
       </v-list>
@@ -279,26 +294,28 @@
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import { IInbound } from "@/entity/inbound";
 import { IContainer } from "@/entity/container";
+import FormValidate from "@/mixin/form-validate";
 
-@Component
+@Component({
+  mixins: [FormValidate]
+})
 export default class CreateInbound extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("inbound", { type: Object }) inboundSync!: IInbound;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
+  // Form validate
+  checkbox = false;
+  editable = false;
   stepper = 1;
   valid = true;
+  // API list
   ports: Array<string> = [];
+  shippingLines: Array<string> = [];
+  containerTypes: Array<string> = [];
   trailers: Array<string> = [];
   tractors: Array<string> = [];
-
-  // rules
-  maxRules = [
-    (v: string) => !!v || "Field is required",
-    (v: string) =>
-      (v && v.length <= 100) || "Field must be less than 100 characters"
-  ];
 
   // inbound form
   datePickerMenu = false;
@@ -309,11 +326,11 @@ export default class CreateInbound extends Vue {
   // Container form
   containerHeaders = [
     {
-      text: "Mã",
+      text: "Container No.",
       align: "start",
-      value: "id"
+      sortable: false,
+      value: "containerNumber"
     },
-    { text: "Container No.", value: "containerNumber" },
     { text: "Biển kiểm sát", value: "licensePlate" },
     { text: "Tài xế", value: "driver" },
     { text: "Rơ mọt", value: "trailer" },
@@ -323,7 +340,6 @@ export default class CreateInbound extends Vue {
       value: "actions"
     }
   ];
-  // containers: Array<IContainer> = [];
   container = {
     containerNumber: "",
     driver: "",
@@ -355,6 +371,10 @@ export default class CreateInbound extends Vue {
   mounted() {
     // TODO: API get Ports
     this.ports = ["HPH", "APL"];
+    // TODO: API get Shipping Line
+    this.shippingLines = ["APL", "GREEN"];
+    // TODO: API get Container Type
+    this.containerTypes = ["40DC", "20DC"];
     // TODO: API get Drivers by Forwarder
     this.drivers = ["driver", "driver1"];
     // trailers & tractors
