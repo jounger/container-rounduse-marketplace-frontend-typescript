@@ -124,9 +124,10 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
+import { Component, Vue, PropSync } from "vue-property-decorator";
 import { IDiscount } from "@/entity/discount";
 import { createDiscount, updateDiscount } from "@/api/discount";
+import { convertToDateTime } from "@/utils/tool";
 
 @Component
 export default class CreateDiscount extends Vue {
@@ -146,7 +147,7 @@ export default class CreateDiscount extends Vue {
   }
   addDiscount() {
     if (this.discountSync) {
-      this.discountSync.expiredDate = this.expiredDateSync + "T00:00";
+      this.discountSync.expiredDate = convertToDateTime(this.expiredDateSync);
       console.log(this.discountSync.expiredDate);
       createDiscount(this.discountSync)
         .then(res => {
@@ -168,6 +169,7 @@ export default class CreateDiscount extends Vue {
   }
   updateDiscount() {
     if (this.discountSync.id) {
+      this.discountSync.expiredDate = convertToDateTime(this.expiredDateSync);
       updateDiscount(this.discountSync)
         .then(res => {
           console.log(res.data);

@@ -1,20 +1,26 @@
 <template>
-  <v-dialog v-model="dialogAddSync" persistent max-width="600px">
+  <v-dialog
+    v-model="dialogAddSync"
+    fullscreen
+    hide-overlay
+    transition="dialog-bottom-transition"
+  >
     <v-card>
-      <v-toolbar color="primary" light flat>
-        <v-toolbar-title
-          ><span class="headline" style="color:white;">{{
-            isUpdate ? "Update" : "Add"
-          }}</span>
-          <v-btn
-            icon
-            dark
-            @click="dialogAddSync = false"
-            style="margin-left:296px;"
+      <v-toolbar dark color="primary">
+        <v-btn icon dark @click="dialogAddSync = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+        <v-toolbar-title>{{
+          isUpdate ? "Cập nhập hãng tàu" : "Thêm mới hãng tàu"
+        }}</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-toolbar-items>
+          <v-btn dark text @click="dialogAddSync = false">Trở về</v-btn>
+          <v-btn dark text @click="createShippingLine()" v-if="!isUpdate"
+            >Thêm mới</v-btn
           >
-            <v-icon>mdi-close</v-icon>
-          </v-btn></v-toolbar-title
-        >
+          <v-btn dark text @click="updateShippingLine()" v-else>Cập nhập</v-btn>
+        </v-toolbar-items>
       </v-toolbar>
       <v-card-text>
         <v-form>
@@ -33,11 +39,11 @@
             <v-layout row>
               <v-flex xs8>
                 <v-text-field
-                  label="Tên hãng tàu"
-                  name="shippingLineName"
+                  label="Mật khẩu"
+                  name="password"
                   prepend-icon="mdi-lock"
-                  type="text"
-                  v-model="shippingLineSync.companyName"
+                  type="password"
+                  v-model="shippingLineSync.password"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -46,11 +52,11 @@
             <v-layout row>
               <v-flex xs8>
                 <v-text-field
-                  label="Mật khẩu"
-                  name="password"
+                  label="Tên hãng tàu"
+                  name="shippingLineName"
                   prepend-icon="mdi-lock"
-                  type="password"
-                  v-model="shippingLineSync.password"
+                  type="text"
+                  v-model="shippingLineSync.companyName"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -69,13 +75,37 @@
           <v-layout col>
             <v-layout row>
               <v-flex xs8>
-                <v-select
-                  :items="['PENDING', 'ACTIVE', 'BANNED']"
-                  label="Trạng thái*"
+                <v-text-field
+                  label="Lời dẫn"
+                  name="companyDescription"
                   prepend-icon="mdi-lock"
-                  required
-                  v-model="shippingLineSync.status"
-                ></v-select>
+                  type="text"
+                  v-model="shippingLineSync.companyDescription"
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+            <v-layout row>
+              <v-flex xs8>
+                <v-text-field
+                  label="Tin"
+                  name="tin"
+                  prepend-icon="mdi-lock"
+                  type="text"
+                  v-model="shippingLineSync.tin"
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-layout>
+          <v-layout col>
+            <v-layout row>
+              <v-flex xs8>
+                <v-text-field
+                  label="Fax"
+                  name="fax"
+                  prepend-icon="mdi-lock"
+                  type="text"
+                  v-model="shippingLineSync.fax"
+                ></v-text-field>
               </v-flex>
             </v-layout>
           </v-layout>
@@ -118,19 +148,6 @@
             <v-layout row>
               <v-flex xs8>
                 <v-text-field
-                  label="name code"
-                  name="companyCode"
-                  prepend-icon="mdi-lock"
-                  type="phone"
-                  v-model="shippingLineSync.companyCode"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs6>
-                <v-text-field
                   label="Địa chỉ"
                   name="companyAddress"
                   prepend-icon="mdi-lock"
@@ -140,36 +157,86 @@
               </v-flex>
             </v-layout>
           </v-layout>
+          <v-layout col>
+            <v-layout row>
+              <v-flex xs6>
+                <v-select
+                  :items="['PENDING', 'ACTIVE', 'BANNED']"
+                  label="Trạng thái*"
+                  prepend-icon="mdi-lock"
+                  required
+                  v-model="shippingLineSync.status"
+                ></v-select>
+              </v-flex>
+            </v-layout>
+          </v-layout>
           <small>*Dấu sao là trường bắt buộc</small>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-top: 65px;">
-        <v-spacer></v-spacer>
-        <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn @click="createShippingLine()" color="primary" v-if="!isUpdate"
-          >Thêm mới</v-btn
-        >
-        <v-btn @click="updateShippingLine()" color="primary" v-else
-          >Cập nhập</v-btn
-        >
-      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import { IShippingLine } from "@/entity/shipping-line";
+import { createShippingLine, updateShippingLine } from "@/api/shipping-line";
+import { convertToDateTime } from "@/utils/tool";
 
 @Component
 export default class CreateShippingLine extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("shippingLine", { type: Object }) shippingLineSync!: IShippingLine;
+  @PropSync("shippingLines", { type: Array }) shippingLinesSync!: Array<IShippingLine>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-
+  @PropSync("expiredDate", { type: String }) expiredDateSync!: string;
+  currencies = ["USD", "VND", "EURO"];
+  expiredDatePicker = false;
   get isUpdate() {
-    if (typeof this.shippingLineSync.id !== "undefined") return true;
+    if (typeof this.shippingLineSync.id !== "undefined") {
+      return true;
+    }
     return false;
+  }
+  addShippingLine() {
+    if (this.shippingLineSync) {
+      createShippingLine(this.shippingLineSync)
+        .then(res => {
+          console.log(res.data);
+          const response: IShippingLine = res.data;
+          this.shippingLineSync = response;
+          this.messageSync =
+            "Thêm mới thành công mã giảm giá: " + this.shippingLineSync.username;
+          this.shippingLinesSync.push(this.shippingLineSync);
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(
+          () => ((this.snackbarSync = true), (this.dialogAddSync = false))
+        );
+    }
+  }
+  updateShippingLine() {
+    if (this.shippingLineSync.id) {
+      updateShippingLine(this.shippingLineSync)
+        .then(res => {
+          console.log(res.data);
+          const response: IShippingLine = res.data;
+          this.shippingLineSync = response;
+          this.messageSync =
+            "Cập nhập thành công mã giảm giá: " + this.shippingLineSync.username;
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(
+          () => ((this.snackbarSync = true), (this.dialogAddSync = false))
+        );
+    }
   }
 }
 </script>
+

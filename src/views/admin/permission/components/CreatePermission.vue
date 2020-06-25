@@ -68,7 +68,6 @@ export default class CreatePermission extends Vue {
   >;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-
   get isUpdate() {
     if (typeof this.permissionSync.id !== "undefined") return true;
     return false;

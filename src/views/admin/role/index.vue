@@ -111,6 +111,7 @@ export default class Role extends Vue {
   }
 
   viewDetail(item: IRole) {
+    console.log(item);
     this.role = item;
     this.dialogAdd = true;
   }

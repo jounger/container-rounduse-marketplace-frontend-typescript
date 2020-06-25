@@ -6,6 +6,7 @@ export interface IUser {
   roles: Array<string>;
   status: string;
   address?: string;
+  password: string;
 }
 
 export interface ISignUpRequest {

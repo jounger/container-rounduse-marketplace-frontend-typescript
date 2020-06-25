@@ -12,11 +12,16 @@
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
+import NavLayout from "../layouts/NavLayout.vue";
 @Component
 export default class Home extends Vue {
   @PropSync("layout") layoutSync!: object;
   created() {
-    this.layoutSync = DefaultLayout;
+    if (!this.$auth.check()) {
+      this.layoutSync = DefaultLayout;
+    } else {
+      this.layoutSync = NavLayout;
+    }
   }
 }
 </script>

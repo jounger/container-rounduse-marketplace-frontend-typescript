@@ -35,7 +35,7 @@
         <template v-slot:top>
           <v-toolbar flat color="white">
             <v-toolbar-title style="font-weight:bold; font-size: 25px;"
-              >Danh sách vai trò</v-toolbar-title
+              >Danh sách mã giảm giá</v-toolbar-title
             >
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
@@ -45,7 +45,7 @@
           </v-toolbar>
         </template>
         <template v-slot:item.expired="{ item }">
-          {{ convertExpiredDate(item.expiredDate) }}
+          {{ convertDateTime(item.expiredDate) }}
         </template>
         <template v-slot:item.actions="{ item }">
           <v-icon small class="mr-2" @click="viewDetail(item)">
@@ -68,6 +68,7 @@ import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 import DeleteDiscount from "./components/DeleteDiscount.vue";
 import CreateDiscount from "./components/CreateDiscount.vue";
+import { convertFromDateTime } from "@/utils/tool";
 
 @Component({
   components: {
@@ -114,13 +115,8 @@ export default class Discount extends Vue {
   created() {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
   }
-  convertExpiredDate(expiredDate: string) {
-    const index = expiredDate.indexOf("T");
-    return (
-      expiredDate.slice(0, index) +
-      " " +
-      expiredDate.slice(index + 1, expiredDate.length)
-    );
+  convertDateTime(input: string){
+    return convertFromDateTime(input);
   }
   addDiscount() {
     this.discount = {} as IDiscount;
