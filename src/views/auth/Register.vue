@@ -1,205 +1,254 @@
 <template>
-  <v-card style="width: 1000px;">
+  <v-card tile>
     <Snackbar :text="message" :snackbar.sync="snackbar" />
-    <v-toolbar color="primary" light flat>
-      <v-toolbar-title style="color: white;">Sign up form</v-toolbar-title>
-    </v-toolbar>
-    <v-card-text>
-      <v-form>
-        <v-layout col>
-          <v-layout row>
-            <v-flex xs8>
-              <v-text-field
-                label="Tên đăng nhập"
-                name="username"
-                prepend-icon="mdi-account"
-                type="text"
-                :counter="20"
-                :rules="[minLength('username', 2), maxLength('username', 20)]"
-                v-model="username"
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-          <v-layout row>
-            <v-flex xs8>
-              <v-text-field
-                label="Mật khẩu"
-                name="password"
-                prepend-icon="mdi-lock"
-                type="password"
-                :counter="120"
-                :rules="[minLength('password', 6), maxLength('password', 120)]"
-                v-model="password"
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-          <v-layout row>
-            <v-flex xs8>
-              <v-radio-group v-model="roles" :mandatory="false">
-                <v-radio label="Đăng ký làm chủ xe" value="forwarder"></v-radio>
-                <v-radio
-                  label="Đăng ký làm chủ hàng"
-                  value="merchant"
-                ></v-radio>
-              </v-radio-group>
-            </v-flex>
-          </v-layout>
-        </v-layout>
-        <v-layout col>
-          <v-layout row>
-            <v-flex xs8>
-              <v-text-field
-                label="Email"
-                name="email"
-                prepend-icon="mdi-lock"
-                type="email"
-                :counter="50"
-                :rules="[minLength('email', 5), maxLength('email', 50)]"
-                v-model="email"
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-          <v-layout row>
-            <v-flex xs8>
-              <v-text-field
-                label="Số điện thoại"
-                name="phone"
-                prepend-icon="mdi-lock"
-                type="text"
-                :counter="10"
-                :rules="[minLength('phone', 10), maxLength('phone', 10)]"
-                v-model="phone"
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-          <v-layout row>
-            <v-flex xs8>
-              <v-text-field
-                label="Địa chỉ"
-                name="address"
-                prepend-icon="mdi-lock"
-                :rules="[required('address')]"
-                type="text"
-                v-model="address"
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-        </v-layout>
-        <v-layout col>
-          <v-layout row>
-            <v-flex xs8>
-              <v-text-field
-                label="Website"
-                name="website"
-                prepend-icon="mdi-lock"
-                type="text"
-                :rules="[required('website')]"
-                v-model="website"
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-          <v-layout row>
-            <v-flex xs8>
-              <v-text-field
-                label="Người liên hệ"
-                name="contactPerson"
-                prepend-icon="mdi-lock"
-                type="text"
-                :rules="[required('Contact Person')]"
-                v-model="contactPerson"
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-          <v-layout row>
-            <v-flex xs8>
-              <v-text-field
-                label="Tên công ty"
-                name="companyName"
-                prepend-icon="mdi-lock"
-                type="text"
-                :rules="[required('Company name')]"
-                v-model="companyName"
-              >
-              </v-text-field>
-            </v-flex>
-          </v-layout>
-        </v-layout>
-        <v-layout col>
-          <v-layout row>
-            <v-flex xs8>
-              <v-text-field
-                label="Mã công ty"
-                name="companyCode"
-                prepend-icon="mdi-lock"
-                type="text"
-                :rules="[required('Company code')]"
-                v-model="companyCode"
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-          <v-layout row>
-            <v-flex xs8>
-              <v-text-field
-                label="Mô tả"
-                name="companyDescription"
-                prepend-icon="mdi-lock"
-                type="text"
-                :rules="[required('Company description')]"
-                v-model="companyDescription"
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-          <v-layout row>
-            <v-flex xs8>
-              <v-text-field
-                label="Địa chỉ công ty"
-                name="companyAddress"
-                prepend-icon="mdi-lock"
-                type="text"
-                :rules="[required('Company address')]"
-                v-model="companyAddress"
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-        </v-layout>
-        <v-layout col>
-          <v-layout row>
-            <v-flex xs8>
-              <v-text-field
-                label="Tin"
-                name="tin"
-                prepend-icon="mdi-lock"
-                :rules="[required('tin')]"
-                type="text"
-                v-model="tin"
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-          <v-layout row>
-            <v-flex xs8>
-              <v-text-field
-                label="Fax"
-                name="fax"
-                prepend-icon="mdi-lock"
-                type="text"
-                :rules="[required('fax')]"
-                v-model="fax"
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-        </v-layout>
-
-        <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-      </v-form>
-    </v-card-text>
-    <v-card-actions>
+    <!-- TITLE -->
+    <v-toolbar dark color="primary">
+      <v-toolbar-title>Đăng ký tài khoản</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn @click="submit()" color="primary">Sign up</v-btn>
-      <v-btn @click="cancel()" color="primary">Login</v-btn>
-    </v-card-actions>
+      <v-toolbar-items>
+        <v-btn dark text to="/login">Đăng nhập</v-btn>
+      </v-toolbar-items>
+    </v-toolbar>
+    <!-- START CONTENT -->
+    <v-list three-line subheader>
+      <v-stepper v-model="stepper" vertical>
+        <v-stepper-step :complete="stepper > 1" step="1" :editable="editable">
+          Đăng ký tài khoản
+          <small>Thông tin chung</small>
+        </v-stepper-step>
+
+        <v-stepper-content step="1">
+          <v-form ref="outboundForm" v-model="valid" lazy-validation>
+            <v-layout col>
+              <v-layout row>
+                <v-flex xs8>
+                  <v-text-field
+                    label="Tên đăng nhập"
+                    name="username"
+                    prepend-icon="mdi-account"
+                    type="text"
+                    :counter="20"
+                    :rules="[
+                      minLength('username', 2),
+                      maxLength('username', 20)
+                    ]"
+                    v-model="username"
+                  ></v-text-field>
+                </v-flex>
+              </v-layout>
+              <v-layout row>
+                <v-flex xs8>
+                  <v-text-field
+                    label="Mật khẩu"
+                    name="password"
+                    prepend-icon="mdi-lock"
+                    type="password"
+                    :counter="120"
+                    :rules="[
+                      minLength('password', 6),
+                      maxLength('password', 120)
+                    ]"
+                    v-model="password"
+                  ></v-text-field>
+                </v-flex>
+              </v-layout>
+            </v-layout>
+            <v-radio-group v-model="roles" :mandatory="false" row>
+              <v-radio label="Đăng ký làm chủ xe" value="forwarder"></v-radio>
+              <v-radio
+                label="Đăng ký làm chủ hàng"
+                value="merchant"
+                style="margin-left:255px;"
+              ></v-radio>
+            </v-radio-group>
+            <v-layout col>
+              <v-layout row>
+                <v-flex xs8>
+                  <v-text-field
+                    label="Email"
+                    name="email"
+                    prepend-icon="mdi-lock"
+                    type="email"
+                    :counter="50"
+                    :rules="[minLength('email', 5), maxLength('email', 50)]"
+                    v-model="email"
+                  ></v-text-field>
+                </v-flex>
+              </v-layout>
+              <v-layout row>
+                <v-flex xs8>
+                  <v-text-field
+                    label="Số điện thoại"
+                    name="phone"
+                    prepend-icon="mdi-lock"
+                    type="text"
+                    :counter="10"
+                    :rules="[minLength('phone', 10), maxLength('phone', 10)]"
+                    v-model="phone"
+                  ></v-text-field>
+                </v-flex>
+              </v-layout>
+            </v-layout>
+
+            <v-text-field
+              label="Địa chỉ"
+              name="address"
+              prepend-icon="mdi-lock"
+              :rules="[required('address')]"
+              type="text"
+              v-model="address"
+            ></v-text-field>
+            <v-btn
+              color="primary"
+              @click="valid ? (stepper = 2) : (stepper = 1)"
+              :disabled="!valid"
+              >Tiếp tục</v-btn
+            >
+            <!-- <v-btn text @click="dialogAddSync = false">Hủy</v-btn> -->
+          </v-form>
+        </v-stepper-content>
+
+        <v-stepper-step :complete="stepper > 2" step="2" :editable="editable">{{
+          roles === "forwarder" ? "Thông tin chủ xe" : "Thông tin chủ hàng"
+        }}</v-stepper-step>
+
+        <v-stepper-content step="2">
+          <v-form ref="bookingForm" v-model="valid" lazy-validation>
+            <v-layout col>
+              <v-layout row>
+                <v-flex xs8>
+                  <v-text-field
+                    label="Tên công ty"
+                    name="companyName"
+                    prepend-icon="mdi-lock"
+                    type="text"
+                    :rules="[required('Company name')]"
+                    v-model="companyName"
+                  >
+                  </v-text-field>
+                </v-flex>
+              </v-layout>
+              <v-layout row>
+                <v-flex xs8>
+                  <v-text-field
+                    label="Mã công ty"
+                    name="companyCode"
+                    prepend-icon="mdi-lock"
+                    type="text"
+                    :rules="[required('Company code')]"
+                    v-model="companyCode"
+                  ></v-text-field>
+                </v-flex>
+              </v-layout>
+            </v-layout>
+            <v-layout col>
+              <v-layout row>
+                <v-flex xs8>
+                  <v-text-field
+                    label="Người liên hệ"
+                    name="contactPerson"
+                    prepend-icon="mdi-lock"
+                    type="text"
+                    :rules="[required('Contact Person')]"
+                    v-model="contactPerson"
+                  ></v-text-field>
+                </v-flex>
+              </v-layout>
+              <v-layout row>
+                <v-flex xs8>
+                  <v-text-field
+                    label="Website"
+                    name="website"
+                    prepend-icon="mdi-lock"
+                    type="text"
+                    :rules="[required('website')]"
+                    v-model="website"
+                  ></v-text-field>
+                </v-flex>
+              </v-layout>
+            </v-layout>
+            <v-layout col>
+              <v-layout row>
+                <v-flex xs8>
+                  <v-text-field
+                    label="Tin"
+                    name="tin"
+                    prepend-icon="mdi-lock"
+                    :rules="[required('tin')]"
+                    type="text"
+                    v-model="tin"
+                  ></v-text-field>
+                </v-flex>
+              </v-layout>
+              <v-layout row>
+                <v-flex xs8>
+                  <v-text-field
+                    label="Fax"
+                    name="fax"
+                    prepend-icon="mdi-lock"
+                    type="text"
+                    :rules="[required('fax')]"
+                    v-model="fax"
+                  ></v-text-field>
+                </v-flex>
+              </v-layout>
+            </v-layout>
+            <v-layout col>
+              <v-layout row>
+                <v-flex xs8>
+                  <v-text-field
+                    label="Mô tả"
+                    name="companyDescription"
+                    prepend-icon="mdi-lock"
+                    type="text"
+                    :rules="[required('Company description')]"
+                    v-model="companyDescription"
+                  ></v-text-field>
+                </v-flex>
+              </v-layout>
+              <v-layout row>
+                <v-flex xs8>
+                  <v-text-field
+                    label="Địa chỉ công ty"
+                    name="companyAddress"
+                    prepend-icon="mdi-lock"
+                    type="text"
+                    :rules="[required('Company address')]"
+                    v-model="companyAddress"
+                  ></v-text-field>
+                </v-flex>
+              </v-layout>
+            </v-layout>
+
+            <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
+              >Tiếp tục</v-btn
+            >
+            <v-btn text @click="stepper = 1">Quay lại</v-btn>
+          </v-form>
+        </v-stepper-content>
+
+        <v-stepper-step :complete="stepper > 3" step="3" :editable="editable"
+          >Hoàn thành</v-stepper-step
+        >
+
+        <v-stepper-content step="3">
+          <v-form ref="finishForm" v-model="valid" lazy-validation>
+            <v-checkbox
+              v-model="checkbox"
+              :rules="[required('agree term')]"
+              label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
+            ></v-checkbox>
+            <v-btn color="primary" @click="submit()" :disabled="!valid"
+              >Hoàn tất</v-btn
+            >
+            <v-btn text @click="stepper = 2">Quay lại</v-btn>
+          </v-form>
+        </v-stepper-content>
+      </v-stepper>
+    </v-list>
+    <!-- END CONTENT -->
   </v-card>
 </template>
-
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import FormValidate from "@/mixin/form-validate";
@@ -231,6 +280,9 @@ export default class Register extends Vue {
   role = [] as Array<string>;
   message = "";
   snackbar = false;
+  editable = false;
+  stepper = 1;
+  valid = true;
 
   created() {
     this.layoutSync = RegisterLayout;

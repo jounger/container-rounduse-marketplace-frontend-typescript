@@ -171,14 +171,6 @@ const routes: Array<RouteConfig> = [
     meta: {
       auth: ["ROLE_MODERATOR"]
     }
-  },
-  {
-    path: "/supplier-ban",
-    name: "SupplierBan",
-    component: () => import("@/views/operator/supplier-ban/index.vue"),
-    meta: {
-      auth: ["ROLE_MODERATOR"]
-    }
   }
 ];
 
