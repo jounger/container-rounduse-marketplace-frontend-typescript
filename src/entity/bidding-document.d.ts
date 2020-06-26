@@ -1,4 +1,3 @@
-import { IMerchant } from "./merchant";
 import { IOutbound } from "./outbound";
 export interface IBiddingDocument {
   id?: number;

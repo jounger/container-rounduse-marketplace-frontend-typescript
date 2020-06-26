@@ -26,3 +26,7 @@ export function isEmptyObject(obj: object) {
   if (Object.keys(obj).length === 0 && obj.constructor === Object) return true;
   return false;
 }
+
+export function isValidDate(d: Date) {
+  return d instanceof Date && !isNaN(d.getTime());
+}
