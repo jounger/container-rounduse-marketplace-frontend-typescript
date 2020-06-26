@@ -130,8 +130,6 @@ export default class BiddingDocument extends Vue {
 
   created() {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
-    this.biddingDocuments = BiddingDocumentData as Array<IBiddingDocument>;
-    this.loading = false;
   }
 
   openEditDialog(item: IBiddingDocument) {
@@ -149,7 +147,7 @@ export default class BiddingDocument extends Vue {
     console.log(this.$auth.user());
     if (val !== oldVal) {
       console.log(BiddingDocumentData);
-      this.biddingDocuments = BiddingDocumentData;
+      this.biddingDocuments = BiddingDocumentData as Array<IBiddingDocument>;
       this.loading = false;
       this.options.totalItems = 10;
       /*

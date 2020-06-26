@@ -15,3 +15,6 @@ export default class App extends Vue {
   layout = EmptyLayout as object;
 }
 </script>
+<style lang="css">
+@import "./assets/css/vuetify-remake.css";
+</style>

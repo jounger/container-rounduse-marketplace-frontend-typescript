@@ -1,43 +1,17 @@
 <template>
-  <v-list>
-    <v-list-item to="/outbound">
+  <v-list dense>
+    <v-list-item
+      v-for="item in getNavigation"
+      :key="item.title"
+      :to="item.link"
+      link
+    >
       <v-list-item-icon>
-        <v-icon>mdi-help-box</v-icon>
+        <v-icon>{{ item.icon }}</v-icon>
       </v-list-item-icon>
+
       <v-list-item-content>
-        <v-list-item-title>Quản lý hàng xuất</v-list-item-title>
-      </v-list-item-content>
-    </v-list-item>
-    <v-list-item to="/consignment-new">
-      <v-list-item-icon>
-        <v-icon>mdi-help-box</v-icon>
-      </v-list-item-icon>
-      <v-list-item-content>
-        <v-list-item-title>Quản lý hàng (bản mới)</v-list-item-title>
-      </v-list-item-content>
-    </v-list-item>
-    <v-list-item to="/inbound">
-      <v-list-item-icon>
-        <v-icon>mdi-image</v-icon>
-      </v-list-item-icon>
-      <v-list-item-content>
-        <v-list-item-title>Quản lý hàng nhập</v-list-item-title>
-      </v-list-item-content>
-    </v-list-item>
-    <v-list-item to="/driver">
-      <v-list-item-icon>
-        <v-icon>mdi-image</v-icon>
-      </v-list-item-icon>
-      <v-list-item-content>
-        <v-list-item-title>Quản lý lái xe</v-list-item-title>
-      </v-list-item-content>
-    </v-list-item>
-    <v-list-item to="/bidding-document">
-      <v-list-item-icon>
-        <v-icon>mdi-help-box</v-icon>
-      </v-list-item-icon>
-      <v-list-item-content>
-        <v-list-item-title>Quản lý HSMT</v-list-item-title>
+        <v-list-item-title>{{ item.title }}</v-list-item-title>
       </v-list-item-content>
     </v-list-item>
   </v-list>
@@ -47,5 +21,26 @@ import { Component, Vue } from "vue-property-decorator";
 @Component({
   name: "NavigationSupplier"
 })
-export default class NavigationSupplier extends Vue {}
+export default class NavigationSupplier extends Vue {
+  private merchantNavigation = [
+    { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
+    { title: "Quản lý hàng xuất", icon: "dashboard", link: "/outbound" },
+    { title: "Quản lý hàng (new)", icon: "dashboard", link: "/outbound-new" },
+    { title: "Quản lý HSMT", icon: "dashboard", link: "/bidding-document" }
+  ];
+  private forwarderNavigation = [
+    { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
+    { title: "Quản lý hàng xuất", icon: "dashboard", link: "/inbound" },
+    { title: "Quản lý HSDT", icon: "dashboard", link: "/bid" },
+    { title: "Quản lý Driver", icon: "dashboard", link: "/driver" }
+  ];
+
+  get getNavigation() {
+    if (this.$auth.check("ROLE_FORWARDER")) {
+      return this.forwarderNavigation;
+    } else {
+      return this.merchantNavigation;
+    }
+  }
+}
 </script>

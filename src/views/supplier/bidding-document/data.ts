@@ -21,6 +21,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
         portOfLoading: "HPH"
       }
     },
+    bids: [],
     bidDiscountCode: "DISCOUNT01",
     isMultipleAward: true,
     bidOpening: "2020-12-01T20:20",
@@ -52,6 +53,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
         portOfLoading: "HPH"
       }
     },
+    bids: [],
     bidDiscountCode: "DISCOUNT01",
     isMultipleAward: true,
     bidOpening: "2020-12-01T20:20",
@@ -83,6 +85,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
         portOfLoading: "HPH"
       }
     },
+    bids: [],
     bidDiscountCode: "DISCOUNT01",
     isMultipleAward: true,
     bidOpening: "2020-12-01T20:20",

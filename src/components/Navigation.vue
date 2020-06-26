@@ -17,15 +17,20 @@
       </v-list-item>
     </v-list>
     <v-divider></v-divider>
-
-    <v-list dense nav>
-      <component :is="navigation"> </component>
-      <v-list-item to="/profile">
+    <component :is="navigation"> </component>
+    <v-list dense>
+      <v-list-item
+        v-for="item in getNavigation"
+        :key="item.title"
+        :to="item.link"
+        link
+      >
         <v-list-item-icon>
-          <v-icon>mdi-help-box</v-icon>
+          <v-icon>{{ item.icon }}</v-icon>
         </v-list-item-icon>
+
         <v-list-item-content>
-          <v-list-item-title>Trang cá nhân</v-list-item-title>
+          <v-list-item-title>{{ item.title }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
     </v-list>
@@ -53,7 +58,10 @@ import { toCapitalize } from "@/utils/tool";
 export default class Navigation extends Vue {
   @PropSync("drawer", { type: Boolean }) drawerSync!: boolean;
 
-  protected navigation = NavigationSupplier;
+  protected navigation: object = NavigationSupplier;
+  protected generalNavigation = [
+    { title: "Trang cá nhân", icon: "dashboard", link: "/profile" }
+  ];
 
   get capitalizeUsername() {
     return toCapitalize(this.$auth.user().username);
@@ -64,6 +72,14 @@ export default class Navigation extends Vue {
       .user()
       .roles[0].toLowerCase()
       .substring(5);
+  }
+
+  get getNavigation() {
+    if (this.$auth.check()) {
+      return this.generalNavigation;
+    } else {
+      return this.$router.push("/");
+    }
   }
 
   created() {

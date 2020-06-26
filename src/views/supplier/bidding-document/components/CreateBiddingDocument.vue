@@ -254,6 +254,7 @@ import { IBiddingDocument } from "@/entity/bidding-document";
 import { IOutbound } from "@/entity/outbound";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
+import { OutboundData } from "../../../supply/outbound/data";
 
 @Component({
   mixins: [FormValidate, Utils]
@@ -347,45 +348,9 @@ export default class CreateBiddingDocument extends Vue {
 
   mounted() {
     // TODO: API get Outbound
-    this.outbounds = [
-      {
-        id: 0,
-        shippingLine: "APL",
-        containerType: "40HC",
-        status: "CREATED",
-        goodsDescription: "Hàng dệt may",
-        packingTime: "2020-12-01T20:20",
-        packingStation: "Hà Nội",
-        grossWeight: 2000,
-        unitOfMesurement: "KG",
-        booking: {
-          bookingNumber: "ABC012",
-          unit: 2,
-          cutOffTime: "2020-12-05T20:20",
-          isFcl: true,
-          portOfLoading: "HPH"
-        }
-      },
-      {
-        id: 1,
-        shippingLine: "GREEN",
-        containerType: "40HC",
-        status: "CREATED",
-        goodsDescription: "Hàng dệt may",
-        packingTime: "2020-12-01T20:20",
-        packingStation: "Hà Nội",
-        grossWeight: 2000,
-        unitOfMesurement: "KG",
-        booking: {
-          bookingNumber: "ABC012",
-          unit: 2,
-          cutOffTime: "2020-12-05T20:20",
-          isFcl: true,
-          portOfLoading: "HPH"
-        }
-      }
-    ];
+    this.outbounds = OutboundData;
     this.options.totalItems = 10;
+    this.loading = false;
     //
     this.currencyOfPayments = ["VND", "USD"];
     this.unitOfMesurements = ["KG", "Ton"];

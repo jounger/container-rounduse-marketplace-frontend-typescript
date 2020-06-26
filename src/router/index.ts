@@ -147,6 +147,14 @@ const routes: Array<RouteConfig> = [
       auth: ["ROLE_FORWARDER"]
     }
   },
+  {
+    path: "/bid",
+    name: "Bid",
+    component: () => import("@/views/supplier/bid/index.vue"),
+    meta: {
+      auth: ["ROLE_FORWARDER"]
+    }
+  },
   // DRIVER
   {
     path: "/driver",
