@@ -17,6 +17,7 @@
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
           :snackbar.sync="snackbar"
+          :update="update"
         />
       </v-row>
       <Snackbar :text="message" :snackbar.sync="snackbar" />
@@ -64,7 +65,6 @@ import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 import DeletePermission from "./components/DeletePermission.vue";
 import CreatePermission from "./components/CreatePermission.vue";
-import router from "../../../router/index";
 
 @Component({
   components: {
@@ -83,6 +83,7 @@ export default class Permission extends Vue {
   message = "";
   snackbar = false;
   loading = true;
+  update = false;
   options = {
     descending: true,
     page: 1,
@@ -108,12 +109,15 @@ export default class Permission extends Vue {
   }
 
   openCreateDialog() {
+    this.update = false;
     this.permission = {} as IPermission;
     this.dialogAdd = true;
   }
 
   openUpdateDialog(item: IPermission) {
+    this.update = true;
     this.permission = item;
+    console.log(this.permission);
     this.dialogAdd = true;
   }
 

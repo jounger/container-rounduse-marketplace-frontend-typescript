@@ -17,6 +17,7 @@
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
           :snackbar.sync="snackbar"
+          :update="update"
         />
       </v-row>
       <Snackbar :text="message" :snackbar.sync="snackbar" />
@@ -82,6 +83,7 @@ export default class Port extends Vue {
   message = "";
   snackbar = false;
   loading = true;
+  update = false;
   options = {
     descending: true,
     page: 1,
@@ -109,11 +111,13 @@ export default class Port extends Vue {
 
   openCreateDialog() {
     this.port = {} as IPort;
+    this.update = false;
     this.dialogAdd = true;
   }
 
   openUpdateDialog(item: IPort) {
     this.port = item;
+    this.update = true;
     this.dialogAdd = true;
   }
 

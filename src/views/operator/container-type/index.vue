@@ -2,7 +2,7 @@
   <v-content>
     <v-card>
       <v-row justify="center">
-        <DialogDeleteContainerType
+        <DeleteContainerType
           :dialogDel.sync="dialogDel"
           :containerType.sync="containerType"
           :containerTypes.sync="containerTypes"
@@ -11,12 +11,13 @@
         />
       </v-row>
       <v-row justify="center">
-        <DialogCreateContainerType
+        <CreateContainerType
           :containerType.sync="containerType"
           :containerTypes.sync="containerTypes"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
           :snackbar.sync="snackbar"
+          :update="update"
         />
       </v-row>
       <Snackbar :text="message" :snackbar.sync="snackbar" />
@@ -62,13 +63,13 @@ import { IContainerType } from "@/entity/container-type";
 import { getContainerTypes } from "@/api/container-type";
 import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
-import DialogCreateContainerType from "./components/CreateContainerType.vue";
-import DialogDeleteContainerType from "./components/DeleteContainerType.vue";
+import CreateContainerType from "./components/CreateContainerType.vue";
+import DeleteContainerType from "./components/DeleteContainerType.vue";
 
 @Component({
   components: {
-    DialogCreateContainerType,
-    DialogDeleteContainerType,
+    CreateContainerType,
+    DeleteContainerType,
     Snackbar
   }
 })
@@ -82,6 +83,7 @@ export default class ContainerType extends Vue {
   message = "";
   snackbar = false;
   loading = true;
+  update = false;
   options = {
     descending: true,
     page: 1,
@@ -116,11 +118,13 @@ export default class ContainerType extends Vue {
 
   openCreateDialog() {
     this.containerType = {} as IContainerType;
+    this.update = false;
     this.dialogAdd = true;
   }
 
   openUpdateDialog(item: IContainerType) {
     this.containerType = item;
+    this.update = true;
     this.dialogAdd = true;
   }
 

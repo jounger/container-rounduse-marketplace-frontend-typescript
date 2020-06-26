@@ -17,6 +17,7 @@
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
           :snackbar.sync="snackbar"
+          :update="update"
         />
       </v-row>
       <Snackbar :text="message" :snackbar.sync="snackbar" />
@@ -82,6 +83,7 @@ export default class Driver extends Vue {
   message = "";
   snackbar = false;
   loading = true;
+  update = false;
   options = {
     descending: true,
     page: 1,
@@ -113,11 +115,13 @@ export default class Driver extends Vue {
     this.driver = {} as IDriver;
     this.driver.status = "ACTIVE";
     this.driver.roles = ["ROLE_DRIVER"];
+    this.update = false;
     this.dialogAdd = true;
   }
 
   openUpdateDialog(item: IDriver) {
     this.driver = item;
+    this.update = true;
     this.dialogAdd = true;
   }
 

@@ -17,6 +17,7 @@
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
           :snackbar.sync="snackbar"
+          :update="update"
         />
       </v-row>
       <Snackbar :text="message" :snackbar.sync="snackbar" />
@@ -82,6 +83,7 @@ export default class Role extends Vue {
   message = "";
   snackbar = false;
   loading = true;
+  update = false;
   options = {
     descending: true,
     page: 1,
@@ -107,12 +109,14 @@ export default class Role extends Vue {
   }
 
   openCreateDialog() {
+    this.role = {} as IRole;
+    this.update = false;
     this.dialogAdd = true;
   }
 
   openUpdateDialog(item: IRole) {
-    console.log(item);
     this.role = item;
+    this.update = true;
     this.dialogAdd = true;
   }
 

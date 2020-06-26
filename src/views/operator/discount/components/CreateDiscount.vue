@@ -4,7 +4,7 @@
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
-            isUpdate ? "Cập nhập" : "Thêm mới"
+            update ? "Cập nhập" : "Thêm mới"
           }}</span>
           <v-btn
             icon
@@ -115,7 +115,7 @@
       <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn @click="updateDiscount()" color="primary" v-if="isUpdate"
+        <v-btn @click="updateDiscount()" color="primary" v-if="update"
           >Cập nhập</v-btn
         >
         <v-btn @click="addDiscount()" color="primary" v-else>Thêm mới</v-btn>
@@ -124,7 +124,7 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IDiscount } from "@/entity/discount";
 import { createDiscount, updateDiscount } from "@/api/discount";
 import { convertToDateTime } from "@/utils/tool";
@@ -137,14 +137,10 @@ export default class CreateDiscount extends Vue {
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("expiredDate", { type: String }) expiredDateSync!: string;
+  @Prop(Boolean) update!: boolean;
+
   currencies = ["USD", "VND", "EURO"];
   expiredDatePicker = false;
-  get isUpdate() {
-    if (typeof this.discountSync.id !== "undefined") {
-      return true;
-    }
-    return false;
-  }
   addDiscount() {
     if (this.discountSync) {
       this.discountSync.expiredDate = convertToDateTime(this.expiredDateSync);

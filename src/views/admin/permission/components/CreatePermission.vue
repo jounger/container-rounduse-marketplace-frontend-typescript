@@ -4,7 +4,7 @@
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
-            isUpdate ? "Cập nhập" : "Thêm mới"
+            update ? "Cập nhập" : "Thêm mới"
           }}</span>
           <v-btn
             icon
@@ -46,7 +46,7 @@
       <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn @click="updatePermission()" color="primary" v-if="isUpdate"
+        <v-btn @click="updatePermission()" color="primary" v-if="update"
           >Cập nhập</v-btn
         >
         <v-btn @click="addPermission()" color="primary" v-else>Thêm mới</v-btn>
@@ -55,7 +55,7 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPermission } from "@/entity/permission";
 import { createPermission, updatePermission } from "@/api/permission";
 
@@ -68,17 +68,16 @@ export default class CreatePermission extends Vue {
   >;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  get isUpdate() {
-    if (typeof this.permissionSync.id !== "undefined") return true;
-    return false;
-  }
+  @Prop(Boolean) update!: boolean;
+
   addPermission() {
     if (this.permissionSync) {
       createPermission(this.permissionSync)
         .then(res => {
           console.log(res.data);
           const response: IPermission = res.data;
-          this.permissionSync = response;
+          console.log(response);
+          this.permissionSync.id = response.id;
           this.messageSync =
             "Thêm mới thành công vai trò: " + this.permissionSync.name;
           this.permissionsSync.push(this.permissionSync);

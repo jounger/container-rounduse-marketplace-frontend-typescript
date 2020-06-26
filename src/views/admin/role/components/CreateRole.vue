@@ -4,7 +4,7 @@
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
-            isUpdate ? "Cập nhập" : "Thêm mới"
+            update ? "Cập nhập" : "Thêm mới"
           }}</span>
           <v-btn
             icon
@@ -45,7 +45,7 @@
       <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn @click="updateRole()" color="primary" v-if="isUpdate"
+        <v-btn @click="updateRole()" color="primary" v-if="update"
           >Cập nhập</v-btn
         >
         <v-btn @click="addRole()" color="primary" v-else>Thêm mới</v-btn>
@@ -54,9 +54,9 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IRole } from "@/entity/role";
-import { createRole, updateRole, getRoles } from "@/api/role";
+import { createRole, updateRole } from "@/api/role";
 import { PaginationResponse } from "@/api/payload";
 import { getPermissions } from "@/api/permission";
 import { IPermission } from "@/entity/permission";
@@ -68,6 +68,7 @@ export default class CreateRole extends Vue {
   @PropSync("roles", { type: Array }) rolesSync!: Array<IRole>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @Prop(Boolean) update!: boolean;
 
   permissions = [] as Array<IPermission>;
   created() {
@@ -81,10 +82,6 @@ export default class CreateRole extends Vue {
       })
       .catch(err => console.log(err))
       .finally();
-  }
-  get isUpdate() {
-    if (typeof this.roleSync.id !== "undefined") return true;
-    return false;
   }
   get permissionsToString() {
     return this.permissions.map(x => x.name);

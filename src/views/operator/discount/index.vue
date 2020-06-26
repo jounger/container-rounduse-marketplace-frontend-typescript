@@ -18,6 +18,7 @@
           :expiredDate.sync="expiredDate"
           :message.sync="message"
           :snackbar.sync="snackbar"
+          :update="update"
         />
       </v-row>
       <Snackbar :text="message" :snackbar.sync="snackbar" />
@@ -88,6 +89,7 @@ export default class Discount extends Vue {
   expiredDate = "";
   snackbar = false;
   loading = true;
+  update = false;
   options = {
     descending: true,
     page: 1,
@@ -120,6 +122,7 @@ export default class Discount extends Vue {
   }
   openCreateDialog() {
     this.discount = {} as IDiscount;
+    this.update = false;
     this.expiredDate = "";
     this.dialogAdd = true;
   }
@@ -128,6 +131,7 @@ export default class Discount extends Vue {
     const index = item.expiredDate.indexOf("T");
     this.expiredDate = item.expiredDate.slice(0, index);
     this.discount = item;
+    this.update = true;
     this.dialogAdd = true;
   }
 

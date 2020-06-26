@@ -2,15 +2,6 @@
   <v-content>
     <v-card>
       <v-row justify="center">
-        <DeleteSupplier
-          :dialogDel.sync="dialogDel"
-          :supplier.sync="supplier"
-          :suppliers.sync="suppliers"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
-        />
-      </v-row>
-      <v-row justify="center">
         <SupplierDetail
           v-if="dialogDetail"
           :dialogDetail.sync="dialogDetail"
@@ -96,14 +87,12 @@ import { getSuppliers } from "@/api/supplier";
 import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 import ReviewSupplier from "./components/ReviewSupplier.vue";
-import DeleteSupplier from "./components/DeleteSupplier.vue";
 import SupplierDetail from "./components/SupplierDetail.vue";
 
 @Component({
   components: {
     Snackbar,
     ReviewSupplier,
-    DeleteSupplier,
     SupplierDetail
   }
 })

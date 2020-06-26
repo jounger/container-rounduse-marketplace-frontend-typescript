@@ -4,7 +4,7 @@
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
-            isUpdate ? "Cập nhập" : "Thêm mới"
+            update ? "Cập nhập" : "Thêm mới"
           }}</span>
           <v-btn
             icon
@@ -25,13 +25,13 @@
                   label="Tên đăng nhập*"
                   type="text"
                   v-model="operatorSync.username"
-                  :readonly="isUpdate"
+                  :readonly="Review"
                   required
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6" md="6">
                 <v-text-field
-                  v-if="!isUpdate"
+                  v-if="!Review"
                   label="Mật khẩu*"
                   type="password"
                   v-model="operatorSync.password"
@@ -78,7 +78,7 @@
       <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn @click="updateOperator()" color="primary" v-if="isUpdate"
+        <v-btn @click="updateOperator()" color="primary" v-if="update"
           >Cập nhập</v-btn
         >
         <v-btn @click="addOperator()" color="primary" v-else>Thêm mới</v-btn>
@@ -87,7 +87,7 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IOperator } from "@/entity/operator";
 import { createOperator, editOperator } from "@/api/operator";
 
@@ -98,12 +98,9 @@ export default class CreateOperator extends Vue {
   @PropSync("operators", { type: Array }) operatorsSync!: Array<IOperator>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @Prop(Boolean) update!: boolean;
 
   roles = ["ROLE_ADMIN", "ROLE_MODERATOR"];
-  get isUpdate() {
-    if (typeof this.operatorSync.id !== "undefined") return true;
-    return false;
-  }
   addOperator() {
     if (this.operatorSync) {
       createOperator(this.operatorSync)

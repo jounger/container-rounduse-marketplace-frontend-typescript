@@ -4,7 +4,7 @@
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
-            isUpdate ? "Cập nhập" : "Thêm mới"
+            update ? "Cập nhập" : "Thêm mới"
           }}</span>
           <v-btn
             icon
@@ -27,7 +27,7 @@
                   prepend-icon="mdi-account"
                   type="text"
                   v-model="driverSync.username"
-                  :readonly="isUpdate"
+                  :readonly="update"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -58,7 +58,7 @@
             <v-layout row>
               <v-flex xs8>
                 <v-text-field
-                  v-if="!isUpdate"
+                  v-if="!update"
                   label="Mật khẩu"
                   name="password"
                   prepend-icon="mdi-lock"
@@ -113,7 +113,7 @@
       <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn @click="updateDriver()" color="primary" v-if="isUpdate"
+        <v-btn @click="updateDriver()" color="primary" v-if="update"
           >Cập nhập</v-btn
         >
         <v-btn @click="addDriver()" color="primary" v-else>Thêm mới</v-btn>
@@ -122,7 +122,7 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IDriver } from "@/entity/driver";
 import { createDriver, updateDriver } from "@/api/driver";
 
@@ -133,13 +133,8 @@ export default class CreateDriver extends Vue {
   @PropSync("drivers", { type: Array }) driversSync!: Array<IDriver>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @Prop(Boolean) update!: boolean;
 
-  get isUpdate() {
-    if (typeof this.driverSync.id !== "undefined") {
-      return true;
-    }
-    return false;
-  }
   addDriver() {
     const id = this.$auth.user().id;
     console.log(id);

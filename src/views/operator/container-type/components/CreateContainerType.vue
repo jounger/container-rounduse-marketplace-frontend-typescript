@@ -4,7 +4,7 @@
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
-            isUpdate ? "Cập nhập" : "Thêm mới"
+            update ? "Cập nhập" : "Thêm mới"
           }}</span>
           <v-btn
             icon
@@ -144,7 +144,7 @@
       <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn @click="updateContainerType()" color="primary" v-if="isUpdate"
+        <v-btn @click="updateContainerType()" color="primary" v-if="update"
           >Cập nhập</v-btn
         >
         <v-btn @click="addContainerType()" color="primary" v-else
@@ -155,7 +155,7 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContainerType } from "@/entity/container-type";
 import { createContainerType, updateContainerType } from "@/api/container-type";
 
@@ -169,11 +169,8 @@ export default class CreateContainerType extends Vue {
   >;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @Prop(Boolean) update!: boolean;
 
-  get isUpdate() {
-    if (typeof this.containerTypeSync.id !== "undefined") return true;
-    return false;
-  }
   addContainerType() {
     if (this.containerTypeSync) {
       createContainerType(this.containerTypeSync)

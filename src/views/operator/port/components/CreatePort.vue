@@ -4,7 +4,7 @@
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
-            isUpdate ? "Cập nhập" : "Thêm mới"
+            update ? "Cập nhập" : "Thêm mới"
           }}</span>
           <v-btn
             icon
@@ -57,7 +57,7 @@
       <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn @click="updatePort()" color="primary" v-if="isUpdate"
+        <v-btn @click="updatePort()" color="primary" v-if="update"
           >Cập nhập</v-btn
         >
         <v-btn @click="addPort()" color="primary" v-else>Thêm mới</v-btn>
@@ -66,7 +66,7 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPort } from "@/entity/port";
 import { createPort, updatePort } from "@/api/port";
 
@@ -77,11 +77,8 @@ export default class CreatePort extends Vue {
   @PropSync("ports", { type: Array }) portsSync!: Array<IPort>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @Prop(Boolean) update!: boolean;
 
-  get isUpdate() {
-    if (typeof this.portSync.id !== "undefined") return true;
-    return false;
-  }
   addPort() {
     if (this.portSync) {
       createPort(this.portSync)
