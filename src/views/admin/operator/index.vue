@@ -24,7 +24,6 @@
       <v-data-table
         :headers="headers"
         :items="operators"
-        item-key="id"
         :search="search"
         :loading="loading"
         :options.sync="options"
@@ -32,6 +31,7 @@
         :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
         :actions-append="options.page"
         class="elevation-1"
+        :custom-filter="filterDatatable"
       >
         <template v-slot:top>
           <v-toolbar flat color="white">
@@ -40,20 +40,16 @@
             >
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
-            <v-btn
-              color="primary"
-              dark
-              class="mb-2"
-              @click="openCreateOperator()"
+            <v-btn color="primary" dark class="mb-2" @click="openCreateDialog()"
               >Thêm mới</v-btn
             >
           </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon small class="mr-2" @click="openUpdateOperator(item)">
+          <v-icon small class="mr-2" @click="openUpdateDialog(item)">
             mdi-pencil
           </v-icon>
-          <v-icon small @click="openDeleteOperator(item)">
+          <v-icon small @click="openDeleteDialog(item)">
             mdi-delete
           </v-icon>
         </template>
@@ -85,6 +81,7 @@ export default class Operator extends Vue {
   dialogAdd = false;
   dialogDel = false;
   search = "";
+  roleSearch = "";
   message = "";
   snackbar = false;
   loading = true;
@@ -95,16 +92,28 @@ export default class Operator extends Vue {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
+  rolesSearch = ["ROLE_ADMIN", "ROLE_MODERATOR"];
   headers = [
     {
       text: "Tên đăng nhập",
       align: "start",
       sortable: true,
-      value: "username"
+      value: "username",
+      filter: (value: string) => {
+        if (!this.search) return true;
+        return value == this.search;
+      }
     },
     { text: "Email", value: "email" },
     { text: "Số điện thoại", value: "phone" },
-    { text: "Phân quyền", value: "roles" },
+    {
+      text: "Phân quyền",
+      value: "roles",
+      filter: (value: string) => {
+        if (!this.roleSearch) return true;
+        return value == this.roleSearch;
+      }
+    },
     { text: "Trạng thái", value: "status" },
     {
       text: "Hành động",
@@ -115,18 +124,28 @@ export default class Operator extends Vue {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
   }
 
-  openCreateOperator() {
+  filterDatatable(value: string, search: string) {
+    return (
+      value != null &&
+      search != null &&
+      typeof value === "string" &&
+      value.toString().indexOf(search) !== -1
+    );
+  }
+  openCreateDialog() {
     this.operator = {} as IOperator;
+    this.operator.roles = ["ROLE_ADMIN"];
+    this.operator.status = "ACTIVE";
     this.dialogAdd = true;
   }
 
-  openUpdateOperator(item: IOperator) {
+  openUpdateDialog(item: IOperator) {
     console.log(item);
     this.operator = item;
     this.dialogAdd = true;
   }
 
-  openDeleteOperator(item: IOperator) {
+  openDeleteDialog(item: IOperator) {
     this.operator = item;
     this.dialogDel = true;
   }

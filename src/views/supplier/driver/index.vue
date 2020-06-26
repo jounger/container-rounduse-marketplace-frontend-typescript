@@ -1,84 +1,55 @@
 <template>
   <v-content>
     <v-card>
-      <v-card-title>
-        Danh sách lái xe
-        <v-spacer></v-spacer>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>
-      </v-card-title>
-      <v-btn
-        color="primary"
-        style="margin-left: 35px;"
-        dark
-        @click.stop="addDriver"
-        v-if="$auth.check(['ROLE_FORWARDER'])"
-      >
-        Thêm mới
-      </v-btn>
       <v-row justify="center">
         <DeleteDriver
           :dialogDel.sync="dialogDel"
-          :checkSuccess.sync="checkSuccess"
-          :success.sync="success"
-          :name="name"
+          :driver.sync="driver"
+          :drivers.sync="drivers"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
         />
       </v-row>
       <v-row justify="center">
         <CreateDriver
           :driver.sync="driver"
-          :title="title"
+          :drivers.sync="drivers"
           :dialogAdd.sync="dialogAdd"
-          :checkSuccess.sync="checkSuccess"
-          :checkAdd="checkAdd"
-          :checkUpdate="checkUpdate"
-          :success.sync="success"
-          :readonly="readonly"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
         />
       </v-row>
-      <v-alert
-        v-model="checkSuccess"
-        dismissible
-        close-icon="mdi-delete"
-        type="success"
-      >
-        {{ success }}
-      </v-alert>
+      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-data-table
         :headers="headers"
         :items="drivers"
-        :search="search"
-        item-key="driverLicense"
-        :options.sync="options"
-        :server-items-length="totalDrivers"
+        item-key="id"
         :loading="loading"
-        :items-per-page="5"
+        :options.sync="options"
+        :server-items-length="options.totalItems"
+        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :actions-append="options.page"
         class="elevation-1"
       >
-        <template v-slot:item.action="{ item }">
-          <v-menu :loading="item.createloading" :disabled="item.createloading">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn color="secondary" dark v-bind="attrs" v-on="on">
-                <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item @click="viewDetail(item)">
-                <v-list-item-title>Xem chi tiết</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="update(item)">
-                <v-list-item-title>Cập nhập</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="delDriver(item)">
-                <v-list-item-title>Xóa</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+        <template v-slot:top>
+          <v-toolbar flat color="white">
+            <v-toolbar-title style="font-weight:bold; font-size: 25px;"
+              >Danh sách mã giảm giá</v-toolbar-title
+            >
+            <v-divider class="mx-4" inset vertical></v-divider>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" dark class="mb-2" @click="openCreateDialog()"
+              >Thêm mới</v-btn
+            >
+          </v-toolbar>
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <v-icon small class="mr-2" @click="openUpdateDialog(item)">
+            mdi-pencil
+          </v-icon>
+          <v-icon small @click="openDeleteDialog(item)">
+            mdi-delete
+          </v-icon>
         </template>
       </v-data-table>
     </v-card>
@@ -87,19 +58,91 @@
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
-import data from "../driver/data";
 import { IDriver } from "@/entity/driver";
+import { PaginationResponse } from "@/api/payload";
+import Snackbar from "@/components/Snackbar.vue";
 import DeleteDriver from "./components/DeleteDriver.vue";
 import CreateDriver from "./components/CreateDriver.vue";
+import { getDriverByForwarder } from "@/api/driver";
 
 @Component({
   components: {
+    CreateDriver,
     DeleteDriver,
-    CreateDriver
+    Snackbar
   }
 })
 export default class Driver extends Vue {
   @PropSync("layout") layoutSync!: object;
+  drivers: Array<IDriver> = [];
+  driver = {} as IDriver;
+  dialogAdd = false;
+  dialogDel = false;
+  search = "";
+  message = "";
+  snackbar = false;
+  loading = true;
+  options = {
+    descending: true,
+    page: 1,
+    itemsPerPage: 5,
+    totalItems: 0,
+    itemsPerPageItems: [5, 10, 20, 50]
+  };
+  headers = [
+    {
+      text: "Tên đăng nhập",
+      align: "start",
+      sortable: true,
+      value: "username"
+    },
+    { text: "Email", value: "email" },
+    { text: "Số điện thoại", value: "phone" },
+    { text: "Tên đầy đủ", value: "fullname" },
+    { text: "Số bằng lái", value: "driverLicense" },
+    { text: "Vị trí", value: "location" },
+    {
+      text: "Hành động",
+      value: "actions"
+    }
+  ];
+  created() {
+    this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
+  }
+  openCreateDialog() {
+    this.driver = {} as IDriver;
+    this.driver.status = "ACTIVE";
+    this.driver.roles = ["ROLE_DRIVER"];
+    this.dialogAdd = true;
+  }
+
+  openUpdateDialog(item: IDriver) {
+    this.driver = item;
+    this.dialogAdd = true;
+  }
+
+  openDeleteDialog(item: IDriver) {
+    this.driver = item;
+    this.dialogDel = true;
+  }
+
+  @Watch("options", { deep: true })
+  onOptionsChange(val: object, oldVal: object) {
+    if (val !== oldVal) {
+      getDriverByForwarder(this.$auth.user().id, {
+        page: this.options.page - 1,
+        limit: this.options.itemsPerPage
+      })
+        .then(res => {
+          const response: PaginationResponse<IDriver> = res.data;
+          console.log("watch", response);
+          this.drivers = response.data;
+          this.options.totalItems = response.totalElements;
+        })
+        .catch(err => console.log(err))
+        .finally(() => (this.loading = false));
+    }
+  }
 }
 </script>
 <style type="text/css">

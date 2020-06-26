@@ -38,16 +38,16 @@
             >
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
-            <v-btn color="primary" dark class="mb-2" @click="addPermission()"
+            <v-btn color="primary" dark class="mb-2" @click="openCreateDialog()"
               >Thêm mới</v-btn
             >
           </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon small class="mr-2" @click="viewDetail(item)">
+          <v-icon small class="mr-2" @click="openUpdateDialog(item)">
             mdi-pencil
           </v-icon>
-          <v-icon small @click="removePermission(item)">
+          <v-icon small @click="openDeleteDialog(item)">
             mdi-delete
           </v-icon>
         </template>
@@ -64,6 +64,7 @@ import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 import DeletePermission from "./components/DeletePermission.vue";
 import CreatePermission from "./components/CreatePermission.vue";
+import router from "../../../router/index";
 
 @Component({
   components: {
@@ -106,17 +107,17 @@ export default class Permission extends Vue {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
   }
 
-  addPermission() {
+  openCreateDialog() {
     this.permission = {} as IPermission;
     this.dialogAdd = true;
   }
 
-  viewDetail(item: IPermission) {
+  openUpdateDialog(item: IPermission) {
     this.permission = item;
     this.dialogAdd = true;
   }
 
-  removePermission(item: IPermission) {
+  openDeleteDialog(item: IPermission) {
     this.permission = item;
     this.dialogDel = true;
   }

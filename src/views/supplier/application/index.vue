@@ -7,12 +7,15 @@
             Tài khoản của bạn đang được xác thực bởi các Quản trị viên. Vui lòng
             chờ phản hồi qua email!
           </p>
-          <p>Xem chi tiết đơn đăng ký tại <a @click="viewDetail()">đây</a></p>
+          <p>
+            Xem chi tiết đơn đăng ký tại
+            <a @click="openDetailDialog()">đây</a>
+          </p>
         </v-col>
       </v-row>
     </v-container>
     <v-row justify="center">
-      <RequestDetail :supplier="supplier" :dialog.sync="dialog" />
+      <RequestDetail v-if="dialog" :supplier="supplier" :dialog.sync="dialog" />
     </v-row>
   </v-content>
 </template>
@@ -35,7 +38,7 @@ export default class Application extends Vue {
   created() {
     this.layoutSync = NavLayout;
   }
-  public viewDetail() {
+  public openDetailDialog() {
     getSuppliersByUsername(this.$auth.user().username)
       .then(res => {
         const response: ISupplier = res.data;

@@ -72,7 +72,7 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item @click="openEditDialog(item)">
+              <v-list-item @click="openUpdateDialog(item)">
                 <v-list-item-icon>
                   <v-icon small>edit</v-icon>
                 </v-list-item-icon>
@@ -169,7 +169,7 @@ export default class Outbound extends Vue {
     this.loading = false;
   }
 
-  openEditDialog(item: IOutbound) {
+  openUpdateDialog(item: IOutbound) {
     this.outbound = item;
     this.dialogEdit = true;
   }

@@ -38,16 +38,16 @@
             >
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
-            <v-btn color="primary" dark class="mb-2" @click="addPort()"
+            <v-btn color="primary" dark class="mb-2" @click="openCreateDialog()"
               >Thêm mới</v-btn
             >
           </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon small class="mr-2" @click="viewDetail(item)">
+          <v-icon small class="mr-2" @click="openUpdateDialog(item)">
             mdi-pencil
           </v-icon>
-          <v-icon small @click="removePort(item)">
+          <v-icon small @click="openDeleteDialog(item)">
             mdi-delete
           </v-icon>
         </template>
@@ -107,17 +107,17 @@ export default class Port extends Vue {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
   }
 
-  addPort() {
+  openCreateDialog() {
     this.port = {} as IPort;
     this.dialogAdd = true;
   }
 
-  viewDetail(item: IPort) {
+  openUpdateDialog(item: IPort) {
     this.port = item;
     this.dialogAdd = true;
   }
 
-  removePort(item: IPort) {
+  openDeleteDialog(item: IPort) {
     this.port = item;
     this.dialogDel = true;
   }

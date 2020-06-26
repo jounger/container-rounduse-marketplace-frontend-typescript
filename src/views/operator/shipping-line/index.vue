@@ -45,7 +45,12 @@
             <v-toolbar-title>Danh sách hãng tàu</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
-            <v-btn color="primary" dark class="mb-2" @click="openAddDialog()">
+            <v-btn
+              color="primary"
+              dark
+              class="mb-2"
+              @click="openCreateDialog()"
+            >
               Thêm mới
             </v-btn>
           </v-toolbar>
@@ -58,7 +63,7 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item @click="openEditDialog(item)">
+              <v-list-item @click="openUpdateDialog(item)">
                 <v-list-item-icon>
                   <v-icon small>edit</v-icon>
                 </v-list-item-icon>
@@ -137,11 +142,11 @@ export default class ShippingLine extends Vue {
   created() {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
   }
-  openAddDialog() {
+  openCreateDialog() {
     this.shippingLine = {} as IShippingLine;
     this.dialogAdd = true;
   }
-  openEditDialog(item: IShippingLine) {
+  openUpdateDialog(item: IShippingLine) {
     console.log(item);
     this.shippingLine = item;
     this.dialogEdit = true;

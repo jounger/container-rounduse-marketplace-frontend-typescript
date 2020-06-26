@@ -14,7 +14,7 @@
         <SupplierDetail
           v-if="dialogDetail"
           :dialogDetail.sync="dialogDetail"
-          :dialogBan.sync="dialogBan"
+          :dialogActive.sync="dialogActive"
           :supplier.sync="supplier"
           :suppliers.sync="suppliers"
           :message.sync="message"
@@ -22,9 +22,9 @@
         />
       </v-row>
       <v-row justify="center">
-        <BannedSupplier
-          v-if="dialogBan"
-          :dialogBan.sync="dialogBan"
+        <ActiveSupplier
+          v-if="dialogActive"
+          :dialogActive.sync="dialogActive"
           :supplier.sync="supplier"
           :suppliers.sync="suppliers"
           :message.sync="message"
@@ -66,8 +66,8 @@
               <v-list-item @click="openDetailDialog(item)">
                 <v-list-item-title>Xem chi tiết</v-list-item-title>
               </v-list-item>
-              <v-list-item @click="openBannedDialog(item)">
-                <v-list-item-title>Khóa tài khoản</v-list-item-title>
+              <v-list-item @click="openActiveDialog(item)">
+                <v-list-item-title>Mở khóa tài khoản</v-list-item-title>
               </v-list-item>
               <v-list-item @click="openDeleteDialog(item)">
                 <v-list-item-title>Xóa tài khoản</v-list-item-title>
@@ -86,14 +86,14 @@ import { ISupplier } from "@/entity/supplier";
 import { getSuppliers } from "@/api/supplier";
 import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
-import BannedSupplier from "./components/BannedSupplier.vue";
+import ActiveSupplier from "./components/ActiveSupplier.vue";
 import DeleteSupplier from "./components/DeleteSupplier.vue";
 import SupplierDetail from "./components/SupplierDetail.vue";
 
 @Component({
   components: {
     Snackbar,
-    BannedSupplier,
+    ActiveSupplier,
     DeleteSupplier,
     SupplierDetail
   }
@@ -105,7 +105,7 @@ export default class Supplier extends Vue {
 
   dialogDetail = false;
   dialogDel = false;
-  dialogBan = false;
+  dialogActive = false;
   loading = true;
   message = "";
   snackbar = false;
@@ -144,9 +144,9 @@ export default class Supplier extends Vue {
     this.supplier = item;
     this.dialogDel = true;
   }
-  openBannedDialog(item: ISupplier) {
+  openActiveDialog(item: ISupplier) {
     this.supplier = item;
-    this.dialogBan = true;
+    this.dialogActive = true;
   }
 
   @Watch("options", { deep: true })
@@ -155,7 +155,7 @@ export default class Supplier extends Vue {
       getSuppliers({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage,
-        status: "ACTIVE"
+        status: "BANNED"
       })
         .then(res => {
           const response: PaginationResponse<ISupplier> = res.data;

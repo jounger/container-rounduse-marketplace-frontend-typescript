@@ -8,7 +8,7 @@
             icon
             dark
             @click="dialogDelSync = false"
-            style="margin-left:403px;"
+            style="margin-left:340px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title

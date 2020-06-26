@@ -35,6 +35,7 @@
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import AuthLayout from "@/layouts/AuthLayout.vue";
+import RegisterLayout from "@/layouts/RegisterLayout.vue";
 @Component
 export default class Login extends Vue {
   @PropSync("layout") layoutSync!: object;
@@ -50,6 +51,7 @@ export default class Login extends Vue {
   }
   public register() {
     this.$router.push("/register");
+    this.layoutSync = RegisterLayout;
   }
   public login() {
     this.$auth

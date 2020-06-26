@@ -38,16 +38,16 @@
             >
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
-            <v-btn color="primary" dark class="mb-2" @click="addContainerType()"
+            <v-btn color="primary" dark class="mb-2" @click="openCreateDialog()"
               >Thêm mới</v-btn
             >
           </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon small class="mr-2" @click="viewDetail(item)">
+          <v-icon small class="mr-2" @click="openUpdateDialog(item)">
             mdi-pencil
           </v-icon>
-          <v-icon small @click="removeContainerType(item)">
+          <v-icon small @click="openDeleteDialog(item)">
             mdi-delete
           </v-icon>
         </template>
@@ -114,17 +114,17 @@ export default class ContainerType extends Vue {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
   }
 
-  addContainerType() {
+  openCreateDialog() {
     this.containerType = {} as IContainerType;
     this.dialogAdd = true;
   }
 
-  viewDetail(item: IContainerType) {
+  openUpdateDialog(item: IContainerType) {
     this.containerType = item;
     this.dialogAdd = true;
   }
 
-  removeContainerType(item: IContainerType) {
+  openDeleteDialog(item: IContainerType) {
     this.containerType = item;
     this.dialogDel = true;
   }

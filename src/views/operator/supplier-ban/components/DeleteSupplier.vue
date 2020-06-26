@@ -3,12 +3,12 @@
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">Xóa hãng tàu</span>
+          ><span class="headline" style="color:white;">Xóa Supplier</span>
           <v-btn
             icon
             dark
             @click="dialogDelSync = false"
-            style="margin-left:379px;"
+            style="margin-left:385px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
@@ -19,14 +19,14 @@
         <v-form>
           <v-container>
             <span style="color: black; font-size:22px;"
-              >Bạn có chắc chắn muốn xóa hãng tàu này?</span
+              >Bạn có chắc chắn muốn xóa Supplier này?</span
             >
             <div class="line"></div>
             <v-list>
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title>{{
-                    shippingLineSync.companyCode
+                    supplierSync.username
                   }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -37,47 +37,27 @@
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
         <v-btn @click="dialogDelSync = false">Hủy</v-btn>
-        <v-btn @click="removeShippingLine()" color="red">Xóa</v-btn>
+        <v-btn @click="removeSupplier()" color="red">Xóa</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
-import { IShippingLine } from "@/entity/shipping-line";
-import { removeShippingLine } from "@/api/shipping-line";
+import { ISupplier } from "@/entity/supplier";
 
 @Component
-export default class DeleteShippingLine extends Vue {
+export default class DeleteSupplier extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("shippingLine", { type: Object }) shippingLineSync!: IShippingLine;
+  @PropSync("supplier", { type: Object }) supplierSync!: ISupplier;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @PropSync("shippingLines", { type: Array }) shippingLinesSync!: Array<
-    IShippingLine
-  >;
+  @PropSync("suppliers", { type: Array }) suppliersSync!: Array<ISupplier>;
 
-  removeShippingLine() {
-    if (this.shippingLineSync.id) {
-      removeShippingLine(this.shippingLineSync.id)
-        .then(res => {
-          console.log(res.data);
-          const response: IShippingLine = res.data;
-          this.shippingLineSync = response;
-          this.messageSync =
-            "Xóa thành công hãng tàu: " + this.shippingLineSync.companyCode;
-          const index = this.shippingLinesSync.findIndex(
-            x => x.id === this.shippingLineSync.id
-          );
-          this.shippingLinesSync.splice(index, 1);
-        })
-        .catch(err => {
-          console.log(err);
-          this.messageSync = "Error happend";
-        })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
-        );
+  removeSupplier() {
+    console.log(1);
+    if (this.supplierSync.id) {
+      console.log(0);
     }
   }
 }

@@ -1,14 +1,16 @@
 <template>
-  <v-dialog v-model="dialogSync" persistent max-width="600px">
+  <v-dialog v-model="dialogAddSync" max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">{{ title }}</span>
+          ><span class="headline" style="color:white;">{{
+            isUpdate ? "Cập nhập" : "Thêm mới"
+          }}</span>
           <v-btn
             icon
             dark
-            @click="dialogSync = false"
-            style="margin-left:327px;"
+            @click="dialogAddSync = false"
+            style="margin-left:412px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
@@ -25,7 +27,7 @@
                   prepend-icon="mdi-account"
                   type="text"
                   v-model="driverSync.username"
-                  :readonly="readonly"
+                  :readonly="isUpdate"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -33,28 +35,15 @@
               <v-flex xs8>
                 <v-text-field
                   label="Tên lái xe"
-                  name="driverName"
+                  name="fullname"
                   prepend-icon="mdi-account"
                   type="text"
-                  v-model="driverSync.driverName"
-                  :readonly="readonly"
+                  v-model="driverSync.fullname"
                 ></v-text-field>
               </v-flex>
             </v-layout>
           </v-layout>
           <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
-                <v-text-field
-                  label="Mật khẩu"
-                  name="password"
-                  prepend-icon="mdi-lock"
-                  type="password"
-                  v-model="driverSync.password"
-                  :readonly="readonly"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
             <v-layout row>
               <v-flex xs8>
                 <v-text-field
@@ -63,34 +52,19 @@
                   prepend-icon="mdi-account"
                   type="text"
                   v-model="driverSync.driverLicense"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
-          </v-layout>
-          <v-layout col>
             <v-layout row>
               <v-flex xs8>
-                <v-select
-                  :items="['ROLE_DRIVER']"
-                  label="Phân quyền*"
+                <v-text-field
+                  v-if="!isUpdate"
+                  label="Mật khẩu"
+                  name="password"
                   prepend-icon="mdi-lock"
-                  required
-                  v-model="driverSync.role"
-                  :readonly="readonly"
-                ></v-select>
-              </v-flex>
-            </v-layout>
-            <v-layout row>
-              <v-flex xs8>
-                <v-select
-                  :items="['PENDING', 'ACTIVE', 'BANNED']"
-                  label="Trạng thái*"
-                  prepend-icon="mdi-lock"
-                  required
-                  v-model="driverSync.status"
-                  :readonly="readonly"
-                ></v-select>
+                  type="password"
+                  v-model="driverSync.password"
+                ></v-text-field>
               </v-flex>
             </v-layout>
           </v-layout>
@@ -100,22 +74,20 @@
                 <v-text-field
                   label="Email"
                   name="email"
-                  prepend-icon="mdi-lock"
-                  type="email"
+                  prepend-icon="mdi-account"
+                  type="text"
                   v-model="driverSync.email"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
             <v-layout row>
               <v-flex xs8>
                 <v-text-field
-                  label="Website"
-                  name="website"
-                  prepend-icon="mdi-lock"
+                  label="Số điện thoại"
+                  name="phone"
+                  prepend-icon="mdi-account"
                   type="text"
-                  v-model="driverSync.website"
-                  :readonly="readonly"
+                  v-model="driverSync.phone"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -124,24 +96,11 @@
             <v-layout row>
               <v-flex xs8>
                 <v-text-field
-                  label="Số điện thoại"
-                  name="phone"
-                  prepend-icon="mdi-lock"
-                  type="phone"
-                  v-model="driverSync.phone"
-                  :readonly="readonly"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout row>
-              <v-flex xs8>
-                <v-text-field
                   label="Địa chỉ"
                   name="address"
                   prepend-icon="mdi-lock"
                   type="text"
                   v-model="driverSync.address"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -153,47 +112,70 @@
       </v-card-text>
       <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
-        <v-btn @click="dialogSync = false">Trở về</v-btn>
-        <v-btn @click="submit()" color="primary" v-if="checkAdd"
-          >Thêm mới</v-btn
-        >
-        <v-btn @click="updateDriver()" color="primary" v-if="checkUpdate"
+        <v-btn @click="dialogAddSync = false">Trở về</v-btn>
+        <v-btn @click="updateDriver()" color="primary" v-if="isUpdate"
           >Cập nhập</v-btn
         >
+        <v-btn @click="addDriver()" color="primary" v-else>Thêm mới</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, Prop, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync } from "vue-property-decorator";
 import { IDriver } from "@/entity/driver";
+import { createDriver, updateDriver } from "@/api/driver";
 
-@Component({
-  name: "CreateDriver"
-})
+@Component
 export default class CreateDriver extends Vue {
-  // @Prop() selected!: Array<object>;
-  @PropSync("dialogAdd", { type: Boolean }) dialogSync!: boolean;
-  @PropSync("checkSuccess", { type: Boolean }) checkSuccessSync!: boolean;
-  @PropSync("success", { type: String }) successSync!: string | null;
-  @Prop(Boolean) checkAdd!: boolean;
-  @Prop(Boolean) checkUpdate!: boolean;
-  @Prop(Boolean) readonly!: boolean;
-  @PropSync("driver", {
-    type: Object
-  })
-  driverSync!: IDriver | null;
-  @Prop(String) title!: string | null;
+  @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
+  @PropSync("driver", { type: Object }) driverSync!: IDriver;
+  @PropSync("drivers", { type: Array }) driversSync!: Array<IDriver>;
+  @PropSync("message", { type: String }) messageSync!: string;
+  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
-  public submit() {
-    this.successSync = "Thêm mới thành công!";
-    this.checkSuccessSync = true;
-    this.dialogSync = false;
+  get isUpdate() {
+    if (typeof this.driverSync.id !== "undefined") {
+      return true;
+    }
+    return false;
   }
-  public updateDriver() {
-    this.successSync = "Cập nhập thành công";
-    this.checkSuccessSync = true;
-    this.dialogSync = false;
+  addDriver() {
+    const id = this.$auth.user().id;
+    console.log(id);
+    if (this.driverSync) {
+      createDriver(id, this.driverSync)
+        .then(res => {
+          console.log(res.data);
+          const response: IDriver = res.data;
+          this.driverSync = response;
+          this.messageSync =
+            "Thêm mới thành công lái xe: " + this.driverSync.username;
+          this.driversSync.push(this.driverSync);
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(() => (this.snackbarSync = true));
+    }
+  }
+  updateDriver() {
+    if (this.driverSync.id) {
+      updateDriver(this.driverSync)
+        .then(res => {
+          console.log(res.data);
+          const response: IDriver = res.data;
+          this.driverSync = response;
+          this.messageSync =
+            "Cập nhập thành công lái xe: " + this.driverSync.username;
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(() => (this.snackbarSync = true));
+    }
   }
 }
 </script>

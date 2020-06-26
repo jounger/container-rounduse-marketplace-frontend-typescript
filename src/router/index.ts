@@ -73,9 +73,9 @@ const routes: Array<RouteConfig> = [
     }
   },
   {
-    path: "/supplier",
-    name: "Supplier",
-    component: () => import("@/views/operator/supplier/index.vue"),
+    path: "/supplier-register",
+    name: "SupplierRegister",
+    component: () => import("@/views/operator/supplier-register/index.vue"),
     meta: {
       auth: ["ROLE_MODERATOR"]
     }
@@ -147,6 +147,7 @@ const routes: Array<RouteConfig> = [
       auth: ["ROLE_FORWARDER"]
     }
   },
+  // DRIVER
   {
     path: "/driver",
     name: "Driver",
@@ -154,8 +155,23 @@ const routes: Array<RouteConfig> = [
     meta: {
       auth: ["ROLE_FORWARDER"]
     }
+  },
+  {
+    path: "/supplier",
+    name: "Supplier",
+    component: () => import("@/views/operator/supplier/index.vue"),
+    meta: {
+      auth: ["ROLE_MODERATOR"]
+    }
+  },
+  {
+    path: "/supplier-ban",
+    name: "SupplierBan",
+    component: () => import("@/views/operator/supplier-ban/index.vue"),
+    meta: {
+      auth: ["ROLE_MODERATOR"]
+    }
   }
-  // DRIVER
 ];
 
 const router = new VueRouter({

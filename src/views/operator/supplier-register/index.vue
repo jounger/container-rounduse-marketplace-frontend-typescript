@@ -2,29 +2,9 @@
   <v-content>
     <v-card>
       <v-row justify="center">
-        <DeleteSupplier
-          :dialogDel.sync="dialogDel"
-          :supplier.sync="supplier"
-          :suppliers.sync="suppliers"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
-        />
-      </v-row>
-      <v-row justify="center">
-        <SupplierDetail
+        <RegisterDetail
           v-if="dialogDetail"
           :dialogDetail.sync="dialogDetail"
-          :dialogBan.sync="dialogBan"
-          :supplier.sync="supplier"
-          :suppliers.sync="suppliers"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
-        />
-      </v-row>
-      <v-row justify="center">
-        <BannedSupplier
-          v-if="dialogBan"
-          :dialogBan.sync="dialogBan"
           :supplier.sync="supplier"
           :suppliers.sync="suppliers"
           :message.sync="message"
@@ -33,7 +13,7 @@
       </v-row>
       <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-card-title>
-        Danh sách Supplier
+        Danh sách đơn đăng ký
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -66,12 +46,6 @@
               <v-list-item @click="openDetailDialog(item)">
                 <v-list-item-title>Xem chi tiết</v-list-item-title>
               </v-list-item>
-              <v-list-item @click="openBannedDialog(item)">
-                <v-list-item-title>Khóa tài khoản</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="openDeleteDialog(item)">
-                <v-list-item-title>Xóa tài khoản</v-list-item-title>
-              </v-list-item>
             </v-list>
           </v-menu>
         </template>
@@ -85,17 +59,13 @@ import NavLayout from "@/layouts/NavLayout.vue";
 import { ISupplier } from "@/entity/supplier";
 import { getSuppliers } from "@/api/supplier";
 import { PaginationResponse } from "@/api/payload";
+import RegisterDetail from "./components/RegisterDetail.vue";
 import Snackbar from "@/components/Snackbar.vue";
-import BannedSupplier from "./components/BannedSupplier.vue";
-import DeleteSupplier from "./components/DeleteSupplier.vue";
-import SupplierDetail from "./components/SupplierDetail.vue";
 
 @Component({
   components: {
-    Snackbar,
-    BannedSupplier,
-    DeleteSupplier,
-    SupplierDetail
+    RegisterDetail,
+    Snackbar
   }
 })
 export default class Supplier extends Vue {
@@ -104,8 +74,6 @@ export default class Supplier extends Vue {
   supplier = {} as ISupplier;
 
   dialogDetail = false;
-  dialogDel = false;
-  dialogBan = false;
   loading = true;
   message = "";
   snackbar = false;
@@ -140,14 +108,6 @@ export default class Supplier extends Vue {
     this.supplier = item;
     this.dialogDetail = true;
   }
-  openDeleteDialog(item: ISupplier) {
-    this.supplier = item;
-    this.dialogDel = true;
-  }
-  openBannedDialog(item: ISupplier) {
-    this.supplier = item;
-    this.dialogBan = true;
-  }
 
   @Watch("options", { deep: true })
   onOptionsChange(val: object, oldVal: object) {
@@ -155,12 +115,14 @@ export default class Supplier extends Vue {
       getSuppliers({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage,
-        status: "ACTIVE"
+        status: "PENDING"
       })
         .then(res => {
           const response: PaginationResponse<ISupplier> = res.data;
           console.log("watch", this.options);
-          this.suppliers = response.data;
+          this.suppliers = response.data.filter(
+            x => x.roles[0] == "ROLE_FORWARDER" || x.roles[0] == "ROLE_MERCHANT"
+          );
           this.options.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))

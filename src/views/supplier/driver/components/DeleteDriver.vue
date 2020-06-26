@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogSync" persistent max-width="600px">
+  <v-dialog v-model="dialogDelSync" persistent max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
@@ -7,7 +7,7 @@
           <v-btn
             icon
             dark
-            @click="dialogSync = false"
+            @click="dialogDelSync = false"
             style="margin-left:417px;"
           >
             <v-icon>mdi-close</v-icon>
@@ -25,7 +25,9 @@
             <v-list>
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title>{{ nameSync }}</v-list-item-title>
+                  <v-list-item-title>{{
+                    driverSync.username
+                  }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -34,29 +36,47 @@
         </v-form>
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
-        <v-btn @click="dialogSync = false">Hủy</v-btn>
-        <v-btn @click="del()" color="red">Xóa</v-btn>
+        <v-btn @click="dialogDelSync = false">Hủy</v-btn>
+        <v-btn @click="removeDriver()" color="red">Xóa</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
+import { IDriver } from "@/entity/driver";
+import { removeDriver } from "@/api/driver";
 
-@Component({
-  name: "DeleteDriver"
-})
+@Component
 export default class DeleteDriver extends Vue {
-  // @Prop() selected!: Array<object>;
-  @PropSync("dialogDel", { type: Boolean }) dialogSync!: boolean;
-  @PropSync("checkSuccess", { type: Boolean }) checkSuccessSync!: boolean;
-  @PropSync("success", { type: String }) successSync!: string | null;
-  @PropSync("name", { type: String }) nameSync!: string | null;
+  @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
+  @PropSync("driver", { type: Object }) driverSync!: IDriver;
+  @PropSync("message", { type: String }) messageSync!: string;
+  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("drivers", { type: Array }) driversSync!: Array<IDriver>;
 
-  public del() {
-    this.successSync = "Xóa thành công!";
-    this.checkSuccessSync = true;
-    this.dialogSync = false;
+  removeDriver() {
+    if (this.driverSync.id) {
+      removeDriver(this.driverSync.id)
+        .then(res => {
+          console.log(res.data);
+          const response: IDriver = res.data;
+          this.driverSync = response;
+          this.messageSync =
+            "Xóa thành công mã lái xe: " + this.driverSync.username;
+          const index = this.driversSync.findIndex(
+            x => x.id === this.driverSync.id
+          );
+          this.driversSync.splice(index, 1);
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Error happend";
+        })
+        .finally(
+          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
+        );
+    }
   }
 }
 </script>

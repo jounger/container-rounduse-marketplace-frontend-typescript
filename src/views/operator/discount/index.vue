@@ -39,7 +39,7 @@
             >
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
-            <v-btn color="primary" dark class="mb-2" @click="addDiscount()"
+            <v-btn color="primary" dark class="mb-2" @click="openCreateDialog()"
               >Thêm mới</v-btn
             >
           </v-toolbar>
@@ -48,10 +48,10 @@
           {{ convertDateTime(item.expiredDate) }}
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon small class="mr-2" @click="viewDetail(item)">
+          <v-icon small class="mr-2" @click="openUpdateDialog(item)">
             mdi-pencil
           </v-icon>
-          <v-icon small @click="removeDiscount(item)">
+          <v-icon small @click="openDeleteDialog(item)">
             mdi-delete
           </v-icon>
         </template>
@@ -115,23 +115,23 @@ export default class Discount extends Vue {
   created() {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
   }
-  convertDateTime(input: string){
+  convertDateTime(input: string) {
     return convertFromDateTime(input);
   }
-  addDiscount() {
+  openCreateDialog() {
     this.discount = {} as IDiscount;
     this.expiredDate = "";
     this.dialogAdd = true;
   }
 
-  viewDetail(item: IDiscount) {
+  openUpdateDialog(item: IDiscount) {
     const index = item.expiredDate.indexOf("T");
     this.expiredDate = item.expiredDate.slice(0, index);
     this.discount = item;
     this.dialogAdd = true;
   }
 
-  removeDiscount(item: IDiscount) {
+  openDeleteDialog(item: IDiscount) {
     this.discount = item;
     this.dialogDel = true;
   }

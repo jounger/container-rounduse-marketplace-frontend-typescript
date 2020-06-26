@@ -14,7 +14,7 @@
         <v-toolbar-title>Thêm mới</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-          <v-btn dark text @click="addShippingLine()">Save</v-btn>
+          <v-btn dark text @click="addShippingLine()">Thêm mới</v-btn>
         </v-toolbar-items>
       </v-toolbar>
       <!-- START CONTENT -->

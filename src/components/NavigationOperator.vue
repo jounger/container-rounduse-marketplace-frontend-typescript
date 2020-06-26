@@ -43,12 +43,28 @@
       <template v-slot:activator>
         <v-list-item-title>Quản lý chung</v-list-item-title>
       </template>
-      <v-list-item to="/supplier">
+      <v-list-item to="/supplier-register">
         <v-list-item-icon>
           <v-icon>mdi-help-box</v-icon>
         </v-list-item-icon>
         <v-list-item-content>
           <v-list-item-title>Đơn đăng ký</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item to="/supplier">
+        <v-list-item-icon>
+          <v-icon>mdi-help-box</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title>Quản lý Supplier</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item to="/supplier-ban">
+        <v-list-item-icon>
+          <v-icon>mdi-help-box</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title>Quản lý Supplier bị khóa</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
       <v-list-item to="/shipping-line">
