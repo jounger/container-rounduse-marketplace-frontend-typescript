@@ -45,15 +45,19 @@
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
                     v-model="bidLocal.bidDate"
-                    label="Thời gian lấy containers đặc từ cảng"
+                    label="Thời gian gửi thầu"
                     prepend-icon="event"
                     v-bind="attrs"
                     v-on="on"
-                    required
-                    :rules="[required('pickup time')]"
                   ></v-text-field>
                 </template>
-                <v-date-picker v-model="bidLocal.bidDate" no-title scrollable>
+                <v-date-picker
+                  v-model="bidLocal.bidDate"
+                  no-title
+                  scrollable
+                  readonly
+                  disabled
+                >
                   <v-spacer></v-spacer>
                   <v-btn text color="primary" @click="datePickerMenu = false"
                     >Cancel</v-btn
@@ -79,12 +83,10 @@
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
                     v-model="bidLocal.bidValidityPeriod"
-                    label="Thời gian lấy containers đặc từ cảng"
+                    label="Hiệu lực HSDT"
                     prepend-icon="event"
                     v-bind="attrs"
                     v-on="on"
-                    required
-                    :rules="[required('pickup time')]"
                   ></v-text-field>
                 </template>
                 <v-date-picker
@@ -106,6 +108,12 @@
                   >
                 </v-date-picker>
               </v-menu>
+              <v-text-field
+                label="Label Text"
+                value="12:30:00"
+                type="time"
+                suffix="PST"
+              ></v-text-field>
               <v-btn
                 color="primary"
                 @click="valid ? (stepper = 2) : (stepper = 1)"
@@ -120,47 +128,72 @@
             >Chọn containers mong muốn</v-stepper-step
           >
 
-          <!-- CREATE CONTAINER -->
+          <!-- SELECT CONTAINER -->
           <v-stepper-content step="2">
-            <v-data-table
-              :headers="inboundHeaders"
-              :items="inbounds"
-              :single-expand="true"
-              :expanded.sync="expanded"
-              show-expand
-              item-key="id"
-              :loading="loading"
-              :options.sync="options"
-              :server-items-length="options.totalItems"
-              :footer-props="{
-                'items-per-page-options': options.itemsPerPageItems
-              }"
-              :actions-append="options.page"
-              class="elevation-1 my-1"
-            >
-              <!--  -->
-              <template v-slot:top>
-                <v-toolbar flat color="white">
-                  <v-toolbar-title>Danh sách hàng nhập phù hợp</v-toolbar-title>
-                  <v-divider class="mx-4" inset vertical></v-divider>
-                  <v-spacer></v-spacer>
-                  <v-btn color="primary" dark class="mb-2" to="/inbound">
-                    Thêm mới
-                  </v-btn>
-                </v-toolbar>
-              </template>
-              <!--  -->
-              <template v-slot:item.pickUpTime="{ item }">
-                {{ formatDatetime(item.pickUpTime) }}
-              </template>
-              <!-- Show containers expened -->
-              <template v-slot:expanded-item="{ headers, item }">
-                <td :colspan="headers.length" class="px-0">
+            <v-tabs background-color="white" color="deep-purple accent-4" left>
+              <v-tab>Danh sach Inbound</v-tab>
+              <v-tab>Selected Containers</v-tab>
+
+              <v-tab-item>
+                <v-container fluid>
+                  <v-data-table
+                    :headers="inboundHeaders"
+                    :items="inbounds"
+                    :single-expand="true"
+                    :expanded.sync="expanded"
+                    show-expand
+                    @click:row="clicked"
+                    item-key="id"
+                    :loading="loading"
+                    :options.sync="options"
+                    :server-items-length="options.totalItems"
+                    :footer-props="{
+                      'items-per-page-options': options.itemsPerPageItems
+                    }"
+                    :actions-append="options.page"
+                    class="elevation-1 my-1"
+                  >
+                    <template v-slot:item.pickUpTime="{ item }">
+                      {{ formatDatetime(item.pickUpTime) }}
+                    </template>
+                    <!-- Show containers expened -->
+                    <template v-slot:expanded-item="{ headers, item }">
+                      <td :colspan="headers.length" class="px-0">
+                        <v-data-table
+                          :headers="containerHeaders"
+                          :items="item.billOfLading.containers"
+                          :hide-default-footer="true"
+                          dark
+                          dense
+                        >
+                          <template v-slot:item.actions="{ item }">
+                            <v-btn
+                              class="ma-1"
+                              x-small
+                              tile
+                              outlined
+                              color="success"
+                              @click="selectContainer(item)"
+                            >
+                              <v-icon left>mdi-pencil</v-icon>
+                              {{ checkDuplicateSelect(item) ? "Bỏ" : "Chọn" }}
+                            </v-btn>
+                          </template>
+                        </v-data-table>
+                      </td>
+                    </template>
+                  </v-data-table>
+                </v-container>
+              </v-tab-item>
+              <v-tab-item>
+                <v-container fluid>
                   <v-data-table
                     :headers="containerHeaders"
-                    :items="item.billOfLading.containers"
-                    :hide-default-footer="true"
-                    dark
+                    :items="bidLocal.containers"
+                    item-key="id"
+                    :footer-props="{
+                      'items-per-page-options': options.itemsPerPageItems
+                    }"
                     dense
                   >
                     <template v-slot:item.actions="{ item }">
@@ -177,9 +210,9 @@
                       </v-btn>
                     </template>
                   </v-data-table>
-                </td>
-              </template>
-            </v-data-table>
+                </v-container>
+              </v-tab-item>
+            </v-tabs>
             <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
               >Tiếp tục</v-btn
             >
@@ -224,7 +257,8 @@ export default class CreateBid extends Vue {
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
-  expanded = [];
+  expanded: Array<IInbound> = [];
+  singleExpand = true;
   dateInit = new Date().toISOString().substr(0, 10);
   bidLocal = {
     containers: [],
@@ -312,6 +346,24 @@ export default class CreateBid extends Vue {
     this.inbounds = InboundData;
     this.options.totalItems = 10;
     this.loading = false;
+  }
+
+  clicked(value: IInbound) {
+    if (this.singleExpand) {
+      if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
+        this.expanded.splice(0, this.expanded.length);
+      } else {
+        this.expanded.splice(0, this.expanded.length);
+        this.expanded.push(value);
+      }
+    } else {
+      const index = this.expanded.findIndex(x => x.id === value.id);
+      if (index === -1) {
+        this.expanded.push(value);
+      } else {
+        this.expanded.splice(index, 1);
+      }
+    }
   }
 }
 </script>

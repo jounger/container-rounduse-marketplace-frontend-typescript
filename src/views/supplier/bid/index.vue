@@ -1,6 +1,6 @@
 <template>
   <v-content>
-    <v-card>
+    <v-card class="ma-5">
       <Snackbar :text="message" :snackbar.sync="snackbar" />
       <CreateBid
         v-if="dialogAdd"
@@ -22,6 +22,7 @@
         :single-expand="singleExpand"
         :expanded.sync="expanded"
         show-expand
+        @click:row="clicked"
         item-key="id"
         :loading="loading"
         :options.sync="options"
@@ -100,7 +101,7 @@ export default class Bid extends Vue {
   biddingDocument = {} as IBiddingDocument;
   bids: Array<IBid> = [];
   bid = {} as IBid;
-  expanded = [];
+  expanded: Array<IBiddingDocument> = [];
   singleExpand = true;
   dialogAdd = false;
   dialogEdit = false;
@@ -150,6 +151,24 @@ export default class Bid extends Vue {
 
   created() {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
+  }
+
+  clicked(value: IBiddingDocument) {
+    if (this.singleExpand) {
+      if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
+        this.expanded.splice(0, this.expanded.length);
+      } else {
+        this.expanded.splice(0, this.expanded.length);
+        this.expanded.push(value);
+      }
+    } else {
+      const index = this.expanded.findIndex(x => x.id === value.id);
+      if (index === -1) {
+        this.expanded.push(value);
+      } else {
+        this.expanded.splice(index, 1);
+      }
+    }
   }
 
   openAddDialog(item: IBiddingDocument) {
