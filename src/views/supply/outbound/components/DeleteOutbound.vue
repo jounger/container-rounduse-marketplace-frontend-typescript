@@ -51,6 +51,7 @@ import { removeOutbound } from "@/api/outbound";
 export default class DeleteOutbound extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
   @PropSync("outbound", { type: Object }) outboundSync!: IOutbound;
+  @PropSync("outbounds", { type: Array }) outboundsSync!: Array<IOutbound>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
@@ -61,13 +62,21 @@ export default class DeleteOutbound extends Vue {
           console.log(res.data);
           const response: IOutbound = res.data;
           this.outboundSync = response;
-          this.messageSync = "Xóa thành công mặt hàng: " + this.outboundSync.id;
+          this.messageSync =
+            "Xóa thành công hàng xuất: " +
+            this.outboundSync.booking.bookingNumber;
+          const index = this.outboundsSync.findIndex(
+            x => x.id === this.outboundSync.id
+          );
+          this.outboundsSync.splice(index, 1);
         })
         .catch(err => {
           console.log(err);
           this.messageSync = "Đã có lỗi xảy ra";
         })
-        .finally(() => (this.snackbarSync = true));
+        .finally(
+          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
+        );
     }
   }
 }

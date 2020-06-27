@@ -13,9 +13,6 @@
         </v-btn>
         <v-toolbar-title>Chỉnh sửa</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-toolbar-items>
-          <v-btn dark text @click="dialogEditSync = false">Save</v-btn>
-        </v-toolbar-items>
       </v-toolbar>
       <!-- START CONTENT -->
       <v-list three-line subheader>
@@ -29,14 +26,14 @@
             <v-form ref="outboundForm" v-model="valid" lazy-validation>
               <v-select
                 v-model="outboundSync.shippingLine"
-                :items="shippingLines"
+                :items="shippingLinesToString"
                 :rules="[required('shipping line')]"
                 label="Hãng tàu"
                 required
               ></v-select>
               <v-select
                 v-model="outboundSync.containerType"
-                :items="containerTypes"
+                :items="containerTypesToString"
                 :rules="[required('container type')]"
                 label="Loại container"
                 required
@@ -86,15 +83,22 @@
                 required
               ></v-text-field>
               <v-text-field
-                v-model="outboundSync.grossWeight"
-                :rules="[required('gross weight')]"
+                v-model="outboundSync.goodsDescription"
+                :rules="[required('Good Description')]"
+                type="text"
+                label="Mô tả"
+                required
+              ></v-text-field>
+              <v-text-field
+                v-model="outboundSync.payload"
+                :rules="[required('payload')]"
                 type="number"
                 label="Khối lượng hàng"
                 required
               ></v-text-field>
               <v-select
-                v-model="outboundSync.unitOfMesurement"
-                :items="UOMS"
+                v-model="outboundSync.unitOfMeasurement"
+                :items="unitOfMesurements"
                 :rules="[required('unit of mesurement')]"
                 label="Đơn vị đo"
                 required
@@ -124,11 +128,12 @@
                 ]"
                 label="bookingNumber"
                 required
+                readonly
               ></v-text-field>
 
               <v-select
                 v-model="outboundSync.booking.portOfLoading"
-                :items="ports"
+                :items="portsToString"
                 :rules="[required('port of loading')]"
                 label="Cảng nhận container rỗng"
                 required
@@ -182,16 +187,13 @@
                 type="number"
                 required
               ></v-text-field>
-              <v-select
+              <v-checkbox
                 v-model="outboundSync.booking.isFcl"
-                :items="fcls"
-                :rules="[required('fcl')]"
-                label="Full container loaded"
-                required
-              ></v-select>
+                label="Hàng nguyên cont"
+              ></v-checkbox>
               <v-btn
                 color="primary"
-                @click="dialogEditSync = false"
+                @click="updateOutbound()"
                 :disabled="!valid"
                 >Hoàn tất</v-btn
               >
@@ -208,6 +210,14 @@
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import { IOutbound } from "@/entity/outbound";
 import FormValidate from "@/mixin/form-validate";
+import { IPort } from "@/entity/port";
+import { IContainerType } from "@/entity/container-type";
+import { IShippingLine } from "@/entity/shipping-line";
+import { getContainerTypes } from "@/api/container-type";
+import { getPorts } from "@/api/port";
+import { getShippingLines } from "@/api/shipping-line";
+import { PaginationResponse } from "@/api/payload";
+import { updateOutbound } from "@/api/outbound";
 
 @Component({
   mixins: [FormValidate]
@@ -224,39 +234,85 @@ export default class UpdateOutbound extends Vue {
   stepper = 1;
   valid = true;
   // API list
-  ports: Array<string> = [];
-  shippingLines: Array<string> = [];
-  containerTypes: Array<string> = [];
-  UOMS: Array<string> = [];
-  fcls: Array<boolean> = [];
-
-  // inbound form
+  ports: Array<IPort> = [];
+  shippingLines: Array<IShippingLine> = [];
+  containerTypes: Array<IContainerType> = [];
+  unitOfMesurements: Array<string> = [];
+  // outboundLocal form
   datePickerMenu = false;
 
-  // Booking form
+  // B/L form
   datePickerMenu2 = false;
 
   // Outbound Update
   updateOutbound() {
     // TODO
+    updateOutbound(this.outboundSync)
+      .then(res => {
+        console.log(res.data);
+        const response: IOutbound = res.data;
+        this.outboundSync = response;
+        this.messageSync =
+          "Cập nhập thành công hàng xuất: " +
+          this.outboundSync.booking.bookingNumber;
+      })
+      .catch(err => {
+        console.log(err);
+        this.messageSync = "Đã có lỗi xảy ra";
+      })
+      .finally(() => (this.snackbarSync = true));
     this.stepper = 2;
   }
 
-  updateBooking() {
-    // TODO
-    this.stepper = 3;
+  created() {
+    getPorts({
+      page: 0,
+      limit: 100
+    })
+      .then(res => {
+        const response: PaginationResponse<IPort> = res.data;
+        this.ports = response.data;
+      })
+      .catch(err => console.log(err))
+      .finally();
+    getShippingLines({
+      page: 0,
+      limit: 100
+    })
+      .then(res => {
+        const response: PaginationResponse<IShippingLine> = res.data;
+        this.shippingLines = response.data.filter(
+          x => x.roles[0] == "ROLE_SHIPPINGLINE"
+        );
+      })
+      .catch(err => console.log(err))
+      .finally();
+    getContainerTypes({
+      page: 0,
+      limit: 100
+    })
+      .then(res => {
+        const response: PaginationResponse<IContainerType> = res.data;
+        this.containerTypes = response.data;
+      })
+      .catch(err => console.log(err))
+      .finally();
   }
-
+  get portsToString() {
+    return this.ports.map(x => x.nameCode);
+  }
+  get shippingLinesToString() {
+    return this.shippingLines.map(x => x.companyCode);
+  }
+  get containerTypesToString() {
+    return this.containerTypes.map(x => x.name);
+  }
   mounted() {
     // TODO: API get Ports
-    this.ports = ["HPH", "APL"];
     // TODO: API get Shipping Line
-    this.shippingLines = ["APL", "GREEN"];
     // TODO: API get Container Type
-    this.containerTypes = ["40HC", "20DC"];
     //TODO: API get unit of mesurement
-    this.UOMS = ["KG", "tấn"];
-    this.fcls = [true, false];
+    this.unitOfMesurements = ["KG"];
   }
 }
 </script>

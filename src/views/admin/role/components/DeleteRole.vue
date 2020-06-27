@@ -67,13 +67,14 @@ export default class DeleteRole extends Vue {
             x => x.id === this.roleSync.id
           );
           this.rolesSync.splice(index, 1);
-          this.dialogDelSync = false;
         })
         .catch(err => {
           console.log(err);
           this.messageSync = "Error happend";
         })
-        .finally(() => (this.snackbarSync = true));
+        .finally(
+          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
+        );
     }
   }
 }

@@ -13,9 +13,6 @@
         </v-btn>
         <v-toolbar-title>Thêm mới</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-toolbar-items>
-          <v-btn dark text @click="dialogAddSync = false">Save</v-btn>
-        </v-toolbar-items>
       </v-toolbar>
       <!-- START CONTENT -->
       <v-list three-line subheader>
@@ -29,14 +26,14 @@
             <v-form ref="outboundForm" v-model="valid" lazy-validation>
               <v-select
                 v-model="outboundLocal.shippingLine"
-                :items="shippingLines"
+                :items="shippingLinesToString"
                 :rules="[required('shipping line')]"
                 label="Hãng tàu"
                 required
               ></v-select>
               <v-select
                 v-model="outboundLocal.containerType"
-                :items="containerTypes"
+                :items="containerTypesToString"
                 :rules="[required('container type')]"
                 label="Loại container"
                 required
@@ -88,16 +85,23 @@
                 required
               ></v-text-field>
               <v-text-field
-                v-model="outboundLocal.grossWeight"
-                :rules="[required('gross weight')]"
+                v-model="outboundLocal.goodsDescription"
+                :rules="[required('Good Description')]"
+                type="text"
+                label="Mô tả"
+                required
+              ></v-text-field>
+              <v-text-field
+                v-model="outboundLocal.payload"
+                :rules="[required('payload')]"
                 type="number"
                 label="Khối lượng hàng"
                 required
               ></v-text-field>
               <v-select
-                v-model="outboundLocal.unitOfMesurement"
+                v-model="outboundLocal.unitOfMeasurement"
                 :items="unitOfMesurements"
-                :rules="[required('unit of mesurement')]"
+                :rules="[required('unit of measurement')]"
                 label="Đơn vị đo"
                 required
               ></v-select>
@@ -130,7 +134,7 @@
 
               <v-select
                 v-model="outboundLocal.booking.portOfLoading"
-                :items="ports"
+                :items="portsToString"
                 :rules="[required('port of loading')]"
                 label="Cảng nhận container rỗng"
                 required
@@ -225,13 +229,22 @@
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import { IOutbound } from "@/entity/outbound";
 import FormValidate from "@/mixin/form-validate";
+import { createOutbound } from "@/api/outbound";
+import { getPorts } from "@/api/port";
+import { PaginationResponse } from "@/api/payload";
+import { IPort } from "@/entity/port";
+import { getShippingLines } from "@/api/shipping-line";
+import { IShippingLine } from "@/entity/shipping-line";
+import { getContainerTypes } from "@/api/container-type";
+import { IContainerType } from "@/entity/container-type";
+import { convertToDateTime } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate]
 })
 export default class CreateOutbound extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("outbound", { type: Object }) outboundSync!: IOutbound;
+  @PropSync("outbounds", { type: Array }) outboundsSync!: Array<IOutbound>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
@@ -243,8 +256,8 @@ export default class CreateOutbound extends Vue {
     packingTime: this.dateInit,
     goodsDescription: "",
     packingStation: "",
-    grossWeight: 0,
-    unitOfMesurement: "KG",
+    payload: 0,
+    unitOfMeasurement: "KG",
     booking: {
       bookingNumber: "",
       unit: 0,
@@ -259,9 +272,9 @@ export default class CreateOutbound extends Vue {
   stepper = 1;
   valid = true;
   // API list
-  ports: Array<string> = [];
-  shippingLines: Array<string> = [];
-  containerTypes: Array<string> = [];
+  ports: Array<IPort> = [];
+  shippingLines: Array<IShippingLine> = [];
+  containerTypes: Array<IContainerType> = [];
   unitOfMesurements: Array<string> = [];
   // outboundLocal form
   datePickerMenu = false;
@@ -272,18 +285,79 @@ export default class CreateOutbound extends Vue {
   // Outbound
   createOutbound() {
     // TODO: API create outbound
-    this.outboundSync = this.outboundLocal;
-  }
 
+    this.outboundLocal.packingTime = convertToDateTime(
+      this.outboundLocal.packingTime
+    );
+    this.outboundLocal.booking.cutOffTime = convertToDateTime(
+      this.outboundLocal.booking.cutOffTime
+    );
+    console.log(this.outboundLocal);
+    createOutbound(this.$auth.user().id, this.outboundLocal)
+      .then(res => {
+        console.log(res.data);
+        const response: IOutbound = res.data;
+        this.outboundLocal = response;
+        this.messageSync =
+          "Thêm mới thành công hàng xuất: " +
+          this.outboundLocal.booking.bookingNumber;
+        this.outboundsSync.unshift(this.outboundLocal);
+      })
+      .catch(err => {
+        console.log(err);
+        this.messageSync = "Đã có lỗi xảy ra";
+      })
+      .finally(() => (this.snackbarSync = true));
+  }
+  created() {
+    getPorts({
+      page: 0,
+      limit: 100
+    })
+      .then(res => {
+        const response: PaginationResponse<IPort> = res.data;
+        this.ports = response.data;
+      })
+      .catch(err => console.log(err))
+      .finally();
+    getShippingLines({
+      page: 0,
+      limit: 100
+    })
+      .then(res => {
+        const response: PaginationResponse<IShippingLine> = res.data;
+        this.shippingLines = response.data.filter(
+          x => x.roles[0] == "ROLE_SHIPPINGLINE"
+        );
+      })
+      .catch(err => console.log(err))
+      .finally();
+    getContainerTypes({
+      page: 0,
+      limit: 100
+    })
+      .then(res => {
+        const response: PaginationResponse<IContainerType> = res.data;
+        this.containerTypes = response.data;
+      })
+      .catch(err => console.log(err))
+      .finally();
+  }
+  get portsToString() {
+    return this.ports.map(x => x.nameCode);
+  }
+  get shippingLinesToString() {
+    return this.shippingLines.map(x => x.companyCode);
+  }
+  get containerTypesToString() {
+    return this.containerTypes.map(x => x.name);
+  }
   mounted() {
     // TODO: API get Ports
-    this.ports = ["HPH", "APL"];
     // TODO: API get Shipping Line
-    this.shippingLines = ["APL", "GREEN"];
     // TODO: API get Container Type
-    this.containerTypes = ["40HC", "20DC"];
     //TODO: API get unit of mesurement
-    this.unitOfMesurements = ["KG", "tấn"];
+    this.unitOfMesurements = ["KG"];
   }
 }
 </script>

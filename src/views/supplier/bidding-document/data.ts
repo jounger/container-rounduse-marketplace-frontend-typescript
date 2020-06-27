@@ -11,8 +11,8 @@ export const BiddingDocumentData: IBiddingDocument[] = [
       goodsDescription: "Hàng dệt may",
       packingTime: "2020-12-01T20:20",
       packingStation: "Hà Nội",
-      grossWeight: 2000,
-      unitOfMesurement: "KG",
+      payload: 2000,
+      unitOfMeasurement: "KG",
       booking: {
         bookingNumber: "ABC012",
         unit: 2,
@@ -43,8 +43,8 @@ export const BiddingDocumentData: IBiddingDocument[] = [
       goodsDescription: "Hàng dệt may",
       packingTime: "2020-12-01T20:20",
       packingStation: "Hà Nội",
-      grossWeight: 2000,
-      unitOfMesurement: "KG",
+      payload: 2000,
+      unitOfMeasurement: "KG",
       booking: {
         bookingNumber: "ABC012",
         unit: 2,
@@ -75,8 +75,8 @@ export const BiddingDocumentData: IBiddingDocument[] = [
       goodsDescription: "Hàng dệt may",
       packingTime: "2020-12-01T20:20",
       packingStation: "Hà Nội",
-      grossWeight: 2000,
-      unitOfMesurement: "KG",
+      payload: 2000,
+      unitOfMeasurement: "KG",
       booking: {
         bookingNumber: "ABC012",
         unit: 2,

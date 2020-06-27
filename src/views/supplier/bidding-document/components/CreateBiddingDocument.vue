@@ -254,7 +254,6 @@ import { IBiddingDocument } from "@/entity/bidding-document";
 import { IOutbound } from "@/entity/outbound";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
-import { OutboundData } from "../../../supply/outbound/data";
 
 @Component({
   mixins: [FormValidate, Utils]
@@ -348,7 +347,6 @@ export default class CreateBiddingDocument extends Vue {
 
   mounted() {
     // TODO: API get Outbound
-    this.outbounds = OutboundData;
     this.options.totalItems = 10;
     this.loading = false;
     //

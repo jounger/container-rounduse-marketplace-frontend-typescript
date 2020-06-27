@@ -4,10 +4,10 @@
       <Snackbar :text="message" :snackbar.sync="snackbar" />
       <CreateOutbound
         v-if="dialogAdd"
-        :outbound.sync="outbound"
         :dialogAdd.sync="dialogAdd"
         :message.sync="message"
         :snackbar.sync="snackbar"
+        :outbounds.sync="outbounds"
       />
       <UpdateOutbound
         v-if="dialogEdit"
@@ -104,9 +104,10 @@ import UpdateOutbound from "./components/UpdateOutbound.vue";
 // import { getOutboundByForwarder } from "@/api/outbound";
 // import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
-import { OutboundData } from "./data";
 import { convertFromDateTime } from "@/utils/tool";
 import DeleteOutbound from "./components/DeleteOutbound.vue";
+import { getOutboundByMerchant } from "@/api/outbound";
+import { PaginationResponse } from "@/api/payload";
 
 @Component({
   components: {
@@ -150,7 +151,7 @@ export default class Outbound extends Vue {
     { text: "Thời gian tàu chạy", value: "cutOffTime" },
     { text: "Nơi đóng hàng", value: "packingStation" },
     { text: "Cảng đóng hàng", value: "booking.portOfLoading" },
-    { text: "Khối lượng hàng", value: "grossWeight" },
+    { text: "Khối lượng hàng", value: "payload" },
     { text: "Số cont", value: "unit" },
     { text: "FCL", value: "fcl" },
     {
@@ -165,7 +166,6 @@ export default class Outbound extends Vue {
 
   created() {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
-    this.outbounds = OutboundData as Array<IOutbound>;
     this.loading = false;
   }
 
@@ -183,24 +183,17 @@ export default class Outbound extends Vue {
   onOptionsChange(val: object, oldVal: object) {
     console.log(this.$auth.user());
     if (val !== oldVal) {
-      console.log(OutboundData);
-      this.outbounds = OutboundData;
-      this.loading = false;
-      this.options.totalItems = 10;
-      /*
-      getOutboundByForwarder(this.$auth.user().id, {
+      getOutboundByMerchant(this.$auth.user().id, {
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IOutbound> = res.data;
-          console.log("watch", this.options);
           this.outbounds = response.data;
           this.options.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
-        */
     }
   }
 }
