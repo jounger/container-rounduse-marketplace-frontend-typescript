@@ -25,13 +25,13 @@
                   label="Tên đăng nhập*"
                   type="text"
                   v-model="operatorSync.username"
-                  :readonly="Review"
+                  :readonly="update"
                   required
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6" md="6">
                 <v-text-field
-                  v-if="!Review"
+                  v-if="!update"
                   label="Mật khẩu*"
                   type="password"
                   v-model="operatorSync.password"

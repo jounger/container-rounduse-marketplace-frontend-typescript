@@ -283,6 +283,7 @@ export default class Register extends Vue {
   editable = false;
   stepper = 1;
   valid = true;
+  checkbox = false;
 
   created() {
     this.layoutSync = RegisterLayout;

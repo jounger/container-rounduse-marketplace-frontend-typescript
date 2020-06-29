@@ -35,11 +35,19 @@ export default class NavigationSupplier extends Vue {
     { title: "Quản lý Driver", icon: "dashboard", link: "/driver" }
   ];
 
+  private supplierRegisterNavigation = [
+    { title: "Đơn đăng ký", icon: "dashboard", link: "/application" }
+  ];
+
   get getNavigation() {
-    if (this.$auth.check("ROLE_FORWARDER")) {
-      return this.forwarderNavigation;
+    if (this.$auth.check() && this.$auth.user().status === "PENDING") {
+      return this.supplierRegisterNavigation;
     } else {
-      return this.merchantNavigation;
+      if (this.$auth.check("ROLE_FORWARDER")) {
+        return this.forwarderNavigation;
+      } else {
+        return this.merchantNavigation;
+      }
     }
   }
 }
