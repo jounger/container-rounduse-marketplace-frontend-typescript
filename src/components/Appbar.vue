@@ -1,9 +1,9 @@
 <template>
   <v-app-bar app clipped-left>
     <v-app-bar-nav-icon @click.stop="changeDrawer()"></v-app-bar-nav-icon>
-    <v-toolbar-title>CRM</v-toolbar-title>
+    <v-toolbar-title>Container Round-use Marketplace</v-toolbar-title>
+    <v-divider class="mx-4" vertical></v-divider>
     <v-btn text to="/">Trang chủ</v-btn>
-    <v-btn text v-if="isSupplier" to="/application">Đơn đăng ký</v-btn>
     <v-btn v-if="$auth.check()" text to="/dashboard">Dashboard</v-btn>
 
     <v-spacer></v-spacer>

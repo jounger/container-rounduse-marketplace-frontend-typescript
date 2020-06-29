@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer v-model="drawerSync" app clipped>
+  <v-navigation-drawer v-model="drawerSync" app clipped v-if="$auth.check()">
     <v-list dense nav>
       <v-list-item two-line :class="'px-0'">
         <v-list-item-avatar>
