@@ -5,17 +5,18 @@
       <CreateBiddingDocument
         v-if="dialogAdd"
         :biddingDocument.sync="biddingDocument"
+        :outbounds.sync="outbounds"
         :dialogAdd.sync="dialogAdd"
         :message.sync="message"
         :snackbar.sync="snackbar"
       />
-      <!-- <UpdateBiddingDocument
+      <UpdateBiddingDocument
         v-if="dialogEdit"
         :biddingDocument.sync="biddingDocument"
         :dialogEdit.sync="dialogEdit"
         :message.sync="message"
         :snackbar.sync="snackbar"
-      /> -->
+      />
       <v-data-table
         :headers="headers"
         :items="biddingDocuments"
@@ -75,16 +76,17 @@ import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
 import NavLayout from "@/layouts/NavLayout.vue";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import CreateBiddingDocument from "./components/CreateBiddingDocument.vue";
-// import UpdateBiddingDocument from "./components/UpdateBiddingDocument.vue";
+import UpdateBiddingDocument from "./components/UpdateBiddingDocument.vue";
 // import { getBiddingDocumentByForwarder } from "@/api/biddingDocument";
 // import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 import { BiddingDocumentData } from "./data";
+import { IOutbound } from "@/entity/outbound";
 
 @Component({
   components: {
     CreateBiddingDocument,
-    // UpdateBiddingDocument,
+    UpdateBiddingDocument,
     Snackbar
   }
 })
@@ -93,6 +95,7 @@ export default class BiddingDocument extends Vue {
 
   biddingDocuments: Array<IBiddingDocument> = [];
   biddingDocument = {} as IBiddingDocument;
+  outbounds: Array<IOutbound> = [];
   dialogAdd = false;
   dialogEdit = false;
   dialogDel = false;

@@ -25,7 +25,6 @@ export default class NavigationSupplier extends Vue {
   private merchantNavigation = [
     { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
     { title: "Quản lý hàng xuất", icon: "dashboard", link: "/outbound" },
-    { title: "Quản lý hàng (new)", icon: "dashboard", link: "/outbound-new" },
     { title: "Quản lý HSMT", icon: "dashboard", link: "/bidding-document" }
   ];
   private forwarderNavigation = [
