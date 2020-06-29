@@ -35,7 +35,7 @@
         <template v-slot:top>
           <v-toolbar flat color="white">
             <v-toolbar-title style="font-weight:bold; font-size: 25px;"
-              >Danh sách mã giảm giá</v-toolbar-title
+              >Danh sách lái xe</v-toolbar-title
             >
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>

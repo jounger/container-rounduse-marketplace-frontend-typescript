@@ -13,9 +13,6 @@
         </v-btn>
         <v-toolbar-title>Thêm mới</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-toolbar-items>
-          <v-btn dark text @click="dialogAddSync = false">Save</v-btn>
-        </v-toolbar-items>
       </v-toolbar>
       <!-- START CONTENT -->
       <v-list three-line subheader>
@@ -29,30 +26,30 @@
             <v-form ref="inboundForm" v-model="valid" lazy-validation>
               <v-select
                 v-model="inboundLocal.shippingLine"
-                :items="shippingLines"
+                :items="shippingLinesToString"
                 :rules="[required('shipping line')]"
                 label="Hãng tàu"
                 required
               ></v-select>
               <v-select
                 v-model="inboundLocal.containerType"
-                :items="containerTypes"
+                :items="containerTypesToString"
                 :rules="[required('container type')]"
                 label="Loại container"
                 required
               ></v-select>
               <v-menu
-                ref="datePickerMenu"
-                v-model="datePickerMenu"
+                ref="pickupTimePicker"
+                v-model="pickupTimePicker"
                 :close-on-content-click="false"
-                :return-value.sync="inboundLocal.pickUpTime"
+                :return-value.sync="inboundLocal.pickupTime"
                 transition="scale-transition"
                 offset-y
                 min-width="290px"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    v-model="inboundLocal.pickUpTime"
+                    v-model="inboundLocal.pickupTime"
                     label="Thời gian lấy containers đặc từ cảng"
                     prepend-icon="event"
                     v-bind="attrs"
@@ -62,18 +59,57 @@
                   ></v-text-field>
                 </template>
                 <v-date-picker
-                  v-model="inboundLocal.pickUpTime"
+                  v-model="inboundLocal.pickupTime"
                   no-title
                   scrollable
                 >
                   <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="datePickerMenu = false"
+                  <v-btn text color="primary" @click="pickupTimePicker = false"
                     >Cancel</v-btn
                   >
                   <v-btn
                     text
                     color="primary"
-                    @click="$refs.datePickerMenu.save(inboundLocal.pickUpTime)"
+                    @click="
+                      $refs.pickupTimePicker.save(inboundLocal.pickupTime)
+                    "
+                    >OK</v-btn
+                  >
+                </v-date-picker>
+              </v-menu>
+              <v-menu
+                ref="emptyTimePicker"
+                v-model="emptyTimePicker"
+                :close-on-content-click="false"
+                :return-value.sync="inboundLocal.emptyTimePicker"
+                transition="scale-transition"
+                offset-y
+                min-width="290px"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="inboundLocal.emptyTime"
+                    label="Thời gian chờ"
+                    prepend-icon="event"
+                    v-bind="attrs"
+                    v-on="on"
+                    required
+                    :rules="[required('pickup time')]"
+                  ></v-text-field>
+                </template>
+                <v-date-picker
+                  v-model="inboundLocal.emptyTime"
+                  no-title
+                  scrollable
+                >
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="emptyTimePicker = false"
+                    >Cancel</v-btn
+                  >
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="$refs.emptyTimePicker.save(inboundLocal.emptyTime)"
                     >OK</v-btn
                   >
                 </v-date-picker>
@@ -106,51 +142,10 @@
 
               <v-select
                 v-model="inboundLocal.billOfLading.portOfDelivery"
-                :items="ports"
+                :items="portsToString"
                 :rules="[required('port of loading')]"
                 label="Cảng lấy container đặc"
               ></v-select>
-
-              <v-menu
-                ref="datePickerMenu2"
-                v-model="datePickerMenu2"
-                :close-on-content-click="false"
-                :return-value.sync="inboundLocal.billOfLading.freeTime"
-                transition="scale-transition"
-                offset-y
-                min-width="290px"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
-                    v-model="inboundLocal.billOfLading.freeTime"
-                    label="Free Time (DEM/DET)"
-                    prepend-icon="event"
-                    v-bind="attrs"
-                    v-on="on"
-                    :rules="[required('det')]"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
-                  v-model="inboundLocal.billOfLading.freeTime"
-                  no-title
-                  scrollable
-                >
-                  <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="datePickerMenu2 = false"
-                    >Cancel</v-btn
-                  >
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="
-                      $refs.datePickerMenu2.save(
-                        inboundLocal.billOfLading.freeTime
-                      )
-                    "
-                    >OK</v-btn
-                  >
-                </v-date-picker>
-              </v-menu>
               <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
                 >Tiếp tục</v-btn
               >
@@ -165,8 +160,7 @@
           <v-stepper-content step="3">
             <v-data-table
               :headers="containerHeaders"
-              :items="inboundLocal.billOfLading.containers"
-              sort-by="calories"
+              :items="containers"
               class="elevation-1 my-1"
             >
               <template v-slot:top>
@@ -180,6 +174,7 @@
                         color="primary"
                         dark
                         class="mb-2"
+                        @click="openCreateContainer()"
                         v-bind="attrs"
                         v-on="on"
                         >Thêm mới</v-btn
@@ -187,7 +182,7 @@
                     </template>
                     <v-card>
                       <v-card-title>
-                        <span class="headline">Thông tin container</span>
+                        <span class="headline">{{ title }}</span>
                       </v-card-title>
 
                       <v-card-text>
@@ -197,20 +192,23 @@
                               <v-text-field
                                 v-model="container.containerNumber"
                                 label="Container No."
+                                :readonly="readonly || !checkAdd"
                               ></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="6" md="4">
                               <v-text-field
                                 v-model="container.licensePlate"
                                 label="Biển kiểm sát"
+                                :readonly="readonly"
                               ></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="6" md="4">
                               <v-select
                                 v-model="container.driver"
-                                :items="drivers"
+                                :items="driversToString"
                                 :rules="[required('driver')]"
                                 label="Tài xế"
+                                :readonly="readonly"
                               ></v-select>
                             </v-col>
                             <v-col cols="12" sm="6" md="4">
@@ -219,6 +217,7 @@
                                 :items="trailers"
                                 :rules="[required('trailer')]"
                                 label="Loại rờ mọt"
+                                :readonly="readonly"
                               ></v-select>
                             </v-col>
                             <v-col cols="12" sm="6" md="4">
@@ -227,6 +226,7 @@
                                 :items="tractors"
                                 :rules="[required('tractor')]"
                                 label="Loại đầu kéo"
+                                :readonly="readonly"
                               ></v-select>
                             </v-col>
                           </v-row>
@@ -239,13 +239,21 @@
                           color="blue darken-1"
                           text
                           @click="dialogAddCont = false"
-                          >Cancel</v-btn
+                          >Trở về</v-btn
                         >
                         <v-btn
                           color="blue darken-1"
                           text
-                          @click="addContainer(container)"
-                          >Save</v-btn
+                          v-if="checkAdd"
+                          @click="createContainer(container)"
+                          >Thêm mới</v-btn
+                        >
+                        <v-btn
+                          color="blue darken-1"
+                          text
+                          v-if="!checkAdd"
+                          @click="updateContainer(container)"
+                          >Cập nhập</v-btn
                         >
                       </v-card-actions>
                     </v-card>
@@ -253,7 +261,7 @@
                 </v-toolbar>
               </template>
               <template v-slot:item.actions="{ item }">
-                <v-icon small class="mr-2" @click="editContainer(item)">
+                <v-icon small class="mr-2" @click="openUpdateContainer(item)">
                   mdi-pencil
                 </v-icon>
                 <v-icon small @click="deleteContainer(item)">
@@ -275,7 +283,10 @@
                 :rules="[required('agree term')]"
                 label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
               ></v-checkbox>
-              <v-btn color="primary" @click="createInbound()" :disabled="!valid"
+              <v-btn
+                color="primary"
+                @click="createInbound()"
+                :disabled="!checkbox"
                 >Hoàn tất</v-btn
               >
               <v-btn text @click="stepper = 3">Quay lại</v-btn>
@@ -292,13 +303,25 @@ import { Component, Vue, PropSync } from "vue-property-decorator";
 import { IInbound } from "@/entity/inbound";
 import { IContainer } from "@/entity/container";
 import FormValidate from "@/mixin/form-validate";
+import { IPort } from "@/entity/port";
+import { IShippingLine } from "@/entity/shipping-line";
+import { IContainerType } from "@/entity/container-type";
+import { IDriver } from "@/entity/driver";
+import { getPorts } from "@/api/port";
+import { getShippingLines } from "@/api/shipping-line";
+import { getDriverByForwarder } from "@/api/driver";
+import { getContainerTypes } from "@/api/container-type";
+import { PaginationResponse } from "@/api/payload";
+import { convertToDateTime } from "@/utils/tool";
+import { createInbound } from "@/api/inbound";
+import { calculateFreeTime } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate]
 })
 export default class CreateInbound extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("inbound", { type: Object }) inboundSync!: IInbound;
+  @PropSync("inbounds", { type: Array }) inboundsSync!: Array<IInbound>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
@@ -308,13 +331,13 @@ export default class CreateInbound extends Vue {
     containerType: "",
     status: "",
     emptyTime: this.dateInit,
-    pickUpTime: this.dateInit,
+    pickupTime: this.dateInit,
     billOfLading: {
       id: 0,
       billOfLadingNumber: "",
-      containers: [],
+      containers: [] as Array<IContainer>,
       portOfDelivery: "",
-      freeTime: this.dateInit
+      freeTime: 0
     }
   } as IInbound;
   // Form validate
@@ -322,18 +345,20 @@ export default class CreateInbound extends Vue {
   editable = false;
   stepper = 1;
   valid = true;
+  title = "Thêm mới Container";
+  checkAdd = true;
   // API list
-  ports: Array<string> = [];
-  shippingLines: Array<string> = [];
-  containerTypes: Array<string> = [];
+  ports: Array<IPort> = [];
+  shippingLines: Array<IShippingLine> = [];
+  containerTypes: Array<IContainerType> = [];
   trailers: Array<string> = [];
   tractors: Array<string> = [];
 
   // inboundLocal form
-  datePickerMenu = false;
+  pickupTimePicker = false;
 
   // B/L form
-  datePickerMenu2 = false;
+  emptyTimePicker = false;
 
   // Container form
   containerHeaders = [
@@ -352,6 +377,7 @@ export default class CreateInbound extends Vue {
       value: "actions"
     }
   ];
+  containers = [] as Array<IContainer>;
   container = {
     containerNumber: "",
     driver: "",
@@ -359,42 +385,141 @@ export default class CreateInbound extends Vue {
     tractor: "",
     licensePlate: ""
   } as IContainer;
-  drivers: Array<string> = [];
+  drivers: Array<IDriver> = [];
   dialogAddCont = false;
+  readonly = false;
 
-  addContainer(item: IContainer) {
+  createContainer(item: IContainer) {
     // TODO: API create Container
     const copyItem = Object.assign({}, item);
-    this.inboundLocal.billOfLading.containers.push(copyItem);
+    this.containers.push(copyItem);
+    this.readonly = true;
+    this.messageSync = "Thêm mới thành công Container: " + item.containerNumber;
+    this.snackbarSync = true;
   }
-
-  editContainer(item: IContainer) {
+  openCreateContainer() {
+    this.title = "Thêm mới container";
+    this.checkAdd = true;
+    this.readonly = false;
+    this.container = {} as IContainer;
+  }
+  openUpdateContainer(item: IContainer) {
     // TODO
+    this.title = "Cập nhập Container";
+    this.checkAdd = false;
+    this.readonly = false;
     this.container = item;
     this.dialogAddCont = true;
     console.log(item);
   }
-
+  updateContainer(item: IContainer) {
+    const index = this.containers.findIndex(
+      x => x.containerNumber === item.containerNumber
+    );
+    this.containers.splice(index, 1, item);
+    this.messageSync = "Cập nhập thành công Container: " + item.containerNumber;
+    this.snackbarSync = true;
+  }
   deleteContainer(item: IContainer) {
     // TODO
-    console.log(item);
+    const index = this.containers.findIndex(
+      x => x.containerNumber === item.containerNumber
+    );
+    this.containers.splice(index, 1);
+    this.messageSync = "Xóa thành công Container: " + item.containerNumber;
+    this.snackbarSync = true;
   }
 
   // Inbound
   createInbound() {
     // TODO: API create inbound
-    this.inboundSync = this.inboundLocal;
+    this.inboundLocal.emptyTime = convertToDateTime(
+      this.inboundLocal.emptyTime
+    );
+    this.inboundLocal.pickupTime = convertToDateTime(
+      this.inboundLocal.pickupTime
+    );
+    this.inboundLocal.billOfLading.freeTime = calculateFreeTime(
+      this.inboundLocal.pickupTime,
+      this.inboundLocal.emptyTime
+    );
+    this.inboundLocal.billOfLading.containers = this.containers;
+    console.log(this.inboundLocal);
+    createInbound(this.$auth.user().id, this.inboundLocal)
+      .then(res => {
+        console.log(res.data);
+        const response: IInbound = res.data;
+        this.inboundLocal = response;
+        this.messageSync =
+          "Thêm mới thành công hàng xuất: " +
+          this.inboundLocal.billOfLading.billOfLadingNumber;
+        this.inboundsSync.unshift(this.inboundLocal);
+      })
+      .catch(err => {
+        console.log(err);
+        this.messageSync = "Đã có lỗi xảy ra";
+      })
+      .finally(() => (this.snackbarSync = true));
+  }
+  created() {
+    getPorts({
+      page: 0,
+      limit: 100
+    })
+      .then(res => {
+        const response: PaginationResponse<IPort> = res.data;
+        this.ports = response.data;
+      })
+      .catch(err => console.log(err))
+      .finally();
+    getShippingLines({
+      page: 0,
+      limit: 100
+    })
+      .then(res => {
+        const response: PaginationResponse<IShippingLine> = res.data;
+        this.shippingLines = response.data.filter(
+          x => x.roles[0] == "ROLE_SHIPPINGLINE"
+        );
+      })
+      .catch(err => console.log(err))
+      .finally();
+    getContainerTypes({
+      page: 0,
+      limit: 100
+    })
+      .then(res => {
+        const response: PaginationResponse<IContainerType> = res.data;
+        this.containerTypes = response.data;
+      })
+      .catch(err => console.log(err))
+      .finally();
+    getDriverByForwarder(this.$auth.user().id, {
+      page: 0,
+      limit: 100
+    })
+      .then(res => {
+        const response: PaginationResponse<IDriver> = res.data;
+        console.log("watch", response);
+        this.drivers = response.data;
+      })
+      .catch(err => console.log(err))
+      .finally();
+  }
+  get driversToString() {
+    return this.drivers.map(x => x.username);
+  }
+  get portsToString() {
+    return this.ports.map(x => x.nameCode);
+  }
+  get shippingLinesToString() {
+    return this.shippingLines.map(x => x.companyCode);
+  }
+  get containerTypesToString() {
+    return this.containerTypes.map(x => x.name);
   }
 
   mounted() {
-    // TODO: API get Ports
-    this.ports = ["HPH", "APL"];
-    // TODO: API get Shipping Line
-    this.shippingLines = ["APL", "GREEN"];
-    // TODO: API get Container Type
-    this.containerTypes = ["40HC", "20DC"];
-    // TODO: API get Drivers by Forwarder
-    this.drivers = ["driver", "driver1"];
     // trailers & tractors
     this.trailers = ["2", "3"];
     this.tractors = ["2", "3"];

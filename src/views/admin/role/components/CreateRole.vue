@@ -100,7 +100,15 @@ export default class CreateRole extends Vue {
           console.log(err);
           this.messageSync = "Đã có lỗi xảy ra";
         })
-        .finally(() => (this.snackbarSync = true));
+        .finally(
+          () => (
+            (this.snackbarSync = true),
+            this.$store.dispatch("addNotification", {
+              message: this.messageSync,
+              type: "success"
+            })
+          )
+        );
     }
   }
   updateRole() {

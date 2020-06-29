@@ -4,10 +4,10 @@
       <Snackbar :text="message" :snackbar.sync="snackbar" />
       <CreateInbound
         v-if="dialogAdd"
-        :inbound.sync="inbound"
         :dialogAdd.sync="dialogAdd"
         :message.sync="message"
         :snackbar.sync="snackbar"
+        :inbounds.sync="inbounds"
       />
       <UpdateInbound
         v-if="dialogEdit"
@@ -15,7 +15,18 @@
         :dialogEdit.sync="dialogEdit"
         :message.sync="message"
         :snackbar.sync="snackbar"
+        :inbounds.sync="inbounds"
       />
+      <v-row justify="center">
+        <DeleteInbound
+          v-if="dialogDel"
+          :dialogDel.sync="dialogDel"
+          :inbound.sync="inbound"
+          :inbounds.sync="inbounds"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
+        />
+      </v-row>
       <v-data-table
         :headers="headers"
         :items="inbounds"
@@ -40,7 +51,13 @@
         </template>
         <!--  -->
         <template v-slot:item.pickUpTime="{ item }">
-          {{ formatDatetime(item.pickUpTime) }}
+          {{ formatDatetime(item.pickupTime) }}
+        </template>
+        <template v-slot:item.freetime="{ item }">
+          {{ item.billOfLading.freeTime }} ngày
+        </template>
+        <template v-slot:item.status="{ item }">
+          {{ item.billOfLading.containers[0].status }}
         </template>
 
         <template v-slot:item.actions="{ item }">
@@ -51,7 +68,7 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item @click="openEditDialog(item)">
+              <v-list-item @click="openUpdateDialog(item)">
                 <v-list-item-icon>
                   <v-icon small>edit</v-icon>
                 </v-list-item-icon>
@@ -80,15 +97,19 @@ import NavLayout from "@/layouts/NavLayout.vue";
 import { IInbound } from "@/entity/inbound";
 import CreateInbound from "./components/CreateInbound.vue";
 import UpdateInbound from "./components/UpdateInbound.vue";
+import DeleteInbound from "./components/DeleteInbound.vue";
 // import { getInboundByForwarder } from "@/api/inbound";
 // import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
-import { InboundData } from "./data";
+import { getInboundByForwarder } from "@/api/inbound";
+import { PaginationResponse } from "@/api/payload";
+import { convertFromDateTime } from "@/utils/tool";
 
 @Component({
   components: {
     CreateInbound,
     UpdateInbound,
+    DeleteInbound,
     Snackbar
   }
 })
@@ -122,7 +143,8 @@ export default class Inbound extends Vue {
     { text: "Hãng tàu", value: "shippingLine" },
     { text: "Loại cont", value: "containerType" },
     { text: "Trạng thái", value: "status" },
-    { text: "Time lấy cont", value: "pickUpTime" },
+    { text: "Thời gian lấy cont", value: "pickUpTime" },
+    { text: "Thời gian chờ", value: "freetime" },
     { text: "B/L No.", value: "billOfLading.billOfLadingNumber" },
     { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery" },
     { text: "Số lượng cont", value: "billOfLading.containers.length" },
@@ -133,17 +155,20 @@ export default class Inbound extends Vue {
   ];
 
   formatDatetime(date: string) {
-    return date.substring(0, 10);
+    return convertFromDateTime(date);
   }
 
   created() {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
-    this.inbounds = InboundData as Array<IInbound>;
     this.loading = false;
   }
 
-  openEditDialog(item: IInbound) {
+  openUpdateDialog(item: IInbound) {
     this.inbound = item;
+    const index = this.inbound.emptyTime.indexOf("T");
+    this.inbound.emptyTime = this.inbound.emptyTime.slice(0, index);
+    this.inbound.pickupTime = this.inbound.pickupTime.slice(0, index);
+    console.log(this.inbound);
     this.dialogEdit = true;
   }
 
@@ -156,11 +181,6 @@ export default class Inbound extends Vue {
   onOptionsChange(val: object, oldVal: object) {
     console.log(this.$auth.user());
     if (val !== oldVal) {
-      console.log(InboundData);
-      this.inbounds = InboundData;
-      this.loading = false;
-      this.options.totalItems = 10;
-      /*
       getInboundByForwarder(this.$auth.user().id, {
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
@@ -173,7 +193,6 @@ export default class Inbound extends Vue {
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
-        */
     }
   }
 }

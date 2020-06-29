@@ -30,7 +30,7 @@ export default class NavigationSupplier extends Vue {
   ];
   private forwarderNavigation = [
     { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
-    { title: "Quản lý hàng xuất", icon: "dashboard", link: "/inbound" },
+    { title: "Quản lý hàng nhập", icon: "dashboard", link: "/inbound" },
     { title: "Quản lý HSDT", icon: "dashboard", link: "/bid" },
     { title: "Quản lý Driver", icon: "dashboard", link: "/driver" }
   ];

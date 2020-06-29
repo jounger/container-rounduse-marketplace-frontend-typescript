@@ -29,14 +29,12 @@
                 :items="shippingLinesToString"
                 :rules="[required('shipping line')]"
                 label="Hãng tàu"
-                required
               ></v-select>
               <v-select
                 v-model="outboundSync.containerType"
                 :items="containerTypesToString"
                 :rules="[required('container type')]"
                 label="Loại container"
-                required
               ></v-select>
               <v-menu
                 ref="datePickerMenu"
@@ -54,7 +52,6 @@
                     prepend-icon="event"
                     v-bind="attrs"
                     v-on="on"
-                    required
                     :rules="[required('packing time')]"
                   ></v-text-field>
                 </template>
@@ -80,28 +77,24 @@
                 :rules="[required('packing station')]"
                 type="text"
                 label="Nơi đóng hàng"
-                required
               ></v-text-field>
               <v-text-field
                 v-model="outboundSync.goodsDescription"
                 :rules="[required('Good Description')]"
                 type="text"
                 label="Mô tả"
-                required
               ></v-text-field>
               <v-text-field
                 v-model="outboundSync.payload"
                 :rules="[required('payload')]"
                 type="number"
                 label="Khối lượng hàng"
-                required
               ></v-text-field>
               <v-select
                 v-model="outboundSync.unitOfMeasurement"
                 :items="unitOfMesurements"
                 :rules="[required('unit of mesurement')]"
                 label="Đơn vị đo"
-                required
               ></v-select>
               <v-btn
                 color="primary"
@@ -127,7 +120,6 @@
                   maxLength('Booking number', 50)
                 ]"
                 label="bookingNumber"
-                required
                 readonly
               ></v-text-field>
 
@@ -136,7 +128,6 @@
                 :items="portsToString"
                 :rules="[required('port of loading')]"
                 label="Cảng nhận container rỗng"
-                required
               ></v-select>
 
               <v-menu
@@ -155,7 +146,6 @@
                     prepend-icon="event"
                     v-bind="attrs"
                     v-on="on"
-                    required
                     :rules="[required('det')]"
                   ></v-text-field>
                 </template>
@@ -193,8 +183,8 @@
               ></v-checkbox>
               <v-btn
                 color="primary"
-                @click="updateOutbound()"
-                :disabled="!valid"
+                @click="updateBooking()"
+                :disabled="!checkbox"
                 >Hoàn tất</v-btn
               >
               <v-btn text @click="stepper = 1">Quay lại</v-btn>
@@ -218,6 +208,9 @@ import { getPorts } from "@/api/port";
 import { getShippingLines } from "@/api/shipping-line";
 import { PaginationResponse } from "@/api/payload";
 import { updateOutbound } from "@/api/outbound";
+import { updateBooking } from "@/api/booking";
+import { IBooking } from "@/entity/booking";
+import { convertToDateTime } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate]
@@ -225,6 +218,7 @@ import { updateOutbound } from "@/api/outbound";
 export default class UpdateOutbound extends Vue {
   @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
   @PropSync("outbound", { type: Object }) outboundSync!: IOutbound;
+  @PropSync("outbounds", { type: Array }) outboundsSync!: Array<IOutbound>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
@@ -247,6 +241,12 @@ export default class UpdateOutbound extends Vue {
   // Outbound Update
   updateOutbound() {
     // TODO
+    this.outboundSync.packingTime = convertToDateTime(
+      this.outboundSync.packingTime
+    );
+    this.outboundSync.booking.cutOffTime = convertToDateTime(
+      this.outboundSync.booking.cutOffTime
+    );
     updateOutbound(this.outboundSync)
       .then(res => {
         console.log(res.data);
@@ -262,6 +262,25 @@ export default class UpdateOutbound extends Vue {
       })
       .finally(() => (this.snackbarSync = true));
     this.stepper = 2;
+  }
+  updateBooking() {
+    updateBooking(this.outboundSync.booking)
+      .then(res => {
+        const response: IBooking = res.data;
+        this.outboundSync.booking = response;
+        this.messageSync =
+          "Cập nhập thành công Booking: " +
+          this.outboundSync.booking.bookingNumber;
+        const index = this.outboundsSync.findIndex(
+          x => x.id === this.outboundSync.id
+        );
+        this.outboundsSync.splice(index, 1, this.outboundSync);
+      })
+      .catch(err => {
+        console.log(err);
+        this.messageSync = "Đã có lỗi xảy ra";
+      })
+      .finally(() => (this.snackbarSync = true));
   }
 
   created() {

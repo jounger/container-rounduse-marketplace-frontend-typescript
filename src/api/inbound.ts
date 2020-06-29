@@ -20,14 +20,14 @@ export function getInbound(id: number) {
 }
 
 export function getInboundByForwarder(id: number, paging: PaginationRequest) {
-  return Vue.axios.get(`/inbound/merchant/${id}`, {
+  return Vue.axios.get(`/inbound/forwarder/${id}`, {
     params: paging,
     headers: config
   });
 }
 
 export function createInbound(id: number, inbound: IInbound) {
-  return Vue.axios.post(`/inbound/merchant/${id}`, inbound, {
+  return Vue.axios.post(`/inbound/forwarder/${id}`, inbound, {
     headers: config
   });
 }

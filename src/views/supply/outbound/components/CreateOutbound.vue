@@ -39,8 +39,8 @@
                 required
               ></v-select>
               <v-menu
-                ref="datePickerMenu"
-                v-model="datePickerMenu"
+                ref="packingTimePicker"
+                v-model="packingTimePicker"
                 :close-on-content-click="false"
                 :return-value.sync="outboundLocal.packingTime"
                 transition="scale-transition"
@@ -64,14 +64,14 @@
                   scrollable
                 >
                   <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="datePickerMenu = false"
+                  <v-btn text color="primary" @click="packingTimePicker = false"
                     >Cancel</v-btn
                   >
                   <v-btn
                     text
                     color="primary"
                     @click="
-                      $refs.datePickerMenu.save(outboundLocal.packingTime)
+                      $refs.packingTimePicker.save(outboundLocal.packingTime)
                     "
                     >OK</v-btn
                   >
@@ -141,8 +141,8 @@
               ></v-select>
 
               <v-menu
-                ref="datePickerMenu2"
-                v-model="datePickerMenu2"
+                ref="cutOffTimePicker"
+                v-model="cutOffTimePicker"
                 :close-on-content-click="false"
                 :return-value.sync="outboundLocal.booking.cutOffTime"
                 transition="scale-transition"
@@ -166,14 +166,14 @@
                   scrollable
                 >
                   <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="datePickerMenu2 = false"
+                  <v-btn text color="primary" @click="cutOffTimePicker = false"
                     >Cancel</v-btn
                   >
                   <v-btn
                     text
                     color="primary"
                     @click="
-                      $refs.datePickerMenu2.save(
+                      $refs.cutOffTimePicker.save(
                         outboundLocal.booking.cutOffTime
                       )
                     "
@@ -213,7 +213,7 @@
               <v-btn
                 color="primary"
                 @click="createOutbound()"
-                :disabled="!valid"
+                :disabled="!checkbox"
                 >Hoàn tất</v-btn
               >
               <v-btn text @click="stepper = 2">Quay lại</v-btn>
@@ -277,10 +277,10 @@ export default class CreateOutbound extends Vue {
   containerTypes: Array<IContainerType> = [];
   unitOfMesurements: Array<string> = [];
   // outboundLocal form
-  datePickerMenu = false;
+  packingTimePicker = false;
 
   // B/L form
-  datePickerMenu2 = false;
+  cutOffTimePicker = false;
 
   // Outbound
   createOutbound() {

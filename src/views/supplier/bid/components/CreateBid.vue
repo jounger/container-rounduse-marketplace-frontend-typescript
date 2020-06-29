@@ -213,7 +213,6 @@ import { IContainer } from "@/entity/container";
 import FormValidate from "@/mixin/form-validate";
 import { IInbound } from "@/entity/inbound";
 import Utils from "@/mixin/utils";
-import { InboundData } from "../../../supply/inbound/data";
 
 @Component({
   mixins: [FormValidate, Utils]
@@ -309,7 +308,6 @@ export default class CreateBid extends Vue {
 
   mounted() {
     // TODO: API get
-    this.inbounds = InboundData;
     this.options.totalItems = 10;
     this.loading = false;
   }

@@ -15,6 +15,7 @@
         :dialogEdit.sync="dialogEdit"
         :message.sync="message"
         :snackbar.sync="snackbar"
+        :outbounds.sync="outbounds"
       />
       <v-row justify="center">
         <DeleteOutbound
@@ -171,6 +172,12 @@ export default class Outbound extends Vue {
 
   openUpdateDialog(item: IOutbound) {
     this.outbound = item;
+    const index = this.outbound.packingTime.indexOf("T");
+    this.outbound.packingTime = this.outbound.packingTime.slice(0, index);
+    this.outbound.booking.cutOffTime = this.outbound.booking.cutOffTime.slice(
+      0,
+      index
+    );
     this.dialogEdit = true;
   }
 
