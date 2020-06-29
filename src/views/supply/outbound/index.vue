@@ -17,6 +17,14 @@
         :snackbar.sync="snackbar"
         :outbounds.sync="outbounds"
       />
+      <CreateBiddingDocument
+        v-if="dialogCreateBiddingDocument"
+        :biddingDocument.sync="biddingDocument"
+        :outbound.sync="outbound"
+        :dialogAdd.sync="dialogCreateBiddingDocument"
+        :message.sync="message"
+        :snackbar.sync="snackbar"
+      />
       <v-row justify="center">
         <DeleteOutbound
           v-if="dialogDel"
@@ -73,6 +81,14 @@
               </v-btn>
             </template>
             <v-list>
+              <v-list-item @click="openCreateBiddingDocument(item)">
+                <v-list-item-icon>
+                  <v-icon small>add</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Mở đấu thầu</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
               <v-list-item @click="openUpdateDialog(item)">
                 <v-list-item-icon>
                   <v-icon small>edit</v-icon>
@@ -109,23 +125,28 @@ import { convertFromDateTime } from "@/utils/tool";
 import DeleteOutbound from "./components/DeleteOutbound.vue";
 import { getOutboundByMerchant } from "@/api/outbound";
 import { PaginationResponse } from "@/api/payload";
+import { IBiddingDocument } from "@/entity/bidding-document";
+import CreateBiddingDocument from "../../supplier/bidding-document/components/CreateBiddingDocument.vue";
 
 @Component({
   components: {
     CreateOutbound,
     UpdateOutbound,
     DeleteOutbound,
+    CreateBiddingDocument,
     Snackbar
   }
 })
 export default class Outbound extends Vue {
   @PropSync("layout") layoutSync!: object;
 
+  biddingDocument = {} as IBiddingDocument;
   outbounds: Array<IOutbound> = [];
   outbound = {} as IOutbound;
   dialogAdd = false;
   dialogEdit = false;
   dialogDel = false;
+  dialogCreateBiddingDocument = false;
   search = "";
   message = "";
   snackbar = false;
@@ -184,6 +205,11 @@ export default class Outbound extends Vue {
   openDeleteDialog(item: IOutbound) {
     this.outbound = item;
     this.dialogDel = true;
+  }
+
+  openCreateBiddingDocument(item: IOutbound) {
+    this.outbound = item;
+    this.dialogCreateBiddingDocument = true;
   }
 
   @Watch("options", { deep: true })

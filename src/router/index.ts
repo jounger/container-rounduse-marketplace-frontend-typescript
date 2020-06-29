@@ -130,14 +130,6 @@ const routes: Array<RouteConfig> = [
       auth: ["ROLE_MERCHANT"]
     }
   },
-  {
-    path: "/outbound-new",
-    name: "Outbound New",
-    component: () => import("@/views/supply/outbound/OutboundNew.vue"),
-    meta: {
-      auth: true
-    }
-  },
   // forwarder
   {
     path: "/inbound",

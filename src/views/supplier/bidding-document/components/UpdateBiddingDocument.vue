@@ -1,6 +1,6 @@
 <template>
   <v-dialog
-    v-model="dialogAddSync"
+    v-model="dialogEditSync"
     fullscreen
     hide-overlay
     transition="dialog-bottom-transition"
@@ -8,13 +8,13 @@
     <v-card tile>
       <!-- TITLE -->
       <v-toolbar dark color="primary">
-        <v-btn icon dark @click="dialogAddSync = false">
+        <v-btn icon dark @click="dialogEditSync = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <v-toolbar-title>Thêm mới</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-          <v-btn dark text @click="dialogAddSync = false">Save</v-btn>
+          <v-btn dark text @click="dialogEditSync = false">Save</v-btn>
         </v-toolbar-items>
       </v-toolbar>
       <!-- START CONTENT -->
@@ -28,15 +28,9 @@
           <v-stepper-content step="1">
             <v-data-table
               :headers="headers"
-              :items="outbounds"
+              :items="[biddingDocumentSync.outbound]"
               item-key="id"
-              :loading="loading"
-              :options.sync="options"
-              :server-items-length="options.totalItems"
-              :footer-props="{
-                'items-per-page-options': options.itemsPerPageItems
-              }"
-              :actions-append="options.page"
+              :hide-default-footer="true"
               class="elevation-1 my-1"
             >
               <!--  -->
@@ -45,9 +39,6 @@
                   <v-toolbar-title>Danh sách hàng xuất</v-toolbar-title>
                   <v-divider class="mx-4" inset vertical></v-divider>
                   <v-spacer></v-spacer>
-                  <v-btn color="primary" dark class="mb-2" to="/outbound">
-                    Thêm mới
-                  </v-btn>
                 </v-toolbar>
               </template>
               <!--  -->
@@ -66,32 +57,15 @@
               <template v-slot:item.unit="{ item }">
                 {{ item.booking.unit }} x {{ item.containerType }}
               </template>
-              <template v-slot:item.actions="{ item }">
-                <v-btn
-                  class="ma-2"
-                  tile
-                  outlined
-                  color="success"
-                  @click="selectOutbound(item)"
-                >
-                  <v-icon left>mdi-pencil</v-icon>
-                  {{
-                    biddingDocumentLocal.outbound &&
-                    biddingDocumentLocal.outbound.id == item.id
-                      ? "Bỏ"
-                      : "Chọn"
-                  }}
-                </v-btn>
-              </template>
             </v-data-table>
             <v-btn
               color="primary"
               @click="
-                !isEmptyObject(biddingDocumentLocal.outbound)
+                !isEmptyObject(biddingDocumentSync.outbound)
                   ? (stepper = 2)
                   : (stepper = 1)
               "
-              :disabled="isEmptyObject(biddingDocumentLocal.outbound)"
+              :disabled="isEmptyObject(biddingDocumentSync.outbound)"
               >Tiếp tục</v-btn
             >
           </v-stepper-content>
@@ -106,14 +80,14 @@
                 ref="datePickerMenu"
                 v-model="datePickerMenu"
                 :close-on-content-click="false"
-                :return-value.sync="biddingDocumentLocal.bidOpening"
+                :return-value.sync="biddingDocumentSync.bidOpening"
                 transition="scale-transition"
                 offset-y
                 min-width="290px"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    v-model="biddingDocumentLocal.bidOpening"
+                    v-model="biddingDocumentSync.bidOpening"
                     label="Thời gian mở thầu"
                     prepend-icon="event"
                     v-bind="attrs"
@@ -122,7 +96,7 @@
                   ></v-text-field>
                 </template>
                 <v-date-picker
-                  v-model="biddingDocumentLocal.bidOpening"
+                  v-model="biddingDocumentSync.bidOpening"
                   no-title
                   scrollable
                 >
@@ -134,7 +108,7 @@
                     text
                     color="primary"
                     @click="
-                      $refs.datePickerMenu.save(biddingDocumentLocal.bidOpening)
+                      $refs.datePickerMenu.save(biddingDocumentSync.bidOpening)
                     "
                     >OK</v-btn
                   >
@@ -145,14 +119,14 @@
                 ref="datePickerMenu2"
                 v-model="datePickerMenu2"
                 :close-on-content-click="false"
-                :return-value.sync="biddingDocumentLocal.bidClosing"
+                :return-value.sync="biddingDocumentSync.bidClosing"
                 transition="scale-transition"
                 offset-y
                 min-width="290px"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    v-model="biddingDocumentLocal.bidClosing"
+                    v-model="biddingDocumentSync.bidClosing"
                     label="Thời gian đóng thầu"
                     prepend-icon="event"
                     v-bind="attrs"
@@ -161,7 +135,7 @@
                   ></v-text-field>
                 </template>
                 <v-date-picker
-                  v-model="biddingDocumentLocal.bidClosing"
+                  v-model="biddingDocumentSync.bidClosing"
                   no-title
                   scrollable
                 >
@@ -173,40 +147,38 @@
                     text
                     color="primary"
                     @click="
-                      $refs.datePickerMenu2.save(
-                        biddingDocumentLocal.bidClosing
-                      )
+                      $refs.datePickerMenu2.save(biddingDocumentSync.bidClosing)
                     "
                     >OK</v-btn
                   >
                 </v-date-picker>
               </v-menu>
               <v-select
-                v-model="biddingDocumentLocal.currencyOfPayment"
+                v-model="biddingDocumentSync.currencyOfPayment"
                 :items="currencyOfPayments"
                 :rules="[required('currency')]"
                 label="Đồng tiền thanh toán"
               ></v-select>
               <v-text-field
-                v-model="biddingDocumentLocal.bidPackagePrice"
+                v-model="biddingDocumentSync.bidPackagePrice"
                 :rules="[required('bid package price')]"
                 type="number"
                 label="Giá gói thầu"
               ></v-text-field>
               <v-text-field
-                v-model="biddingDocumentLocal.bidFloorPrice"
+                v-model="biddingDocumentSync.bidFloorPrice"
                 :rules="[
                   required('bid floor price'),
                   maxNumber(
                     'bid floor price',
-                    biddingDocumentLocal.bidPackagePrice
+                    biddingDocumentSync.bidPackagePrice
                   )
                 ]"
                 type="number"
                 label="Giá sàn"
               ></v-text-field>
               <v-checkbox
-                v-model="biddingDocumentLocal.isMultipleAward"
+                v-model="biddingDocumentSync.isMultipleAward"
                 label="Cho phép nhiều nhà thầu cùng thắng"
               ></v-checkbox>
               <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
@@ -220,7 +192,7 @@
           <v-stepper-content step="3">
             <v-form ref="finishForm" v-model="valid" lazy-validation>
               <v-text-field
-                v-model="biddingDocumentLocal.bidDiscountCode"
+                v-model="biddingDocumentSync.bidDiscountCode"
                 prepend-icon="event"
                 label="Mã giảm giá"
               ></v-text-field>
@@ -235,7 +207,7 @@
               ></v-checkbox>
               <v-btn
                 color="primary"
-                @click="createBiddingDocument()"
+                @click="updateBiddingDocument()"
                 :disabled="!valid"
                 >Hoàn tất</v-btn
               >
@@ -251,61 +223,34 @@
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
-import { IOutbound } from "@/entity/outbound";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
-import { isEmptyObject } from "../../../../utils/tool";
 
 @Component({
   mixins: [FormValidate, Utils]
 })
-export default class CreateBiddingDocument extends Vue {
-  @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
+export default class UpdateBiddingDocument extends Vue {
+  @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
   @PropSync("biddingDocument", { type: Object })
   biddingDocumentSync!: IBiddingDocument;
-  @PropSync("outbound", { type: Object })
-  outboundSync?: IOutbound;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
-  dateInit = new Date().toISOString().substr(0, 10);
-  biddingDocumentLocal = {
-    offeree: this.$auth.user().username,
-    outbound: {},
-    bidDiscountCode: "",
-    isMultipleAward: false,
-    bidOpening: this.dateInit,
-    bidClosing: this.dateInit,
-    dateOfDecision: this.dateInit,
-    currencyOfPayment: "VND",
-    bidPackagePrice: 0,
-    bidFloorPrice: 0,
-    priceLeadership: 0
-  } as IBiddingDocument;
   // Form validate
   autoSendCheckbox = true;
   checkbox = false;
-  editable = false;
+  editable = true;
   stepper = 1;
   valid = true;
   // API list
   currencyOfPayments: Array<string> = [];
   unitOfMesurements: Array<string> = [];
 
-  // biddingDocumentLocal form
+  // biddingDocumentSync form
   datePickerMenu = false;
   datePickerMenu2 = false;
 
   // Outbound form
-  outbounds: Array<IOutbound> = [];
-  loading = false;
-  options = {
-    descending: true,
-    page: 1,
-    itemsPerPage: 5,
-    totalItems: 0,
-    itemsPerPageItems: [5, 10, 20, 50]
-  };
   headers = [
     {
       text: "Mã",
@@ -322,43 +267,16 @@ export default class CreateBiddingDocument extends Vue {
     { text: "Cảng đóng hàng", value: "booking.portOfLoading" },
     { text: "Khối lượng hàng", value: "grossWeight" },
     { text: "Số cont", value: "unit" },
-    { text: "FCL", value: "fcl" },
-    {
-      text: "Hành động",
-      value: "actions"
-    }
+    { text: "FCL", value: "fcl" }
   ];
 
-  selectOutbound(item: IOutbound) {
-    if (
-      this.biddingDocumentLocal.outbound &&
-      this.biddingDocumentLocal.outbound.id === item.id
-    ) {
-      // unselected item
-      this.biddingDocumentLocal.outbound = {} as IOutbound;
-    } else {
-      // select item
-      this.biddingDocumentLocal.outbound = item;
-    }
-  }
-
   // BiddingDocument
-  createBiddingDocument() {
+  updateBiddingDocument() {
     // TODO: API create biddingDocument
-    this.biddingDocumentSync = this.biddingDocumentLocal;
+    console.log(this.biddingDocumentSync);
   }
 
   mounted() {
-    // TODO: API get Outbound
-    if (this.outboundSync && !isEmptyObject(this.outboundSync)) {
-      this.outbounds.push(this.outboundSync);
-      this.selectOutbound(this.outboundSync);
-    } else {
-      this.outbounds = [] as Array<IOutbound>;
-    }
-
-    this.options.totalItems = 10;
-    this.loading = false;
     //
     this.currencyOfPayments = ["VND", "USD"];
     this.unitOfMesurements = ["KG", "Ton"];
