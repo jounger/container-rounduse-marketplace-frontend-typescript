@@ -1,16 +1,16 @@
 <template>
-  <v-dialog v-model="dialogAddSync" max-width="600px">
+  <v-dialog v-model="dialogAddSync" persistent max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
-            update ? "Cập nhập" : "Thêm mới"
+            update ? "Cập nhập Vai trò" : "Thêm mới Vai trò"
           }}</span>
           <v-btn
             icon
             dark
             @click="dialogAddSync = false"
-            style="margin-left:412px;"
+            style="margin-left:337px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
@@ -18,25 +18,35 @@
       </v-toolbar>
       <v-card-text>
         <v-form>
+          <small>*Dấu sao là trường bắt buộc</small>
           <v-layout row>
             <v-flex xs9>
               <v-text-field
-                label="Tên vai trò"
+                label="Tên vai trò*"
                 name="name"
                 prepend-icon="mdi-account"
                 type="text"
-                v-model="permissionSync.name"
+                :counter="20"
+                :rules="[minLength('name', 5), maxLength('name', 20)]"
+                v-model="permissionLocal.name"
+                :readonly="readonly"
               ></v-text-field>
             </v-flex>
           </v-layout>
           <v-layout row>
             <v-flex xs9>
               <v-text-field
-                label="Mô tả"
+                label="Mô tả*"
                 name="description"
                 prepend-icon="mdi-account"
                 type="text"
-                v-model="permissionSync.description"
+                :counter="100"
+                :rules="[
+                  minLength('description', 5),
+                  maxLength('description', 100)
+                ]"
+                v-model="permissionLocal.description"
+                :readonly="readonly"
               ></v-text-field>
             </v-flex>
           </v-layout>
@@ -49,7 +59,13 @@
         <v-btn @click="updatePermission()" color="primary" v-if="update"
           >Cập nhập</v-btn
         >
-        <v-btn @click="addPermission()" color="primary" v-else>Thêm mới</v-btn>
+        <v-btn
+          @click="addPermission()"
+          color="primary"
+          v-else
+          :disabled="readonly"
+          >Thêm mới</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -57,30 +73,44 @@
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPermission } from "@/entity/permission";
+import FormValidate from "@/mixin/form-validate";
 import { createPermission, updatePermission } from "@/api/permission";
 
-@Component
+@Component({
+  mixins: [FormValidate]
+})
 export default class CreatePermission extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("permission", { type: Object }) permissionSync!: IPermission;
   @PropSync("permissions", { type: Array }) permissionsSync!: Array<
     IPermission
   >;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @Prop(Object) permission!: IPermission;
   @Prop(Boolean) update!: boolean;
 
+  readonly = false;
+  permissionLocal = {
+    name: "",
+    description: ""
+  } as IPermission;
+  created() {
+    this.permissionLocal.name = this.permission.name;
+    this.permissionLocal.description = this.permission.description;
+  }
   addPermission() {
-    if (this.permissionSync) {
-      createPermission(this.permissionSync)
+    if (this.permissionLocal) {
+      createPermission(this.permissionLocal)
         .then(res => {
           console.log(res.data);
           const response: IPermission = res.data;
           console.log(response);
-          this.permissionSync.id = response.id;
+          this.permissionLocal.id = response.id;
           this.messageSync =
-            "Thêm mới thành công vai trò: " + this.permissionSync.name;
-          this.permissionsSync.push(this.permissionSync);
+            "Thêm mới thành công vai trò: " + this.permissionLocal.name;
+          this.permissionsSync.unshift(this.permissionLocal);
+          console.log(this.permissionsSync);
+          this.readonly = true;
         })
         .catch(err => {
           console.log(err);
@@ -90,14 +120,19 @@ export default class CreatePermission extends Vue {
     }
   }
   updatePermission() {
-    if (this.permissionSync.id) {
-      updatePermission(this.permissionSync)
+    if (this.permission.id) {
+      this.permissionLocal.id = this.permission.id;
+      updatePermission(this.permissionLocal)
         .then(res => {
           console.log(res.data);
           const response: IPermission = res.data;
-          this.permissionSync = response;
+          this.permissionLocal = response;
           this.messageSync =
-            "Cập nhập thành công vai trò: " + this.permissionSync.name;
+            "Cập nhập thành công vai trò: " + this.permissionLocal.name;
+          const index = this.permissionsSync.findIndex(
+            x => x.id === this.permission.id
+          );
+          this.permissionsSync.splice(index, 1, this.permissionLocal);
         })
         .catch(err => {
           console.log(err);

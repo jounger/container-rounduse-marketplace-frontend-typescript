@@ -1,16 +1,16 @@
 <template>
-  <v-dialog v-model="dialogAddSync" max-width="600px">
+  <v-dialog v-model="dialogAddSync" persistent max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
-            update ? "Cập nhập" : "Thêm mới"
+            update ? "Cập nhập Quyền" : "Thêm mới Quyền"
           }}</span>
           <v-btn
             icon
             dark
             @click="dialogAddSync = false"
-            style="margin-left:412px;"
+            style="margin-left:339px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
@@ -18,25 +18,49 @@
       </v-toolbar>
       <v-card-text>
         <v-form>
+          <small>*Dấu sao là trường bắt buộc</small>
           <v-layout row>
             <v-flex xs9>
               <v-text-field
-                label="Tên quyền"
+                label="Tên quyền*"
                 name="name"
                 prepend-icon="mdi-account"
                 type="text"
-                v-model="roleSync.name"
+                v-model="roleLocal.name"
+                :counter="20"
+                :rules="[minLength('name', 5), maxLength('name', 20)]"
+                :readonly="readonly"
               ></v-text-field>
             </v-flex>
           </v-layout>
           <v-layout row>
             <v-flex xs9>
-              <v-select
+              <v-combobox
+                v-model="roleLocal.permissions"
                 :items="permissionsToString"
-                label="Phân vai trò"
+                chips
+                :clearable="!readonly"
+                label="Phân vai trò*"
                 multiple
-                v-model="roleSync.permissions"
-              ></v-select>
+                prepend-icon="filter_list"
+                :rules="[required('permissions')]"
+                :readonly="readonly"
+              >
+                <template
+                  v-slot:selection="{ attrs, item, select, selected }"
+                  v-if="!readonly"
+                >
+                  <v-chip
+                    v-bind="attrs"
+                    :input-value="selected"
+                    close
+                    @click="select"
+                    @click:close="remove(item)"
+                  >
+                    {{ item }}
+                  </v-chip>
+                </template>
+              </v-combobox>
             </v-flex>
           </v-layout>
           <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
@@ -48,7 +72,9 @@
         <v-btn @click="updateRole()" color="primary" v-if="update"
           >Cập nhập</v-btn
         >
-        <v-btn @click="addRole()" color="primary" v-else>Thêm mới</v-btn>
+        <v-btn @click="addRole()" color="primary" v-else :disabled="readonly"
+          >Thêm mới</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -60,18 +86,28 @@ import { createRole, updateRole } from "@/api/role";
 import { PaginationResponse } from "@/api/payload";
 import { getPermissions } from "@/api/permission";
 import { IPermission } from "@/entity/permission";
+import FormValidate from "@/mixin/form-validate";
 
-@Component
+@Component({
+  mixins: [FormValidate]
+})
 export default class CreateRole extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("role", { type: Object }) roleSync!: IRole;
   @PropSync("roles", { type: Array }) rolesSync!: Array<IRole>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Boolean) update!: boolean;
+  @Prop(Object) role!: IRole;
 
   permissions = [] as Array<IPermission>;
+  readonly = false;
+  roleLocal = {
+    name: "",
+    permissions: []
+  } as IRole;
   created() {
+    this.roleLocal.name = this.role.name;
+    this.roleLocal.permissions = this.role.permissions;
     getPermissions({
       page: 0,
       limit: 100
@@ -86,39 +122,44 @@ export default class CreateRole extends Vue {
   get permissionsToString() {
     return this.permissions.map(x => x.name);
   }
+  remove(item: string) {
+    this.roleLocal.permissions.splice(
+      this.roleLocal.permissions.indexOf(item),
+      1
+    );
+    this.roleLocal.permissions = [...this.roleLocal.permissions];
+  }
   addRole() {
-    if (this.roleSync) {
-      createRole(this.roleSync)
+    if (this.roleLocal) {
+      createRole(this.roleLocal)
         .then(res => {
-          console.log(res.data);
           const response: IRole = res.data;
-          this.roleSync = response;
-          this.messageSync = "Thêm mới thành công quyền: " + this.roleSync.name;
-          this.rolesSync.push(this.roleSync);
+          this.roleLocal.id = response.id;
+          this.messageSync =
+            "Thêm mới thành công quyền: " + this.roleLocal.name;
+          this.rolesSync.unshift(this.roleLocal);
+          this.readonly = true;
         })
         .catch(err => {
           console.log(err);
           this.messageSync = "Đã có lỗi xảy ra";
         })
-        .finally(
-          () => (
-            (this.snackbarSync = true),
-            this.$store.dispatch("addNotification", {
-              message: this.messageSync,
-              type: "success"
-            })
-          )
-        );
+        .finally(() => (this.snackbarSync = true));
     }
   }
   updateRole() {
-    if (this.roleSync.id) {
-      updateRole(this.roleSync)
+    console.log(this.roleLocal.permissions);
+    if (this.role.id) {
+      this.roleLocal.id = this.role.id;
+      updateRole(this.roleLocal)
         .then(res => {
           console.log(res.data);
           const response: IRole = res.data;
-          this.roleSync = response;
-          this.messageSync = "Cập nhập thành công quyền: " + this.roleSync.name;
+          this.roleLocal = response;
+          this.messageSync =
+            "Cập nhập thành công quyền: " + this.roleLocal.name;
+          const index = this.rolesSync.findIndex(x => x.id === this.role.id);
+          this.rolesSync.splice(index, 1, this.roleLocal);
         })
         .catch(err => {
           console.log(err);

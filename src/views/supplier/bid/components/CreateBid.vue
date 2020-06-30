@@ -154,7 +154,14 @@
                     class="elevation-1 my-1"
                   >
                     <template v-slot:item.pickUpTime="{ item }">
-                      {{ formatDatetime(item.pickUpTime) }}
+                      {{ formatDatetime(item.pickupTime) }}
+                    </template>
+                    <template v-slot:item.status="{ item }">
+                      {{
+                        typeof item.billOfLading !== "undefined"
+                          ? item.billOfLading.containers[0].status
+                          : ""
+                      }}
                     </template>
                     <!-- Show containers expened -->
                     <template v-slot:expanded-item="{ headers, item }">
@@ -246,6 +253,9 @@ import { IContainer } from "@/entity/container";
 import FormValidate from "@/mixin/form-validate";
 import { IInbound } from "@/entity/inbound";
 import Utils from "@/mixin/utils";
+import { getInboundByForwarder } from "@/api/inbound";
+import { PaginationResponse } from "@/api/payload";
+import { CreateBiddingDocument } from "@/api/bid";
 
 @Component({
   mixins: [FormValidate, Utils]
@@ -253,6 +263,7 @@ import Utils from "@/mixin/utils";
 export default class CreateBid extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("bid", { type: Object }) bidSync!: IBid;
+  @PropSync("bids", { type: Array }) bidsSync!: Array<IBid>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
@@ -284,7 +295,7 @@ export default class CreateBid extends Vue {
   // bidLocal form
   datePickerMenu = false;
   datePickerMenu2 = false;
-
+  readonlyInbound = false;
   // Inbound
   inbounds: Array<IInbound> = [];
   inbound = {} as IInbound;
@@ -321,7 +332,20 @@ export default class CreateBid extends Vue {
   // Bid
   createBid() {
     // TODO: API create bid
-    this.bidSync = this.bidLocal;
+    CreateBiddingDocument(this.bidLocal)
+      .then(res => {
+        console.log(res.data);
+        const response: IBid = res.data;
+        this.bidLocal = response;
+        this.messageSync = "Thêm mới thành công Hồ sơ dự thầu: " + this.bidLocal.id;
+        this.bidsSync.unshift(this.bidLocal);
+        this.readonlyInbound = true;
+      })
+      .catch(err => {
+        console.log(err);
+        this.messageSync = "Đã có lỗi xảy ra";
+      })
+      .finally(() => (this.snackbarSync = true));
   }
 
   selectContainer(item: IContainer) {
@@ -339,7 +363,18 @@ export default class CreateBid extends Vue {
       ? true
       : false;
   }
-
+  created() {
+    getInboundByForwarder(this.$auth.user().id, {
+      page: 0,
+      limit: 100
+    })
+      .then(res => {
+        const response: PaginationResponse<IInbound> = res.data;
+        this.inbounds = response.data;
+      })
+      .catch(err => console.log(err))
+      .finally();
+  }
   mounted() {
     // TODO: API get
     this.options.totalItems = 10;

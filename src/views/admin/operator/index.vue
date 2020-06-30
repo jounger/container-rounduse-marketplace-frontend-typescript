@@ -13,7 +13,7 @@
       <v-row justify="center">
         <CreateOperator
           v-if="dialogAdd"
-          :operator.sync="operator"
+          :operator="operator"
           :operators.sync="operators"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
@@ -32,7 +32,6 @@
         :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
         :actions-append="options.page"
         class="elevation-1"
-        :custom-filter="filterDatatable"
       >
         <template v-slot:top>
           <v-toolbar flat color="white">
@@ -99,40 +98,23 @@ export default class Operator extends Vue {
     {
       text: "Tên đăng nhập",
       align: "start",
-      sortable: true,
-      value: "username",
-      filter: (value: string) => {
-        if (!this.search) return true;
-        return value == this.search;
-      }
+      value: "username"
     },
     { text: "Email", value: "email" },
     { text: "Số điện thoại", value: "phone" },
     {
       text: "Phân quyền",
-      value: "roles",
-      filter: (value: string) => {
-        if (!this.roleSearch) return true;
-        return value == this.roleSearch;
-      }
+      value: "roles"
     },
     { text: "Trạng thái", value: "status" },
     {
       text: "Hành động",
-      value: "actions"
+      value: "actions",
+      sortable: false
     }
   ];
   created() {
     this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
-  }
-
-  filterDatatable(value: string, search: string) {
-    return (
-      value != null &&
-      search != null &&
-      typeof value === "string" &&
-      value.toString().indexOf(search) !== -1
-    );
   }
   openCreateDialog() {
     this.operator = {} as IOperator;

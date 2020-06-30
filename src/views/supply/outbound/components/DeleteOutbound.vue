@@ -25,9 +25,7 @@
             <v-list>
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title>{{
-                    outboundSync.booking.bookingNumber
-                  }}</v-list-item-title>
+                  <v-list-item-title>{{ bookNo }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -55,6 +53,12 @@ export default class DeleteOutbound extends Vue {
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
+  bookNo = "";
+  created() {
+    if (typeof this.outboundSync.booking.bookingNumber != "undefined") {
+      this.bookNo = this.outboundSync.booking.bookingNumber;
+    }
+  }
   removeOutbound() {
     if (this.outboundSync.id) {
       removeOutbound(this.outboundSync.id)
@@ -62,9 +66,7 @@ export default class DeleteOutbound extends Vue {
           console.log(res.data);
           const response: IOutbound = res.data;
           this.outboundSync = response;
-          this.messageSync =
-            "Xóa thành công hàng xuất: " +
-            this.outboundSync.booking.bookingNumber;
+          this.messageSync = "Xóa thành công hàng xuất: " + this.bookNo;
           const index = this.outboundsSync.findIndex(
             x => x.id === this.outboundSync.id
           );

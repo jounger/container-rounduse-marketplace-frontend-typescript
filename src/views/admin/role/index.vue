@@ -3,6 +3,7 @@
     <v-card>
       <v-row justify="center">
         <DeleteRole
+          v-if="dialogDel"
           :dialogDel.sync="dialogDel"
           :role.sync="role"
           :roles.sync="roles"
@@ -12,7 +13,8 @@
       </v-row>
       <v-row justify="center">
         <CreateRole
-          :role.sync="role"
+          v-if="dialogAdd"
+          :role="role"
           :roles.sync="roles"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"

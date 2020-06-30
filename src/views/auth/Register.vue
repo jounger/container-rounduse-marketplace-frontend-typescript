@@ -94,7 +94,8 @@
               label="Địa chỉ"
               name="address"
               prepend-icon="mdi-lock"
-              :rules="[required('address')]"
+              :counter="100"
+              :rules="[minLength('address', 5), maxLength('address', 100)]"
               type="text"
               v-model="address"
             ></v-text-field>
@@ -122,7 +123,11 @@
                     name="companyName"
                     prepend-icon="mdi-lock"
                     type="text"
-                    :rules="[required('Company name')]"
+                    :counter="100"
+                    :rules="[
+                      minLength('company name', 5),
+                      maxLength('company name', 100)
+                    ]"
                     v-model="companyName"
                   >
                   </v-text-field>
@@ -135,7 +140,11 @@
                     name="companyCode"
                     prepend-icon="mdi-lock"
                     type="text"
-                    :rules="[required('Company code')]"
+                    :counter="10"
+                    :rules="[
+                      minLength('cpmpany code', 2),
+                      maxLength('company code', 10)
+                    ]"
                     v-model="companyCode"
                   ></v-text-field>
                 </v-flex>
@@ -149,7 +158,11 @@
                     name="contactPerson"
                     prepend-icon="mdi-lock"
                     type="text"
-                    :rules="[required('Contact Person')]"
+                    :counter="50"
+                    :rules="[
+                      minLength('contact person', 5),
+                      maxLength('contact person', 50)
+                    ]"
                     v-model="contactPerson"
                   ></v-text-field>
                 </v-flex>
@@ -161,7 +174,8 @@
                     name="website"
                     prepend-icon="mdi-lock"
                     type="text"
-                    :rules="[required('website')]"
+                    :counter="50"
+                    :rules="[minLength('website', 5), maxLength('website', 50)]"
                     v-model="website"
                   ></v-text-field>
                 </v-flex>
@@ -174,7 +188,8 @@
                     label="Tin"
                     name="tin"
                     prepend-icon="mdi-lock"
-                    :rules="[required('tin')]"
+                    :counter="20"
+                    :rules="[minLength('tin', 5), maxLength('tin', 20)]"
                     type="text"
                     v-model="tin"
                   ></v-text-field>
@@ -187,7 +202,8 @@
                     name="fax"
                     prepend-icon="mdi-lock"
                     type="text"
-                    :rules="[required('fax')]"
+                    :counter="20"
+                    :rules="[minLength('fax', 5), maxLength('fax', 20)]"
                     v-model="fax"
                   ></v-text-field>
                 </v-flex>
@@ -201,7 +217,11 @@
                     name="companyDescription"
                     prepend-icon="mdi-lock"
                     type="text"
-                    :rules="[required('Company description')]"
+                    :counter="200"
+                    :rules="[
+                      minLength('company description', 5),
+                      maxLength('company description', 200)
+                    ]"
                     v-model="companyDescription"
                   ></v-text-field>
                 </v-flex>
@@ -213,7 +233,11 @@
                     name="companyAddress"
                     prepend-icon="mdi-lock"
                     type="text"
-                    :rules="[required('Company address')]"
+                    :counter="200"
+                    :rules="[
+                      minLength('company address', 5),
+                      maxLength('company address', 200)
+                    ]"
                     v-model="companyAddress"
                   ></v-text-field>
                 </v-flex>
@@ -238,7 +262,7 @@
               :rules="[required('agree term')]"
               label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
             ></v-checkbox>
-            <v-btn color="primary" @click="submit()" :disabled="!valid"
+            <v-btn color="primary" @click="submit()" :disabled="!checkbox"
               >Hoàn tất</v-btn
             >
             <v-btn text @click="stepper = 2">Quay lại</v-btn>

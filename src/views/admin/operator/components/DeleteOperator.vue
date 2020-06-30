@@ -59,9 +59,7 @@ export default class DeleteOperator extends Vue {
     if (this.operatorSync.id) {
       removeOperator(this.operatorSync.id)
         .then(res => {
-          console.log(res.data);
-          const response: IOperator = res.data;
-          this.operatorSync = response;
+          console.log(res);
           this.messageSync =
             "Xóa thành công quản trị viên: " + this.operatorSync.username;
           const index = this.operatorsSync.findIndex(

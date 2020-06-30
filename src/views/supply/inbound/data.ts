@@ -6,7 +6,7 @@ export const InboundData: IInbound[] = [
     containerType: "40HC",
     status: "CREATED",
     emptyTime: "2020-12-02T20:20",
-    pickUpTime: "2020-12-01T20:20",
+    pickupTime: "2020-12-01T20:20",
     billOfLading: {
       id: 0,
       billOfLadingNumber: "BXAWI203923",
@@ -46,7 +46,7 @@ export const InboundData: IInbound[] = [
     containerType: "40HC",
     status: "CREATED",
     emptyTime: "2020-12-02T20:20",
-    pickUpTime: "2020-12-01T20:20",
+    pickupTime: "2020-12-01T20:20",
     billOfLading: {
       id: 0,
       billOfLadingNumber: "BXAWI203923",
@@ -78,7 +78,7 @@ export const InboundData: IInbound[] = [
     containerType: "40HC",
     status: "CREATED",
     emptyTime: "2020-12-02T20:20",
-    pickUpTime: "2020-12-01T20:20",
+    pickupTime: "2020-12-01T20:20",
     billOfLading: {
       id: 0,
       billOfLadingNumber: "BXAWI203923",
@@ -102,7 +102,7 @@ export const InboundData: IInbound[] = [
     containerType: "40HC",
     status: "CREATED",
     emptyTime: "2020-12-02T20:20",
-    pickUpTime: "2020-12-01T20:20",
+    pickupTime: "2020-12-01T20:20",
     billOfLading: {
       id: 0,
       billOfLadingNumber: "BXAWI203923",

@@ -68,10 +68,14 @@ export default class Navigation extends Vue {
   }
 
   get getUserRole() {
-    return this.$auth
-      .user()
-      .roles[0].toLowerCase()
-      .substring(5);
+    if (typeof this.$auth.user().roles !== "undefined") {
+      return this.$auth
+        .user()
+        .roles[0].toLowerCase()
+        .substring(5);
+    } else {
+      return "";
+    }
   }
 
   get getNavigation() {

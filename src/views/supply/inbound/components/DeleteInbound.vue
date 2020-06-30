@@ -26,7 +26,9 @@
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title>{{
-                    inboundSync.billOfLading.billOfLadingNumber
+                    typeof inboundSync.billOfLading !== "undefined"
+                      ? inboundSync.billOfLading.billOfLadingNumber
+                      : ""
                   }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>

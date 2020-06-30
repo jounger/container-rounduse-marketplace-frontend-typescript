@@ -5,5 +5,5 @@ export interface IBillOfLading {
   billOfLadingNumber: string;
   containers: Array<IContainer>;
   portOfDelivery: string; // nameCode
-  freeTime: number;
+  freeTime: string;
 }

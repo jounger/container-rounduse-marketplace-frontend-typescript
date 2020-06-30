@@ -142,6 +142,39 @@
                 :rules="[required('port of loading')]"
                 label="Cảng lấy container đặc"
               ></v-select>
+              <v-menu
+                ref="freeTimePicker"
+                v-model="freeTimePicker"
+                :close-on-content-click="false"
+                :return-value="freeTime"
+                transition="scale-transition"
+                offset-y
+                min-width="290px"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="freeTime"
+                    label="Thời gian được thuê cont"
+                    prepend-icon="event"
+                    v-bind="attrs"
+                    v-on="on"
+                    required
+                    :rules="[required('free time')]"
+                  ></v-text-field>
+                </template>
+                <v-date-picker v-model="freeTimeSync" no-title scrollable>
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="freeTimePicker = false"
+                    >Cancel</v-btn
+                  >
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="$refs.freeTimePicker.save(freeTimeSync)"
+                    >OK</v-btn
+                  >
+                </v-date-picker>
+              </v-menu>
               <v-btn
                 color="primary"
                 @click="updateBillOfLading()"
@@ -272,7 +305,7 @@
             <v-btn
               color="primary"
               @click="updateBillOfLading()"
-              :disabled="!checkbox"
+              :disabled="!valid"
               >Hoàn tất</v-btn
             >
             <v-btn text @click="stepper = 2">Quay lại</v-btn>
@@ -298,7 +331,6 @@ import { IShippingLine } from "@/entity/shipping-line";
 import { IContainerType } from "@/entity/container-type";
 import { IDriver } from "@/entity/driver";
 import { convertToDateTime } from "@/utils/tool";
-import { calculateFreeTime } from "@/utils/tool";
 import { updateInbound } from "@/api/inbound";
 import { getPorts } from "@/api/port";
 import { getContainerTypes } from "@/api/container-type";
@@ -317,7 +349,7 @@ export default class UpdateInbound extends Vue {
   @PropSync("inbounds", { type: Array }) inboundsSync!: Array<IInbound>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-
+  @PropSync("freeTime", { type: String }) freeTimeSync!: string;
   // Form validate
   checkbox = false;
   editable = true;
@@ -337,7 +369,7 @@ export default class UpdateInbound extends Vue {
 
   // B/L form
   emptyTimePicker = false;
-
+  freeTimePicker = false;
   // Container form
   containerHeaders = [
     {
@@ -372,9 +404,8 @@ export default class UpdateInbound extends Vue {
     this.inboundSync.pickupTime = convertToDateTime(
       this.inboundSync.pickupTime
     );
-    this.inboundSync.billOfLading.freeTime = calculateFreeTime(
-      this.inboundSync.pickupTime,
-      this.inboundSync.emptyTime
+    this.inboundSync.billOfLading.freeTime = convertToDateTime(
+      this.freeTimeSync
     );
     console.log(this.inboundSync);
     updateInbound(this.inboundSync)
@@ -456,10 +487,8 @@ export default class UpdateInbound extends Vue {
       removeContainer(item.id)
         .then(res => {
           console.log(res.data);
-          const response: IContainer = res.data;
-          this.container = response;
           this.messageSync =
-            "Xóa thành công vai trò: " + this.container.containerNumber;
+            "Xóa thành công Container: " + item.containerNumber;
           const index = this.inboundSync.billOfLading.containers.findIndex(
             x => x.id === this.container.id
           );
@@ -518,7 +547,9 @@ export default class UpdateInbound extends Vue {
       .finally();
   }
   updateBillOfLading() {
-    this.inboundSync.billOfLading.containers;
+    this.inboundSync.billOfLading.freeTime = convertToDateTime(
+      this.freeTimeSync
+    );
     updateBillOfLading(this.inboundSync.billOfLading)
       .then(res => {
         const response: IBillOfLading = res.data;
@@ -530,12 +561,13 @@ export default class UpdateInbound extends Vue {
           x => x.id === this.inboundSync.id
         );
         this.inboundsSync.splice(index, 1, this.inboundSync);
+        this.stepper = 3;
       })
       .catch(err => {
         console.log(err);
         this.messageSync = "Đã có lỗi xảy ra";
       })
-      .finally(() => ((this.snackbarSync = true), (this.stepper = 3)));
+      .finally(() => (this.snackbarSync = true));
   }
   get driversToString() {
     return this.drivers.map(x => x.username);

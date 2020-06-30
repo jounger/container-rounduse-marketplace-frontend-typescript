@@ -24,19 +24,20 @@
 
           <v-stepper-content step="1">
             <v-form ref="inboundForm" v-model="valid" lazy-validation>
+              <small>*Dấu sao là trường bắt buộc</small>
               <v-select
                 v-model="inboundLocal.shippingLine"
                 :items="shippingLinesToString"
                 :rules="[required('shipping line')]"
-                label="Hãng tàu"
-                required
+                label="Hãng tàu*"
+                :readonly="readonlyInbound"
               ></v-select>
               <v-select
                 v-model="inboundLocal.containerType"
                 :items="containerTypesToString"
                 :rules="[required('container type')]"
-                label="Loại container"
-                required
+                label="Loại container*"
+                :readonly="readonlyInbound"
               ></v-select>
               <v-menu
                 ref="pickupTimePicker"
@@ -50,15 +51,16 @@
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
                     v-model="inboundLocal.pickupTime"
-                    label="Thời gian lấy containers đặc từ cảng"
+                    label="Thời gian lấy containers đặc từ cảng*"
                     prepend-icon="event"
                     v-bind="attrs"
                     v-on="on"
-                    required
                     :rules="[required('pickup time')]"
+                    :readonly="readonlyInbound"
                   ></v-text-field>
                 </template>
                 <v-date-picker
+                  v-if="!readonlyInbound"
                   v-model="inboundLocal.pickupTime"
                   no-title
                   scrollable
@@ -81,7 +83,7 @@
                 ref="emptyTimePicker"
                 v-model="emptyTimePicker"
                 :close-on-content-click="false"
-                :return-value.sync="inboundLocal.emptyTimePicker"
+                :return-value.sync="inboundLocal.emptyTime"
                 transition="scale-transition"
                 offset-y
                 min-width="290px"
@@ -89,15 +91,15 @@
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
                     v-model="inboundLocal.emptyTime"
-                    label="Thời gian chờ"
+                    label="Thời gian chờ cont rỗng"
                     prepend-icon="event"
                     v-bind="attrs"
                     v-on="on"
-                    required
-                    :rules="[required('pickup time')]"
+                    :readonly="readonlyInbound"
                   ></v-text-field>
                 </template>
                 <v-date-picker
+                  v-if="!readonlyInbound"
                   v-model="inboundLocal.emptyTime"
                   no-title
                   scrollable
@@ -130,22 +132,62 @@
 
           <v-stepper-content step="2">
             <v-form ref="billOfLadingForm" v-model="valid" lazy-validation>
+              <small>*Dấu sao là trường bắt buộc</small>
               <v-text-field
                 v-model="inboundLocal.billOfLading.billOfLadingNumber"
-                :counter="50"
-                :rules="[
-                  minLength('B/L number', 5),
-                  maxLength('B/L number', 50)
-                ]"
-                label="B/L No."
+                :rules="[required('B/L No.')]"
+                label="B/L No.*"
+                :readonly="readonlyInbound"
               ></v-text-field>
 
               <v-select
                 v-model="inboundLocal.billOfLading.portOfDelivery"
                 :items="portsToString"
                 :rules="[required('port of loading')]"
-                label="Cảng lấy container đặc"
+                label="Cảng lấy container đặc*"
+                :readonly="readonlyInbound"
               ></v-select>
+              <v-menu
+                ref="freeTimePicker"
+                v-model="freeTimePicker"
+                :close-on-content-click="false"
+                :return-value.sync="inboundLocal.billOfLading.freeTime"
+                transition="scale-transition"
+                offset-y
+                min-width="290px"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="inboundLocal.billOfLading.freeTime"
+                    label="Thời gian được thuê cont"
+                    prepend-icon="event"
+                    v-bind="attrs"
+                    v-on="on"
+                    :readonly="readonlyInbound"
+                  ></v-text-field>
+                </template>
+                <v-date-picker
+                  v-if="!readonlyInbound"
+                  v-model="inboundLocal.billOfLading.freeTime"
+                  no-title
+                  scrollable
+                >
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="freeTimePicker = false"
+                    >Cancel</v-btn
+                  >
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="
+                      $refs.freeTimePicker.save(
+                        inboundLocal.billOfLading.freeTime
+                      )
+                    "
+                    >OK</v-btn
+                  >
+                </v-date-picker>
+              </v-menu>
               <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
                 >Tiếp tục</v-btn
               >
@@ -286,7 +328,7 @@
               <v-btn
                 color="primary"
                 @click="createInbound()"
-                :disabled="!checkbox"
+                :disabled="!checkbox || readonlyInbound"
                 >Hoàn tất</v-btn
               >
               <v-btn text @click="stepper = 3">Quay lại</v-btn>
@@ -314,7 +356,6 @@ import { getContainerTypes } from "@/api/container-type";
 import { PaginationResponse } from "@/api/payload";
 import { convertToDateTime } from "@/utils/tool";
 import { createInbound } from "@/api/inbound";
-import { calculateFreeTime } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate]
@@ -337,7 +378,7 @@ export default class CreateInbound extends Vue {
       billOfLadingNumber: "",
       containers: [] as Array<IContainer>,
       portOfDelivery: "",
-      freeTime: 0
+      freeTime: this.dateInit
     }
   } as IInbound;
   // Form validate
@@ -359,6 +400,7 @@ export default class CreateInbound extends Vue {
 
   // B/L form
   emptyTimePicker = false;
+  freeTimePicker = false;
 
   // Container form
   containerHeaders = [
@@ -388,6 +430,7 @@ export default class CreateInbound extends Vue {
   drivers: Array<IDriver> = [];
   dialogAddCont = false;
   readonly = false;
+  readonlyInbound = false;
 
   createContainer(item: IContainer) {
     // TODO: API create Container
@@ -439,9 +482,8 @@ export default class CreateInbound extends Vue {
     this.inboundLocal.pickupTime = convertToDateTime(
       this.inboundLocal.pickupTime
     );
-    this.inboundLocal.billOfLading.freeTime = calculateFreeTime(
-      this.inboundLocal.pickupTime,
-      this.inboundLocal.emptyTime
+    this.inboundLocal.billOfLading.freeTime = convertToDateTime(
+      this.inboundLocal.billOfLading.freeTime
     );
     this.inboundLocal.billOfLading.containers = this.containers;
     console.log(this.inboundLocal);
@@ -451,9 +493,10 @@ export default class CreateInbound extends Vue {
         const response: IInbound = res.data;
         this.inboundLocal = response;
         this.messageSync =
-          "Thêm mới thành công hàng xuất: " +
+          "Thêm mới thành công hàng nhập: " +
           this.inboundLocal.billOfLading.billOfLadingNumber;
         this.inboundsSync.unshift(this.inboundLocal);
+        this.readonlyInbound = true;
       })
       .catch(err => {
         console.log(err);

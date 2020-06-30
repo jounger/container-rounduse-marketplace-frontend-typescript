@@ -3,6 +3,7 @@
     <v-card>
       <v-row justify="center">
         <DeletePermission
+          v-if="dialogDel"
           :dialogDel.sync="dialogDel"
           :permission.sync="permission"
           :permissions.sync="permissions"
@@ -12,7 +13,8 @@
       </v-row>
       <v-row justify="center">
         <CreatePermission
-          :permission.sync="permission"
+          v-if="dialogAdd"
+          :permission="permission"
           :permissions.sync="permissions"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
@@ -117,7 +119,6 @@ export default class Permission extends Vue {
   openUpdateDialog(item: IPermission) {
     this.update = true;
     this.permission = item;
-    console.log(this.permission);
     this.dialogAdd = true;
   }
 
@@ -135,7 +136,6 @@ export default class Permission extends Vue {
       })
         .then(res => {
           const response: PaginationResponse<IPermission> = res.data;
-          console.log("watch", response);
           this.permissions = response.data;
           this.options.totalItems = response.totalElements;
         })

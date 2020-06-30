@@ -16,6 +16,7 @@
         :message.sync="message"
         :snackbar.sync="snackbar"
         :inbounds.sync="inbounds"
+        :freeTime.sync="freeTime"
       />
       <v-row justify="center">
         <DeleteInbound
@@ -54,10 +55,14 @@
           {{ formatDatetime(item.pickupTime) }}
         </template>
         <template v-slot:item.freetime="{ item }">
-          {{ item.billOfLading.freeTime }} ngày
+          {{ formatDatetime(item.billOfLading.freeTime) }}
         </template>
         <template v-slot:item.status="{ item }">
-          {{ item.billOfLading.containers[0].status }}
+          {{
+            typeof item.billOfLading.containers[0] != "undefined"
+              ? item.billOfLading.containers[0].status
+              : ""
+          }}
         </template>
 
         <template v-slot:item.actions="{ item }">
@@ -81,7 +86,7 @@
                   <v-icon small>delete</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
-                  <v-list-item-title>Xoa</v-list-item-title>
+                  <v-list-item-title>Xóa</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -123,6 +128,7 @@ export default class Inbound extends Vue {
   dialogDel = false;
   search = "";
   message = "";
+  freeTime = "";
   snackbar = false;
   loading = true;
   dateInit = new Date().toISOString().substr(0, 10);
@@ -144,7 +150,7 @@ export default class Inbound extends Vue {
     { text: "Loại cont", value: "containerType" },
     { text: "Trạng thái", value: "status" },
     { text: "Thời gian lấy cont", value: "pickUpTime" },
-    { text: "Thời gian chờ", value: "freetime" },
+    { text: "Thời gian được thuê cont", value: "freetime" },
     { text: "B/L No.", value: "billOfLading.billOfLadingNumber" },
     { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery" },
     { text: "Số lượng cont", value: "billOfLading.containers.length" },
@@ -168,6 +174,8 @@ export default class Inbound extends Vue {
     const index = this.inbound.emptyTime.indexOf("T");
     this.inbound.emptyTime = this.inbound.emptyTime.slice(0, index);
     this.inbound.pickupTime = this.inbound.pickupTime.slice(0, index);
+    this.freeTime = this.inbound.billOfLading.freeTime.slice(0, index);
+    console.log(this.inbound.billOfLading.freeTime);
     console.log(this.inbound);
     this.dialogEdit = true;
   }

@@ -5,6 +5,7 @@
       <CreateBid
         v-if="dialogAdd"
         :bid.sync="bid"
+        :bids.sync="bids"
         :dialogAdd.sync="dialogAdd"
         :message.sync="message"
         :snackbar.sync="snackbar"
@@ -33,9 +34,12 @@
       >
         <template v-slot:top>
           <v-toolbar flat color="white">
-            <v-toolbar-title>Danh sách đấu thầu</v-toolbar-title>
+            <v-toolbar-title>Danh sách Hồ sơ dự thầu</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
+            <v-btn color="primary" dark class="mb-2" @click="dialogAdd = true">
+              Thêm mới
+            </v-btn>
           </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
@@ -86,6 +90,8 @@ import CreateBid from "./components/CreateBid.vue";
 // import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 import { BiddingDocumentData } from "./data";
+import { getBidsByForwarder } from "@/api/bid";
+import { PaginationResponse } from "@/api/payload";
 
 @Component({
   components: {
@@ -190,12 +196,7 @@ export default class Bid extends Vue {
   onOptionsChange(val: object, oldVal: object) {
     console.log(this.$auth.user());
     if (val !== oldVal) {
-      console.log(BiddingDocumentData);
-      this.biddingDocuments = BiddingDocumentData;
-      this.loading = false;
-      this.options.totalItems = 10;
-      /*
-      getBidByForwarder(this.$auth.user().id, {
+      getBidsByForwarder(this.$auth.user().id, {
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })
@@ -207,7 +208,6 @@ export default class Bid extends Vue {
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
-        */
     }
   }
 }

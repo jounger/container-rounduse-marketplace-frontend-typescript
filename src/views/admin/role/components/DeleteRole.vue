@@ -54,14 +54,10 @@ export default class DeleteRole extends Vue {
   @PropSync("roles", { type: Array }) rolesSync!: Array<IRole>;
 
   removeRole() {
-    console.log(1);
     if (this.roleSync.id) {
-      console.log(0);
       removeRole(this.roleSync.id)
         .then(res => {
           console.log(res.data);
-          const response: IRole = res.data;
-          this.roleSync = response;
           this.messageSync = "Xóa thành công quyền: " + this.roleSync.name;
           const index = this.rolesSync.findIndex(
             x => x.id === this.roleSync.id
