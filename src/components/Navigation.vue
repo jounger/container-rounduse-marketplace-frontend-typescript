@@ -60,7 +60,8 @@ export default class Navigation extends Vue {
 
   protected navigation: object = NavigationSupplier;
   protected generalNavigation = [
-    { title: "Trang cá nhân", icon: "dashboard", link: "/profile" }
+    { title: "Trang cá nhân", icon: "dashboard", link: "/profile" },
+    { title: "Thông báo", icon: "dashboard", link: "/notification" }
   ];
 
   get capitalizeUsername() {
