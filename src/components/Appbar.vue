@@ -7,7 +7,7 @@
     <v-btn v-if="$auth.check()" text to="/dashboard">Dashboard</v-btn>
 
     <v-spacer></v-spacer>
-
+    <Notification />
     <v-btn icon>
       <v-icon>mdi-heart</v-icon>
     </v-btn>
@@ -36,7 +36,12 @@
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
-@Component
+import Notification from "./Notification.vue";
+@Component({
+  components: {
+    Notification
+  }
+})
 export default class Appbar extends Vue {
   @PropSync("drawer", { type: Boolean }) drawerSync!: boolean | null;
   messages = 3;

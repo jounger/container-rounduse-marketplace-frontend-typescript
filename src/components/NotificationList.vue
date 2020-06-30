@@ -18,7 +18,7 @@ import NotificationMessage from "./NotificationMessage.vue";
   }
 })
 export default class NotificationList extends Vue {
-  notifications = this.$store.getters.getNotifications;
+  notifications = []
 }
 </script>
 <style>
