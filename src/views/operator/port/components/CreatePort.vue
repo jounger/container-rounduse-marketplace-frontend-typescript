@@ -4,7 +4,7 @@
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
-            update ? "Cập nhập" : "Thêm mới"
+            update ? "Cập nhập Bến cảng" : "Thêm mới Bến cảng"
           }}</span>
           <v-btn
             icon
@@ -25,7 +25,7 @@
                 name="fullname"
                 prepend-icon="mdi-account"
                 type="text"
-                v-model="portSync.fullname"
+                v-model="portLocal.fullname"
               ></v-text-field>
             </v-flex>
           </v-layout>
@@ -36,7 +36,7 @@
                 name="nameCode"
                 prepend-icon="mdi-account"
                 type="text"
-                v-model="portSync.nameCode"
+                v-model="portLocal.nameCode"
               ></v-text-field>
             </v-flex>
           </v-layout>
@@ -47,7 +47,7 @@
                 name="address"
                 prepend-icon="mdi-account"
                 type="text"
-                v-model="portSync.address"
+                v-model="portLocal.address"
               ></v-text-field>
             </v-flex>
           </v-layout>
@@ -60,7 +60,7 @@
         <v-btn @click="updatePort()" color="primary" v-if="update"
           >Cập nhập</v-btn
         >
-        <v-btn @click="addPort()" color="primary" v-else>Thêm mới</v-btn>
+        <v-btn @click="createPort()" color="primary" v-else>Thêm mới</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -79,16 +79,20 @@ export default class CreatePort extends Vue {
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Boolean) update!: boolean;
 
-  addPort() {
-    if (this.portSync) {
-      createPort(this.portSync)
+  portLocal = {} as IPort;
+  created() {
+    this.portLocal = Object.assign({}, this.portSync);
+  }
+  createPort() {
+    if (this.portLocal) {
+      createPort(this.portLocal)
         .then(res => {
           console.log(res.data);
           const response: IPort = res.data;
-          this.portSync = response;
+          this.portLocal = response;
           this.messageSync =
-            "Thêm mới thành công bến tàu: " + this.portSync.fullname;
-          this.portsSync.push(this.portSync);
+            "Thêm mới thành công bến tàu: " + this.portLocal.fullname;
+          this.portsSync.push(this.portLocal);
         })
         .catch(err => {
           console.log(err);
@@ -100,7 +104,8 @@ export default class CreatePort extends Vue {
     }
   }
   updatePort() {
-    if (this.portSync.id) {
+    if (this.portLocal.id) {
+      this.portSync = Object.assign({}, this.portLocal);
       updatePort(this.portSync)
         .then(res => {
           console.log(res.data);
@@ -108,6 +113,10 @@ export default class CreatePort extends Vue {
           this.portSync = response;
           this.messageSync =
             "Cập nhập thành công bến cảng: " + this.portSync.fullname;
+          const index = this.portsSync.findIndex(
+            x => x.id === this.portSync.id
+          );
+          this.portsSync.splice(index, 1, this.portSync);
         })
         .catch(err => {
           console.log(err);

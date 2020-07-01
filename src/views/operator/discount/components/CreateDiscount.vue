@@ -29,7 +29,6 @@
                   type="text"
                   v-model="discountLocal.code"
                   :rules="[required('code')]"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -41,7 +40,6 @@
                   prepend-icon="mdi-account"
                   type="text"
                   v-model="discountLocal.detail"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -55,7 +53,6 @@
                   label="Loại tiền tệ"
                   chips
                   v-model="discountLocal.currency"
-                  :readonly="readonly"
                 ></v-select>
               </v-flex>
             </v-layout>
@@ -67,7 +64,6 @@
                   prepend-icon="mdi-account"
                   type="number"
                   v-model="discountLocal.percent"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -81,7 +77,6 @@
                   prepend-icon="mdi-account"
                   type="number"
                   v-model="discountLocal.maximumDiscount"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -105,12 +100,10 @@
                       prepend-icon="event"
                       v-bind="attrs"
                       v-on="on"
-                      :readonly="readonly"
                     ></v-text-field>
                   </template>
                   <v-date-picker
-                    v-if="!readonly"
-                    v-model="expiredDateSync"
+                    v-model="discountLocal.expiredDate"
                     no-title
                     @input="expiredDatePicker = false"
                   ></v-date-picker>
@@ -127,13 +120,7 @@
         <v-btn @click="updateDiscount()" color="primary" v-if="update"
           >Cập nhập</v-btn
         >
-        <v-btn
-          @click="createDiscount()"
-          color="primary"
-          v-else
-          :disabled="readonly"
-          >Thêm mới</v-btn
-        >
+        <v-btn @click="createDiscount()" color="primary" v-else>Thêm mới</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -143,8 +130,11 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IDiscount } from "@/entity/discount";
 import { createDiscount, updateDiscount } from "@/api/discount";
 import { convertToDateTime } from "@/utils/tool";
+import FormValidate from "@/mixin/form-validate";
 
-@Component
+@Component({
+  mixins: [FormValidate]
+})
 export default class CreateDiscount extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("discount", { type: Object }) discountSync!: IDiscount;
@@ -153,9 +143,8 @@ export default class CreateDiscount extends Vue {
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Boolean) update!: boolean;
 
-  currencies = ["USD", "VND", "EURO"];
+  currencies = ["USD", "VND"];
   expiredDatePicker = false;
-  readonly = false;
   discountLocal = {} as IDiscount;
   created() {
     this.discountLocal = Object.assign({}, this.discountSync);
@@ -168,11 +157,10 @@ export default class CreateDiscount extends Vue {
       createDiscount(this.discountLocal)
         .then(res => {
           const response: IDiscount = res.data;
-          this.discountLocal.id = response.id;
+          this.discountLocal = response;
           this.messageSync =
             "Thêm mới thành công mã giảm giá: " + this.discountLocal.code;
           this.discountsSync.unshift(this.discountLocal);
-          this.readonly = true;
         })
         .catch(err => {
           console.log(err);
@@ -186,17 +174,19 @@ export default class CreateDiscount extends Vue {
       this.discountLocal.expiredDate = convertToDateTime(
         this.discountLocal.expiredDate
       );
-      this.discountSync = Object.assign({}, this.discountLocal);
-      updateDiscount(this.discountSync)
+
+      updateDiscount(this.discountLocal)
         .then(res => {
           console.log(res.data);
           const response: IDiscount = res.data;
           this.discountSync = response;
           this.messageSync =
-            "Cập nhập thành công mã giảm giá: " + this.discountSync.code;
+            "Cập nhập thành công mã giảm giá: " + this.discountLocal.code;
+          console.log(this.discountSync);
           const index = this.discountsSync.findIndex(
             x => x.id === this.discountSync.id
           );
+
           this.discountsSync.splice(index, 1, this.discountSync);
         })
         .catch(err => {

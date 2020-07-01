@@ -2,6 +2,16 @@
   <v-content>
     <v-card>
       <Snackbar :text="message" :snackbar.sync="snackbar" />
+      <v-row justify="center">
+        <DeleteBiddingDocument
+          v-if="dialogDel"
+          :dialogDel.sync="dialogDel"
+          :biddingDocument.sync="biddingDocument"
+          :biddingDocuments.sync="biddingDocuments"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
+        />
+      </v-row>
       <CreateBiddingDocument
         v-if="dialogAdd"
         :biddingDocuments.sync="biddingDocuments"
@@ -13,6 +23,7 @@
       <UpdateBiddingDocument
         v-if="dialogEdit"
         :biddingDocument.sync="biddingDocument"
+        :biddingDocuments.sync="biddingDocuments"
         :dialogEdit.sync="dialogEdit"
         :message.sync="message"
         :snackbar.sync="snackbar"
@@ -61,7 +72,7 @@
                   <v-icon small>delete</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
-                  <v-list-item-title>Xoa</v-list-item-title>
+                  <v-list-item-title>Xóa</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -73,21 +84,20 @@
 </template>
 <script lang="ts">
 import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import NavLayout from "@/layouts/NavLayout.vue";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import CreateBiddingDocument from "./components/CreateBiddingDocument.vue";
 import UpdateBiddingDocument from "./components/UpdateBiddingDocument.vue";
-// import { getBiddingDocumentByForwarder } from "@/api/biddingDocument";
-// import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 import { IOutbound } from "@/entity/outbound";
 import { getBiddingDocumentsByMerchant } from "@/api/bidding-document";
 import { PaginationResponse } from "@/api/payload";
+import DeleteBiddingDocument from "./components/DeleteBiddingDocument.vue";
 
 @Component({
   components: {
     CreateBiddingDocument,
     UpdateBiddingDocument,
+    DeleteBiddingDocument,
     Snackbar
   }
 })
@@ -122,6 +132,7 @@ export default class BiddingDocument extends Vue {
     { text: "Hãng tàu", value: "outbound.shippingLine" },
     { text: "Loại cont", value: "outbound.containerType" },
     { text: "Mã booking", value: "outbound.booking.bookingNumber" },
+    { text: "Trạng thái", value: "outbound.status" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
     { text: "Mở thầu", value: "bidOpening" },
     { text: "Đóng thầu", value: "bidClosing" },
@@ -132,10 +143,6 @@ export default class BiddingDocument extends Vue {
     }
   ];
 
-  created() {
-    this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
-  }
-
   openEditDialog(item: IBiddingDocument) {
     this.biddingDocument = item;
     this.dialogEdit = true;
@@ -145,7 +152,6 @@ export default class BiddingDocument extends Vue {
     this.biddingDocument = item;
     this.dialogDel = true;
   }
-
   @Watch("options", { deep: true })
   onOptionsChange(val: object, oldVal: object) {
     console.log(this.$auth.user());

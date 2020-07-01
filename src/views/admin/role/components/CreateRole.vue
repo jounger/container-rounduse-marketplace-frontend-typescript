@@ -29,7 +29,6 @@
                 v-model="roleLocal.name"
                 :counter="20"
                 :rules="[minLength('name', 5), maxLength('name', 20)]"
-                :readonly="readonly"
               ></v-text-field>
             </v-flex>
           </v-layout>
@@ -44,7 +43,6 @@
                 multiple
                 prepend-icon="filter_list"
                 :rules="[required('permissions')]"
-                :readonly="readonly"
               >
                 <template
                   v-slot:selection="{ attrs, item, select, selected }"
@@ -72,9 +70,7 @@
         <v-btn @click="updateRole()" color="primary" v-if="update"
           >Cập nhập</v-btn
         >
-        <v-btn @click="createRole()" color="primary" v-else :disabled="readonly"
-          >Thêm mới</v-btn
-        >
+        <v-btn @click="createRole()" color="primary" v-else>Thêm mới</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -100,7 +96,6 @@ export default class CreateRole extends Vue {
   @Prop(Boolean) update!: boolean;
 
   permissions = [] as Array<IPermission>;
-  readonly = false;
   roleLocal = {} as IRole;
   created() {
     this.roleLocal = Object.assign({}, this.roleSync);
@@ -134,7 +129,6 @@ export default class CreateRole extends Vue {
           this.messageSync =
             "Thêm mới thành công quyền: " + this.roleLocal.name;
           this.rolesSync.unshift(this.roleLocal);
-          this.readonly = true;
         })
         .catch(err => {
           console.log(err);

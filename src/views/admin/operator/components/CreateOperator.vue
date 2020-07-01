@@ -19,9 +19,7 @@
           <v-btn dark text @click="updateOperator()" v-if="update"
             >Cập nhập</v-btn
           >
-          <v-btn dark text @click="createOperator()" v-else :disabled="readonly"
-            >Thêm mới</v-btn
-          >
+          <v-btn dark text @click="createOperator()" v-else>Thêm mới</v-btn>
         </v-toolbar-items>
       </v-toolbar>
       <v-card-text>
@@ -35,7 +33,7 @@
                     label="Tên đăng nhập*"
                     type="text"
                     v-model="operatorLocal.username"
-                    :readonly="update || readonly"
+                    :readonly="update"
                     :counter="20"
                     :rules="[
                       minLength('username', 2),
@@ -47,7 +45,7 @@
               <v-layout row>
                 <v-flex xs10>
                   <v-text-field
-                    v-if="!update && !readonly"
+                    v-if="!update"
                     label="Mật khẩu*"
                     type="password"
                     v-model="operatorLocal.password"
@@ -73,7 +71,6 @@
                       minLength('email', 5),
                       maxLength('email', 50)
                     ]"
-                    :readonly="readonly"
                   ></v-text-field>
                 </v-flex>
               </v-layout>
@@ -85,7 +82,6 @@
                     v-model="operatorLocal.phone"
                     :counter="10"
                     :rules="[minLength('phone', 10), maxLength('phone', 10)]"
-                    :readonly="readonly"
                   ></v-text-field>
                 </v-flex>
               </v-layout>
@@ -98,7 +94,6 @@
                     type="fullname"
                     v-model="operatorLocal.fullname"
                     :rules="[required('fullname')]"
-                    :readonly="readonly"
                   ></v-text-field>
                 </v-flex>
               </v-layout>
@@ -114,7 +109,6 @@
                     ]"
                     type="text"
                     v-model="operatorLocal.address"
-                    :readonly="readonly"
                   ></v-text-field>
                 </v-flex>
               </v-layout>
@@ -126,7 +120,6 @@
                     v-model="role"
                     :items="roles"
                     label="Phân quyền*"
-                    :readonly="readonly"
                     :rules="[required('role')]"
                   ></v-select>
                 </v-flex>
@@ -156,7 +149,6 @@ export default class CreateOperator extends Vue {
   @Prop(Boolean) update!: boolean;
 
   roles = ["ROLE_ADMIN", "ROLE_MODERATOR"];
-  readonly = false;
   role = "";
   operatorLocal = {} as IOperator;
   created() {
@@ -177,7 +169,6 @@ export default class CreateOperator extends Vue {
           this.messageSync =
             "Thêm mới thành công quản trị viên: " + this.operatorLocal.username;
           this.operatorsSync.unshift(this.operatorLocal);
-          this.readonly = true;
         })
         .catch(err => {
           console.log(err);

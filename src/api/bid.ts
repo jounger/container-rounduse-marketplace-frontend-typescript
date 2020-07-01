@@ -35,7 +35,7 @@ export function getBidsByBiddingDocument(
   });
 }
 
-export function CreateBiddingDocument(bid: IBid) {
+export function createBiddingDocument(bid: IBid) {
   return Vue.axios.post("/bid", bid, {
     headers: config
   });

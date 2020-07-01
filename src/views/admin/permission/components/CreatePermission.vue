@@ -29,7 +29,6 @@
                 :counter="20"
                 :rules="[minLength('name', 5), maxLength('name', 20)]"
                 v-model="permissionLocal.name"
-                :readonly="readonly"
               ></v-text-field>
             </v-flex>
           </v-layout>
@@ -46,7 +45,6 @@
                   maxLength('description', 100)
                 ]"
                 v-model="permissionLocal.description"
-                :readonly="readonly"
               ></v-text-field>
             </v-flex>
           </v-layout>
@@ -59,11 +57,7 @@
         <v-btn @click="updatePermission()" color="primary" v-if="update"
           >Cập nhập</v-btn
         >
-        <v-btn
-          @click="createPermission()"
-          color="primary"
-          v-else
-          :disabled="readonly"
+        <v-btn @click="createPermission()" color="primary" v-else
           >Thêm mới</v-btn
         >
       </v-card-actions>
@@ -89,7 +83,6 @@ export default class CreatePermission extends Vue {
   @PropSync("permission", { type: Object }) permissionSync!: IPermission;
   @Prop(Boolean) update!: boolean;
 
-  readonly = false;
   permissionLocal = {} as IPermission;
   created() {
     this.permissionLocal = Object.assign({}, this.permissionSync);
@@ -106,7 +99,6 @@ export default class CreatePermission extends Vue {
             "Thêm mới thành công vai trò: " + this.permissionLocal.name;
           this.permissionsSync.unshift(this.permissionLocal);
           console.log(this.permissionsSync);
-          this.readonly = true;
         })
         .catch(err => {
           console.log(err);
@@ -117,8 +109,7 @@ export default class CreatePermission extends Vue {
   }
   updatePermission() {
     if (this.permissionSync.id) {
-      this.permissionSync = Object.assign({}, this.permissionLocal);
-      updatePermission(this.permissionSync)
+      updatePermission(this.permissionLocal)
         .then(res => {
           console.log(res.data);
           const response: IPermission = res.data;

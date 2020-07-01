@@ -38,7 +38,7 @@ export function updateBiddingDocument(biddingDocument: IBiddingDocument) {
   });
 }
 
-export function editBiddingDocument(id: number, updates: Map<string, object>) {
+export function editBiddingDocument(id: number, updates: object) {
   return Vue.axios.patch(`/bidding-document/${id}`, updates, {
     headers: config
   });

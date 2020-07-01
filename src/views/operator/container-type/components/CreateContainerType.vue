@@ -20,12 +20,7 @@
           <v-btn dark text @click="updateContainerType()" v-if="update"
             >Cập nhập</v-btn
           >
-          <v-btn
-            dark
-            text
-            @click="createContainerType()"
-            v-else
-            :disabled="readonly"
+          <v-btn dark text @click="createContainerType()" v-else
             >Thêm mới</v-btn
           >
         </v-toolbar-items>
@@ -43,7 +38,6 @@
                   type="text"
                   v-model="containerTypeLocal.name"
                   :rules="[required('name')]"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -55,7 +49,6 @@
                   prepend-icon="mdi-lock"
                   type="text"
                   v-model="containerTypeLocal.description"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -69,7 +62,6 @@
                   prepend-icon="mdi-lock"
                   type="number"
                   v-model="containerTypeLocal.tareWeight"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -81,7 +73,6 @@
                   prepend-icon="mdi-lock"
                   type="number"
                   v-model="containerTypeLocal.payloadCapacity"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -95,7 +86,6 @@
                   prepend-icon="mdi-lock"
                   type="number"
                   v-model="containerTypeLocal.cubicCapacity"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -107,7 +97,6 @@
                   prepend-icon="mdi-lock"
                   type="number"
                   v-model="containerTypeLocal.internalLength"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -121,7 +110,6 @@
                   prepend-icon="mdi-lock"
                   type="number"
                   v-model="containerTypeLocal.internalWidth"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -133,7 +121,6 @@
                   prepend-icon="mdi-lock"
                   type="number"
                   v-model="containerTypeLocal.internalHeight"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -147,7 +134,6 @@
                   prepend-icon="mdi-lock"
                   type="number"
                   v-model="containerTypeLocal.doorOpeningWidth"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -159,7 +145,6 @@
                   prepend-icon="mdi-lock"
                   type="number"
                   v-model="containerTypeLocal.doorOpeningHeight"
-                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -191,7 +176,6 @@ export default class CreateContainerType extends Vue {
   @Prop(Boolean) update!: boolean;
 
   containerTypeLocal = {} as IContainerType;
-  readonly = false;
   created() {
     this.containerTypeLocal = Object.assign({}, this.containerTypeSync);
   }
@@ -206,7 +190,6 @@ export default class CreateContainerType extends Vue {
             "Thêm mới thành công loại Container: " +
             this.containerTypeLocal.name;
           this.containerTypesSync.unshift(this.containerTypeLocal);
-          this.readonly = true;
         })
         .catch(err => {
           console.log(err);

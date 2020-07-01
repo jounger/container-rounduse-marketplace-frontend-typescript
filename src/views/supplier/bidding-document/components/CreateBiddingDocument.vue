@@ -256,6 +256,8 @@ import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
 import { isEmptyObject, convertToDateTime } from "../../../../utils/tool";
 import { createBiddingDocument } from "@/api/bidding-document";
+import { getOutboundByMerchant } from "@/api/outbound";
+import { PaginationResponse } from "@/api/payload";
 
 @Component({
   mixins: [FormValidate, Utils]
@@ -363,7 +365,7 @@ export default class CreateBiddingDocument extends Vue {
         this.messageSync =
           "Thêm mới thành công HSMT: " + this.biddingDocumentLocal.id;
         if (typeof this.biddingDocumentsSync != "undefined") {
-          this.biddingDocumentsSync.push(this.biddingDocumentLocal);
+          this.biddingDocumentsSync.unshift(this.biddingDocumentLocal);
         }
       })
       .catch(err => {
@@ -379,7 +381,17 @@ export default class CreateBiddingDocument extends Vue {
       this.outbounds.push(this.outboundSync);
       this.selectOutbound(this.outboundSync);
     } else {
-      this.outbounds = [] as Array<IOutbound>;
+      getOutboundByMerchant(this.$auth.user().id, {
+        page: 0,
+        limit: 100
+      })
+        .then(res => {
+          const response: PaginationResponse<IOutbound> = res.data;
+          this.outbounds = response.data.filter(x => x.status == "CREATED");
+          this.options.totalItems = response.totalElements;
+        })
+        .catch(err => console.log(err))
+        .finally(() => (this.loading = false));
     }
 
     this.options.totalItems = 10;

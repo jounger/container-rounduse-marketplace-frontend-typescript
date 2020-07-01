@@ -255,7 +255,7 @@ import { IInbound } from "@/entity/inbound";
 import Utils from "@/mixin/utils";
 import { getInboundByForwarder } from "@/api/inbound";
 import { PaginationResponse } from "@/api/payload";
-import { CreateBiddingDocument } from "@/api/bid";
+import { createBiddingDocument } from "@/api/bid";
 
 @Component({
   mixins: [FormValidate, Utils]
@@ -332,7 +332,7 @@ export default class CreateBid extends Vue {
   // Bid
   createBid() {
     // TODO: API create bid
-    CreateBiddingDocument(this.bidLocal)
+    createBiddingDocument(this.bidLocal)
       .then(res => {
         console.log(res.data);
         const response: IBid = res.data;

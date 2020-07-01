@@ -80,14 +80,14 @@
                 ref="datePickerMenu"
                 v-model="datePickerMenu"
                 :close-on-content-click="false"
-                :return-value.sync="biddingDocumentSync.bidOpening"
+                :return-value.sync="biddingDocumentLocal.bidOpening"
                 transition="scale-transition"
                 offset-y
                 min-width="290px"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    v-model="biddingDocumentSync.bidOpening"
+                    v-model="biddingDocumentLocal.bidOpening"
                     label="Thời gian mở thầu"
                     prepend-icon="event"
                     v-bind="attrs"
@@ -96,7 +96,7 @@
                   ></v-text-field>
                 </template>
                 <v-date-picker
-                  v-model="biddingDocumentSync.bidOpening"
+                  v-model="biddingDocumentLocal.bidOpening"
                   no-title
                   scrollable
                 >
@@ -119,14 +119,14 @@
                 ref="datePickerMenu2"
                 v-model="datePickerMenu2"
                 :close-on-content-click="false"
-                :return-value.sync="biddingDocumentSync.bidClosing"
+                :return-value.sync="biddingDocumentLocal.bidClosing"
                 transition="scale-transition"
                 offset-y
                 min-width="290px"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    v-model="biddingDocumentSync.bidClosing"
+                    v-model="biddingDocumentLocal.bidClosing"
                     label="Thời gian đóng thầu"
                     prepend-icon="event"
                     v-bind="attrs"
@@ -135,7 +135,7 @@
                   ></v-text-field>
                 </template>
                 <v-date-picker
-                  v-model="biddingDocumentSync.bidClosing"
+                  v-model="biddingDocumentLocal.bidClosing"
                   no-title
                   scrollable
                 >
@@ -154,31 +154,31 @@
                 </v-date-picker>
               </v-menu>
               <v-select
-                v-model="biddingDocumentSync.currencyOfPayment"
+                v-model="biddingDocumentLocal.currencyOfPayment"
                 :items="currencyOfPayments"
                 :rules="[required('currency')]"
                 label="Đồng tiền thanh toán"
               ></v-select>
               <v-text-field
-                v-model="biddingDocumentSync.bidPackagePrice"
+                v-model="biddingDocumentLocal.bidPackagePrice"
                 :rules="[required('bid package price')]"
                 type="number"
                 label="Giá gói thầu"
               ></v-text-field>
               <v-text-field
-                v-model="biddingDocumentSync.bidFloorPrice"
+                v-model="biddingDocumentLocal.bidFloorPrice"
                 :rules="[
                   required('bid floor price'),
                   maxNumber(
                     'bid floor price',
-                    biddingDocumentSync.bidPackagePrice
+                    biddingDocumentLocal.bidPackagePrice
                   )
                 ]"
                 type="number"
                 label="Giá sàn"
               ></v-text-field>
               <v-checkbox
-                v-model="biddingDocumentSync.isMultipleAward"
+                v-model="biddingDocumentLocal.isMultipleAward"
                 label="Cho phép nhiều nhà thầu cùng thắng"
               ></v-checkbox>
               <v-btn
@@ -198,7 +198,7 @@
           <v-stepper-content step="3">
             <v-form ref="finishForm" v-model="valid" lazy-validation>
               <v-text-field
-                v-model="biddingDocumentSync.bidDiscountCode"
+                v-model="biddingDocumentLocal.bidDiscountCode"
                 prepend-icon="event"
                 label="Mã giảm giá"
               ></v-text-field>
@@ -231,6 +231,9 @@ import { Component, Vue, PropSync } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
+import { updateBiddingDocument } from "@/api/bidding-document";
+import { IOutbound } from "@/entity/outbound";
+import Outbound from "../../../supply/outbound/index.vue";
 
 @Component({
   mixins: [FormValidate, Utils]
@@ -239,6 +242,8 @@ export default class UpdateBiddingDocument extends Vue {
   @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
   @PropSync("biddingDocument", { type: Object })
   biddingDocumentSync!: IBiddingDocument;
+  @PropSync("biddingDocuments", { type: Array })
+  biddingDocumentsSync!: Array<IBiddingDocument>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
@@ -251,11 +256,11 @@ export default class UpdateBiddingDocument extends Vue {
   // API list
   currencyOfPayments: Array<string> = [];
   unitOfMesurements: Array<string> = [];
-
+  outbound = [] as Array<IOutbound>;
   // biddingDocumentSync form
   datePickerMenu = false;
   datePickerMenu2 = false;
-
+  biddingDocumentLocal = {} as IBiddingDocument;
   // Outbound form
   headers = [
     {
@@ -276,10 +281,37 @@ export default class UpdateBiddingDocument extends Vue {
     { text: "FCL", value: "fcl" }
   ];
 
+  created() {
+    this.biddingDocumentLocal = Object.assign({}, this.biddingDocumentSync);
+    if (
+      typeof this.biddingDocumentSync.outbound != "number" &&
+      typeof this.biddingDocumentSync.outbound.id != "undefined"
+    ) {
+      this.biddingDocumentLocal.outbound = this.biddingDocumentSync.outbound.id;
+    }
+  }
   // BiddingDocument
   updateBiddingDocument() {
     // TODO: API create biddingDocument
-    console.log(this.biddingDocumentSync);
+    if (this.biddingDocumentSync) {
+      updateBiddingDocument(this.biddingDocumentLocal)
+        .then(res => {
+          console.log(res.data);
+          const response: IBiddingDocument = res.data;
+          this.biddingDocumentSync = response;
+          this.messageSync =
+            "Cập nhập thành công HSMT: " + this.biddingDocumentSync.id;
+          const index = this.biddingDocumentsSync.findIndex(
+            x => x.id === this.biddingDocumentSync.id
+          );
+          this.biddingDocumentsSync.splice(index, 1, this.biddingDocumentSync);
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(() => (this.snackbarSync = true));
+    }
   }
 
   mounted() {
