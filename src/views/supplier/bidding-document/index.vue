@@ -72,14 +72,14 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, Watch, Vue } from "vue-property-decorator";
+import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
+import NavLayout from "@/layouts/NavLayout.vue";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import CreateBiddingDocument from "./components/CreateBiddingDocument.vue";
 import UpdateBiddingDocument from "./components/UpdateBiddingDocument.vue";
 // import { getBiddingDocumentByForwarder } from "@/api/biddingDocument";
 // import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
-import { BiddingDocumentData } from "./data";
 import { IOutbound } from "@/entity/outbound";
 import { getBiddingDocumentsByMerchant } from "@/api/bidding-document";
 import { PaginationResponse } from "@/api/payload";
@@ -92,6 +92,7 @@ import { PaginationResponse } from "@/api/payload";
   }
 })
 export default class BiddingDocument extends Vue {
+  @PropSync("layout") layoutSync!: object;
 
   biddingDocuments: Array<IBiddingDocument> = [];
   biddingDocument = {} as IBiddingDocument;
@@ -130,6 +131,10 @@ export default class BiddingDocument extends Vue {
       value: "actions"
     }
   ];
+
+  created() {
+    this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
+  }
 
   openEditDialog(item: IBiddingDocument) {
     this.biddingDocument = item;
