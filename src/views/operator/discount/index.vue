@@ -3,6 +3,7 @@
     <v-card>
       <v-row justify="center">
         <DeleteDiscount
+          v-if="dialogDel"
           :dialogDel.sync="dialogDel"
           :discount.sync="discount"
           :discounts.sync="discounts"
@@ -12,10 +13,10 @@
       </v-row>
       <v-row justify="center">
         <CreateDiscount
+          v-if="dialogAdd"
           :discount.sync="discount"
           :discounts.sync="discounts"
           :dialogAdd.sync="dialogAdd"
-          :expiredDate.sync="expiredDate"
           :message.sync="message"
           :snackbar.sync="snackbar"
           :update="update"
@@ -86,7 +87,6 @@ export default class Discount extends Vue {
   dialogDel = false;
   search = "";
   message = "";
-  expiredDate = "";
   snackbar = false;
   loading = true;
   update = false;
@@ -123,14 +123,13 @@ export default class Discount extends Vue {
   openCreateDialog() {
     this.discount = {} as IDiscount;
     this.update = false;
-    this.expiredDate = "";
     this.dialogAdd = true;
   }
 
   openUpdateDialog(item: IDiscount) {
     const index = item.expiredDate.indexOf("T");
-    this.expiredDate = item.expiredDate.slice(0, index);
     this.discount = item;
+    this.discount.expiredDate = this.discount.expiredDate.slice(0, index);
     this.update = true;
     this.dialogAdd = true;
   }

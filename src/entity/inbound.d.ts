@@ -4,4 +4,5 @@ export interface IInbound extends ISupply {
   emptyTime: string;
   pickupTime: string;
   billOfLading: IBillOfLading;
+  returnStation: string;
 }

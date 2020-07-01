@@ -14,7 +14,7 @@
       <v-row justify="center">
         <CreatePermission
           v-if="dialogAdd"
-          :permission="permission"
+          :permission.sync="permission"
           :permissions.sync="permissions"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"

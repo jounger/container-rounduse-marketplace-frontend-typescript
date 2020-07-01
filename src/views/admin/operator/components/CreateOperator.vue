@@ -19,7 +19,7 @@
           <v-btn dark text @click="updateOperator()" v-if="update"
             >Cập nhập</v-btn
           >
-          <v-btn dark text @click="addOperator()" v-else :disabled="readonly"
+          <v-btn dark text @click="createOperator()" v-else :disabled="readonly"
             >Thêm mới</v-btn
           >
         </v-toolbar-items>
@@ -139,7 +139,7 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync, Prop, Watch } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IOperator } from "@/entity/operator";
 import FormValidate from "@/mixin/form-validate";
 import { createOperator, editOperator } from "@/api/operator";
@@ -152,40 +152,22 @@ export default class CreateOperator extends Vue {
   @PropSync("operators", { type: Array }) operatorsSync!: Array<IOperator>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("operator", { type: Object }) operatorSync!: IOperator;
   @Prop(Boolean) update!: boolean;
-  @Prop(Object) operator!: IOperator;
 
   roles = ["ROLE_ADMIN", "ROLE_MODERATOR"];
   readonly = false;
   role = "";
-  operatorLocal = {
-    username: "",
-    password: "",
-    email: "",
-    address: "",
-    fullname: "",
-    phone: "",
-    roles: [],
-    status: "",
-    isRoot: false
-  } as IOperator;
+  operatorLocal = {} as IOperator;
   created() {
-    this.operatorLocal.username = this.operator.username;
-    this.operatorLocal.email = this.operator.email;
-    this.operatorLocal.address = this.operator.address;
-    this.operatorLocal.password = this.operator.password;
-    this.operatorLocal.fullname = this.operator.fullname;
-    this.operatorLocal.phone = this.operator.phone;
-    this.operatorLocal.roles = this.operator.roles;
-    this.operatorLocal.status = this.operator.status;
-    this.operatorLocal.isRoot = this.operator.isRoot;
+    this.operatorLocal = Object.assign({}, this.operatorSync);
     if (typeof this.operatorLocal.roles[0] != "undefined") {
       this.role = this.operatorLocal.roles[0];
     } else {
       this.role = "";
     }
   }
-  addOperator() {
+  createOperator() {
     if (this.operatorLocal) {
       this.operatorLocal.roles[0] = this.role;
       createOperator(this.operatorLocal)
@@ -205,18 +187,19 @@ export default class CreateOperator extends Vue {
     }
   }
   updateOperator() {
-    if (this.operator.id) {
+    if (this.operatorLocal.id) {
       this.operatorLocal.roles[0] = this.role;
-      editOperator(this.operator.id, this.operatorLocal)
+      this.operatorSync = Object.assign({}, this.operatorLocal);
+      editOperator(this.operatorLocal.id, this.operatorSync)
         .then(res => {
           const response: IOperator = res.data;
-          this.operatorLocal = response;
+          this.operatorSync = response;
           this.messageSync =
-            "Cập nhập thành công quản trị viên: " + this.operatorLocal.username;
+            "Cập nhập thành công quản trị viên: " + this.operatorSync.username;
           const index = this.operatorsSync.findIndex(
-            x => x.id === this.operator.id
+            x => x.id === this.operatorSync.id
           );
-          this.operatorsSync.splice(index, 1, this.operatorLocal);
+          this.operatorsSync.splice(index, 1, this.operatorSync);
         })
         .catch(err => {
           console.log(err);

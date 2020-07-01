@@ -1,32 +1,49 @@
 <template>
-  <v-dialog v-model="dialogAddSync" max-width="600px">
+  <v-dialog
+    v-model="dialogAddSync"
+    fullscreen
+    hide-overlay
+    transition="dialog-bottom-transition"
+  >
     <v-card>
-      <v-toolbar color="primary" light flat>
+      <v-toolbar dark color="primary">
+        <v-btn icon dark @click="dialogAddSync = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">{{
-            update ? "Cập nhập" : "Thêm mới"
-          }}</span>
-          <v-btn
-            icon
-            dark
-            @click="dialogAddSync = false"
-            style="margin-left:395px;"
+          >{{ update ? "Cập nhập Loại Container" : "Thêm mới Loại Container" }}
+        </v-toolbar-title>
+
+        <v-spacer></v-spacer>
+        <v-toolbar-items>
+          <v-btn dark text @click="dialogAddSync = false">Trở về</v-btn>
+          <v-btn dark text @click="updateContainerType()" v-if="update"
+            >Cập nhập</v-btn
           >
-            <v-icon>mdi-close</v-icon>
-          </v-btn></v-toolbar-title
-        >
+          <v-btn
+            dark
+            text
+            @click="createContainerType()"
+            v-else
+            :disabled="readonly"
+            >Thêm mới</v-btn
+          >
+        </v-toolbar-items>
       </v-toolbar>
       <v-card-text>
         <v-form>
+          <small>*Dấu sao là trường bắt buộc</small>
           <v-layout col>
             <v-layout row>
               <v-flex xs8>
                 <v-text-field
-                  label="Tên loại Container"
+                  label="Tên loại Container*"
                   name="name"
                   prepend-icon="mdi-account"
                   type="text"
-                  v-model="containerTypeSync.name"
+                  v-model="containerTypeLocal.name"
+                  :rules="[required('name')]"
+                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -37,7 +54,8 @@
                   name="description"
                   prepend-icon="mdi-lock"
                   type="text"
-                  v-model="containerTypeSync.description"
+                  v-model="containerTypeLocal.description"
+                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -50,7 +68,8 @@
                   name="tareWeight"
                   prepend-icon="mdi-lock"
                   type="number"
-                  v-model="containerTypeSync.tareWeight"
+                  v-model="containerTypeLocal.tareWeight"
+                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -61,7 +80,8 @@
                   name="payloadCapacity"
                   prepend-icon="mdi-lock"
                   type="number"
-                  v-model="containerTypeSync.payloadCapacity"
+                  v-model="containerTypeLocal.payloadCapacity"
+                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -74,7 +94,8 @@
                   name="cubicCapacity"
                   prepend-icon="mdi-lock"
                   type="number"
-                  v-model="containerTypeSync.cubicCapacity"
+                  v-model="containerTypeLocal.cubicCapacity"
+                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -85,7 +106,8 @@
                   name="internalLength"
                   prepend-icon="mdi-lock"
                   type="number"
-                  v-model="containerTypeSync.internalLength"
+                  v-model="containerTypeLocal.internalLength"
+                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -98,7 +120,8 @@
                   name="internalWidth"
                   prepend-icon="mdi-lock"
                   type="number"
-                  v-model="containerTypeSync.internalWidth"
+                  v-model="containerTypeLocal.internalWidth"
+                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -109,7 +132,8 @@
                   name="internalHeight"
                   prepend-icon="mdi-lock"
                   type="number"
-                  v-model="containerTypeSync.internalHeight"
+                  v-model="containerTypeLocal.internalHeight"
+                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -122,7 +146,8 @@
                   name="doorOpeningWidth"
                   prepend-icon="mdi-lock"
                   type="number"
-                  v-model="containerTypeSync.doorOpeningWidth"
+                  v-model="containerTypeLocal.doorOpeningWidth"
+                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -133,7 +158,8 @@
                   name="doorOpeningHeight"
                   prepend-icon="mdi-lock"
                   type="number"
-                  v-model="containerTypeSync.doorOpeningHeight"
+                  v-model="containerTypeLocal.doorOpeningHeight"
+                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -141,25 +167,18 @@
           <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-top: 65px;">
-        <v-spacer></v-spacer>
-        <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn @click="updateContainerType()" color="primary" v-if="update"
-          >Cập nhập</v-btn
-        >
-        <v-btn @click="addContainerType()" color="primary" v-else
-          >Thêm mới</v-btn
-        >
-      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContainerType } from "@/entity/container-type";
+import FormValidate from "@/mixin/form-validate";
 import { createContainerType, updateContainerType } from "@/api/container-type";
 
-@Component
+@Component({
+  mixins: [FormValidate]
+})
 export default class CreateContainerType extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("containerType", { type: Object })
@@ -171,17 +190,23 @@ export default class CreateContainerType extends Vue {
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Boolean) update!: boolean;
 
-  addContainerType() {
-    if (this.containerTypeSync) {
-      createContainerType(this.containerTypeSync)
+  containerTypeLocal = {} as IContainerType;
+  readonly = false;
+  created() {
+    this.containerTypeLocal = Object.assign({}, this.containerTypeSync);
+  }
+  createContainerType() {
+    if (this.containerTypeLocal) {
+      createContainerType(this.containerTypeLocal)
         .then(res => {
           console.log(res.data);
           const response: IContainerType = res.data;
-          this.containerTypeSync = response;
+          this.containerTypeLocal.id = response.id;
           this.messageSync =
             "Thêm mới thành công loại Container: " +
-            this.containerTypeSync.name;
-          this.containerTypesSync.push(this.containerTypeSync);
+            this.containerTypeLocal.name;
+          this.containerTypesSync.unshift(this.containerTypeLocal);
+          this.readonly = true;
         })
         .catch(err => {
           console.log(err);
@@ -192,6 +217,7 @@ export default class CreateContainerType extends Vue {
   }
   updateContainerType() {
     if (this.containerTypeSync.id) {
+      this.containerTypeSync = Object.assign({}, this.containerTypeLocal);
       updateContainerType(this.containerTypeSync)
         .then(res => {
           console.log(res.data);
@@ -200,6 +226,10 @@ export default class CreateContainerType extends Vue {
           this.messageSync =
             "Cập nhập thành công loại Container: " +
             this.containerTypeSync.name;
+          const index = this.containerTypesSync.findIndex(
+            x => x.id === this.containerTypeSync.id
+          );
+          this.containerTypesSync.splice(index, 1, this.containerTypeSync);
         })
         .catch(err => {
           console.log(err);

@@ -181,10 +181,7 @@
                 v-model="outboundSync.booking.isFcl"
                 label="Hàng nguyên cont"
               ></v-checkbox>
-              <v-btn
-                color="primary"
-                @click="updateBooking()"
-                :disabled="!checkbox"
+              <v-btn color="primary" @click="updateBooking()" :disabled="!valid"
                 >Hoàn tất</v-btn
               >
               <v-btn text @click="stepper = 1">Quay lại</v-btn>

@@ -13,7 +13,7 @@
       <v-row justify="center">
         <CreateOperator
           v-if="dialogAdd"
-          :operator="operator"
+          :operator.sync="operator"
           :operators.sync="operators"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"

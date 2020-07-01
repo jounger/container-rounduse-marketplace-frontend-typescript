@@ -38,6 +38,12 @@
                 label="Loại container"
                 required
               ></v-select>
+              <v-text-field
+                v-model="inboundSync.returnStation"
+                :rules="[required('return station')]"
+                label="Nơi trả hàng*"
+                :readonly="readonlyInbound"
+              ></v-text-field>
               <v-menu
                 ref="pickupTimePicker"
                 v-model="pickupTimePicker"
@@ -71,43 +77,6 @@
                     text
                     color="primary"
                     @click="$refs.pickupTimePicker.save(inboundSync.pickupTime)"
-                    >OK</v-btn
-                  >
-                </v-date-picker>
-              </v-menu>
-              <v-menu
-                ref="emptyTimePicker"
-                v-model="emptyTimePicker"
-                :close-on-content-click="false"
-                :return-value.sync="inboundSync.emptyTime"
-                transition="scale-transition"
-                offset-y
-                min-width="290px"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
-                    v-model="inboundSync.emptyTime"
-                    label="Thời gian lấy containers đặc từ cảng"
-                    prepend-icon="event"
-                    v-bind="attrs"
-                    v-on="on"
-                    required
-                    :rules="[required('empty time')]"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
-                  v-model="inboundSync.emptyTime"
-                  no-title
-                  scrollable
-                >
-                  <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="emptyTimePicker = false"
-                    >Cancel</v-btn
-                  >
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="$refs.emptyTimePicker.save(inboundSync.emptyTime)"
                     >OK</v-btn
                   >
                 </v-date-picker>
@@ -349,7 +318,6 @@ export default class UpdateInbound extends Vue {
   @PropSync("inbounds", { type: Array }) inboundsSync!: Array<IInbound>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @PropSync("freeTime", { type: String }) freeTimeSync!: string;
   // Form validate
   checkbox = false;
   editable = true;
@@ -368,7 +336,6 @@ export default class UpdateInbound extends Vue {
   pickupTimePicker = false;
 
   // B/L form
-  emptyTimePicker = false;
   freeTimePicker = false;
   // Container form
   containerHeaders = [
@@ -400,12 +367,12 @@ export default class UpdateInbound extends Vue {
 
   updateInbound() {
     // TODO: API update inbound
-    this.inboundSync.emptyTime = convertToDateTime(this.inboundSync.emptyTime);
+
     this.inboundSync.pickupTime = convertToDateTime(
       this.inboundSync.pickupTime
     );
     this.inboundSync.billOfLading.freeTime = convertToDateTime(
-      this.freeTimeSync
+      this.inboundSync.billOfLading.freeTime
     );
     console.log(this.inboundSync);
     updateInbound(this.inboundSync)
@@ -548,7 +515,7 @@ export default class UpdateInbound extends Vue {
   }
   updateBillOfLading() {
     this.inboundSync.billOfLading.freeTime = convertToDateTime(
-      this.freeTimeSync
+      this.inboundSync.billOfLading.freeTime
     );
     updateBillOfLading(this.inboundSync.billOfLading)
       .then(res => {

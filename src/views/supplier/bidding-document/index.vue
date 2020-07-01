@@ -4,7 +4,7 @@
       <Snackbar :text="message" :snackbar.sync="snackbar" />
       <CreateBiddingDocument
         v-if="dialogAdd"
-        :biddingDocument.sync="biddingDocument"
+        :biddingDocuments.sync="biddingDocuments"
         :outbounds.sync="outbounds"
         :dialogAdd.sync="dialogAdd"
         :message.sync="message"
@@ -82,6 +82,8 @@ import UpdateBiddingDocument from "./components/UpdateBiddingDocument.vue";
 import Snackbar from "@/components/Snackbar.vue";
 import { BiddingDocumentData } from "./data";
 import { IOutbound } from "@/entity/outbound";
+import { getBiddingDocumentsByMerchant } from "@/api/bidding-document";
+import { PaginationResponse } from "@/api/payload";
 
 @Component({
   components: {
@@ -149,12 +151,7 @@ export default class BiddingDocument extends Vue {
   onOptionsChange(val: object, oldVal: object) {
     console.log(this.$auth.user());
     if (val !== oldVal) {
-      console.log(BiddingDocumentData);
-      this.biddingDocuments = BiddingDocumentData as Array<IBiddingDocument>;
-      this.loading = false;
-      this.options.totalItems = 10;
-      /*
-      getBiddingDocumentByForwarder(this.$auth.user().id, {
+      getBiddingDocumentsByMerchant(this.$auth.user().id, {
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })
@@ -166,7 +163,6 @@ export default class BiddingDocument extends Vue {
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
-        */
     }
   }
 }

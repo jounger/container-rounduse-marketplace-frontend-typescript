@@ -3,6 +3,7 @@
     <v-card>
       <v-row justify="center">
         <DeleteContainerType
+          v-if="dialogDel"
           :dialogDel.sync="dialogDel"
           :containerType.sync="containerType"
           :containerTypes.sync="containerTypes"
@@ -12,6 +13,7 @@
       </v-row>
       <v-row justify="center">
         <CreateContainerType
+          v-if="dialogAdd"
           :containerType.sync="containerType"
           :containerTypes.sync="containerTypes"
           :dialogAdd.sync="dialogAdd"

@@ -31,7 +31,7 @@ export function updateContainerType(containerType: IContainerType) {
   });
 }
 
-export function editContainerType(id: number, updates: Map<string, object>) {
+export function editContainerType(id: number, updates: IContainerType) {
   return Vue.axios.patch(`/container-type/${id}`, updates, {
     headers: config
   });

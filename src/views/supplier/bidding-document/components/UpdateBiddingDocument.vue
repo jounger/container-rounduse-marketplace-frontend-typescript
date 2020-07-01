@@ -11,7 +11,7 @@
         <v-btn icon dark @click="dialogEditSync = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title>Thêm mới</v-toolbar-title>
+        <v-toolbar-title>Cập nhập</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
           <v-btn dark text @click="dialogEditSync = false">Save</v-btn>
@@ -181,8 +181,14 @@
                 v-model="biddingDocumentSync.isMultipleAward"
                 label="Cho phép nhiều nhà thầu cùng thắng"
               ></v-checkbox>
-              <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
-                >Tiếp tục</v-btn
+              <v-btn
+                color="primary"
+                @click="
+                  updateBiddingDocument();
+                  stepper = 3;
+                "
+                :disabled="!valid"
+                >Lưu và Tiếp tục</v-btn
               >
               <v-btn text @click="stepper = 1">Quay lại</v-btn>
             </v-form>

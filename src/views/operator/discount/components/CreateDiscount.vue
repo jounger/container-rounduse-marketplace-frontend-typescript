@@ -4,7 +4,7 @@
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
-            update ? "Cập nhập" : "Thêm mới"
+            update ? "Cập nhập Mã giảm giá" : "Thêm mới Mã giảm giá"
           }}</span>
           <v-btn
             icon
@@ -18,15 +18,18 @@
       </v-toolbar>
       <v-card-text>
         <v-form>
+          <small>*Dấu sao là trường bắt buộc</small>
           <v-layout col>
             <v-layout row>
               <v-flex xs8>
                 <v-text-field
-                  label="Mã giảm giá"
+                  label="Mã giảm giá*"
                   name="code"
                   prepend-icon="mdi-account"
                   type="text"
-                  v-model="discountSync.code"
+                  v-model="discountLocal.code"
+                  :rules="[required('code')]"
+                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -37,7 +40,8 @@
                   name="detail"
                   prepend-icon="mdi-account"
                   type="text"
-                  v-model="discountSync.detail"
+                  v-model="discountLocal.detail"
+                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -50,7 +54,8 @@
                   attach
                   label="Loại tiền tệ"
                   chips
-                  v-model="discountSync.currency"
+                  v-model="discountLocal.currency"
+                  :readonly="readonly"
                 ></v-select>
               </v-flex>
             </v-layout>
@@ -61,7 +66,8 @@
                   name="percent"
                   prepend-icon="mdi-account"
                   type="number"
-                  v-model="discountSync.percent"
+                  v-model="discountLocal.percent"
+                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -74,7 +80,8 @@
                   name="maximumDiscount"
                   prepend-icon="mdi-account"
                   type="number"
-                  v-model="discountSync.maximumDiscount"
+                  v-model="discountLocal.maximumDiscount"
+                  :readonly="readonly"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -91,16 +98,18 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
-                      v-model="expiredDateSync"
+                      v-model="discountLocal.expiredDate"
                       label="Ngày hết hạn"
                       hint="YYYY/MM/DD"
                       persistent-hint
                       prepend-icon="event"
                       v-bind="attrs"
                       v-on="on"
+                      :readonly="readonly"
                     ></v-text-field>
                   </template>
                   <v-date-picker
+                    v-if="!readonly"
                     v-model="expiredDateSync"
                     no-title
                     @input="expiredDatePicker = false"
@@ -118,7 +127,13 @@
         <v-btn @click="updateDiscount()" color="primary" v-if="update"
           >Cập nhập</v-btn
         >
-        <v-btn @click="addDiscount()" color="primary" v-else>Thêm mới</v-btn>
+        <v-btn
+          @click="createDiscount()"
+          color="primary"
+          v-else
+          :disabled="readonly"
+          >Thêm mới</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -136,23 +151,28 @@ export default class CreateDiscount extends Vue {
   @PropSync("discounts", { type: Array }) discountsSync!: Array<IDiscount>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @PropSync("expiredDate", { type: String }) expiredDateSync!: string;
   @Prop(Boolean) update!: boolean;
 
   currencies = ["USD", "VND", "EURO"];
   expiredDatePicker = false;
-  addDiscount() {
-    if (this.discountSync) {
-      this.discountSync.expiredDate = convertToDateTime(this.expiredDateSync);
-      console.log(this.discountSync.expiredDate);
-      createDiscount(this.discountSync)
+  readonly = false;
+  discountLocal = {} as IDiscount;
+  created() {
+    this.discountLocal = Object.assign({}, this.discountSync);
+  }
+  createDiscount() {
+    if (this.discountLocal) {
+      this.discountLocal.expiredDate = convertToDateTime(
+        this.discountLocal.expiredDate
+      );
+      createDiscount(this.discountLocal)
         .then(res => {
-          console.log(res.data);
           const response: IDiscount = res.data;
-          this.discountSync = response;
+          this.discountLocal.id = response.id;
           this.messageSync =
-            "Thêm mới thành công mã giảm giá: " + this.discountSync.code;
-          this.discountsSync.push(this.discountSync);
+            "Thêm mới thành công mã giảm giá: " + this.discountLocal.code;
+          this.discountsSync.unshift(this.discountLocal);
+          this.readonly = true;
         })
         .catch(err => {
           console.log(err);
@@ -162,8 +182,11 @@ export default class CreateDiscount extends Vue {
     }
   }
   updateDiscount() {
-    if (this.discountSync.id) {
-      this.discountSync.expiredDate = convertToDateTime(this.expiredDateSync);
+    if (this.discountLocal.id) {
+      this.discountLocal.expiredDate = convertToDateTime(
+        this.discountLocal.expiredDate
+      );
+      this.discountSync = Object.assign({}, this.discountLocal);
       updateDiscount(this.discountSync)
         .then(res => {
           console.log(res.data);
@@ -171,6 +194,10 @@ export default class CreateDiscount extends Vue {
           this.discountSync = response;
           this.messageSync =
             "Cập nhập thành công mã giảm giá: " + this.discountSync.code;
+          const index = this.discountsSync.findIndex(
+            x => x.id === this.discountSync.id
+          );
+          this.discountsSync.splice(index, 1, this.discountSync);
         })
         .catch(err => {
           console.log(err);

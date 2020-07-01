@@ -58,7 +58,7 @@
                 {{ formatDatetime(item.booking.cutOffTime) }}
               </template>
               <template v-slot:item.grossWeight="{ item }">
-                {{ item.grossWeight }} {{ item.unitOfMesurement }}
+                {{ item.payload }} {{ item.unitOfMesurement }}
               </template>
               <template v-slot:item.fcl="{ item }">
                 {{ item.booking.isFcl ? "Có" : "Không" }}
@@ -76,8 +76,8 @@
                 >
                   <v-icon left>mdi-pencil</v-icon>
                   {{
-                    biddingDocumentLocal.outbound &&
-                    biddingDocumentLocal.outbound.id == item.id
+                    biddingDocumentLocal.outbound != -1 &&
+                    biddingDocumentLocal.outbound == item.id
                       ? "Bỏ"
                       : "Chọn"
                   }}
@@ -254,15 +254,16 @@ import { IBiddingDocument } from "@/entity/bidding-document";
 import { IOutbound } from "@/entity/outbound";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
-import { isEmptyObject } from "../../../../utils/tool";
+import { isEmptyObject, convertToDateTime } from "../../../../utils/tool";
+import { createBiddingDocument } from "@/api/bidding-document";
 
 @Component({
   mixins: [FormValidate, Utils]
 })
 export default class CreateBiddingDocument extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("biddingDocument", { type: Object })
-  biddingDocumentSync!: IBiddingDocument;
+  @PropSync("biddingDocuments", { type: Array })
+  biddingDocumentsSync!: Array<IBiddingDocument>;
   @PropSync("outbound", { type: Object })
   outboundSync?: IOutbound;
   @PropSync("message", { type: String }) messageSync!: string;
@@ -271,7 +272,7 @@ export default class CreateBiddingDocument extends Vue {
   dateInit = new Date().toISOString().substr(0, 10);
   biddingDocumentLocal = {
     offeree: this.$auth.user().username,
-    outbound: {},
+    outbound: -1,
     bidDiscountCode: "",
     isMultipleAward: false,
     bidOpening: this.dateInit,
@@ -331,21 +332,45 @@ export default class CreateBiddingDocument extends Vue {
 
   selectOutbound(item: IOutbound) {
     if (
-      this.biddingDocumentLocal.outbound &&
-      this.biddingDocumentLocal.outbound.id === item.id
+      this.biddingDocumentLocal.outbound != -1 &&
+      this.biddingDocumentLocal.outbound === item.id
     ) {
       // unselected item
-      this.biddingDocumentLocal.outbound = {} as IOutbound;
+      this.biddingDocumentLocal.outbound = -1;
     } else {
       // select item
-      this.biddingDocumentLocal.outbound = item;
+      if (item.id) {
+        this.biddingDocumentLocal.outbound = item.id;
+      }
     }
   }
 
   // BiddingDocument
   createBiddingDocument() {
     // TODO: API create biddingDocument
-    this.biddingDocumentSync = this.biddingDocumentLocal;
+    console.log(this.biddingDocumentLocal);
+    this.biddingDocumentLocal.bidOpening = convertToDateTime(
+      this.biddingDocumentLocal.bidOpening
+    );
+    this.biddingDocumentLocal.bidClosing = convertToDateTime(
+      this.biddingDocumentLocal.bidClosing
+    );
+    createBiddingDocument(this.biddingDocumentLocal)
+      .then(res => {
+        console.log(res.data);
+        const response: IBiddingDocument = res.data;
+        this.biddingDocumentLocal = response;
+        this.messageSync =
+          "Thêm mới thành công HSMT: " + this.biddingDocumentLocal.id;
+        if (typeof this.biddingDocumentsSync != "undefined") {
+          this.biddingDocumentsSync.push(this.biddingDocumentLocal);
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        this.messageSync = "Đã có lỗi xảy ra";
+      })
+      .finally(() => (this.snackbarSync = true));
   }
 
   mounted() {

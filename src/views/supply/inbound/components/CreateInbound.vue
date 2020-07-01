@@ -39,6 +39,12 @@
                 label="Loại container*"
                 :readonly="readonlyInbound"
               ></v-select>
+              <v-text-field
+                v-model="inboundLocal.returnStation"
+                :rules="[required('return station')]"
+                label="Nơi trả hàng*"
+                :readonly="readonlyInbound"
+              ></v-text-field>
               <v-menu
                 ref="pickupTimePicker"
                 v-model="pickupTimePicker"
@@ -75,43 +81,6 @@
                     @click="
                       $refs.pickupTimePicker.save(inboundLocal.pickupTime)
                     "
-                    >OK</v-btn
-                  >
-                </v-date-picker>
-              </v-menu>
-              <v-menu
-                ref="emptyTimePicker"
-                v-model="emptyTimePicker"
-                :close-on-content-click="false"
-                :return-value.sync="inboundLocal.emptyTime"
-                transition="scale-transition"
-                offset-y
-                min-width="290px"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
-                    v-model="inboundLocal.emptyTime"
-                    label="Thời gian chờ cont rỗng"
-                    prepend-icon="event"
-                    v-bind="attrs"
-                    v-on="on"
-                    :readonly="readonlyInbound"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
-                  v-if="!readonlyInbound"
-                  v-model="inboundLocal.emptyTime"
-                  no-title
-                  scrollable
-                >
-                  <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="emptyTimePicker = false"
-                    >Cancel</v-btn
-                  >
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="$refs.emptyTimePicker.save(inboundLocal.emptyTime)"
                     >OK</v-btn
                   >
                 </v-date-picker>
@@ -370,6 +339,7 @@ export default class CreateInbound extends Vue {
   inboundLocal = {
     shippingLine: "",
     containerType: "",
+    returnStation: "",
     status: "",
     emptyTime: this.dateInit,
     pickupTime: this.dateInit,
@@ -399,7 +369,6 @@ export default class CreateInbound extends Vue {
   pickupTimePicker = false;
 
   // B/L form
-  emptyTimePicker = false;
   freeTimePicker = false;
 
   // Container form
@@ -476,9 +445,6 @@ export default class CreateInbound extends Vue {
   // Inbound
   createInbound() {
     // TODO: API create inbound
-    this.inboundLocal.emptyTime = convertToDateTime(
-      this.inboundLocal.emptyTime
-    );
     this.inboundLocal.pickupTime = convertToDateTime(
       this.inboundLocal.pickupTime
     );

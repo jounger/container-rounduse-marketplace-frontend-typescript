@@ -54,7 +54,7 @@ export default class NotificationSetting extends Vue {
     this.stompClient = Stomp.over(this.socket);
     this.stompClient.connect(
       { Authorization: `Bearer ${this.$auth.token()}` },
-      (frame: unknown) => {
+      (frame: any) => {
         this.connected = true;
         console.log(frame);
         this.stompClient.subscribe(
@@ -65,7 +65,7 @@ export default class NotificationSetting extends Vue {
           }
         );
       },
-      (error: unknown) => {
+      (error: any) => {
         console.log(error);
         this.connected = false;
       }

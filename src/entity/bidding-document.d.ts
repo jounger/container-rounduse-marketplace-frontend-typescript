@@ -3,7 +3,7 @@ import { IBid } from './bid';
 export interface IBiddingDocument {
   id?: number;
   offeree: string; // IMerchant username
-  outbound: IOutbound;
+  outbound: IOutbound | number;
   bids: Array<IBid>;
   bidDiscountCode: string;
   isMultipleAward: boolean;

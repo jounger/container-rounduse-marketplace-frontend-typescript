@@ -60,7 +60,7 @@
           >Cập nhập</v-btn
         >
         <v-btn
-          @click="addPermission()"
+          @click="createPermission()"
           color="primary"
           v-else
           :disabled="readonly"
@@ -86,19 +86,15 @@ export default class CreatePermission extends Vue {
   >;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @Prop(Object) permission!: IPermission;
+  @PropSync("permission", { type: Object }) permissionSync!: IPermission;
   @Prop(Boolean) update!: boolean;
 
   readonly = false;
-  permissionLocal = {
-    name: "",
-    description: ""
-  } as IPermission;
+  permissionLocal = {} as IPermission;
   created() {
-    this.permissionLocal.name = this.permission.name;
-    this.permissionLocal.description = this.permission.description;
+    this.permissionLocal = Object.assign({}, this.permissionSync);
   }
-  addPermission() {
+  createPermission() {
     if (this.permissionLocal) {
       createPermission(this.permissionLocal)
         .then(res => {
@@ -120,19 +116,19 @@ export default class CreatePermission extends Vue {
     }
   }
   updatePermission() {
-    if (this.permission.id) {
-      this.permissionLocal.id = this.permission.id;
-      updatePermission(this.permissionLocal)
+    if (this.permissionSync.id) {
+      this.permissionSync = Object.assign({}, this.permissionLocal);
+      updatePermission(this.permissionSync)
         .then(res => {
           console.log(res.data);
           const response: IPermission = res.data;
-          this.permissionLocal = response;
+          this.permissionSync = response;
           this.messageSync =
-            "Cập nhập thành công vai trò: " + this.permissionLocal.name;
+            "Cập nhập thành công vai trò: " + this.permissionSync.name;
           const index = this.permissionsSync.findIndex(
-            x => x.id === this.permission.id
+            x => x.id === this.permissionSync.id
           );
-          this.permissionsSync.splice(index, 1, this.permissionLocal);
+          this.permissionsSync.splice(index, 1, this.permissionSync);
         })
         .catch(err => {
           console.log(err);

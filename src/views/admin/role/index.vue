@@ -14,7 +14,7 @@
       <v-row justify="center">
         <CreateRole
           v-if="dialogAdd"
-          :role="role"
+          :role.sync="role"
           :roles.sync="roles"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"

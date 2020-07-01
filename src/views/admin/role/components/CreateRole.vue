@@ -72,7 +72,7 @@
         <v-btn @click="updateRole()" color="primary" v-if="update"
           >Cập nhập</v-btn
         >
-        <v-btn @click="addRole()" color="primary" v-else :disabled="readonly"
+        <v-btn @click="createRole()" color="primary" v-else :disabled="readonly"
           >Thêm mới</v-btn
         >
       </v-card-actions>
@@ -94,20 +94,16 @@ import FormValidate from "@/mixin/form-validate";
 export default class CreateRole extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("roles", { type: Array }) rolesSync!: Array<IRole>;
+  @PropSync("role", { type: Object }) roleSync!: IRole;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Boolean) update!: boolean;
-  @Prop(Object) role!: IRole;
 
   permissions = [] as Array<IPermission>;
   readonly = false;
-  roleLocal = {
-    name: "",
-    permissions: []
-  } as IRole;
+  roleLocal = {} as IRole;
   created() {
-    this.roleLocal.name = this.role.name;
-    this.roleLocal.permissions = this.role.permissions;
+    this.roleLocal = Object.assign({}, this.roleSync);
     getPermissions({
       page: 0,
       limit: 100
@@ -129,7 +125,7 @@ export default class CreateRole extends Vue {
     );
     this.roleLocal.permissions = [...this.roleLocal.permissions];
   }
-  addRole() {
+  createRole() {
     if (this.roleLocal) {
       createRole(this.roleLocal)
         .then(res => {
@@ -148,18 +144,18 @@ export default class CreateRole extends Vue {
     }
   }
   updateRole() {
-    console.log(this.roleLocal.permissions);
-    if (this.role.id) {
-      this.roleLocal.id = this.role.id;
-      updateRole(this.roleLocal)
+    if (this.roleSync.id) {
+      this.roleSync = Object.assign({}, this.roleLocal);
+      updateRole(this.roleSync)
         .then(res => {
           console.log(res.data);
           const response: IRole = res.data;
-          this.roleLocal = response;
-          this.messageSync =
-            "Cập nhập thành công quyền: " + this.roleLocal.name;
-          const index = this.rolesSync.findIndex(x => x.id === this.role.id);
-          this.rolesSync.splice(index, 1, this.roleLocal);
+          this.roleSync = response;
+          this.messageSync = "Cập nhập thành công quyền: " + this.roleSync.name;
+          const index = this.rolesSync.findIndex(
+            x => x.id === this.roleSync.id
+          );
+          this.rolesSync.splice(index, 1, this.roleSync);
         })
         .catch(err => {
           console.log(err);

@@ -16,7 +16,6 @@
         :message.sync="message"
         :snackbar.sync="snackbar"
         :inbounds.sync="inbounds"
-        :freeTime.sync="freeTime"
       />
       <v-row justify="center">
         <DeleteInbound
@@ -172,9 +171,8 @@ export default class Inbound extends Vue {
   openUpdateDialog(item: IInbound) {
     this.inbound = item;
     const index = this.inbound.emptyTime.indexOf("T");
-    this.inbound.emptyTime = this.inbound.emptyTime.slice(0, index);
     this.inbound.pickupTime = this.inbound.pickupTime.slice(0, index);
-    this.freeTime = this.inbound.billOfLading.freeTime.slice(0, index);
+    this.inbound.billOfLading.freeTime = this.inbound.billOfLading.freeTime.slice(0, index);
     console.log(this.inbound.billOfLading.freeTime);
     console.log(this.inbound);
     this.dialogEdit = true;
