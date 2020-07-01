@@ -59,8 +59,7 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import NavLayout from "@/layouts/NavLayout.vue";
+import { Component, Watch, Vue } from "vue-property-decorator";
 import { IPermission } from "@/entity/permission";
 import { getPermissions } from "@/api/permission";
 import { PaginationResponse } from "@/api/payload";
@@ -76,7 +75,6 @@ import CreatePermission from "./components/CreatePermission.vue";
   }
 })
 export default class Permission extends Vue {
-  @PropSync("layout") layoutSync!: object;
   permissions: Array<IPermission> = [];
   permission = {} as IPermission;
   dialogAdd = false;
@@ -106,10 +104,6 @@ export default class Permission extends Vue {
       value: "actions"
     }
   ];
-  created() {
-    this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
-  }
-
   openCreateDialog() {
     this.update = false;
     this.permission = {} as IPermission;

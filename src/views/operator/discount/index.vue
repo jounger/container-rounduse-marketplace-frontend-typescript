@@ -61,8 +61,7 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import NavLayout from "@/layouts/NavLayout.vue";
+import { Component, Watch, Vue } from "vue-property-decorator";
 import { IDiscount } from "@/entity/discount";
 import { getDiscounts } from "@/api/discount";
 import { PaginationResponse } from "@/api/payload";
@@ -79,7 +78,6 @@ import { convertFromDateTime } from "@/utils/tool";
   }
 })
 export default class Discount extends Vue {
-  @PropSync("layout") layoutSync!: object;
   discounts: Array<IDiscount> = [];
   discount = {} as IDiscount;
   dialogAdd = false;
@@ -114,9 +112,7 @@ export default class Discount extends Vue {
       value: "actions"
     }
   ];
-  created() {
-    this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
-  }
+
   convertDateTime(input: string) {
     return convertFromDateTime(input);
   }

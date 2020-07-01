@@ -57,8 +57,7 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import NavLayout from "@/layouts/NavLayout.vue";
+import { Component, Watch, Vue } from "vue-property-decorator";
 import { IContainerType } from "@/entity/container-type";
 import { getContainerTypes } from "@/api/container-type";
 import { PaginationResponse } from "@/api/payload";
@@ -74,7 +73,6 @@ import DeleteContainerType from "./components/DeleteContainerType.vue";
   }
 })
 export default class ContainerType extends Vue {
-  @PropSync("layout") layoutSync!: object;
   containerTypes: Array<IContainerType> = [];
   containerType = {} as IContainerType;
   dialogAdd = false;
@@ -112,9 +110,6 @@ export default class ContainerType extends Vue {
       value: "actions"
     }
   ];
-  created() {
-    this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
-  }
 
   openCreateDialog() {
     this.containerType = {} as IContainerType;

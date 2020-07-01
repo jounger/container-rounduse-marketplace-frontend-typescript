@@ -9,17 +9,26 @@ const routes: Array<RouteConfig> = [
   {
     path: "/login",
     name: "Login",
+    meta: {
+      layout: "AuthLayout"
+    },
     component: () => import("@/views/auth/Login.vue")
   },
   {
     path: "/register",
     name: "Register",
+    meta: {
+      layout: "RegisterLayout"
+    },
     component: () => import("@/views/auth/Register.vue")
   },
   // GENERAL
   {
     path: "/",
     name: "Home",
+    meta: {
+      layout: "DefaultLayout"
+    },
     component: () => import("@/views/Home.vue")
   },
   {
@@ -27,7 +36,8 @@ const routes: Array<RouteConfig> = [
     name: "Profile",
     component: () => import("@/views/user/profile/index.vue"),
     meta: {
-      auth: true
+      auth: true,
+      layout: "NavLayout"
     }
   },
   {
@@ -35,7 +45,8 @@ const routes: Array<RouteConfig> = [
     name: "Notification",
     component: () => import("@/views/user/notification/index.vue"),
     meta: {
-      auth: true
+      auth: true,
+      layout: "NavLayout"
     }
   },
   {
@@ -43,7 +54,8 @@ const routes: Array<RouteConfig> = [
     name: "Dashboard",
     component: () => import("@/views/user/dashboard/index.vue"),
     meta: {
-      auth: true
+      auth: true,
+      layout: "NavLayout"
     }
   },
   // ADMIN
@@ -52,7 +64,8 @@ const routes: Array<RouteConfig> = [
     name: "Role",
     component: () => import("@/views/admin/role/index.vue"),
     meta: {
-      auth: ["ROLE_ADMIN"]
+      auth: ["ROLE_ADMIN"],
+      layout: "NavLayout"
     }
   },
   {
@@ -60,7 +73,8 @@ const routes: Array<RouteConfig> = [
     name: "Permission",
     component: () => import("@/views/admin/permission/index.vue"),
     meta: {
-      auth: ["ROLE_ADMIN"]
+      auth: ["ROLE_ADMIN"],
+      layout: "NavLayout"
     }
   },
   {
@@ -68,7 +82,8 @@ const routes: Array<RouteConfig> = [
     name: "Operator",
     component: () => import("@/views/admin/operator/index.vue"),
     meta: {
-      auth: ["ROLE_ADMIN"]
+      auth: ["ROLE_ADMIN"],
+      layout: "NavLayout"
     }
   },
   // MODERATOR
@@ -77,7 +92,8 @@ const routes: Array<RouteConfig> = [
     name: "Shipping Line",
     component: () => import("@/views/operator/shipping-line/index.vue"),
     meta: {
-      auth: ["ROLE_MODERATOR"]
+      auth: ["ROLE_MODERATOR"],
+      layout: "NavLayout"
     }
   },
   {
@@ -85,7 +101,8 @@ const routes: Array<RouteConfig> = [
     name: "SupplierRegister",
     component: () => import("@/views/operator/supplier-register/index.vue"),
     meta: {
-      auth: ["ROLE_MODERATOR"]
+      auth: ["ROLE_MODERATOR"],
+      layout: "NavLayout"
     }
   },
   {
@@ -93,7 +110,8 @@ const routes: Array<RouteConfig> = [
     name: "Port",
     component: () => import("@/views/operator/port/index.vue"),
     meta: {
-      auth: ["ROLE_MODERATOR"]
+      auth: ["ROLE_MODERATOR"],
+      layout: "NavLayout"
     }
   },
   {
@@ -101,7 +119,8 @@ const routes: Array<RouteConfig> = [
     name: "Container Type",
     component: () => import("@/views/operator/container-type/index.vue"),
     meta: {
-      auth: ["ROLE_MODERATOR"]
+      auth: ["ROLE_MODERATOR"],
+      layout: "NavLayout"
     }
   },
   {
@@ -109,7 +128,8 @@ const routes: Array<RouteConfig> = [
     name: "Mã giảm giá",
     component: () => import("@/views/operator/discount/index.vue"),
     meta: {
-      auth: ["ROLE_MODERATOR"]
+      auth: ["ROLE_MODERATOR"],
+      layout: "NavLayout"
     }
   },
   // SUPPLIER
@@ -118,7 +138,8 @@ const routes: Array<RouteConfig> = [
     name: "Application",
     component: () => import("@/views/supplier/application/index.vue"),
     meta: {
-      auth: ["ROLE_FORWARDER", "ROLE_MERCHANT"]
+      auth: ["ROLE_FORWARDER", "ROLE_MERCHANT"],
+      layout: "NavLayout"
     }
   },
   // merchant
@@ -127,7 +148,8 @@ const routes: Array<RouteConfig> = [
     name: "Outbound",
     component: () => import("@/views/supply/outbound/index.vue"),
     meta: {
-      auth: ["ROLE_MERCHANT"]
+      auth: ["ROLE_MERCHANT"],
+      layout: "NavLayout"
     }
   },
   {
@@ -135,7 +157,8 @@ const routes: Array<RouteConfig> = [
     name: "Bidding Document",
     component: () => import("@/views/supplier/bidding-document/index.vue"),
     meta: {
-      auth: ["ROLE_MERCHANT"]
+      auth: ["ROLE_MERCHANT"],
+      layout: "NavLayout"
     }
   },
   // forwarder
@@ -144,7 +167,8 @@ const routes: Array<RouteConfig> = [
     name: "Inbound",
     component: () => import("@/views/supply/inbound/index.vue"),
     meta: {
-      auth: ["ROLE_FORWARDER"]
+      auth: ["ROLE_FORWARDER"],
+      layout: "NavLayout"
     }
   },
   {
@@ -152,7 +176,8 @@ const routes: Array<RouteConfig> = [
     name: "Bid",
     component: () => import("@/views/supplier/bid/index.vue"),
     meta: {
-      auth: ["ROLE_FORWARDER"]
+      auth: ["ROLE_FORWARDER"],
+      layout: "NavLayout"
     }
   },
   // DRIVER
@@ -161,7 +186,8 @@ const routes: Array<RouteConfig> = [
     name: "Driver",
     component: () => import("@/views/supplier/driver/index.vue"),
     meta: {
-      auth: ["ROLE_FORWARDER"]
+      auth: ["ROLE_FORWARDER"],
+      layout: "NavLayout"
     }
   },
   {
@@ -169,7 +195,8 @@ const routes: Array<RouteConfig> = [
     name: "Supplier",
     component: () => import("@/views/operator/supplier/index.vue"),
     meta: {
-      auth: ["ROLE_MODERATOR"]
+      auth: ["ROLE_MODERATOR"],
+      layout: "NavLayout"
     }
   }
 ];

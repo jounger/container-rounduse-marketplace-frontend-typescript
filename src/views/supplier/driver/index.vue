@@ -57,8 +57,7 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import NavLayout from "@/layouts/NavLayout.vue";
+import { Component, Watch, Vue } from "vue-property-decorator";
 import { IDriver } from "@/entity/driver";
 import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
@@ -74,7 +73,6 @@ import { getDriverByForwarder } from "@/api/driver";
   }
 })
 export default class Driver extends Vue {
-  @PropSync("layout") layoutSync!: object;
   drivers: Array<IDriver> = [];
   driver = {} as IDriver;
   dialogAdd = false;
@@ -108,9 +106,7 @@ export default class Driver extends Vue {
       value: "actions"
     }
   ];
-  created() {
-    this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
-  }
+
   openCreateDialog() {
     this.driver = {} as IDriver;
     this.driver.status = "ACTIVE";

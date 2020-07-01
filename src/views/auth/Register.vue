@@ -274,19 +274,16 @@
   </v-card>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import FormValidate from "@/mixin/form-validate";
 import Snackbar from "@/components/Snackbar.vue";
-import RegisterLayout from "@/layouts/RegisterLayout.vue";
 @Component({
   mixins: [FormValidate],
   components: {
-    Snackbar,
-    RegisterLayout
+    Snackbar
   }
 })
 export default class Register extends Vue {
-  @PropSync("layout") layoutSync!: object;
   private username = "";
   private password = "";
   private email = "";
@@ -309,9 +306,6 @@ export default class Register extends Vue {
   valid = true;
   checkbox = false;
 
-  created() {
-    this.layoutSync = RegisterLayout;
-  }
   public submit() {
     this.role.push(this.roles);
     console.log(this.role);

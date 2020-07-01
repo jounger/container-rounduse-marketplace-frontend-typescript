@@ -1,7 +1,7 @@
 import { IBiddingNotification } from '@/entity/bidding-notification';
 export const IBiddingNotificationData: IBiddingNotification[] = [
   {
-    id: 0,
+    id: 100,
     recipient: "forwarder",
     isRead: false,
     relatedResource: {
@@ -40,7 +40,7 @@ export const IBiddingNotificationData: IBiddingNotification[] = [
     type: "CREATED"
   },
   {
-    id: 1,
+    id: 101,
     recipient: "forwarder",
     isRead: false,
     relatedResource: {

@@ -59,8 +59,7 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import NavLayout from "@/layouts/NavLayout.vue";
+import { Component, Watch, Vue } from "vue-property-decorator";
 import { IRole } from "@/entity/role";
 import { getRoles } from "@/api/role";
 import { PaginationResponse } from "@/api/payload";
@@ -76,7 +75,6 @@ import CreateRole from "./components/CreateRole.vue";
   }
 })
 export default class Role extends Vue {
-  @PropSync("layout") layoutSync!: object;
   roles: Array<IRole> = [];
   role = {} as IRole;
   dialogAdd = false;
@@ -106,9 +104,6 @@ export default class Role extends Vue {
       value: "actions"
     }
   ];
-  created() {
-    this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
-  }
 
   openCreateDialog() {
     this.role = {} as IRole;

@@ -8,8 +8,7 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
-import NavLayout from "@/layouts/NavLayout.vue";
+import { Component, Vue } from "vue-property-decorator";
 import CardProfile from "./components/CardProfile.vue";
 import { IUser } from "@/entity/user";
 import { getProfile } from "@/api/user";
@@ -20,11 +19,8 @@ import { getProfile } from "@/api/user";
   }
 })
 export default class Profile extends Vue {
-  @PropSync("layout") layoutSync!: object;
   public profile: IUser | null = null;
-  created() {
-    this.layoutSync = NavLayout;
-  }
+
   async mounted() {
     getProfile()
       .then(res => {

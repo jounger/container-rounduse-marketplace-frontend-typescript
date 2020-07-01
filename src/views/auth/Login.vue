@@ -33,17 +33,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
-import AuthLayout from "@/layouts/AuthLayout.vue";
-import RegisterLayout from "@/layouts/RegisterLayout.vue";
+import { Component, Vue } from "vue-property-decorator";
 @Component
 export default class Login extends Vue {
-  @PropSync("layout") layoutSync!: object;
   public username = "admin";
   public password = "123456";
-  created() {
-    this.layoutSync = AuthLayout;
-  }
   public mounted() {
     if (this.$auth.check()) {
       this.$router.push("/dashboard");
@@ -51,7 +45,6 @@ export default class Login extends Vue {
   }
   public register() {
     this.$router.push("/register");
-    this.layoutSync = RegisterLayout;
   }
   public login() {
     this.$auth

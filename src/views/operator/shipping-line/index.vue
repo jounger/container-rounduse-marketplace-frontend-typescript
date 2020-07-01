@@ -87,8 +87,7 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import NavLayout from "@/layouts/NavLayout.vue";
+import { Component, Watch, Vue } from "vue-property-decorator";
 import { IShippingLine } from "@/entity/shipping-line";
 import { getShippingLines } from "@/api/shipping-line";
 import { PaginationResponse } from "@/api/payload";
@@ -106,7 +105,6 @@ import UpdateShippingLine from "./components/UpdateShippingLine.vue";
   }
 })
 export default class ShippingLine extends Vue {
-  @PropSync("layout") layoutSync!: object;
   shippingLines: Array<IShippingLine> = [];
   shippingLine = {} as IShippingLine;
 
@@ -139,9 +137,7 @@ export default class ShippingLine extends Vue {
       align: "center"
     }
   ];
-  created() {
-    this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
-  }
+
   openCreateDialog() {
     this.shippingLine = {} as IShippingLine;
     this.dialogAdd = true;

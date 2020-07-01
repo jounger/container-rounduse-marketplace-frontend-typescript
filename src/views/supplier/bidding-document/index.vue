@@ -72,8 +72,7 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import NavLayout from "@/layouts/NavLayout.vue";
+import { Component, Watch, Vue } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import CreateBiddingDocument from "./components/CreateBiddingDocument.vue";
 import UpdateBiddingDocument from "./components/UpdateBiddingDocument.vue";
@@ -91,7 +90,6 @@ import { IOutbound } from "@/entity/outbound";
   }
 })
 export default class BiddingDocument extends Vue {
-  @PropSync("layout") layoutSync!: object;
 
   biddingDocuments: Array<IBiddingDocument> = [];
   biddingDocument = {} as IBiddingDocument;
@@ -130,10 +128,6 @@ export default class BiddingDocument extends Vue {
       value: "actions"
     }
   ];
-
-  created() {
-    this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
-  }
 
   openEditDialog(item: IBiddingDocument) {
     this.biddingDocument = item;

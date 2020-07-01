@@ -80,8 +80,7 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import NavLayout from "@/layouts/NavLayout.vue";
+import { Component, Watch, Vue } from "vue-property-decorator";
 import { ISupplier } from "@/entity/supplier";
 import { getSuppliers } from "@/api/supplier";
 import { PaginationResponse } from "@/api/payload";
@@ -97,7 +96,6 @@ import SupplierDetail from "./components/SupplierDetail.vue";
   }
 })
 export default class Supplier extends Vue {
-  @PropSync("layout") layoutSync!: object;
   suppliers: Array<ISupplier> = [];
   supplier = {} as ISupplier;
 
@@ -130,9 +128,6 @@ export default class Supplier extends Vue {
       align: "center"
     }
   ];
-  created() {
-    this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
-  }
 
   openDetailDialog(item: ISupplier) {
     this.supplier = item;
