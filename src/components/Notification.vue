@@ -1,244 +1,160 @@
 <template>
   <v-menu offset-y>
     <template v-slot:activator="{ on, attrs }">
-      <v-btn icon v-bind="attrs" v-on="on" @click="clear()">
-        <v-badge :value="messages" :content="messages" color="green" overlap>
-          <v-icon dark>gavel</v-icon>
+      <v-btn icon v-bind="attrs" v-on="on" @click="seenNotification()">
+        <v-badge
+          :value="messageCount"
+          :content="messageCount"
+          color="green"
+          overlap
+        >
+          <v-icon dark>mdi-email</v-icon>
         </v-badge>
       </v-btn>
     </template>
-    <v-list style="max-height: 600px;" class="overflow-y-auto">
-      <v-list-item v-for="(item, index) in items" :key="index" :to="item.link">
-        <v-list-item-icon>
-          <v-icon>{{ item.icon }}</v-icon>
-        </v-list-item-icon>
-        <v-list-item-content>
-          <v-list-item-title
-            ><a>{{ item.from }}</a>
-            {{
-              item.type == "CREATE"
-                ? "vừa thêm mới thành công"
-                : item.type == "UPDATE"
-                ? "vừa cập nhập thành công"
-                : "vừa xóa thành công"
-            }}
-            {{ item.object }} cùng <a>{{ item.to }}</a>
-          </v-list-item-title>
-        </v-list-item-content>
+    <v-card max-width="450" class="mx-auto">
+      <v-toolbar color="cyan" dark>
+        <v-app-bar-nav-icon></v-app-bar-nav-icon>
+        <v-toolbar-title>Notification</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn icon>
+          <v-icon>mdi-magnify</v-icon>
+        </v-btn>
+      </v-toolbar>
 
-        <div class="line"></div>
-      </v-list-item>
-      <v-row justify="center">
-        <button color="primary" @click="seeMore()" v-if="count < data.length">
-          See more
-        </button>
-      </v-row>
-    </v-list>
+      <v-list three-line>
+        <v-divider></v-divider>
+        <v-list-item
+          v-for="item in notifications"
+          :key="item.id"
+          :to="gotoNotification(item)"
+        >
+          <v-list-item-avatar>
+            <!-- <v-img :src="item.avatar"></v-img> -->
+            {{ item.id }}
+          </v-list-item-avatar>
+
+          <v-list-item-content>
+            <v-list-item-title v-html="item.message"></v-list-item-title>
+            <v-list-item-subtitle>{{
+              item.type + " " + item.sendDate
+            }}</v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-card>
   </v-menu>
 </template>
 
 <script lang="ts">
-import { Vue, Component } from "vue-property-decorator";
+import { Vue, Component, Watch } from "vue-property-decorator";
+import { IBiddingNotification } from "@/entity/bidding-notification";
+import { getBiddingNotificationsByUser } from "../api/notification";
+import { PaginationResponse } from "../api/payload";
 
-@Component({
-  name: "Notification"
-})
+import SockJS from "sockjs-client";
+import Stomp, { Client } from "webstomp-client";
+
+@Component
 export default class Notification extends Vue {
-  items = [] as Array<any>;
-  count = 10;
-  data = [
-    {
-      from: "Forwarder",
-      type: "CREATE",
-      object: "HSDT",
-      to: "Merchant",
-      link: "/dashboard",
-      icon: "dashboard",
-      seen: false
-    },
-    {
-      from: "Merchant",
-      type: "UPDATE",
-      object: "HSMT",
-      to: "Forwarder",
-      link: "/dashboard",
-      icon: "dashboard",
-      seen: false
-    },
-    {
-      from: "Forwarder",
-      type: "DELETE",
-      object: "HSDT",
-      to: "Merchant",
-      link: "/dashboard",
-      icon: "dashboard",
-      seen: false
-    },
-    {
-      from: "Merchant",
-      type: "CREATE",
-      object: "HSMT",
-      to: "Forwarder",
-      link: "/dashboard",
-      icon: "dashboard",
-      seen: false
-    },
-    {
-      from: "Forwarder",
-      type: "UPDATE",
-      object: "HSDT",
-      to: "Merchant",
-      link: "/dashboard",
-      icon: "dashboard",
-      seen: false
-    },
-    {
-      from: "Merchant",
-      type: "DELETE",
-      object: "HSMT",
-      to: "Forwarder",
-      link: "/dashboard",
-      icon: "dashboard",
-      seen: false
-    },
-    {
-      from: "Forwarder",
-      type: "CREATE",
-      object: "HSDT",
-      to: "Merchant",
-      link: "/dashboard",
-      icon: "dashboard",
-      seen: false
-    },
-    {
-      from: "Merchant",
-      type: "UPDATE",
-      object: "HSMT",
-      to: "Forwarder",
-      link: "/dashboard",
-      icon: "dashboard",
-      seen: false
-    },
-    {
-      from: "Forwarder",
-      type: "DELETE",
-      object: "HSDT",
-      to: "Merchant",
-      link: "/dashboard",
-      icon: "dashboard",
-      seen: false
-    },
-    {
-      from: "Merchant",
-      type: "CREATE",
-      object: "HSMT",
-      to: "Forwarder",
-      link: "/dashboard",
-      icon: "dashboard",
-      seen: false
-    },
-    {
-      from: "Forwarder",
-      type: "UPDATE",
-      object: "HSDT",
-      to: "Merchant",
-      link: "/dashboard",
-      icon: "dashboard",
-      seen: false
-    },
-    {
-      from: "Merchant",
-      type: "DELETE",
-      object: "HSMT",
-      to: "Forwarder",
-      link: "/dashboard",
-      icon: "dashboard",
-      seen: false
-    },
-    {
-      from: "Forwarder",
-      type: "CREATE",
-      object: "HSDT",
-      to: "Merchant",
-      link: "/dashboard",
-      icon: "dashboard",
-      seen: false
-    },
-    {
-      from: "Merchant",
-      type: "UPDATE",
-      object: "HSMT",
-      to: "Forwarder",
-      link: "/dashboard",
-      icon: "dashboard",
-      seen: false
-    },
-    {
-      from: "Forwarder",
-      type: "DELETE",
-      object: "HSDT",
-      to: "Merchant",
-      link: "/dashboard",
-      icon: "dashboard",
-      seen: false
-    },
-    {
-      from: "Merchant",
-      type: "CREATE",
-      object: "HSMT",
-      to: "Forwarder",
-      link: "/dashboard",
-      icon: "dashboard",
-      seen: false
-    },
-    {
-      from: "Forwarder",
-      type: "UPDATE",
-      object: "HSDT",
-      to: "Merchant",
-      link: "/dashboard",
-      icon: "dashboard",
-      seen: false
-    },
-    {
-      from: "Merchant",
-      type: "CREATE",
-      object: "HSMT",
-      to: "Forwarder",
-      link: "/dashboard",
-      icon: "dashboard",
-      seen: false
-    },
-    {
-      from: "Forwarder",
-      type: "DELETE",
-      object: "HSDT",
-      to: "Merchant",
-      link: "/dashboard",
-      icon: "dashboard",
-      seen: false
-    },
-    {
-      from: "Merchant",
-      type: "CREATE",
-      object: "HSMT",
-      to: "Forwarder",
-      link: "/dashboard",
-      icon: "dashboard",
-      seen: false
+  notifications: Array<IBiddingNotification> = [];
+  notification = {} as IBiddingNotification;
+  options = {
+    descending: true,
+    page: 1,
+    itemsPerPage: 5,
+    totalItems: 0,
+    itemsPerPageItems: [5, 10, 20, 50]
+  };
+  loading = false;
+  messageCount = 1;
+
+  gotoNotification(item: IBiddingNotification) {
+    const ROUTER = "/bidding-document";
+    return `${ROUTER}/${item.relatedResource.id}`;
+  }
+
+  seenNotification() {
+    this.messageCount = 0;
+  }
+
+  @Watch("options", { deep: true })
+  onOptionsChange(val: object, oldVal: object) {
+    console.log(this.$auth.user());
+    if (val !== oldVal) {
+      getBiddingNotificationsByUser({
+        page: this.options.page - 1,
+        limit: this.options.itemsPerPage
+      })
+        .then(res => {
+          const response: PaginationResponse<IBiddingNotification> = res.data;
+          this.notifications = response.data;
+          this.options.totalItems = response.totalElements;
+          this.messageCount = 2;
+        })
+        .catch(err => console.log(err))
+        .finally(() => (this.loading = false));
     }
-  ];
-  messages = this.items.length;
-  created() {
-    this.items = this.data.slice(0, this.count);
-    this.messages = 10;
   }
-  seeMore() {
-    this.count += 10;
-    this.items = this.data.slice(0, this.count);
+
+  connected = false;
+  socket = {} as WebSocket;
+  stompClient = {} as Client;
+
+  connect() {
+    this.socket = new SockJS("http://localhost:8085/stomp");
+    this.stompClient = Stomp.over(this.socket);
+    this.stompClient.connect(
+      { Authorization: `Bearer ${this.$auth.token()}` },
+      this.onConnected,
+      this.onDisconnected
+    );
   }
-  clear() {
-    this.messages = 0;
+
+  onConnected(frame: any) {
+    this.connected = true;
+    console.log(frame);
+    this.stompClient.subscribe(
+      "/user/queue/bidding-notification",
+      (tick: any) => {
+        console.log(tick);
+        this.notifications.unshift(JSON.parse(tick.body));
+        this.messageCount += 1;
+      }
+    );
+  }
+
+  onDisconnected(err: any) {
+    console.log(err);
+    this.connected = false;
+  }
+
+  disconnect() {
+    if (this.stompClient) {
+      this.stompClient.disconnect();
+    }
+    this.connected = false;
+  }
+  tickleConnection() {
+    this.connected ? this.disconnect() : this.connect();
+  }
+
+  mounted() {
+    // CONNECT WEBSOCKET
+    this.connect();
+    // INIT NOTIFICATION
+    getBiddingNotificationsByUser({
+      page: this.options.page - 1,
+      limit: this.options.itemsPerPage
+    })
+      .then(res => {
+        const response: PaginationResponse<IBiddingNotification> = res.data;
+        this.notifications = response.data;
+        this.options.totalItems = response.totalElements;
+        this.messageCount += this.notifications.length;
+      })
+      .catch(err => console.log(err))
+      .finally(() => (this.loading = false));
   }
 }
 </script>

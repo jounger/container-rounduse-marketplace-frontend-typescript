@@ -96,8 +96,7 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import NavLayout from "@/layouts/NavLayout.vue";
+import { Component, Watch, Vue } from "vue-property-decorator";
 import { IInbound } from "@/entity/inbound";
 import CreateInbound from "./components/CreateInbound.vue";
 import UpdateInbound from "./components/UpdateInbound.vue";
@@ -118,7 +117,6 @@ import { convertFromDateTime } from "@/utils/tool";
   }
 })
 export default class Inbound extends Vue {
-  @PropSync("layout") layoutSync!: object;
 
   inbounds: Array<IInbound> = [];
   inbound = {} as IInbound;
@@ -164,7 +162,6 @@ export default class Inbound extends Vue {
   }
 
   created() {
-    this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
     this.loading = false;
   }
 

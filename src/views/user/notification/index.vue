@@ -23,7 +23,7 @@
 
           <v-list-item-content>
             <v-list-item-title v-html="item.message"></v-list-item-title>
-            <v-list-item-subtitle v-html="item.CREATED"></v-list-item-subtitle>
+            <v-list-item-subtitle v-html="item.type"></v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -31,8 +31,7 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
-import NavLayout from "@/layouts/NavLayout.vue";
+import { Component, Vue } from "vue-property-decorator";
 import { IBiddingNotification } from "@/entity/bidding-notification";
 import { IBiddingNotificationData } from "./data";
 
@@ -41,7 +40,6 @@ import Stomp from "webstomp-client";
 
 @Component
 export default class NotificationSetting extends Vue {
-  @PropSync("layout") layoutSync!: object;
   public notifications: Array<IBiddingNotification> = [];
   public notification = {} as IBiddingNotification;
 
@@ -54,22 +52,26 @@ export default class NotificationSetting extends Vue {
     this.stompClient = Stomp.over(this.socket);
     this.stompClient.connect(
       { Authorization: `Bearer ${this.$auth.token()}` },
-      (frame: any) => {
-        this.connected = true;
-        console.log(frame);
-        this.stompClient.subscribe(
-          "/user/queue/bidding-notification",
-          (tick: any) => {
-            console.log(tick);
-            this.notifications.push(JSON.parse(tick.body));
-          }
-        );
-      },
-      (error: any) => {
-        console.log(error);
-        this.connected = false;
+      this.onConnected,
+      this.onDisconnected
+    );
+  }
+
+  onConnected(frame: any) {
+    this.connected = true;
+    console.log(frame);
+    this.stompClient.subscribe(
+      "/user/queue/bidding-notification",
+      (tick: any) => {
+        console.log(tick);
+        this.notifications.push(JSON.parse(tick.body));
       }
     );
+  }
+
+  onDisconnected(err: any) {
+    console.log(err);
+    this.connected = false;
   }
 
   disconnect() {
@@ -80,10 +82,6 @@ export default class NotificationSetting extends Vue {
   }
   tickleConnection() {
     this.connected ? this.disconnect() : this.connect();
-  }
-
-  created() {
-    if (this.layoutSync !== NavLayout) this.layoutSync = NavLayout;
   }
 
   mounted() {

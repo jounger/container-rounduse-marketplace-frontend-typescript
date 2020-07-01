@@ -58,8 +58,7 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import NavLayout from "@/layouts/NavLayout.vue";
+import { Component, Watch, Vue } from "vue-property-decorator";
 import { IOperator } from "@/entity/operator";
 import CreateOperator from "./components/CreateOperator.vue";
 import DeleteOperator from "./components/DeleteOperator.vue";
@@ -75,7 +74,6 @@ import Snackbar from "@/components/Snackbar.vue";
   }
 })
 export default class Operator extends Vue {
-  @PropSync("layout") layoutSync!: object;
   operators: Array<IOperator> = [];
   operator = {} as IOperator;
   dialogAdd = false;
@@ -113,9 +111,6 @@ export default class Operator extends Vue {
       sortable: false
     }
   ];
-  created() {
-    this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
-  }
   openCreateDialog() {
     this.operator = {} as IOperator;
     this.operator.roles = ["ROLE_ADMIN"];

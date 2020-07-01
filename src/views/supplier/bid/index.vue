@@ -80,8 +80,7 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import NavLayout from "@/layouts/NavLayout.vue";
+import { Component, Watch, Vue } from "vue-property-decorator";
 import { IBid } from "@/entity/bid";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import CreateBid from "./components/CreateBid.vue";
@@ -101,7 +100,6 @@ import { PaginationResponse } from "@/api/payload";
   }
 })
 export default class Bid extends Vue {
-  @PropSync("layout") layoutSync!: object;
 
   biddingDocuments: Array<IBiddingDocument> = [];
   biddingDocument = {} as IBiddingDocument;
@@ -154,10 +152,6 @@ export default class Bid extends Vue {
     { text: "Hiệu lực", value: "bidValidityPeriod" },
     { text: "Actions", value: "actions", sortable: false }
   ];
-
-  created() {
-    this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
-  }
 
   clicked(value: IBiddingDocument) {
     if (this.singleExpand) {

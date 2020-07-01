@@ -113,8 +113,7 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import NavLayout from "@/layouts/NavLayout.vue";
+import { Component, Watch, Vue } from "vue-property-decorator";
 import { IOutbound } from "@/entity/outbound";
 import CreateOutbound from "./components/CreateOutbound.vue";
 import UpdateOutbound from "./components/UpdateOutbound.vue";
@@ -138,7 +137,6 @@ import CreateBiddingDocument from "../../supplier/bidding-document/components/Cr
   }
 })
 export default class Outbound extends Vue {
-  @PropSync("layout") layoutSync!: object;
 
   biddingDocument = {} as IBiddingDocument;
   outbounds: Array<IOutbound> = [];
@@ -187,7 +185,6 @@ export default class Outbound extends Vue {
   }
 
   created() {
-    this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
     this.loading = false;
   }
 

@@ -20,8 +20,7 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
-import NavLayout from "@/layouts/NavLayout.vue";
+import { Component, Vue } from "vue-property-decorator";
 import { ISupplier } from "@/entity/supplier";
 import RequestDetail from "./components/RequestDetail.vue";
 import { getSuppliersByUsername } from "../../../api/supplier";
@@ -32,12 +31,8 @@ import { getSuppliersByUsername } from "../../../api/supplier";
   }
 })
 export default class Application extends Vue {
-  @PropSync("layout") layoutSync!: object;
   public supplier: ISupplier | null = null;
   dialog = false;
-  created() {
-    this.layoutSync = NavLayout;
-  }
   public openDetailDialog() {
     getSuppliersByUsername(this.$auth.user().username)
       .then(res => {

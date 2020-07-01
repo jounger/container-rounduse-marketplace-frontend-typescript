@@ -106,12 +106,10 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
-import NavLayout from "@/layouts/NavLayout.vue";
+import { Component, Vue } from "vue-property-decorator";
 
 @Component
 export default class Dashboard extends Vue {
-  @PropSync("layout") layoutSync!: object;
   private users = [];
   items = [
     {
@@ -157,8 +155,5 @@ export default class Dashboard extends Vue {
       time: "6h"
     }
   ];
-  created() {
-    this.layoutSync = NavLayout;
-  }
 }
 </script>

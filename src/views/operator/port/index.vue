@@ -57,8 +57,7 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
-import NavLayout from "@/layouts/NavLayout.vue";
+import { Component, Watch, Vue } from "vue-property-decorator";
 import { IPort } from "@/entity/port";
 import CreatePort from "./components/CreatePort.vue";
 import DeletePort from "./components/DeletePort.vue";
@@ -74,7 +73,6 @@ import Snackbar from "@/components/Snackbar.vue";
   }
 })
 export default class Port extends Vue {
-  @PropSync("layout") layoutSync!: object;
   ports: Array<IPort> = [];
   port = {} as IPort;
   dialogAdd = false;
@@ -105,9 +103,6 @@ export default class Port extends Vue {
       value: "actions"
     }
   ];
-  created() {
-    this.layoutSync = NavLayout; // change EmptyLayout to NavLayout.vue
-  }
 
   openCreateDialog() {
     this.port = {} as IPort;
