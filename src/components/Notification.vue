@@ -1,14 +1,14 @@
 <template>
   <v-menu offset-y>
     <template v-slot:activator="{ on, attrs }">
-      <v-btn icon v-bind="attrs" v-on="on">
+      <v-btn icon v-bind="attrs" v-on="on" @click="seenNotification()">
         <v-badge
           :value="messageCount"
           :content="messageCount"
           color="green"
           overlap
         >
-          <v-icon dark>gavel</v-icon>
+          <v-icon dark>mdi-email</v-icon>
         </v-badge>
       </v-btn>
     </template>
@@ -52,6 +52,9 @@ import { IBiddingNotification } from "@/entity/bidding-notification";
 import { getBiddingNotificationsByUser } from "../api/notification";
 import { PaginationResponse } from "../api/payload";
 
+import SockJS from "sockjs-client";
+import Stomp, { Client } from "webstomp-client";
+
 @Component
 export default class Notification extends Vue {
   notifications: Array<IBiddingNotification> = [];
@@ -64,11 +67,15 @@ export default class Notification extends Vue {
     itemsPerPageItems: [5, 10, 20, 50]
   };
   loading = false;
-  messageCount = 0;
+  messageCount = 1;
 
   gotoNotification(item: IBiddingNotification) {
     const ROUTER = "/bidding-document";
     return `${ROUTER}/${item.relatedResource.id}`;
+  }
+
+  seenNotification() {
+    this.messageCount = 0;
   }
 
   @Watch("options", { deep: true })
@@ -83,14 +90,59 @@ export default class Notification extends Vue {
           const response: PaginationResponse<IBiddingNotification> = res.data;
           this.notifications = response.data;
           this.options.totalItems = response.totalElements;
-          this.messageCount = this.notifications.length;
+          this.messageCount = 2;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
     }
   }
 
+  connected = false;
+  socket = {} as WebSocket;
+  stompClient = {} as Client;
+
+  connect() {
+    this.socket = new SockJS("http://localhost:8085/stomp");
+    this.stompClient = Stomp.over(this.socket);
+    this.stompClient.connect(
+      { Authorization: `Bearer ${this.$auth.token()}` },
+      this.onConnected,
+      this.onDisconnected
+    );
+  }
+
+  onConnected(frame: any) {
+    this.connected = true;
+    console.log(frame);
+    this.stompClient.subscribe(
+      "/user/queue/bidding-notification",
+      (tick: any) => {
+        console.log(tick);
+        this.notifications.unshift(JSON.parse(tick.body));
+        this.messageCount += 1;
+      }
+    );
+  }
+
+  onDisconnected(err: any) {
+    console.log(err);
+    this.connected = false;
+  }
+
+  disconnect() {
+    if (this.stompClient) {
+      this.stompClient.disconnect();
+    }
+    this.connected = false;
+  }
+  tickleConnection() {
+    this.connected ? this.disconnect() : this.connect();
+  }
+
   mounted() {
+    // CONNECT WEBSOCKET
+    this.connect();
+    // INIT NOTIFICATION
     getBiddingNotificationsByUser({
       page: this.options.page - 1,
       limit: this.options.itemsPerPage
@@ -99,6 +151,7 @@ export default class Notification extends Vue {
         const response: PaginationResponse<IBiddingNotification> = res.data;
         this.notifications = response.data;
         this.options.totalItems = response.totalElements;
+        this.messageCount += this.notifications.length;
       })
       .catch(err => console.log(err))
       .finally(() => (this.loading = false));
