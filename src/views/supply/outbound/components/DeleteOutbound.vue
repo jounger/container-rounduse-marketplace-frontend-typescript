@@ -41,34 +41,32 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IOutbound } from "@/entity/outbound";
 import { removeOutbound } from "@/api/outbound";
 
 @Component
 export default class DeleteOutbound extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("outbound", { type: Object }) outboundSync!: IOutbound;
+  @Prop(Object) outbound!: IOutbound;
   @PropSync("outbounds", { type: Array }) outboundsSync!: Array<IOutbound>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
   bookNo = "";
   created() {
-    if (typeof this.outboundSync.booking.bookingNumber != "undefined") {
-      this.bookNo = this.outboundSync.booking.bookingNumber;
+    if (typeof this.outbound.booking.bookingNumber != "undefined") {
+      this.bookNo = this.outbound.booking.bookingNumber;
     }
   }
   removeOutbound() {
-    if (this.outboundSync.id) {
-      removeOutbound(this.outboundSync.id)
+    if (this.outbound.id) {
+      removeOutbound(this.outbound.id)
         .then(res => {
           console.log(res.data);
-          const response: IOutbound = res.data;
-          this.outboundSync = response;
           this.messageSync = "Xóa thành công hàng xuất: " + this.bookNo;
           const index = this.outboundsSync.findIndex(
-            x => x.id === this.outboundSync.id
+            x => x.id === this.outbound.id
           );
           this.outboundsSync.splice(index, 1);
         })

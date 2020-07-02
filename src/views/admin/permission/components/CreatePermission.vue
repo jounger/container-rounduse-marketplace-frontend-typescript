@@ -80,12 +80,12 @@ export default class CreatePermission extends Vue {
   >;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @PropSync("permission", { type: Object }) permissionSync!: IPermission;
+  @Prop(Object) permission!: IPermission;
   @Prop(Boolean) update!: boolean;
 
   permissionLocal = {} as IPermission;
   created() {
-    this.permissionLocal = Object.assign({}, this.permissionSync);
+    this.permissionLocal = Object.assign({}, this.permission);
   }
   createPermission() {
     if (this.permissionLocal) {
@@ -108,18 +108,16 @@ export default class CreatePermission extends Vue {
     }
   }
   updatePermission() {
-    if (this.permissionSync.id) {
+    if (this.permissionLocal.id) {
       updatePermission(this.permissionLocal)
         .then(res => {
           console.log(res.data);
           const response: IPermission = res.data;
-          this.permissionSync = response;
-          this.messageSync =
-            "Cập nhập thành công vai trò: " + this.permissionSync.name;
+          this.messageSync = "Cập nhập thành công vai trò: " + response.name;
           const index = this.permissionsSync.findIndex(
-            x => x.id === this.permissionSync.id
+            x => x.id == response.id
           );
-          this.permissionsSync.splice(index, 1, this.permissionSync);
+          this.permissionsSync.splice(index, 1, response);
         })
         .catch(err => {
           console.log(err);

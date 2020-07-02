@@ -27,36 +27,71 @@
 
           <v-stepper-content step="1">
             <v-form ref="shippingLineForm" v-model="valid" lazy-validation>
-              <v-text-field
-                v-model="shippingLineLocal.username"
-                :rules="[required('username')]"
-                type="text"
-                label="Tên đăng nhập"
-              ></v-text-field>
-              <v-text-field
-                v-model="shippingLineLocal.password"
-                :rules="[minLength('password', 6)]"
-                type="text"
-                label="Mật khẩu"
-              ></v-text-field>
-              <v-text-field
-                v-model="shippingLineLocal.email"
-                :rules="[email('email')]"
-                type="text"
-                label="Email"
-              ></v-text-field>
-              <v-text-field
-                v-model="shippingLineLocal.phone"
-                :rules="[minLength('phone', 10), maxLength('phone', 11)]"
-                type="text"
-                label="Số điện thoại"
-              ></v-text-field>
-              <v-text-field
-                v-model="shippingLineLocal.address"
-                type="text"
-                :rules="[required('address')]"
-                label="Địa chỉ"
-              ></v-text-field>
+              <small>*Dấu sao là trường bắt buộc</small>
+              <v-layout col
+                ><v-layout row
+                  ><v-flex xs10>
+                    <v-text-field
+                      v-model="shippingLineLocal.username"
+                      :counter="20"
+                      :rules="[
+                        minLength('username', 2),
+                        maxLength('username', 20)
+                      ]"
+                      type="text"
+                      label="Tên đăng nhập*"
+                    ></v-text-field> </v-flex></v-layout
+                ><v-layout row
+                  ><v-flex xs10>
+                    <v-text-field
+                      v-model="shippingLineLocal.password"
+                      :counter="120"
+                      :rules="[
+                        minLength('password', 6),
+                        maxLength('password', 120)
+                      ]"
+                      type="text"
+                      label="Mật khẩu*"
+                    ></v-text-field> </v-flex></v-layout
+              ></v-layout>
+              <v-layout col
+                ><v-layout row
+                  ><v-flex xs10>
+                    <v-text-field
+                      v-model="shippingLineLocal.email"
+                      :counter="50"
+                      :rules="[
+                        email('Shipping Line'),
+                        minLength('email', 5),
+                        maxLength('email', 50)
+                      ]"
+                      type="text"
+                      label="Email*"
+                    ></v-text-field> </v-flex></v-layout
+                ><v-layout row
+                  ><v-flex xs10>
+                    <v-text-field
+                      v-model="shippingLineLocal.phone"
+                      :counter="10"
+                      :rules="[minLength('phone', 10), maxLength('phone', 10)]"
+                      type="text"
+                      label="Số điện thoại*"
+                    ></v-text-field> </v-flex></v-layout
+              ></v-layout>
+              <v-layout col
+                ><v-layout row
+                  ><v-flex xs11>
+                    <v-text-field
+                      v-model="shippingLineLocal.address"
+                      type="text"
+                      :counter="100"
+                      :rules="[
+                        minLength('address', 5),
+                        maxLength('address', 100)
+                      ]"
+                      label="Địa chỉ*"
+                    ></v-text-field> </v-flex></v-layout
+              ></v-layout>
               <v-btn
                 color="primary"
                 @click="valid ? (stepper = 2) : (stepper = 1)"
@@ -73,17 +108,18 @@
 
           <v-stepper-content step="2">
             <v-form ref="bookingForm" v-model="valid" lazy-validation>
+              <small>*Dấu sao là trường bắt buộc</small>
               <v-layout col>
                 <v-layout row>
                   <v-flex xs8>
                     <v-text-field
                       v-model="shippingLineLocal.companyCode"
-                      :counter="50"
+                      :counter="10"
                       :rules="[
-                        minLength('Company code', 5),
-                        maxLength('Company code', 50)
+                        minLength('Company code', 2),
+                        maxLength('Company code', 10)
                       ]"
-                      label="Mã công ty"
+                      label="Mã công ty*"
                       type="text"
                     ></v-text-field>
                   </v-flex>
@@ -92,8 +128,12 @@
                   <v-flex xs8>
                     <v-text-field
                       v-model="shippingLineLocal.companyName"
-                      :rules="[required('tên công ty')]"
-                      label="Tên công ty"
+                      :counter="100"
+                      :rules="[
+                        minLength('Company name', 5),
+                        maxLength('Company name', 100)
+                      ]"
+                      label="Tên công ty*"
                       type="text"
                     ></v-text-field>
                   </v-flex>
@@ -104,8 +144,12 @@
                   <v-flex xs8>
                     <v-text-field
                       v-model="shippingLineLocal.contactPerson"
-                      :rules="[required('người liên hệ')]"
-                      label="Người liên hệ"
+                      :counter="50"
+                      :rules="[
+                        minLength('contact person', 5),
+                        maxLength('contact person', 50)
+                      ]"
+                      label="Người liên hệ*"
                       type="text"
                     ></v-text-field>
                   </v-flex>
@@ -114,8 +158,12 @@
                   <v-flex xs8>
                     <v-text-field
                       v-model="shippingLineLocal.website"
-                      :rules="[required('website')]"
-                      label="website"
+                      :counter="50"
+                      :rules="[
+                        minLength('website', 5),
+                        maxLength('website', 50)
+                      ]"
+                      label="Website*"
                       type="text"
                     ></v-text-field>
                   </v-flex>
@@ -126,7 +174,12 @@
                   <v-flex xs8>
                     <v-text-field
                       v-model="shippingLineLocal.companyDescription"
-                      label="Mô tả"
+                      label="Mô tả*"
+                      :counter="200"
+                      :rules="[
+                        minLength('company description', 5),
+                        maxLength('company description', 200)
+                      ]"
                       type="text"
                     ></v-text-field>
                   </v-flex>
@@ -135,8 +188,12 @@
                   <v-flex xs8>
                     <v-text-field
                       v-model="shippingLineLocal.companyAddress"
-                      :rules="[required('companyAddress')]"
-                      label="Địa chỉ công ty"
+                      :counter="200"
+                      :rules="[
+                        minLength('company address', 5),
+                        maxLength('company address', 200)
+                      ]"
+                      label="Địa chỉ công ty*"
                       type="text"
                     ></v-text-field>
                   </v-flex>
@@ -147,8 +204,9 @@
                   <v-flex xs8>
                     <v-text-field
                       v-model="shippingLineLocal.tin"
-                      :rules="[required('tin')]"
-                      label="Tin"
+                      :counter="20"
+                      :rules="[minLength('tin', 5), maxLength('tin', 20)]"
+                      label="Tin*"
                       type="text"
                     ></v-text-field>
                   </v-flex>
@@ -157,8 +215,9 @@
                   <v-flex xs8>
                     <v-text-field
                       v-model="shippingLineLocal.fax"
-                      :rules="[required('fax')]"
-                      label="fax"
+                      :counter="20"
+                      :rules="[minLength('fax', 5), maxLength('fax', 20)]"
+                      label="Fax*"
                       type="text"
                     ></v-text-field>
                   </v-flex>
@@ -184,7 +243,7 @@
               ></v-checkbox>
               <v-btn
                 color="primary"
-                @click="addShippingLine()"
+                @click="createShippingLine()"
                 :disabled="!valid || !checkbox"
                 >Hoàn tất</v-btn
               >
@@ -208,51 +267,30 @@ import FormValidate from "@/mixin/form-validate";
 })
 export default class CreateShippingLine extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("shippingLine", { type: Object }) shippingLineSync!: IShippingLine;
   @PropSync("shippingLines", { type: Array }) shippingLinesSync!: Array<
     IShippingLine
   >;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
-  shippingLineLocal = {
-    username: "",
-    password: "",
-    email: "",
-    phone: "",
-    roles: ["ROLE_SHIPPINGLINE"],
-    status: "ACTIVE",
-    address: "",
-    website: "",
-    contactPerson: "",
-    companyName: "",
-    companyCode: "",
-    companyDescription: "",
-    companyAddress: "",
-    tin: "",
-    fax: "",
-    ratingValue: 0
-  } as IShippingLine;
+  shippingLineLocal = {} as IShippingLine;
 
   checkbox = false;
   editable = false;
   stepper = 1;
   valid = true;
 
-  addShippingLine() {
+  createShippingLine() {
     if (this.shippingLineLocal) {
-      console.log(this.shippingLineSync);
       console.log(this.shippingLineLocal);
-      this.shippingLineSync = this.shippingLineLocal;
-      console.log(this.shippingLineSync);
-      createShippingLine(this.shippingLineSync)
+      createShippingLine(this.shippingLineLocal)
         .then(res => {
           const response: IShippingLine = res.data;
-          console.log(response);
+          this.shippingLineLocal = response;
           this.messageSync =
             "Thêm mới thành công hãng tàu: " +
-            this.shippingLineSync.companyCode;
-          this.shippingLinesSync.push(this.shippingLineSync);
+            this.shippingLineLocal.companyCode;
+          this.shippingLinesSync.unshift(this.shippingLineLocal);
         })
         .catch(err => {
           console.log(err);

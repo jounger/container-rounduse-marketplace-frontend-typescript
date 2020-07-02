@@ -15,7 +15,7 @@
       </v-row>
     </v-container>
     <v-row justify="center">
-      <RequestDetail v-if="dialog" :supplier="supplier" :dialog.sync="dialog" />
+      <RequestDetail v-if="dialog" :dialog.sync="dialog" />
     </v-row>
   </v-content>
 </template>
@@ -23,7 +23,6 @@
 import { Component, Vue } from "vue-property-decorator";
 import { ISupplier } from "@/entity/supplier";
 import RequestDetail from "./components/RequestDetail.vue";
-import { getSuppliersByUsername } from "../../../api/supplier";
 
 @Component({
   components: {
@@ -34,12 +33,6 @@ export default class Application extends Vue {
   public supplier: ISupplier | null = null;
   dialog = false;
   public openDetailDialog() {
-    getSuppliersByUsername(this.$auth.user().username)
-      .then(res => {
-        const response: ISupplier = res.data;
-        this.supplier = response;
-      })
-      .catch(err => console.log(err));
     this.dialog = true;
   }
 }

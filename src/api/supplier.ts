@@ -23,6 +23,12 @@ export function getSuppliersByUsername(username: string) {
     headers: config
   });
 }
+export function getSuppliersByStatus(paging: PaginationRequest) {
+  return Vue.axios.get("/supplier/status", {
+    params: paging,
+    headers: config
+  });
+}
 
 // Use "defaults" in destructuring:
 // https://stackoverflow.com/a/26578323/10597062

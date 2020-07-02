@@ -25,9 +25,7 @@
             <v-list>
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title>{{
-                    permissionSync.name
-                  }}</v-list-item-title>
+                  <v-list-item-title>{{ permission.name }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -43,14 +41,14 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPermission } from "@/entity/permission";
 import { removePermission } from "@/api/permission";
 
 @Component
 export default class DeletePermission extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("permission", { type: Object }) permissionSync!: IPermission;
+  @Prop(Object) permission!: IPermission;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("permissions", { type: Array }) permissionsSync!: Array<
@@ -58,16 +56,13 @@ export default class DeletePermission extends Vue {
   >;
 
   removePermission() {
-    if (this.permissionSync.id) {
-      removePermission(this.permissionSync.id)
+    if (this.permission.id) {
+      removePermission(this.permission.id)
         .then(res => {
           console.log(res.data);
-          const response: IPermission = res.data;
-          this.permissionSync = response;
-          this.messageSync =
-            "Xóa thành công vai trò: " + this.permissionSync.name;
+          this.messageSync = "Xóa thành công vai trò: " + this.permission.name;
           const index = this.permissionsSync.findIndex(
-            x => x.id === this.permissionSync.id
+            x => x.id === this.permission.id
           );
           this.permissionsSync.splice(index, 1);
         })

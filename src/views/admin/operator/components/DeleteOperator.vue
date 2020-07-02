@@ -25,9 +25,7 @@
             <v-list>
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title>{{
-                    operatorSync.username
-                  }}</v-list-item-title>
+                  <v-list-item-title>{{ operator.username }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -43,27 +41,27 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IOperator } from "@/entity/operator";
 import { removeOperator } from "@/api/operator";
 
 @Component
 export default class DeleteOperator extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("operator", { type: Object }) operatorSync!: IOperator;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("operators", { type: Array }) operatorsSync!: Array<IOperator>;
+  @Prop(Object) operator!: IOperator;
 
   removeOperator() {
-    if (this.operatorSync.id) {
-      removeOperator(this.operatorSync.id)
+    if (this.operator.id) {
+      removeOperator(this.operator.id)
         .then(res => {
           console.log(res);
           this.messageSync =
-            "Xóa thành công quản trị viên: " + this.operatorSync.username;
+            "Xóa thành công quản trị viên: " + this.operator.username;
           const index = this.operatorsSync.findIndex(
-            x => x.id === this.operatorSync.id
+            x => x.id === this.operator.id
           );
           this.operatorsSync.splice(index, 1);
         })

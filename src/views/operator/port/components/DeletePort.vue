@@ -25,7 +25,7 @@
             <v-list>
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title>{{ portSync.fullname }}</v-list-item-title>
+                  <v-list-item-title>{{ port.fullname }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -41,30 +41,25 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPort } from "@/entity/port";
 import { removePort } from "@/api/port";
 
 @Component
 export default class DeletePort extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("port", { type: Object }) portSync!: IPort;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("ports", { type: Array }) portsSync!: Array<IPort>;
+  @Prop(Object) port!: IPort;
 
   removePort() {
-    if (this.portSync.id) {
-      removePort(this.portSync.id)
+    if (this.port.id) {
+      removePort(this.port.id)
         .then(res => {
           console.log(res.data);
-          const response: IPort = res.data;
-          this.portSync = response;
-          this.messageSync =
-            "Xóa thành công bến cảng: " + this.portSync.fullname;
-          const index = this.portsSync.findIndex(
-            x => x.id === this.portSync.id
-          );
+          this.messageSync = "Xóa thành công bến cảng: " + this.port.fullname;
+          const index = this.portsSync.findIndex(x => x.id === this.port.id);
           this.portsSync.splice(index, 1);
         })
         .catch(err => {

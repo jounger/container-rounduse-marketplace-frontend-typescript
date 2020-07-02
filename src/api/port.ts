@@ -32,7 +32,7 @@ export function updatePort(port: IPort) {
   });
 }
 
-export function editPort(id: number, updates: Map<string, object>) {
+export function editPort(id: number, updates: IPort) {
   return Vue.axios.patch(`/port/${id}`, updates, {
     headers: config
   });

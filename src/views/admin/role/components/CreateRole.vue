@@ -38,16 +38,13 @@
                 v-model="roleLocal.permissions"
                 :items="permissionsToString"
                 chips
-                :clearable="!readonly"
+                clearable
                 label="Phân vai trò*"
                 multiple
                 prepend-icon="filter_list"
                 :rules="[required('permissions')]"
               >
-                <template
-                  v-slot:selection="{ attrs, item, select, selected }"
-                  v-if="!readonly"
-                >
+                <template v-slot:selection="{ attrs, item, select, selected }">
                   <v-chip
                     v-bind="attrs"
                     :input-value="selected"
@@ -90,15 +87,15 @@ import FormValidate from "@/mixin/form-validate";
 export default class CreateRole extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("roles", { type: Array }) rolesSync!: Array<IRole>;
-  @PropSync("role", { type: Object }) roleSync!: IRole;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Boolean) update!: boolean;
+  @Prop(Object) role!: IRole;
 
   permissions = [] as Array<IPermission>;
   roleLocal = {} as IRole;
   created() {
-    this.roleLocal = Object.assign({}, this.roleSync);
+    this.roleLocal = Object.assign({}, this.role);
     getPermissions({
       page: 0,
       limit: 100
@@ -138,18 +135,14 @@ export default class CreateRole extends Vue {
     }
   }
   updateRole() {
-    if (this.roleSync.id) {
-      this.roleSync = Object.assign({}, this.roleLocal);
-      updateRole(this.roleSync)
+    if (this.roleLocal.id) {
+      updateRole(this.roleLocal)
         .then(res => {
           console.log(res.data);
           const response: IRole = res.data;
-          this.roleSync = response;
-          this.messageSync = "Cập nhập thành công quyền: " + this.roleSync.name;
-          const index = this.rolesSync.findIndex(
-            x => x.id === this.roleSync.id
-          );
-          this.rolesSync.splice(index, 1, this.roleSync);
+          this.messageSync = "Cập nhập thành công quyền: " + response.name;
+          const index = this.rolesSync.findIndex(x => x.id == response.id);
+          this.rolesSync.splice(index, 1, response);
         })
         .catch(err => {
           console.log(err);

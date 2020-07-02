@@ -159,25 +159,25 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContainerType } from "@/entity/container-type";
 import FormValidate from "@/mixin/form-validate";
-import { createContainerType, updateContainerType } from "@/api/container-type";
+import { createContainerType, editContainerType } from "@/api/container-type";
 
 @Component({
   mixins: [FormValidate]
 })
 export default class CreateContainerType extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("containerType", { type: Object })
-  containerTypeSync!: IContainerType;
   @PropSync("containerTypes", { type: Array }) containerTypesSync!: Array<
     IContainerType
   >;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Boolean) update!: boolean;
+  @Prop(Object)
+  containerType!: IContainerType;
 
   containerTypeLocal = {} as IContainerType;
   created() {
-    this.containerTypeLocal = Object.assign({}, this.containerTypeSync);
+    this.containerTypeLocal = Object.assign({}, this.containerType);
   }
   createContainerType() {
     if (this.containerTypeLocal) {
@@ -199,20 +199,17 @@ export default class CreateContainerType extends Vue {
     }
   }
   updateContainerType() {
-    if (this.containerTypeSync.id) {
-      this.containerTypeSync = Object.assign({}, this.containerTypeLocal);
-      updateContainerType(this.containerTypeSync)
+    if (this.containerTypeLocal.id) {
+      editContainerType(this.containerTypeLocal.id, this.containerTypeLocal)
         .then(res => {
           console.log(res.data);
           const response: IContainerType = res.data;
-          this.containerTypeSync = response;
           this.messageSync =
-            "Cập nhập thành công loại Container: " +
-            this.containerTypeSync.name;
+            "Cập nhập thành công loại Container: " + response.name;
           const index = this.containerTypesSync.findIndex(
-            x => x.id === this.containerTypeSync.id
+            x => x.id == response.id
           );
-          this.containerTypesSync.splice(index, 1, this.containerTypeSync);
+          this.containerTypesSync.splice(index, 1, response);
         })
         .catch(err => {
           console.log(err);

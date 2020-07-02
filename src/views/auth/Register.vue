@@ -119,6 +119,22 @@
               <v-layout row>
                 <v-flex xs8>
                   <v-text-field
+                    label="Mã công ty"
+                    name="companyCode"
+                    prepend-icon="mdi-lock"
+                    type="text"
+                    :counter="10"
+                    :rules="[
+                      minLength('cpmpany code', 2),
+                      maxLength('company code', 10)
+                    ]"
+                    v-model="companyCode"
+                  ></v-text-field>
+                </v-flex>
+              </v-layout>
+              <v-layout row>
+                <v-flex xs8>
+                  <v-text-field
                     label="Tên công ty"
                     name="companyName"
                     prepend-icon="mdi-lock"
@@ -131,22 +147,6 @@
                     v-model="companyName"
                   >
                   </v-text-field>
-                </v-flex>
-              </v-layout>
-              <v-layout row>
-                <v-flex xs8>
-                  <v-text-field
-                    label="Mã công ty"
-                    name="companyCode"
-                    prepend-icon="mdi-lock"
-                    type="text"
-                    :counter="10"
-                    :rules="[
-                      minLength('cpmpany code', 2),
-                      maxLength('company code', 10)
-                    ]"
-                    v-model="companyCode"
-                  ></v-text-field>
                 </v-flex>
               </v-layout>
             </v-layout>

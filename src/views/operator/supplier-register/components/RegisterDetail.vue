@@ -18,10 +18,14 @@
         <v-spacer></v-spacer>
         <v-toolbar-items>
           <v-btn dark text @click="dialogDetailSync = false">Trở về</v-btn>
-          <v-btn dark @click="reviewRegister(false)" color="red"
-            ><span style="color:white;">Từ chối</span></v-btn
+          <v-btn
+            dark
+            color="error"
+            @click="reviewRegister(false)"
+            :disabled="finish"
+            >Từ chối</v-btn
           >
-          <v-btn @click="reviewRegister(true)" color="green"
+          <v-btn @click="reviewRegister(true)" color="green" :disabled="finish"
             ><span style="color:white;">Cho phép</span></v-btn
           >
         </v-toolbar-items>
@@ -36,7 +40,7 @@
                   name="username"
                   prepend-icon="mdi-account"
                   type="text"
-                  v-model="supplierSync.username"
+                  v-model="supplier.username"
                   readonly
                 ></v-text-field>
               </v-flex>
@@ -48,7 +52,7 @@
                   name="email"
                   prepend-icon="mdi-lock"
                   type="text"
-                  v-model="supplierSync.email"
+                  v-model="supplier.email"
                   readonly
                 ></v-text-field>
               </v-flex>
@@ -62,7 +66,7 @@
                   name="phone"
                   prepend-icon="mdi-lock"
                   type="number"
-                  v-model="supplierSync.phone"
+                  v-model="supplier.phone"
                   readonly
                 ></v-text-field>
               </v-flex>
@@ -74,7 +78,7 @@
                   name="role"
                   prepend-icon="mdi-lock"
                   type="text"
-                  v-model="supplierSync.roles[0]"
+                  v-model="supplier.roles[0]"
                   readonly
                 ></v-text-field>
               </v-flex>
@@ -88,7 +92,7 @@
                   name="address"
                   prepend-icon="mdi-lock"
                   type="text"
-                  v-model="supplierSync.address"
+                  v-model="supplier.address"
                   readonly
                 ></v-text-field>
               </v-flex>
@@ -100,7 +104,7 @@
                   name="website"
                   prepend-icon="mdi-lock"
                   type="text"
-                  v-model="supplierSync.website"
+                  v-model="supplier.website"
                   readonly
                 ></v-text-field>
               </v-flex>
@@ -114,7 +118,7 @@
                   name="contactPerson"
                   prepend-icon="mdi-lock"
                   type="text"
-                  v-model="supplierSync.contactPerson"
+                  v-model="supplier.contactPerson"
                   readonly
                 ></v-text-field>
               </v-flex>
@@ -126,7 +130,7 @@
                   name="companyName"
                   prepend-icon="mdi-lock"
                   type="text"
-                  v-model="supplierSync.companyName"
+                  v-model="supplier.companyName"
                   readonly
                 >
                 </v-text-field>
@@ -141,7 +145,7 @@
                   name="companyCode"
                   prepend-icon="mdi-lock"
                   type="text"
-                  v-model="supplierSync.companyCode"
+                  v-model="supplier.companyCode"
                   readonly
                 ></v-text-field>
               </v-flex>
@@ -153,7 +157,7 @@
                   name="companyDescription"
                   prepend-icon="mdi-lock"
                   type="text"
-                  v-model="supplierSync.companyDescription"
+                  v-model="supplier.companyDescription"
                   readonly
                 ></v-text-field>
               </v-flex>
@@ -167,7 +171,7 @@
                   name="companyAddress"
                   prepend-icon="mdi-lock"
                   type="text"
-                  v-model="supplierSync.companyAddress"
+                  v-model="supplier.companyAddress"
                   readonly
                 ></v-text-field>
               </v-flex>
@@ -179,7 +183,7 @@
                   name="tin"
                   prepend-icon="mdi-lock"
                   type="text"
-                  v-model="supplierSync.tin"
+                  v-model="supplier.tin"
                   readonly
                 ></v-text-field>
               </v-flex>
@@ -191,7 +195,7 @@
                   name="tin"
                   prepend-icon="mdi-lock"
                   type="text"
-                  v-model="supplierSync.fax"
+                  v-model="supplier.fax"
                   readonly
                 ></v-text-field>
               </v-flex>
@@ -203,33 +207,34 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { ISupplier } from "@/entity/supplier";
 import { reviewSupplier } from "@/api/supplier";
 
 @Component
 export default class RegisterDetail extends Vue {
   @PropSync("dialogDetail", { type: Boolean }) dialogDetailSync!: boolean;
-  @PropSync("supplier", { type: Object }) supplierSync!: ISupplier;
   @PropSync("suppliers", { type: Array }) suppliersSync!: Array<ISupplier>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @Prop(Object) supplier!: ISupplier;
 
+  finish = false;
   reviewRegister(status: boolean) {
-    if (this.supplierSync.id) {
-      reviewSupplier(this.supplierSync.id, {
+    if (this.supplier.id) {
+      reviewSupplier(this.supplier.id, {
         status: status == true ? "ACTIVE" : "BANNED"
       })
         .then(res => {
           console.log(res.data);
           const response: ISupplier = res.data;
-          this.supplierSync = response;
           this.messageSync =
-            "Success " + response.status + " for user: " + response.username;
-          const index = this.suppliersSync.findIndex(
-            x => x.id === this.supplierSync.id
-          );
+            response.status == "ACTIVE"
+              ? "Đồng ý thành công người dùng: " + response.username
+              : "Từ chối thành công người dùng: " + response.username;
+          const index = this.suppliersSync.findIndex(x => x.id == response.id);
           this.suppliersSync.splice(index, 1);
+          this.finish = true;
         })
         .catch(err => {
           console.log(err);

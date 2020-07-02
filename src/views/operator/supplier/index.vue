@@ -5,18 +5,14 @@
         <SupplierDetail
           v-if="dialogDetail"
           :dialogDetail.sync="dialogDetail"
-          :dialogReview.sync="dialogReview"
-          :supplier.sync="supplier"
-          :suppliers.sync="suppliers"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
+          :supplier="supplier"
         />
       </v-row>
       <v-row justify="center">
         <ReviewSupplier
           v-if="dialogReview"
           :dialogReview.sync="dialogReview"
-          :supplier.sync="supplier"
+          :supplier="supplier"
           :suppliers.sync="suppliers"
           :message.sync="message"
           :snackbar.sync="snackbar"
@@ -68,9 +64,6 @@
                 v-if="item.status === 'BANNED'"
               >
                 <v-list-item-title>Mở khóa tài khoản</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="openDeleteDialog(item)">
-                <v-list-item-title>Xóa tài khoản</v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -152,9 +145,7 @@ export default class Supplier extends Vue {
         .then(res => {
           const response: PaginationResponse<ISupplier> = res.data;
           console.log("watch", this.options);
-          this.suppliers = response.data.filter(
-            (supplier: ISupplier) => supplier.status != "PENDING"
-          );
+          this.suppliers = response.data.filter(x => x.status != "PENDING");
           this.options.totalItems = this.suppliers.length;
         })
         .catch(err => console.log(err))

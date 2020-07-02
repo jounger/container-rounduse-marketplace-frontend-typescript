@@ -24,8 +24,8 @@ export function getDriverByForwarder(id: number, paging: PaginationRequest) {
     headers: config
   });
 }
-export function createDriver(id: number, driver: IDriver) {
-  return Vue.axios.post(`/driver/forwarder/${id}`, driver, {
+export function createDriver(driver: IDriver) {
+  return Vue.axios.post("/driver/forwarder/", driver, {
     headers: config
   });
 }

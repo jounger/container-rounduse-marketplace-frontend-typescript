@@ -5,7 +5,7 @@
         <DeleteRole
           v-if="dialogDel"
           :dialogDel.sync="dialogDel"
-          :role.sync="role"
+          :role="role"
           :roles.sync="roles"
           :message.sync="message"
           :snackbar.sync="snackbar"
@@ -14,7 +14,7 @@
       <v-row justify="center">
         <CreateRole
           v-if="dialogAdd"
-          :role.sync="role"
+          :role="role"
           :roles.sync="roles"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"

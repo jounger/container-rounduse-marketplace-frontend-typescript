@@ -5,7 +5,7 @@
         <DeletePermission
           v-if="dialogDel"
           :dialogDel.sync="dialogDel"
-          :permission.sync="permission"
+          :permission="permission"
           :permissions.sync="permissions"
           :message.sync="message"
           :snackbar.sync="snackbar"
@@ -14,7 +14,7 @@
       <v-row justify="center">
         <CreatePermission
           v-if="dialogAdd"
-          :permission.sync="permission"
+          :permission="permission"
           :permissions.sync="permissions"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"

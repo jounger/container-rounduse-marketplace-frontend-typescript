@@ -26,7 +26,7 @@
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title>{{
-                    containerTypeSync.name
+                    containerType.name
                   }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -43,32 +43,31 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContainerType } from "@/entity/container-type";
 import { removeContainerType } from "@/api/container-type";
 
 @Component
 export default class DeleteContainerType extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("containerType", { type: Object })
-  containerTypeSync!: IContainerType;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("containerTypes", { type: Array }) containerTypesSync!: Array<
     IContainerType
   >;
+  @Prop(Object)
+  containerType!: IContainerType;
+
   removeContainerType() {
-    console.log(this.containerTypeSync);
-    if (this.containerTypeSync.id) {
-      removeContainerType(this.containerTypeSync.id)
+    console.log(this.containerType);
+    if (this.containerType.id) {
+      removeContainerType(this.containerType.id)
         .then(res => {
           console.log(res.data);
-          const response: IContainerType = res.data;
-          this.containerTypeSync = response;
           this.messageSync =
-            "Xóa thành công loại Container: " + this.containerTypeSync.name;
+            "Xóa thành công loại Container: " + this.containerType.name;
           const index = this.containerTypesSync.findIndex(
-            x => x.id === this.containerTypeSync.id
+            x => x.id === this.containerType.id
           );
           this.containerTypesSync.splice(index, 1);
         })

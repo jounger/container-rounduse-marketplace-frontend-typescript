@@ -4,9 +4,7 @@
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
-            supplierSync.status == "ACTIVE"
-              ? "Khóa tài khoản"
-              : "Mở khóa tài khoản"
+            supplier.status == "ACTIVE" ? "Khóa tài khoản" : "Mở khóa tài khoản"
           }}</span>
           <v-btn
             icon
@@ -27,11 +25,11 @@
               name="username"
               prepend-icon="mdi-account"
               type="text"
-              v-model="supplierSync.username"
+              v-model="supplier.username"
               readonly
             ></v-text-field>
           </v-layout>
-          <v-layout row v-if="supplierSync.status == 'ACTIVE'">
+          <v-layout row v-if="supplier.status == 'ACTIVE'">
             <v-text-field
               label="Lý do khóa tài khoản"
               name="reason"
@@ -49,52 +47,55 @@
         <v-btn
           @click="reviewSupplier('BANNED')"
           color="red"
-          v-if="supplierSync.status == 'ACTIVE'"
-          >Khóa tài khoản</v-btn
+          v-if="supplier.status == 'ACTIVE'"
+          :disabled="finish"
+          ><span style="color:white;">Khóa tài khoản</span></v-btn
         >
         <v-btn
           @click="reviewSupplier('ACTIVE')"
           color="green"
-          v-if="supplierSync.status == 'BANNED'"
-          >Mở khóa</v-btn
+          v-if="supplier.status == 'BANNED'"
+          :disabled="finish"
+          ><span style="color:white;">Mở khóa</span></v-btn
         >
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { ISupplier } from "@/entity/supplier";
 import { reviewSupplier } from "@/api/supplier";
 
 @Component
 export default class ReviewSupplier extends Vue {
   @PropSync("dialogReview", { type: Boolean }) dialogReviewSync!: boolean;
-  @PropSync("supplier", { type: Object }) supplierSync!: ISupplier;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("suppliers", { type: Array }) suppliersSync!: Array<ISupplier>;
+  @Prop(Object) supplier!: ISupplier;
 
   reason = "";
+  finish = false;
   reviewSupplier(status: string) {
-    if (this.supplierSync.id) {
-      reviewSupplier(this.supplierSync.id, {
+    if (this.supplier.id) {
+      reviewSupplier(this.supplier.id, {
         status: status
       })
         .then(res => {
           console.log(res.data);
           const response: ISupplier = res.data;
-          this.supplierSync = response;
           this.messageSync =
-            "Success " + response.status + " for user: " + response.username;
-          const index = this.suppliersSync.findIndex(
-            x => x.id === this.supplierSync.id
-          );
-          this.suppliersSync.splice(index, 1);
+            response.status == "ACTIVE"
+              ? "Mở khóa thành công tài khoản: " + response.username
+              : "Khóa thành công tài khoản: " + response.username;
+          const index = this.suppliersSync.findIndex(x => x.id == response.id);
+          this.suppliersSync.splice(index, 1, response);
+          this.finish = true;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Error happend";
+          this.messageSync = "Đã có lỗi xảy ra";
         })
         .finally(() => (this.snackbarSync = true));
     }

@@ -26,7 +26,7 @@
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title>{{
-                    shippingLineSync.companyCode
+                    shippingLine.companyCode
                   }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -43,31 +43,29 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IShippingLine } from "@/entity/shipping-line";
 import { removeShippingLine } from "@/api/shipping-line";
 
 @Component
 export default class DeleteShippingLine extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("shippingLine", { type: Object }) shippingLineSync!: IShippingLine;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("shippingLines", { type: Array }) shippingLinesSync!: Array<
     IShippingLine
   >;
+  @Prop(Object) shippingLine!: IShippingLine;
 
   removeShippingLine() {
-    if (this.shippingLineSync.id) {
-      removeShippingLine(this.shippingLineSync.id)
+    if (this.shippingLine.id) {
+      removeShippingLine(this.shippingLine.id)
         .then(res => {
           console.log(res.data);
-          const response: IShippingLine = res.data;
-          this.shippingLineSync = response;
           this.messageSync =
-            "Xóa thành công hãng tàu: " + this.shippingLineSync.companyCode;
+            "Xóa thành công hãng tàu: " + this.shippingLine.companyCode;
           const index = this.shippingLinesSync.findIndex(
-            x => x.id === this.shippingLineSync.id
+            x => x.id === this.shippingLine.id
           );
           this.shippingLinesSync.splice(index, 1);
         })

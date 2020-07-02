@@ -3,8 +3,9 @@
     <v-card>
       <v-row justify="center">
         <DeletePort
+          v-if="dialogDel"
           :dialogDel.sync="dialogDel"
-          :port.sync="port"
+          :port="port"
           :ports.sync="ports"
           :message.sync="message"
           :snackbar.sync="snackbar"
@@ -12,7 +13,8 @@
       </v-row>
       <v-row justify="center">
         <CreatePort
-          :port.sync="port"
+          v-if="dialogAdd"
+          :port="port"
           :ports.sync="ports"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"

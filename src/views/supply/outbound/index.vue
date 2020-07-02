@@ -11,7 +11,7 @@
       />
       <UpdateOutbound
         v-if="dialogEdit"
-        :outbound.sync="outbound"
+        :outbound="outbound"
         :dialogEdit.sync="dialogEdit"
         :message.sync="message"
         :snackbar.sync="snackbar"
@@ -29,7 +29,7 @@
         <DeleteOutbound
           v-if="dialogDel"
           :dialogDel.sync="dialogDel"
-          :outbound.sync="outbound"
+          :outbound="outbound"
           :outbounds.sync="outbounds"
           :message.sync="message"
           :snackbar.sync="snackbar"
@@ -137,7 +137,6 @@ import CreateBiddingDocument from "../../supplier/bidding-document/components/Cr
   }
 })
 export default class Outbound extends Vue {
-
   biddingDocument = {} as IBiddingDocument;
   outbounds: Array<IOutbound> = [];
   outbound = {} as IOutbound;
@@ -190,11 +189,10 @@ export default class Outbound extends Vue {
 
   openUpdateDialog(item: IOutbound) {
     this.outbound = item;
-    const index = this.outbound.packingTime.indexOf("T");
-    this.outbound.packingTime = this.outbound.packingTime.slice(0, index);
+    this.outbound.packingTime = this.outbound.packingTime.slice(0, 10);
     this.outbound.booking.cutOffTime = this.outbound.booking.cutOffTime.slice(
       0,
-      index
+      10
     );
     this.dialogEdit = true;
   }

@@ -24,16 +24,20 @@ import { Component, Vue } from "vue-property-decorator";
 export default class NavigationOperator extends Vue {
   private adminNavigation = [
     { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
-    { title: "Quản lý QTV", icon: "dashboard", link: "/operator" },
-    { title: "Quản lý Role", icon: "dashboard", link: "/role" },
-    { title: "Quản lý Permission", icon: "dashboard", link: "/permission" }
+    { title: "Quản lý Quản trị viên", icon: "dashboard", link: "/operator" },
+    { title: "Quản lý Quyền", icon: "dashboard", link: "/role" },
+    { title: "Quản lý Vai trò", icon: "dashboard", link: "/permission" }
   ];
   private moderatorNavigation = [
     { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
-    { title: "Quản lý đơn Đky", icon: "dashboard", link: "/supplier-register" },
-    { title: "Quản lý Supply", icon: "dashboard", link: "/supplier" },
+    {
+      title: "Quản lý Đơn đăng ký",
+      icon: "dashboard",
+      link: "/supplier-register"
+    },
+    { title: "Quản lý Người dùng", icon: "dashboard", link: "/supplier" },
     { title: "Quản lý Hãng tàu", icon: "dashboard", link: "/shipping-line" },
-    { title: "Quản lý Port", icon: "dashboard", link: "/port" },
+    { title: "Quản lý Bến cảng", icon: "dashboard", link: "/port" },
     { title: "Quản lý Loại Cont", icon: "dashboard", link: "/container-type" },
     { title: "Quản lý Mã giảm giá", icon: "dashboard", link: "/discount" }
   ];

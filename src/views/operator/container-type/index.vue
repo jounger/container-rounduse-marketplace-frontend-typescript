@@ -5,7 +5,7 @@
         <DeleteContainerType
           v-if="dialogDel"
           :dialogDel.sync="dialogDel"
-          :containerType.sync="containerType"
+          :containerType="containerType"
           :containerTypes.sync="containerTypes"
           :message.sync="message"
           :snackbar.sync="snackbar"
@@ -14,7 +14,7 @@
       <v-row justify="center">
         <CreateContainerType
           v-if="dialogAdd"
-          :containerType.sync="containerType"
+          :containerType="containerType"
           :containerTypes.sync="containerTypes"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"

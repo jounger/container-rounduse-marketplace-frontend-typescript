@@ -10,7 +10,7 @@
             icon
             dark
             @click="dialogAddSync = false"
-            style="margin-left:412px;"
+            style="margin-left:274px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
@@ -137,17 +137,17 @@ import FormValidate from "@/mixin/form-validate";
 })
 export default class CreateDiscount extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("discount", { type: Object }) discountSync!: IDiscount;
   @PropSync("discounts", { type: Array }) discountsSync!: Array<IDiscount>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @Prop(Object) discount!: IDiscount;
   @Prop(Boolean) update!: boolean;
 
   currencies = ["USD", "VND"];
   expiredDatePicker = false;
   discountLocal = {} as IDiscount;
   created() {
-    this.discountLocal = Object.assign({}, this.discountSync);
+    this.discountLocal = Object.assign({}, this.discount);
   }
   createDiscount() {
     if (this.discountLocal) {
@@ -179,15 +179,11 @@ export default class CreateDiscount extends Vue {
         .then(res => {
           console.log(res.data);
           const response: IDiscount = res.data;
-          this.discountSync = response;
           this.messageSync =
-            "Cập nhập thành công mã giảm giá: " + this.discountLocal.code;
-          console.log(this.discountSync);
-          const index = this.discountsSync.findIndex(
-            x => x.id === this.discountSync.id
-          );
+            "Cập nhập thành công mã giảm giá: " + response.code;
+          const index = this.discountsSync.findIndex(x => x.id == response.id);
 
-          this.discountsSync.splice(index, 1, this.discountSync);
+          this.discountsSync.splice(index, 1, response);
         })
         .catch(err => {
           console.log(err);

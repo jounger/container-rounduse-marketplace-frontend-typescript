@@ -19,7 +19,6 @@ export function getDiscountById(id: number) {
   });
 }
 
-
 export function createDiscount(discount: IDiscount) {
   return Vue.axios.post("/discount", discount, {
     headers: config
@@ -32,7 +31,7 @@ export function updateDiscount(discount: IDiscount) {
   });
 }
 
-export function editDiscount(id: number, updates: Map<string, object>) {
+export function editDiscount(id: number, updates: IDiscount) {
   return Vue.axios.patch(`/discount/${id}`, updates, {
     headers: config
   });

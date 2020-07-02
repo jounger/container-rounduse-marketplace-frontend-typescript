@@ -100,7 +100,7 @@
               <v-layout row>
                 <v-flex xs10>
                   <v-text-field
-                    label="Địa chỉ"
+                    label="Địa chỉ*"
                     name="address"
                     :counter="100"
                     :rules="[
@@ -145,14 +145,14 @@ export default class CreateOperator extends Vue {
   @PropSync("operators", { type: Array }) operatorsSync!: Array<IOperator>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @PropSync("operator", { type: Object }) operatorSync!: IOperator;
+  @Prop(Object) operator!: IOperator;
   @Prop(Boolean) update!: boolean;
 
   roles = ["ROLE_ADMIN", "ROLE_MODERATOR"];
   role = "";
   operatorLocal = {} as IOperator;
   created() {
-    this.operatorLocal = Object.assign({}, this.operatorSync);
+    this.operatorLocal = Object.assign({}, this.operator);
     if (typeof this.operatorLocal.roles[0] != "undefined") {
       this.role = this.operatorLocal.roles[0];
     } else {
@@ -180,17 +180,14 @@ export default class CreateOperator extends Vue {
   updateOperator() {
     if (this.operatorLocal.id) {
       this.operatorLocal.roles[0] = this.role;
-      this.operatorSync = Object.assign({}, this.operatorLocal);
-      editOperator(this.operatorLocal.id, this.operatorSync)
+      editOperator(this.operatorLocal.id, this.operatorLocal)
         .then(res => {
           const response: IOperator = res.data;
-          this.operatorSync = response;
+          console.log(response);
           this.messageSync =
-            "Cập nhập thành công quản trị viên: " + this.operatorSync.username;
-          const index = this.operatorsSync.findIndex(
-            x => x.id === this.operatorSync.id
-          );
-          this.operatorsSync.splice(index, 1, this.operatorSync);
+            "Cập nhập thành công quản trị viên: " + response.username;
+          const index = this.operatorsSync.findIndex(x => x.id === response.id);
+          this.operatorsSync.splice(index, 1, response);
         })
         .catch(err => {
           console.log(err);

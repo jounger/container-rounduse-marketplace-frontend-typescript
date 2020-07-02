@@ -5,7 +5,7 @@
         <DeleteDiscount
           v-if="dialogDel"
           :dialogDel.sync="dialogDel"
-          :discount.sync="discount"
+          :discount="discount"
           :discounts.sync="discounts"
           :message.sync="message"
           :snackbar.sync="snackbar"
@@ -14,7 +14,7 @@
       <v-row justify="center">
         <CreateDiscount
           v-if="dialogAdd"
-          :discount.sync="discount"
+          :discount="discount"
           :discounts.sync="discounts"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
@@ -123,9 +123,10 @@ export default class Discount extends Vue {
   }
 
   openUpdateDialog(item: IDiscount) {
+    console.log(item);
     const index = item.expiredDate.indexOf("T");
+    item.expiredDate = item.expiredDate.slice(0, index);
     this.discount = item;
-    this.discount.expiredDate = this.discount.expiredDate.slice(0, index);
     this.update = true;
     this.dialogAdd = true;
   }

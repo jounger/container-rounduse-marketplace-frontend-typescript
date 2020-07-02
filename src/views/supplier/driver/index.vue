@@ -12,7 +12,7 @@
       </v-row>
       <v-row justify="center">
         <CreateDriver
-          :driver.sync="driver"
+          :driver="driver"
           :drivers.sync="drivers"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"

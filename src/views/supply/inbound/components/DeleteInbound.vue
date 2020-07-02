@@ -26,8 +26,8 @@
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title>{{
-                    typeof inboundSync.billOfLading !== "undefined"
-                      ? inboundSync.billOfLading.billOfLadingNumber
+                    typeof inbound.billOfLading !== "undefined"
+                      ? inbound.billOfLading.billOfLadingNumber
                       : ""
                   }}</v-list-item-title>
                 </v-list-item-content>
@@ -45,30 +45,28 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IInbound } from "@/entity/inbound";
 import { removeInbound } from "@/api/inbound";
 
 @Component
 export default class DeleteInbound extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("inbound", { type: Object }) inboundSync!: IInbound;
+  @Prop(Object) inbound!: IInbound;
   @PropSync("inbounds", { type: Array }) inboundsSync!: Array<IInbound>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
   removeInbound() {
-    if (this.inboundSync.id) {
-      removeInbound(this.inboundSync.id)
+    if (this.inbound.id) {
+      removeInbound(this.inbound.id)
         .then(res => {
           console.log(res.data);
-          const response: IInbound = res.data;
-          this.inboundSync = response;
           this.messageSync =
             "Xóa thành công hàng nhập: " +
-            this.inboundSync.billOfLading.billOfLadingNumber;
+            this.inbound.billOfLading.billOfLadingNumber;
           const index = this.inboundsSync.findIndex(
-            x => x.id === this.inboundSync.id
+            x => x.id === this.inbound.id
           );
           this.inboundsSync.splice(index, 1);
         })

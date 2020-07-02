@@ -25,7 +25,7 @@
             <v-list>
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title>{{ roleSync.name }}</v-list-item-title>
+                  <v-list-item-title>{{ role.name }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -41,27 +41,25 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IRole } from "@/entity/role";
 import { removeRole } from "@/api/role";
 
 @Component
 export default class DeleteRole extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("role", { type: Object }) roleSync!: IRole;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("roles", { type: Array }) rolesSync!: Array<IRole>;
+  @Prop(Object) role!: IRole;
 
   removeRole() {
-    if (this.roleSync.id) {
-      removeRole(this.roleSync.id)
+    if (this.role.id) {
+      removeRole(this.role.id)
         .then(res => {
           console.log(res.data);
-          this.messageSync = "Xóa thành công quyền: " + this.roleSync.name;
-          const index = this.rolesSync.findIndex(
-            x => x.id === this.roleSync.id
-          );
+          this.messageSync = "Xóa thành công quyền: " + this.role.name;
+          const index = this.rolesSync.findIndex(x => x.id === this.role.id);
           this.rolesSync.splice(index, 1);
         })
         .catch(err => {

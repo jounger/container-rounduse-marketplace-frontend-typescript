@@ -4,7 +4,7 @@
       <v-row justify="center">
         <DeleteOperator
           :dialogDel.sync="dialogDel"
-          :operator.sync="operator"
+          :operator="operator"
           :operators.sync="operators"
           :message.sync="message"
           :snackbar.sync="snackbar"
@@ -13,7 +13,7 @@
       <v-row justify="center">
         <CreateOperator
           v-if="dialogAdd"
-          :operator.sync="operator"
+          :operator="operator"
           :operators.sync="operators"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
@@ -120,6 +120,7 @@ export default class Operator extends Vue {
   }
 
   openUpdateDialog(item: IOperator) {
+    console.log(item);
     this.operator = item;
     this.update = true;
     this.dialogAdd = true;

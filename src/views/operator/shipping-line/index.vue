@@ -4,7 +4,6 @@
       <Snackbar :text="message" :snackbar.sync="snackbar" />
       <CreateShippingLine
         v-if="dialogAdd"
-        :shippingLine.sync="shippingLine"
         :shippingLines.sync="shippingLines"
         :dialogAdd.sync="dialogAdd"
         :message.sync="message"
@@ -12,7 +11,7 @@
       />
       <UpdateShippingLine
         v-if="dialogEdit"
-        :shippingLine.sync="shippingLine"
+        :shippingLine="shippingLine"
         :shippingLines.sync="shippingLines"
         :dialogEdit.sync="dialogEdit"
         :message.sync="message"
@@ -22,7 +21,7 @@
         <DeleteShippingLine
           v-if="dialogDel"
           :dialogDel.sync="dialogDel"
-          :shippingLine.sync="shippingLine"
+          :shippingLine="shippingLine"
           :shippingLines.sync="shippingLines"
           :message.sync="message"
           :snackbar.sync="snackbar"

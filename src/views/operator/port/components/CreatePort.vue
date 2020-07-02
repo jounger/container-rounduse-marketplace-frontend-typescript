@@ -10,7 +10,7 @@
             icon
             dark
             @click="dialogAddSync = false"
-            style="margin-left:412px;"
+            style="margin-left:307px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
@@ -21,22 +21,24 @@
           <v-layout row>
             <v-flex xs9>
               <v-text-field
-                label="Tên bến cảng"
-                name="fullname"
+                label="Mã code"
+                name="nameCode"
                 prepend-icon="mdi-account"
                 type="text"
-                v-model="portLocal.fullname"
+                v-model="portLocal.nameCode"
+                :rules="[required('namecode')]"
               ></v-text-field>
             </v-flex>
           </v-layout>
           <v-layout row>
             <v-flex xs9>
               <v-text-field
-                label="Mã code"
-                name="nameCode"
+                label="Tên bến cảng"
+                name="fullname"
                 prepend-icon="mdi-account"
                 type="text"
-                v-model="portLocal.nameCode"
+                v-model="portLocal.fullname"
+                :rules="[required('fullname')]"
               ></v-text-field>
             </v-flex>
           </v-layout>
@@ -68,20 +70,23 @@
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPort } from "@/entity/port";
-import { createPort, updatePort } from "@/api/port";
+import { createPort, editPort } from "@/api/port";
+import FormValidate from "@/mixin/form-validate";
 
-@Component
+@Component({
+  mixins: [FormValidate]
+})
 export default class CreatePort extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("port", { type: Object }) portSync!: IPort;
   @PropSync("ports", { type: Array }) portsSync!: Array<IPort>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Boolean) update!: boolean;
+  @Prop(Object) port!: IPort;
 
   portLocal = {} as IPort;
   created() {
-    this.portLocal = Object.assign({}, this.portSync);
+    this.portLocal = Object.assign({}, this.port);
   }
   createPort() {
     if (this.portLocal) {
@@ -92,39 +97,31 @@ export default class CreatePort extends Vue {
           this.portLocal = response;
           this.messageSync =
             "Thêm mới thành công bến tàu: " + this.portLocal.fullname;
-          this.portsSync.push(this.portLocal);
+          this.portsSync.unshift(this.portLocal);
         })
         .catch(err => {
           console.log(err);
           this.messageSync = "Đã có lỗi xảy ra";
         })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogAddSync = false))
-        );
+        .finally(() => (this.snackbarSync = true));
     }
   }
   updatePort() {
     if (this.portLocal.id) {
-      this.portSync = Object.assign({}, this.portLocal);
-      updatePort(this.portSync)
+      editPort(this.portLocal.id, this.portLocal)
         .then(res => {
           console.log(res.data);
           const response: IPort = res.data;
-          this.portSync = response;
           this.messageSync =
-            "Cập nhập thành công bến cảng: " + this.portSync.fullname;
-          const index = this.portsSync.findIndex(
-            x => x.id === this.portSync.id
-          );
-          this.portsSync.splice(index, 1, this.portSync);
+            "Cập nhập thành công bến cảng: " + response.fullname;
+          const index = this.portsSync.findIndex(x => x.id == response.id);
+          this.portsSync.splice(index, 1, response);
         })
         .catch(err => {
           console.log(err);
           this.messageSync = "Đã có lỗi xảy ra";
         })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogAddSync = false))
-        );
+        .finally(() => (this.snackbarSync = true));
     }
   }
 }

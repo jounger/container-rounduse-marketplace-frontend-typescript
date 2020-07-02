@@ -11,7 +11,7 @@
       />
       <UpdateInbound
         v-if="dialogEdit"
-        :inbound.sync="inbound"
+        :inbound="inbound"
         :dialogEdit.sync="dialogEdit"
         :message.sync="message"
         :snackbar.sync="snackbar"
@@ -21,7 +21,7 @@
         <DeleteInbound
           v-if="dialogDel"
           :dialogDel.sync="dialogDel"
-          :inbound.sync="inbound"
+          :inbound="inbound"
           :inbounds.sync="inbounds"
           :message.sync="message"
           :snackbar.sync="snackbar"
@@ -117,7 +117,6 @@ import { convertFromDateTime } from "@/utils/tool";
   }
 })
 export default class Inbound extends Vue {
-
   inbounds: Array<IInbound> = [];
   inbound = {} as IInbound;
   dialogAdd = false;
@@ -167,11 +166,11 @@ export default class Inbound extends Vue {
 
   openUpdateDialog(item: IInbound) {
     this.inbound = item;
-    const index = this.inbound.emptyTime.indexOf("T");
-    this.inbound.pickupTime = this.inbound.pickupTime.slice(0, index);
-    this.inbound.billOfLading.freeTime = this.inbound.billOfLading.freeTime.slice(0, index);
-    console.log(this.inbound.billOfLading.freeTime);
-    console.log(this.inbound);
+    this.inbound.pickupTime = this.inbound.pickupTime.slice(0, 10);
+    this.inbound.billOfLading.freeTime = this.inbound.billOfLading.freeTime.slice(
+      0,
+      10
+    );
     this.dialogEdit = true;
   }
 

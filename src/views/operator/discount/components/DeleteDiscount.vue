@@ -25,7 +25,7 @@
             <v-list>
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title>{{ discountSync.code }}</v-list-item-title>
+                  <v-list-item-title>{{ discount.code }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -41,29 +41,27 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IDiscount } from "@/entity/discount";
 import { removeDiscount } from "@/api/discount";
 
 @Component
 export default class DeleteDiscount extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("discount", { type: Object }) discountSync!: IDiscount;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("discounts", { type: Array }) discountsSync!: Array<IDiscount>;
+  @Prop(Object) discount!: IDiscount;
 
   removeDiscount() {
-    if (this.discountSync.id) {
-      removeDiscount(this.discountSync.id)
+    if (this.discount.id) {
+      removeDiscount(this.discount.id)
         .then(res => {
           console.log(res.data);
-          const response: IDiscount = res.data;
-          this.discountSync = response;
           this.messageSync =
-            "Xóa thành công mã giảm giá: " + this.discountSync.code;
+            "Xóa thành công mã giảm giá: " + this.discount.code;
           const index = this.discountsSync.findIndex(
-            x => x.id === this.discountSync.id
+            x => x.id === this.discount.id
           );
           this.discountsSync.splice(index, 1);
         })

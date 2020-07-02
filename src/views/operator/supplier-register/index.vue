@@ -5,7 +5,7 @@
         <RegisterDetail
           v-if="dialogDetail"
           :dialogDetail.sync="dialogDetail"
-          :supplier.sync="supplier"
+          :supplier="supplier"
           :suppliers.sync="suppliers"
           :message.sync="message"
           :snackbar.sync="snackbar"
@@ -56,7 +56,7 @@
 <script lang="ts">
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { ISupplier } from "@/entity/supplier";
-import { getSuppliers } from "@/api/supplier";
+import { getSuppliersByStatus } from "@/api/supplier";
 import { PaginationResponse } from "@/api/payload";
 import RegisterDetail from "./components/RegisterDetail.vue";
 import Snackbar from "@/components/Snackbar.vue";
@@ -107,7 +107,7 @@ export default class Supplier extends Vue {
   @Watch("options", { deep: true })
   onOptionsChange(val: object, oldVal: object) {
     if (val !== oldVal) {
-      getSuppliers({
+      getSuppliersByStatus({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage,
         status: "PENDING"
@@ -116,7 +116,10 @@ export default class Supplier extends Vue {
           const response: PaginationResponse<ISupplier> = res.data;
           console.log("watch", this.options);
           this.suppliers = response.data.filter(
-            x => x.roles[0] == "ROLE_FORWARDER" || x.roles[0] == "ROLE_MERCHANT"
+            x =>
+              (x.roles[0] == "ROLE_FORWARDER" ||
+                x.roles[0] == "ROLE_MERCHANT") &&
+              x.status == "PENDING"
           );
           this.options.totalItems = response.totalElements;
         })
