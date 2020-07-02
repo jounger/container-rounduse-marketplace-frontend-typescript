@@ -31,6 +31,7 @@ export default class NavigationSupplier extends Vue {
     { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
     { title: "Quản lý hàng nhập", icon: "dashboard", link: "/inbound" },
     { title: "Quản lý HSDT", icon: "dashboard", link: "/bid" },
+    { title: "HSMT Nhận được", icon: "dashboard", link: "/invited-bidding" },
     { title: "Quản lý Driver", icon: "dashboard", link: "/driver" }
   ];
 

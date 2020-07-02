@@ -21,11 +21,75 @@
       <v-list three-line subheader>
         <v-stepper v-model="stepper" vertical>
           <v-stepper-step :complete="stepper > 1" step="1" :editable="editable">
+            Chọn HSMT
+            <small>Thông tin bắt buộc</small>
+          </v-stepper-step>
+
+          <v-stepper-content step="1">
+            <v-data-table
+              :headers="headers"
+              :items="biddingDocuments"
+              item-key="id"
+              :loading="loading"
+              :options.sync="options"
+              :server-items-length="options.totalItems"
+              :footer-props="{
+                'items-per-page-options': options.itemsPerPageItems
+              }"
+              :actions-append="options.page"
+              class="elevation-1 my-1"
+            >
+              <template v-slot:top>
+                <v-toolbar flat color="white">
+                  <v-toolbar-title>HSMT nhận được</v-toolbar-title>
+                  <v-divider class="mx-4" inset vertical></v-divider>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    color="primary"
+                    dark
+                    class="mb-2"
+                    @click="dialogAdd = true"
+                  >
+                    Thêm mới
+                  </v-btn>
+                </v-toolbar>
+              </template>
+              <template v-slot:item.actions="{ item }">
+                <v-btn
+                  class="ma-2"
+                  tile
+                  outlined
+                  color="success"
+                  @click="selectBiddingDocument(item)"
+                >
+                  <v-icon left>mdi-pencil</v-icon>
+                  {{
+                    biddingDocumentSelected &&
+                    biddingDocumentSelected.id == item.id
+                      ? "Bỏ"
+                      : "Chọn"
+                  }}
+                </v-btn>
+              </template>
+            </v-data-table>
+            <v-btn
+              color="primary"
+              @click="
+                !isEmptyObject(biddingDocumentSelected)
+                  ? (stepper = 2)
+                  : (stepper = 1)
+              "
+              :disabled="isEmptyObject(biddingDocumentSelected)"
+              >Tiếp tục</v-btn
+            >
+          </v-stepper-content>
+
+          <v-stepper-step :complete="stepper > 2" step="2" :editable="editable">
             Thông tin HSDT
             <small>Thông tin chung</small>
           </v-stepper-step>
 
-          <v-stepper-content step="1">
+          <v-stepper-content step="2">
             <v-form ref="bidForm" v-model="valid" lazy-validation>
               <v-text-field
                 v-model="bidLocal.bidPrice"
@@ -116,20 +180,20 @@
               ></v-text-field>
               <v-btn
                 color="primary"
-                @click="valid ? (stepper = 2) : (stepper = 1)"
+                @click="valid ? (stepper = 3) : (stepper = 2)"
                 :disabled="!valid"
                 >Tiếp tục</v-btn
               >
-              <!-- <v-btn text @click="dialogAddSync = false">Hủy</v-btn> -->
+              <v-btn text @click="stepper = 1">Quay lại</v-btn>
             </v-form>
           </v-stepper-content>
 
-          <v-stepper-step :complete="stepper > 2" step="2" :editable="editable"
+          <v-stepper-step :complete="stepper > 3" step="3" :editable="editable"
             >Chọn containers mong muốn</v-stepper-step
           >
 
           <!-- SELECT CONTAINER -->
-          <v-stepper-content step="2">
+          <v-stepper-content step="3">
             <v-tabs background-color="white" color="deep-purple accent-4" left>
               <v-tab>Danh sach Inbound</v-tab>
               <v-tab>Selected Containers</v-tab>
@@ -220,14 +284,14 @@
                 </v-container>
               </v-tab-item>
             </v-tabs>
-            <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
+            <v-btn color="primary" @click="stepper = 4" :disabled="!valid"
               >Tiếp tục</v-btn
             >
-            <v-btn text @click="stepper = 1">Quay lại</v-btn>
+            <v-btn text @click="stepper = 2">Quay lại</v-btn>
           </v-stepper-content>
 
-          <v-stepper-step step="3">Hoàn thành</v-stepper-step>
-          <v-stepper-content step="3">
+          <v-stepper-step step="4">Hoàn thành</v-stepper-step>
+          <v-stepper-content step="4">
             <v-form ref="finishForm" v-model="valid" lazy-validation>
               <v-checkbox
                 v-model="checkbox"
@@ -237,7 +301,7 @@
               <v-btn color="primary" @click="createBid()" :disabled="!valid"
                 >Hoàn tất</v-btn
               >
-              <v-btn text @click="stepper = 2">Quay lại</v-btn>
+              <v-btn text @click="stepper = 3">Quay lại</v-btn>
             </v-form>
           </v-stepper-content>
         </v-stepper>
@@ -255,18 +319,24 @@ import { IInbound } from "@/entity/inbound";
 import Utils from "@/mixin/utils";
 import { getInboundByForwarder } from "@/api/inbound";
 import { PaginationResponse } from "@/api/payload";
-import { createBiddingDocument } from "@/api/bid";
+import { createBid } from "@/api/bid";
+import { IBiddingDocument } from "@/entity/bidding-document";
+import { isEmptyObject } from "../../../../utils/tool";
+import { getBiddingNotificationsByUser } from "../../../../api/notification";
+import { IBiddingNotification } from "../../../../entity/bidding-notification";
 
 @Component({
   mixins: [FormValidate, Utils]
 })
 export default class CreateBid extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("bid", { type: Object }) bidSync!: IBid;
-  @PropSync("bids", { type: Array }) bidsSync!: Array<IBid>;
+  @PropSync("biddingDocument", { type: Object })
+  biddingDocumentSync!: IBiddingDocument;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
+  biddingDocuments: Array<IBiddingDocument> = [];
+  biddingDocumentSelected = {} as IBiddingDocument;
   expanded: Array<IInbound> = [];
   singleExpand = true;
   dateInit = new Date().toISOString().substr(0, 10);
@@ -299,6 +369,23 @@ export default class CreateBid extends Vue {
   // Inbound
   inbounds: Array<IInbound> = [];
   inbound = {} as IInbound;
+  headers = [
+    {
+      text: "Mã",
+      align: "start",
+      sortable: false,
+      value: "id"
+    },
+    { text: "Hãng tàu", value: "outbound.shippingLine" },
+    { text: "Loại cont", value: "outbound.containerType" },
+    { text: "Mã booking", value: "outbound.booking.bookingNumber" },
+    { text: "Giá gói thầu", value: "bidPackagePrice" },
+    { text: "Mở thầu", value: "bidOpening" },
+    { text: "Đóng thầu", value: "bidClosing" },
+    { text: "Nhiều thầu win", value: "isMultipleAward" },
+    { text: "Actions", value: "actions", sortable: false }
+  ];
+
   inboundHeaders = [
     {
       text: "Mã",
@@ -332,13 +419,13 @@ export default class CreateBid extends Vue {
   // Bid
   createBid() {
     // TODO: API create bid
-    createBiddingDocument(this.bidLocal)
+    createBid(this.bidLocal)
       .then(res => {
         console.log(res.data);
         const response: IBid = res.data;
         this.bidLocal = response;
-        this.messageSync = "Thêm mới thành công Hồ sơ dự thầu: " + this.bidLocal.id;
-        this.bidsSync.unshift(this.bidLocal);
+        this.messageSync =
+          "Thêm mới thành công Hồ sơ dự thầu: " + this.bidLocal.id;
         this.readonlyInbound = true;
       })
       .catch(err => {
@@ -375,8 +462,49 @@ export default class CreateBid extends Vue {
       .catch(err => console.log(err))
       .finally();
   }
+
+  selectBiddingDocument(item: IBiddingDocument) {
+    if (
+      this.biddingDocumentSelected &&
+      this.biddingDocumentSelected.id === item.id
+    ) {
+      // unselected item
+      this.biddingDocumentSelected = {} as IBiddingDocument;
+    } else {
+      // select item
+      if (item.id) {
+        this.biddingDocumentSelected = item;
+      }
+    }
+  }
+
   mounted() {
     // TODO: API get
+    if (this.biddingDocumentSync && !isEmptyObject(this.biddingDocumentSync)) {
+      this.biddingDocuments.push(this.biddingDocumentSync);
+      this.selectBiddingDocument(this.biddingDocumentSync);
+    } else {
+      getBiddingNotificationsByUser({
+        page: 0,
+        limit: 100,
+        status: "ADDED"
+      })
+        .then(res => {
+          const response: PaginationResponse<IBiddingNotification> = res.data;
+          console.log("watch", response);
+          this.biddingDocuments = response.data.reduce(function(
+            pV: Array<IBiddingDocument>,
+            cV: IBiddingNotification
+          ) {
+            pV.push(cV.relatedResource);
+            return pV;
+          },
+          []);
+          this.options.totalItems = response.totalElements;
+        })
+        .catch(err => console.log(err))
+        .finally(() => (this.loading = false));
+    }
     this.options.totalItems = 10;
     this.loading = false;
   }

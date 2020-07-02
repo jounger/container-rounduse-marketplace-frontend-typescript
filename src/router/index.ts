@@ -189,6 +189,15 @@ const routes: Array<RouteConfig> = [
       layout: "NavLayout"
     }
   },
+  {
+    path: "/invited-bidding",
+    name: "Invited Bidding Document",
+    component: () => import("@/views/supplier/bid/components/InvitedNotify.vue"),
+    meta: {
+      auth: ["ROLE_FORWARDER"],
+      layout: "NavLayout"
+    }
+  },
   // DRIVER
   {
     path: "/driver",
