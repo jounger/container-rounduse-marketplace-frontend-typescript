@@ -21,11 +21,61 @@ export const BiddingDocumentData: IBiddingDocument[] = [
         portOfLoading: "HPH"
       }
     },
-    bids: [],
+    bids: [
+      {
+        id: 0,
+        containers: [
+          {
+            id: 0,
+            containerNumber: "APL2982",
+            driver: "driver",
+            trailer: "2",
+            tractor: "3",
+            licensePlate: "90A-H0923",
+          },
+          {
+            id: 1,
+            containerNumber: "APA2982",
+            driver: "driver1",
+            trailer: "2",
+            tractor: "3",
+            licensePlate: "90A-H0933",
+          },
+          {
+            id: 2,
+            containerNumber: "APN2982",
+            driver: "driver1",
+            trailer: "2",
+            tractor: "3",
+            licensePlate: "90A-H0333",
+          },
+          {
+            id: 3,
+            containerNumber: "APX2982",
+            driver: "driver1",
+            trailer: "2",
+            tractor: "3",
+            licensePlate: "90A-H0993",
+          },
+          {
+            id: 4,
+            containerNumber: "APAX2982",
+            driver: "driver1",
+            trailer: "2",
+            tractor: "3",
+            licensePlate: "90A-HA993",
+          }
+        ],
+        bidPrice: 2099,
+        bidDate: "2020-12-01T20:20",
+        bidValidityPeriod: "2020-12-01T20:20",
+        status: "CREATED"
+      }
+    ],
     bidDiscountCode: "DISCOUNT01",
     isMultipleAward: true,
-    bidOpening: "2020-12-01T20:20",
-    bidClosing: "2020-12-03T20:20",
+    bidOpening: "2020-07-01T20:20",
+    bidClosing: "2020-07-03T20:20",
     dateOfDecision: "2020-12-02T20:20",
     currencyOfPayment: "VND",
     bidPackagePrice: 200,

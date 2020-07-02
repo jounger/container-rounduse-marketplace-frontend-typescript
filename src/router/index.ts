@@ -161,6 +161,15 @@ const routes: Array<RouteConfig> = [
       layout: "NavLayout"
     }
   },
+  {
+    path: "/bidding-document/:id",
+    name: "Bidding Document Detail",
+    component: () => import("@/views/supplier/bidding-document/components/DetailBiddingDocument.vue"),
+    meta: {
+      auth: ["ROLE_MERCHANT", "ROLE_FORWARDER"],
+      layout: "NavLayout"
+    }
+  },
   // forwarder
   {
     path: "/inbound",
