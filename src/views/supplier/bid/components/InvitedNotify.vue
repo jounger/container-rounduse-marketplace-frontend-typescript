@@ -4,7 +4,7 @@
       <Snackbar :text="message" :snackbar.sync="snackbar" />
       <CreateBid
         v-if="dialogAdd"
-        :bid.sync="bid"
+        :biddingDocument.sync="biddingDocument"
         :bids.sync="bids"
         :dialogAdd.sync="dialogAdd"
         :message.sync="message"
@@ -20,10 +20,6 @@
       <v-data-table
         :headers="headers"
         :items="biddingDocuments"
-        :single-expand="singleExpand"
-        :expanded.sync="expanded"
-        show-expand
-        @click:row="clicked"
         item-key="id"
         :loading="loading"
         :options.sync="options"
@@ -34,7 +30,7 @@
       >
         <template v-slot:top>
           <v-toolbar flat color="white">
-            <v-toolbar-title>Danh sách Hồ sơ dự thầu</v-toolbar-title>
+            <v-toolbar-title>HSMT nhận được</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
             <v-btn color="primary" dark class="mb-2" @click="dialogAdd = true">
@@ -48,32 +44,21 @@
             tile
             outlined
             color="success"
-            @click="openAddDialog(item)"
+            @click.stop="openAddDialog(item)"
             small
           >
-            <v-icon left>mdi-pencil</v-icon> Thêm HSDT
+            <v-icon left>mdi-pencil</v-icon> Đồng ý
           </v-btn>
-        </template>
-        <!-- Show Bids expened -->
-        <template v-slot:expanded-item="{ headers, item }">
-          <td :colspan="headers.length" class="px-0">
-            <v-data-table
-              :headers="bidHeaders"
-              :items="item.bids"
-              :hide-default-footer="true"
-              dark
-              dense
-            >
-              <template v-slot:item.actions="{ item }">
-                <v-icon small class="mr-2" @click="openEditDialog(item)">
-                  mdi-pencil
-                </v-icon>
-                <v-icon small @click="openDeleteDialog(item)">
-                  mdi-delete
-                </v-icon>
-              </template>
-            </v-data-table>
-          </td>
+          <v-btn
+            class="ma-1"
+            tile
+            outlined
+            color="error"
+            @click.stop="openDeleteDialog(item)"
+            small
+          >
+            <v-icon left>mdi-pencil</v-icon> Từ chối
+          </v-btn>
         </template>
       </v-data-table>
     </v-card>
@@ -81,33 +66,27 @@
 </template>
 <script lang="ts">
 import { Component, Watch, Vue } from "vue-property-decorator";
-import { IBid } from "@/entity/bid";
 import { IBiddingDocument } from "@/entity/bidding-document";
-import CreateBid from "./components/CreateBid.vue";
-// import UpdateBid from "./components/UpdateBid.vue";
-// import { getBidByForwarder } from "@/api/bid";
-// import { PaginationResponse } from "@/api/payload";
+import CreateBid from "./CreateBid.vue";
 import Snackbar from "@/components/Snackbar.vue";
-import { getBidsByForwarder } from "@/api/bid";
 import { PaginationResponse } from "@/api/payload";
+import { IBiddingNotification } from "@/entity/bidding-notification";
+import { getBiddingNotificationsByUser } from "../../../../api/notification";
 
 @Component({
   components: {
     CreateBid,
-    // UpdateBid,
     Snackbar
   }
 })
-export default class Bid extends Vue {
+export default class InvitedNotify extends Vue {
+  biddingNotifications: Array<IBiddingNotification> = [];
+  biddingNotification = {} as IBiddingNotification;
 
   biddingDocuments: Array<IBiddingDocument> = [];
   biddingDocument = {} as IBiddingDocument;
-  bids: Array<IBid> = [];
-  bid = {} as IBid;
-  expanded: Array<IBiddingDocument> = [];
-  singleExpand = true;
+
   dialogAdd = false;
-  dialogEdit = false;
   dialogDel = false;
   search = "";
   message = "";
@@ -152,36 +131,13 @@ export default class Bid extends Vue {
     { text: "Actions", value: "actions", sortable: false }
   ];
 
-  clicked(value: IBiddingDocument) {
-    if (this.singleExpand) {
-      if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
-        this.expanded.splice(0, this.expanded.length);
-      } else {
-        this.expanded.splice(0, this.expanded.length);
-        this.expanded.push(value);
-      }
-    } else {
-      const index = this.expanded.findIndex(x => x.id === value.id);
-      if (index === -1) {
-        this.expanded.push(value);
-      } else {
-        this.expanded.splice(index, 1);
-      }
-    }
-  }
-
   openAddDialog(item: IBiddingDocument) {
     this.biddingDocument = item;
     this.dialogAdd = true;
   }
 
-  openEditDialog(item: IBid) {
-    this.bid = item;
-    this.dialogEdit = true;
-  }
-
-  openDeleteDialog(item: IBid) {
-    this.bid = item;
+  openDeleteDialog(item: IBiddingDocument) {
+    this.biddingDocument = item;
     this.dialogDel = true;
   }
 
@@ -189,14 +145,22 @@ export default class Bid extends Vue {
   onOptionsChange(val: object, oldVal: object) {
     console.log(this.$auth.user());
     if (val !== oldVal) {
-      getBidsByForwarder(this.$auth.user().id, {
+      getBiddingNotificationsByUser({
         page: this.options.page - 1,
-        limit: this.options.itemsPerPage
+        limit: this.options.itemsPerPage,
+        status: "ADDED"
       })
         .then(res => {
-          const response: PaginationResponse<IBid> = res.data;
-          console.log("watch", this.options);
-          this.bids = response.data;
+          const response: PaginationResponse<IBiddingNotification> = res.data;
+          console.log("watch", response);
+          this.biddingDocuments = response.data.reduce(function(
+            pV: Array<IBiddingDocument>,
+            cV: IBiddingNotification
+          ) {
+            pV.push(cV.relatedResource);
+            return pV;
+          },
+          []);
           this.options.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))

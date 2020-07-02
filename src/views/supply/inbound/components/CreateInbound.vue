@@ -341,7 +341,7 @@ export default class CreateInbound extends Vue {
     containerType: "",
     returnStation: "",
     status: "",
-    emptyTime: this.dateInit,
+    emptyTime: "",
     pickupTime: this.dateInit,
     billOfLading: {
       id: 0,
