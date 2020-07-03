@@ -19,15 +19,6 @@ export function getBiddingDocument(id: number) {
   });
 }
 
-export function getBiddingDocumentsByMerchant(
-  id: number,
-  paging: PaginationRequest
-) {
-  return Vue.axios.get(`/bidding-document/merchant/${id}`, {
-    params: paging,
-    headers: config
-  });
-}
 
 export function createBiddingDocument(biddingDocument: IBiddingDocument) {
   return Vue.axios.post("/bidding-document", biddingDocument, {
@@ -41,7 +32,7 @@ export function updateBiddingDocument(biddingDocument: IBiddingDocument) {
   });
 }
 
-export function editBiddingDocument(id: number, updates: IBiddingDocument) {
+export function editBiddingDocument(id: number, updates: object) {
   return Vue.axios.patch(`/bidding-document/${id}`, updates, {
     headers: config
   });

@@ -34,6 +34,11 @@ export function getBidsByBiddingDocument(
     headers: config
   });
 }
+export function getBidByBiddingDocumentAndForwarder(id: number) {
+  return Vue.axios.get(`/bid/bidding-document/${id}`, {
+    headers: config
+  });
+}
 
 export function createBid(id: number, bid: IBid) {
   return Vue.axios.post(`/bid/bidding-document/${id}`, bid, {
@@ -47,7 +52,7 @@ export function updateBid(bid: IBid) {
   });
 }
 
-export function editBid(id: number, updates: IBid) {
+export function editBid(id: number, updates: object) {
   return Vue.axios.patch(`/bid/${id}`, updates, {
     headers: config
   });

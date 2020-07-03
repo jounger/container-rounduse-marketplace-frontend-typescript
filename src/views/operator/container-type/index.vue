@@ -14,6 +14,7 @@
       <v-row justify="center">
         <CreateContainerType
           v-if="dialogAdd"
+          :totalItems="options.totalItems"
           :containerType="containerType"
           :containerTypes.sync="containerTypes"
           :dialogAdd.sync="dialogAdd"

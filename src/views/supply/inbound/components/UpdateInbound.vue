@@ -404,11 +404,11 @@ import { IPort } from "@/entity/port";
 import { IShippingLine } from "@/entity/shipping-line";
 import { IContainerType } from "@/entity/container-type";
 import { IDriver } from "@/entity/driver";
-import { convertToDateTime } from "@/utils/tool";
+import { addTimeToDate } from "@/utils/tool";
 import { updateInbound } from "@/api/inbound";
 import { getPorts } from "@/api/port";
 import { getContainerTypes } from "@/api/container-type";
-import { getDriverByForwarder } from "@/api/driver";
+import { getDriversByForwarder } from "@/api/driver";
 import { getShippingLines } from "@/api/shipping-line";
 import { PaginationResponse } from "@/api/payload";
 import { updateBillOfLading } from "@/api/bill-of-lading";
@@ -470,10 +470,10 @@ export default class UpdateInbound extends Vue {
   updateInbound() {
     // TODO: API update inbound
 
-    this.inboundLocal.pickupTime = convertToDateTime(
+    this.inboundLocal.pickupTime = addTimeToDate(
       this.inboundLocal.pickupTime
     );
-    this.inboundLocal.billOfLading.freeTime = convertToDateTime(
+    this.inboundLocal.billOfLading.freeTime = addTimeToDate(
       this.inboundLocal.billOfLading.freeTime
     );
     console.log(this.inboundLocal);
@@ -610,7 +610,7 @@ export default class UpdateInbound extends Vue {
       })
       .catch(err => console.log(err))
       .finally();
-    getDriverByForwarder(this.$auth.user().id, {
+    getDriversByForwarder(this.$auth.user().id, {
       page: 0,
       limit: 100
     })
@@ -623,7 +623,7 @@ export default class UpdateInbound extends Vue {
       .finally();
   }
   updateBillOfLading() {
-    this.inboundLocal.billOfLading.freeTime = convertToDateTime(
+    this.inboundLocal.billOfLading.freeTime = addTimeToDate(
       this.inboundLocal.billOfLading.freeTime
     );
     updateBillOfLading(this.inboundLocal.billOfLading)

@@ -14,6 +14,7 @@
       <v-row justify="center">
         <CreatePort
           v-if="dialogAdd"
+          :totalItems="options.totalItems"
           :port="port"
           :ports.sync="ports"
           :dialogAdd.sync="dialogAdd"

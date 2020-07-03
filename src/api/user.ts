@@ -11,6 +11,12 @@ export function getProfile() {
   });
 }
 
+export function changeStatus(id: number, updates: object) {
+  return Vue.axios.patch(`/user/${id}`, updates, {
+    headers: config
+  });
+}
+
 export function getUsers(paging: PaginationRequest) {
   return Vue.axios.get("/user", {
     params: paging,

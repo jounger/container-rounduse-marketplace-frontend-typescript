@@ -103,12 +103,13 @@ import UpdateInbound from "./components/UpdateInbound.vue";
 import DeleteInbound from "./components/DeleteInbound.vue";
 // import { getInboundByForwarder } from "@/api/inbound";
 // import { PaginationResponse } from "@/api/payload";
+import Utils from "@/mixin/utils";
 import Snackbar from "@/components/Snackbar.vue";
-import { getInboundByForwarder } from "@/api/inbound";
+import { getInboundsByForwarder } from "@/api/inbound";
 import { PaginationResponse } from "@/api/payload";
-import { convertFromDateTime } from "@/utils/tool";
 
 @Component({
+  mixins: [Utils],
   components: {
     CreateInbound,
     UpdateInbound,
@@ -156,10 +157,6 @@ export default class Inbound extends Vue {
     }
   ];
 
-  formatDatetime(date: string) {
-    return convertFromDateTime(date);
-  }
-
   created() {
     this.loading = false;
   }
@@ -183,7 +180,7 @@ export default class Inbound extends Vue {
   onOptionsChange(val: object, oldVal: object) {
     console.log(this.$auth.user());
     if (val !== oldVal) {
-      getInboundByForwarder(this.$auth.user().id, {
+      getInboundsByForwarder(this.$auth.user().id, {
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })

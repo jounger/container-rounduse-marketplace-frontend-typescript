@@ -17,7 +17,7 @@
         >
       </v-toolbar>
       <v-card-text>
-        <v-form>
+        <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
           <v-layout col>
             <v-layout row>
@@ -51,7 +51,6 @@
                   :items="currencies"
                   attach
                   label="Loại tiền tệ"
-                  chips
                   v-model="discountLocal.currency"
                 ></v-select>
               </v-flex>
@@ -93,7 +92,7 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
-                      v-model="discountLocal.expiredDate"
+                      v-model="expiredDate"
                       label="Ngày hết hạn"
                       hint="YYYY/MM/DD"
                       persistent-hint
@@ -103,7 +102,7 @@
                     ></v-text-field>
                   </template>
                   <v-date-picker
-                    v-model="discountLocal.expiredDate"
+                    v-model="expiredDate"
                     no-title
                     @input="expiredDatePicker = false"
                   ></v-date-picker>
@@ -117,10 +116,20 @@
       <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn @click="updateDiscount()" color="primary" v-if="update"
+        <v-btn
+          @click="updateDiscount()"
+          color="primary"
+          v-if="update"
+          :disabled="!valid"
           >Cập nhập</v-btn
         >
-        <v-btn @click="createDiscount()" color="primary" v-else>Thêm mới</v-btn>
+        <v-btn
+          @click="createDiscount()"
+          color="primary"
+          v-else
+          :disabled="!valid"
+          >Thêm mới</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -129,8 +138,8 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IDiscount } from "@/entity/discount";
 import { createDiscount, updateDiscount } from "@/api/discount";
-import { convertToDateTime } from "@/utils/tool";
 import FormValidate from "@/mixin/form-validate";
+import { addTimeToDate } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate]
@@ -140,27 +149,39 @@ export default class CreateDiscount extends Vue {
   @PropSync("discounts", { type: Array }) discountsSync!: Array<IDiscount>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) discount!: IDiscount;
   @Prop(Boolean) update!: boolean;
 
   currencies = ["USD", "VND"];
+  valid = false;
+  expiredDate = "";
   expiredDatePicker = false;
-  discountLocal = {} as IDiscount;
+  initDate = new Date().toISOString().substr(0, 10);
+  discountLocal = {
+    code: "",
+    detail: "",
+    currency: "VND",
+    percent: 0,
+    maximumDiscount: 0,
+    expiredDate: this.initDate
+  } as IDiscount;
   created() {
-    this.discountLocal = Object.assign({}, this.discount);
+    if (this.update) {
+      this.discountLocal = Object.assign({}, this.discount);
+    }
+    this.expiredDate = this.discountLocal.expiredDate;
   }
   createDiscount() {
     if (this.discountLocal) {
-      this.discountLocal.expiredDate = convertToDateTime(
-        this.discountLocal.expiredDate
-      );
+      this.discountLocal.expiredDate = addTimeToDate(this.expiredDate);
       createDiscount(this.discountLocal)
         .then(res => {
           const response: IDiscount = res.data;
-          this.discountLocal = response;
           this.messageSync =
-            "Thêm mới thành công mã giảm giá: " + this.discountLocal.code;
-          this.discountsSync.unshift(this.discountLocal);
+            "Thêm mới thành công mã giảm giá: " + response.code;
+          this.discountsSync.unshift(response);
+          this.totalItemsSync += 1;
         })
         .catch(err => {
           console.log(err);
@@ -171,10 +192,7 @@ export default class CreateDiscount extends Vue {
   }
   updateDiscount() {
     if (this.discountLocal.id) {
-      this.discountLocal.expiredDate = convertToDateTime(
-        this.discountLocal.expiredDate
-      );
-
+      this.discountLocal.expiredDate = addTimeToDate(this.expiredDate);
       updateDiscount(this.discountLocal)
         .then(res => {
           console.log(res.data);

@@ -203,7 +203,7 @@
 <script lang="ts">
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import { ISupplier } from "@/entity/supplier";
-import { getSuppliersById } from "@/api/supplier";
+import { getSupplier } from "@/api/supplier";
 
 @Component({
   name: "RequestDetail"
@@ -214,7 +214,7 @@ export default class RequestDetail extends Vue {
   supplier = {} as ISupplier;
   role = "";
   created() {
-    getSuppliersById(this.$auth.user().id)
+    getSupplier(this.$auth.user().id)
       .then(res => {
         const response: ISupplier = res.data;
         this.supplier = response;

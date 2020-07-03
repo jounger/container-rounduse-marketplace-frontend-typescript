@@ -109,7 +109,7 @@
                   <v-list-item-subtitle>
                     {{
                       "Thời gian: " +
-                        convertDateTime(biddingDocument.outbound.packingTime)
+                        formatDatetime(biddingDocument.outbound.packingTime)
                     }}
                   </v-list-item-subtitle>
                 </v-list-item-content>
@@ -147,13 +147,12 @@
             column
           >
             <v-chip
-              >Mở thầu:
-              {{ convertDateTime(biddingDocument.bidOpening) }}</v-chip
+              >Mở thầu: {{ formatDatetime(biddingDocument.bidOpening) }}</v-chip
             >
 
             <v-chip
               >Đóng thầu:
-              {{ convertDateTime(biddingDocument.bidClosing) }}</v-chip
+              {{ formatDatetime(biddingDocument.bidClosing) }}</v-chip
             >
           </v-chip-group>
         </v-card-text>
@@ -196,8 +195,7 @@
                   </v-list-item-icon>
                   <v-list-item-content>
                     <v-list-item-title>{{
-                      "Đóng thầu: " +
-                        convertDateTime(biddingDocument.bidClosing)
+                      "Đóng thầu: " + formatDatetime(biddingDocument.bidClosing)
                     }}</v-list-item-title>
                     <v-list-item-subtitle>
                       {{
@@ -292,7 +290,7 @@
             <span style="color: red;" v-if="item.status == 'REJECTED'">{{
               item.status
             }}</span>
-            <span style="color: red;" v-if="item.status == 'ACCEPTED'">{{
+            <span style="color: green;" v-if="item.status == 'ACCEPTED'">{{
               item.status
             }}</span>
           </template>
@@ -321,7 +319,6 @@ import Utils from "@/mixin/utils";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { IBid } from "@/entity/bid";
 import { getBiddingDocument } from "@/api/bidding-document";
-import { convertFromDateTime } from "@/utils/tool";
 import { getBidsByBiddingDocument } from "@/api/bid";
 import { PaginationResponse } from "@/api/payload";
 import ConfirmBid from "./ConfirmBid.vue";
@@ -421,9 +418,6 @@ export default class DetailBiddingDocument extends Vue {
     this.bid = item;
     this.status = false;
     this.dialogConfirm = true;
-  }
-  convertDateTime(item: string) {
-    return convertFromDateTime(item);
   }
   clicked(value: IBid) {
     console.log(value);

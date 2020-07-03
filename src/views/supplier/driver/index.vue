@@ -63,7 +63,7 @@ import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 import DeleteDriver from "./components/DeleteDriver.vue";
 import CreateDriver from "./components/CreateDriver.vue";
-import { getDriverByForwarder } from "@/api/driver";
+import { getDriversByForwarder } from "@/api/driver";
 
 @Component({
   components: {
@@ -129,7 +129,7 @@ export default class Driver extends Vue {
   @Watch("options", { deep: true })
   onOptionsChange(val: object, oldVal: object) {
     if (val !== oldVal) {
-      getDriverByForwarder(this.$auth.user().id, {
+      getDriversByForwarder(this.$auth.user().id, {
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })

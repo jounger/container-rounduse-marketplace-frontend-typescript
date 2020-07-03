@@ -17,6 +17,7 @@
           :operators.sync="operators"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
+          :totalItems.sync="options.totalItems"
           :snackbar.sync="snackbar"
           :update="update"
         />
@@ -113,8 +114,6 @@ export default class Operator extends Vue {
   ];
   openCreateDialog() {
     this.operator = {} as IOperator;
-    this.operator.roles = ["ROLE_ADMIN"];
-    this.operator.status = "ACTIVE";
     this.update = false;
     this.dialogAdd = true;
   }

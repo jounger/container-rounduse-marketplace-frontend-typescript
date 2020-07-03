@@ -254,7 +254,7 @@ import { IBiddingDocument } from "@/entity/bidding-document";
 import { IOutbound } from "@/entity/outbound";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
-import { isEmptyObject, convertToDateTime } from "../../../../utils/tool";
+import { isEmptyObject, addTimeToDate } from "@/utils/tool";
 import { createBiddingDocument } from "@/api/bidding-document";
 import { getOutboundByMerchant } from "@/api/outbound";
 import { PaginationResponse } from "@/api/payload";
@@ -351,10 +351,10 @@ export default class CreateBiddingDocument extends Vue {
   createBiddingDocument() {
     // TODO: API create biddingDocument
     console.log(this.biddingDocumentLocal);
-    this.biddingDocumentLocal.bidOpening = convertToDateTime(
+    this.biddingDocumentLocal.bidOpening = addTimeToDate(
       this.biddingDocumentLocal.bidOpening
     );
-    this.biddingDocumentLocal.bidClosing = convertToDateTime(
+    this.biddingDocumentLocal.bidClosing = addTimeToDate(
       this.biddingDocumentLocal.bidClosing
     );
     createBiddingDocument(this.biddingDocumentLocal)

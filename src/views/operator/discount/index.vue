@@ -14,6 +14,7 @@
       <v-row justify="center">
         <CreateDiscount
           v-if="dialogAdd"
+          :totalItems="options.totalItems"
           :discount="discount"
           :discounts.sync="discounts"
           :dialogAdd.sync="dialogAdd"
@@ -47,7 +48,7 @@
           </v-toolbar>
         </template>
         <template v-slot:item.expired="{ item }">
-          {{ convertDateTime(item.expiredDate) }}
+          {{ formatDatetime(item.expiredDate) }}
         </template>
         <template v-slot:item.actions="{ item }">
           <v-icon small class="mr-2" @click="openUpdateDialog(item)">
@@ -69,9 +70,10 @@ import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 import DeleteDiscount from "./components/DeleteDiscount.vue";
 import CreateDiscount from "./components/CreateDiscount.vue";
-import { convertFromDateTime } from "@/utils/tool";
+import Utils from "@/mixin/utils";
 
 @Component({
+  mixins: [Utils],
   components: {
     CreateDiscount,
     DeleteDiscount,
@@ -112,10 +114,6 @@ export default class Discount extends Vue {
       value: "actions"
     }
   ];
-
-  convertDateTime(input: string) {
-    return convertFromDateTime(input);
-  }
   openCreateDialog() {
     this.discount = {} as IDiscount;
     this.update = false;

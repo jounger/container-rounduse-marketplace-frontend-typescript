@@ -13,13 +13,13 @@ export function getContainers(paging: PaginationRequest) {
   });
 }
 
-export function getContainerById(id: number) {
+export function getContainer(id: number) {
   return Vue.axios.get(`/container/${id}`, {
     headers: config
   });
 }
 export function getContainersByBillOfLading(id: number, paging: PaginationRequest) {
-  return Vue.axios.get(`/container/billOfLading/${id}`, {
+  return Vue.axios.get(`/container/bill-of-lading/${id}`, {
     params: paging,
     headers: config
   });
@@ -30,8 +30,14 @@ export function getContainersByInbound(id: number, paging: PaginationRequest) {
     headers: config
   });
 }
+export function getContainersByBid(id: number, paging: PaginationRequest) {
+  return Vue.axios.get(`/container/bid/${id}`, {
+    params: paging,
+    headers: config
+  });
+}
 export function createContainer(id: number, container: IContainer) {
-  return Vue.axios.post(`/container/billOfLading/${id}`, container, {
+  return Vue.axios.post(`/container/bill-of-lading/${id}`, container, {
     headers: config
   });
 }
@@ -42,7 +48,7 @@ export function updateContainer(container: IContainer) {
   });
 }
 
-export function editContainer(id: number, updates: Map<string, object>) {
+export function editContainer(id: number, updates: object) {
   return Vue.axios.patch(`/container/${id}`, updates, {
     headers: config
   });

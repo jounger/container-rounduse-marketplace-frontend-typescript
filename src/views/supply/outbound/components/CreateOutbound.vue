@@ -266,7 +266,7 @@ import { getShippingLines } from "@/api/shipping-line";
 import { IShippingLine } from "@/entity/shipping-line";
 import { getContainerTypes } from "@/api/container-type";
 import { IContainerType } from "@/entity/container-type";
-import { convertToDateTime } from "@/utils/tool";
+import { addTimeToDate } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate]
@@ -315,10 +315,10 @@ export default class CreateOutbound extends Vue {
   createOutbound() {
     // TODO: API create outbound
 
-    this.outboundLocal.packingTime = convertToDateTime(
+    this.outboundLocal.packingTime = addTimeToDate(
       this.outboundLocal.packingTime
     );
-    this.outboundLocal.booking.cutOffTime = convertToDateTime(
+    this.outboundLocal.booking.cutOffTime = addTimeToDate(
       this.outboundLocal.booking.cutOffTime
     );
     console.log(this.outboundLocal);

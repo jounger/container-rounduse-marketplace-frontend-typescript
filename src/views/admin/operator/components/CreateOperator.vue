@@ -6,24 +6,31 @@
     transition="dialog-bottom-transition"
   >
     <v-card>
-      <v-toolbar dark color="primary">
-        <v-btn icon dark @click="dialogAddSync = false">
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-        <v-toolbar-title>{{
-          update ? "Cập nhập Quản trị viên" : "Thêm mới Quản trị viên"
-        }}</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-toolbar-items>
-          <v-btn dark text @click="dialogAddSync = false">Trở về</v-btn>
-          <v-btn dark text @click="updateOperator()" v-if="update"
-            >Cập nhập</v-btn
-          >
-          <v-btn dark text @click="createOperator()" v-else>Thêm mới</v-btn>
-        </v-toolbar-items>
-      </v-toolbar>
-      <v-card-text>
-        <v-form>
+      <v-form v-model="valid" validation>
+        <v-toolbar dark color="primary">
+          <v-btn icon dark @click="dialogAddSync = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+          <v-toolbar-title>{{
+            update ? "Cập nhập Quản trị viên" : "Thêm mới Quản trị viên"
+          }}</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-toolbar-items>
+            <v-btn dark text @click="dialogAddSync = false">Trở về</v-btn>
+            <v-btn
+              dark
+              text
+              @click="updateOperator()"
+              v-if="update"
+              :disabled="!valid"
+              >Cập nhập</v-btn
+            >
+            <v-btn dark text @click="createOperator()" v-else :disabled="!valid"
+              >Thêm mới</v-btn
+            >
+          </v-toolbar-items>
+        </v-toolbar>
+        <v-card-text>
           <small>*Dấu sao là trường bắt buộc</small>
           <v-container>
             <v-layout col>
@@ -117,7 +124,7 @@
               <v-layout row>
                 <v-flex xs6>
                   <v-select
-                    v-model="role"
+                    v-model="operatorLocal.roles[0]"
                     :items="roles"
                     label="Phân quyền*"
                     :rules="[required('role')]"
@@ -126,8 +133,8 @@
               </v-layout>
             </v-layout>
           </v-container>
-        </v-form>
-      </v-card-text>
+        </v-card-text>
+      </v-form>
     </v-card>
   </v-dialog>
 </template>
@@ -145,30 +152,37 @@ export default class CreateOperator extends Vue {
   @PropSync("operators", { type: Array }) operatorsSync!: Array<IOperator>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) operator!: IOperator;
   @Prop(Boolean) update!: boolean;
 
+  valid = false;
   roles = ["ROLE_ADMIN", "ROLE_MODERATOR"];
-  role = "";
-  operatorLocal = {} as IOperator;
+  operatorLocal = {
+    username: "",
+    email: "",
+    phone: "",
+    roles: ["ROLE_ADMIN"],
+    status: "ACTIVE",
+    address: "",
+    password: "",
+    fullname: "",
+    isRoot: false
+  } as IOperator;
   created() {
-    this.operatorLocal = Object.assign({}, this.operator);
-    if (typeof this.operatorLocal.roles[0] != "undefined") {
-      this.role = this.operatorLocal.roles[0];
-    } else {
-      this.role = "";
+    if (this.update) {
+      this.operatorLocal = Object.assign({}, this.operator);
     }
   }
   createOperator() {
     if (this.operatorLocal) {
-      this.operatorLocal.roles[0] = this.role;
       createOperator(this.operatorLocal)
         .then(res => {
           const response: IOperator = res.data;
-          this.operatorLocal.id = response.id;
           this.messageSync =
-            "Thêm mới thành công quản trị viên: " + this.operatorLocal.username;
-          this.operatorsSync.unshift(this.operatorLocal);
+            "Thêm mới thành công quản trị viên: " + response.username;
+          this.operatorsSync.unshift(response);
+          this.totalItemsSync += 1;
         })
         .catch(err => {
           console.log(err);
@@ -179,7 +193,6 @@ export default class CreateOperator extends Vue {
   }
   updateOperator() {
     if (this.operatorLocal.id) {
-      this.operatorLocal.roles[0] = this.role;
       editOperator(this.operatorLocal.id, this.operatorLocal)
         .then(res => {
           const response: IOperator = res.data;

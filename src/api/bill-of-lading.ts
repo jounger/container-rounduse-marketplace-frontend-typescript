@@ -15,6 +15,18 @@ export function getBillOfLadingsByInbound(
     headers: config
   });
 }
+export function getBillOfLading(id: number) {
+  return Vue.axios.get(`/bill-of-lading/${id}`, {
+    headers: config
+  });
+}
+export function getBillOfLadingByBillOfLadingNumber(
+  billOfLadingNumber: string
+) {
+  return Vue.axios.get(`/bill-of-lading/${billOfLadingNumber}`, {
+    headers: config
+  });
+}
 
 export function updateBillOfLading(billOfLading: IBillOfLading) {
   return Vue.axios.put("/bill-of-lading", billOfLading, {
@@ -22,7 +34,7 @@ export function updateBillOfLading(billOfLading: IBillOfLading) {
   });
 }
 
-export function editBillOfLading(id: number, updates: IBillOfLading) {
+export function editBillOfLading(id: number, updates: object) {
   return Vue.axios.patch(`/bill-of-lading/${id}`, updates, {
     headers: config
   });

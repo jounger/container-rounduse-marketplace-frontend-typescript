@@ -120,14 +120,15 @@ import UpdateOutbound from "./components/UpdateOutbound.vue";
 // import { getOutboundByForwarder } from "@/api/outbound";
 // import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
-import { convertFromDateTime } from "@/utils/tool";
 import DeleteOutbound from "./components/DeleteOutbound.vue";
 import { getOutboundByMerchant } from "@/api/outbound";
 import { PaginationResponse } from "@/api/payload";
 import { IBiddingDocument } from "@/entity/bidding-document";
+import Utils from "@/mixin/utils";
 import CreateBiddingDocument from "../../supplier/bidding-document/components/CreateBiddingDocument.vue";
 
 @Component({
+  mixins: [Utils],
   components: {
     CreateOutbound,
     UpdateOutbound,
@@ -178,10 +179,6 @@ export default class Outbound extends Vue {
       value: "actions"
     }
   ];
-
-  formatDatetime(date: string) {
-    return convertFromDateTime(date);
-  }
 
   created() {
     this.loading = false;

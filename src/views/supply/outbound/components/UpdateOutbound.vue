@@ -245,7 +245,7 @@ import { PaginationResponse } from "@/api/payload";
 import { updateOutbound } from "@/api/outbound";
 import { updateBooking } from "@/api/booking";
 import { IBooking } from "@/entity/booking";
-import { convertToDateTime } from "@/utils/tool";
+import { addTimeToDate } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate]
@@ -277,10 +277,10 @@ export default class UpdateOutbound extends Vue {
   // Outbound Update
   updateOutbound() {
     // TODO
-    this.outboundLocal.packingTime = convertToDateTime(
+    this.outboundLocal.packingTime = addTimeToDate(
       this.outboundLocal.packingTime
     );
-    this.outboundLocal.booking.cutOffTime = convertToDateTime(
+    this.outboundLocal.booking.cutOffTime = addTimeToDate(
       this.outboundLocal.booking.cutOffTime
     );
     updateOutbound(this.outboundLocal)
@@ -304,7 +304,7 @@ export default class UpdateOutbound extends Vue {
       .finally(() => (this.snackbarSync = true));
   }
   updateBooking() {
-    this.outboundLocal.booking.cutOffTime = convertToDateTime(
+    this.outboundLocal.booking.cutOffTime = addTimeToDate(
       this.outboundLocal.booking.cutOffTime
     );
     updateBooking(this.outboundLocal.booking)

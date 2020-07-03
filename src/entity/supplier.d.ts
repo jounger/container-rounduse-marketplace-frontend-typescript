@@ -8,5 +8,5 @@ export interface ISupplier extends IUser {
   companyAddress: string;
   tin: string;
   fax: string;
-  ratingValue: number;
+  ratingValue?: number;
 }

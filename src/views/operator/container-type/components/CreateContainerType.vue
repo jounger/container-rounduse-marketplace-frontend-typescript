@@ -6,27 +6,39 @@
     transition="dialog-bottom-transition"
   >
     <v-card>
-      <v-toolbar dark color="primary">
-        <v-btn icon dark @click="dialogAddSync = false">
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-        <v-toolbar-title
-          >{{ update ? "Cập nhập Loại Container" : "Thêm mới Loại Container" }}
-        </v-toolbar-title>
+      <v-form v-model="valid" validation>
+        <v-toolbar dark color="primary">
+          <v-btn icon dark @click="dialogAddSync = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+          <v-toolbar-title
+            >{{
+              update ? "Cập nhập Loại Container" : "Thêm mới Loại Container"
+            }}
+          </v-toolbar-title>
 
-        <v-spacer></v-spacer>
-        <v-toolbar-items>
-          <v-btn dark text @click="dialogAddSync = false">Trở về</v-btn>
-          <v-btn dark text @click="updateContainerType()" v-if="update"
-            >Cập nhập</v-btn
-          >
-          <v-btn dark text @click="createContainerType()" v-else
-            >Thêm mới</v-btn
-          >
-        </v-toolbar-items>
-      </v-toolbar>
-      <v-card-text>
-        <v-form>
+          <v-spacer></v-spacer>
+          <v-toolbar-items>
+            <v-btn dark text @click="dialogAddSync = false">Trở về</v-btn>
+            <v-btn
+              dark
+              text
+              @click="updateContainerType()"
+              v-if="update"
+              :disabled="!valid"
+              >Cập nhập</v-btn
+            >
+            <v-btn
+              dark
+              text
+              @click="createContainerType()"
+              v-else
+              :disabled="!valid"
+              >Thêm mới</v-btn
+            >
+          </v-toolbar-items>
+        </v-toolbar>
+        <v-card-text>
           <small>*Dấu sao là trường bắt buộc</small>
           <v-layout col>
             <v-layout row>
@@ -150,8 +162,8 @@
             </v-layout>
           </v-layout>
           <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
-        </v-form>
-      </v-card-text>
+        </v-card-text>
+      </v-form>
     </v-card>
   </v-dialog>
 </template>
@@ -159,7 +171,7 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContainerType } from "@/entity/container-type";
 import FormValidate from "@/mixin/form-validate";
-import { createContainerType, editContainerType } from "@/api/container-type";
+import { createContainerType, updateContainerType } from "@/api/container-type";
 
 @Component({
   mixins: [FormValidate]
@@ -171,13 +183,28 @@ export default class CreateContainerType extends Vue {
   >;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Boolean) update!: boolean;
   @Prop(Object)
   containerType!: IContainerType;
 
-  containerTypeLocal = {} as IContainerType;
+  containerTypeLocal = {
+    name: "",
+    description: "",
+    tareWeight: 0,
+    payloadCapacity: 0,
+    cubicCapacity: 0,
+    internalLength: 0,
+    internalWidth: 0,
+    internalHeight: 0,
+    doorOpeningWidth: 0,
+    doorOpeningHeight: 0
+  } as IContainerType;
+  valid = false;
   created() {
-    this.containerTypeLocal = Object.assign({}, this.containerType);
+    if (this.update) {
+      this.containerTypeLocal = Object.assign({}, this.containerType);
+    }
   }
   createContainerType() {
     if (this.containerTypeLocal) {
@@ -185,11 +212,10 @@ export default class CreateContainerType extends Vue {
         .then(res => {
           console.log(res.data);
           const response: IContainerType = res.data;
-          this.containerTypeLocal.id = response.id;
           this.messageSync =
-            "Thêm mới thành công loại Container: " +
-            this.containerTypeLocal.name;
-          this.containerTypesSync.unshift(this.containerTypeLocal);
+            "Thêm mới thành công loại Container: " + response.name;
+          this.containerTypesSync.unshift(response);
+          this.totalItemsSync += 1;
         })
         .catch(err => {
           console.log(err);
@@ -200,7 +226,7 @@ export default class CreateContainerType extends Vue {
   }
   updateContainerType() {
     if (this.containerTypeLocal.id) {
-      editContainerType(this.containerTypeLocal.id, this.containerTypeLocal)
+      updateContainerType(this.containerTypeLocal)
         .then(res => {
           console.log(res.data);
           const response: IContainerType = res.data;

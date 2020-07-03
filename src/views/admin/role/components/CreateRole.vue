@@ -17,7 +17,7 @@
         >
       </v-toolbar>
       <v-card-text>
-        <v-form>
+        <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
           <v-layout row>
             <v-flex xs9>
@@ -39,10 +39,9 @@
                 :items="permissionsToString"
                 chips
                 clearable
-                label="Phân vai trò*"
+                label="Phân vai trò"
                 multiple
                 prepend-icon="filter_list"
-                :rules="[required('permissions')]"
               >
                 <template v-slot:selection="{ attrs, item, select, selected }">
                   <v-chip
@@ -64,10 +63,16 @@
       <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn @click="updateRole()" color="primary" v-if="update"
+        <v-btn
+          @click="updateRole()"
+          color="primary"
+          v-if="update"
+          :disabled="!valid"
           >Cập nhập</v-btn
         >
-        <v-btn @click="createRole()" color="primary" v-else>Thêm mới</v-btn>
+        <v-btn @click="createRole()" color="primary" v-else :disabled="!valid"
+          >Thêm mới</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -89,13 +94,20 @@ export default class CreateRole extends Vue {
   @PropSync("roles", { type: Array }) rolesSync!: Array<IRole>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Boolean) update!: boolean;
   @Prop(Object) role!: IRole;
 
   permissions = [] as Array<IPermission>;
-  roleLocal = {} as IRole;
+  valid = false;
+  roleLocal = {
+    name: "",
+    permissions: []
+  } as IRole;
   created() {
-    this.roleLocal = Object.assign({}, this.role);
+    if (this.update) {
+      this.roleLocal = Object.assign({}, this.role);
+    }
     getPermissions({
       page: 0,
       limit: 100
@@ -111,21 +123,18 @@ export default class CreateRole extends Vue {
     return this.permissions.map(x => x.name);
   }
   remove(item: string) {
-    this.roleLocal.permissions.splice(
-      this.roleLocal.permissions.indexOf(item),
-      1
-    );
-    this.roleLocal.permissions = [...this.roleLocal.permissions];
+    const permissions = this.roleLocal.permissions.filter(x => x != item);
+    this.roleLocal.permissions = permissions;
   }
   createRole() {
     if (this.roleLocal) {
+      console.log(this.roleLocal);
       createRole(this.roleLocal)
         .then(res => {
           const response: IRole = res.data;
-          this.roleLocal.id = response.id;
-          this.messageSync =
-            "Thêm mới thành công quyền: " + this.roleLocal.name;
-          this.rolesSync.unshift(this.roleLocal);
+          this.messageSync = "Thêm mới thành công quyền: " + response.name;
+          this.rolesSync.unshift(response);
+          this.totalItemsSync += 1;
         })
         .catch(err => {
           console.log(err);

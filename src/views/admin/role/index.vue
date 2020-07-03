@@ -16,6 +16,7 @@
           v-if="dialogAdd"
           :role="role"
           :roles.sync="roles"
+          :totalItems="options.totalItems"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
           :snackbar.sync="snackbar"

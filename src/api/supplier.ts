@@ -12,17 +12,12 @@ export function getSuppliers(paging: PaginationRequest) {
   });
 }
 
-export function getSuppliersById(id: number) {
+export function getSupplier(id: number) {
   return Vue.axios.get(`/supplier/${id}`, {
     headers: config
   });
 }
 
-export function getSuppliersByUsername(username: string) {
-  return Vue.axios.get(`/supplier/${username}`, {
-    headers: config
-  });
-}
 export function getSuppliersByStatus(paging: PaginationRequest) {
   return Vue.axios.get("/supplier/status", {
     params: paging,
@@ -32,13 +27,22 @@ export function getSuppliersByStatus(paging: PaginationRequest) {
 
 // Use "defaults" in destructuring:
 // https://stackoverflow.com/a/26578323/10597062
-export function reviewSupplier(id: number, { status = "PENDING" }) {
+export function reviewSupplier(id: number, updates: object) {
   return Vue.axios.patch(
     `/supplier/register/${id}`,
     // data object
+    updates,
+    // headers
     {
-      status: status
-    },
+      headers: config
+    }
+  );
+}
+export function editSupplier(id: number, updates: object) {
+  return Vue.axios.patch(
+    `/supplier/${id}`,
+    // data object
+    updates,
     // headers
     {
       headers: config

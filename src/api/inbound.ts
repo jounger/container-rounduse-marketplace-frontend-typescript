@@ -19,7 +19,7 @@ export function getInbound(id: number) {
   });
 }
 
-export function getInboundByForwarder(id: number, paging: PaginationRequest) {
+export function getInboundsByForwarder(id: number, paging: PaginationRequest) {
   return Vue.axios.get(`/inbound/forwarder/${id}`, {
     params: paging,
     headers: config
@@ -27,6 +27,13 @@ export function getInboundByForwarder(id: number, paging: PaginationRequest) {
 }
 export function getInboundsByOutbound(id: number, paging: PaginationRequest) {
   return Vue.axios.get(`/inbound/outbound/${id}`, {
+    params: paging,
+    headers: config
+  });
+}
+
+export function getInboundsByOutboundAndForwarder(id: number, paging: PaginationRequest) {
+  return Vue.axios.get(`/inbound/outbound-match/${id}`, {
     params: paging,
     headers: config
   });
@@ -44,7 +51,7 @@ export function updateInbound(inbound: IInbound) {
   });
 }
 
-export function editInbound(id: number, updates: Map<string, object>) {
+export function editInbound(id: number, updates: object) {
   return Vue.axios.patch(`/inbound/${id}`, updates, {
     headers: config
   });

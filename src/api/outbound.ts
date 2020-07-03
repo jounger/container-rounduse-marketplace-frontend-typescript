@@ -38,7 +38,7 @@ export function updateOutbound(outbound: IOutbound) {
   });
 }
 
-export function editOutbound(id: number, updates: IOutbound) {
+export function editOutbound(id: number, updates: object) {
   return Vue.axios.patch(`/outbound/${id}`, updates, {
     headers: config
   });

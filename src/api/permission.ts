@@ -13,11 +13,6 @@ export function getPermissions(paging: PaginationRequest) {
   });
 }
 
-export function getPermissionById(id: number) {
-  return Vue.axios.get(`/permission/${id}`, {
-    headers: config
-  });
-}
 
 export function createPermission(permission: IPermission) {
   return Vue.axios.post("/permission", permission, {
@@ -31,11 +26,6 @@ export function updatePermission(permission: IPermission) {
   });
 }
 
-export function editPermission(id: number, updates: Map<string, object>) {
-  return Vue.axios.patch(`/permission/${id}`, updates, {
-    headers: config
-  });
-}
 
 export function removePermission(id: number) {
   return Vue.axios.delete(`/permission/${id}`, {

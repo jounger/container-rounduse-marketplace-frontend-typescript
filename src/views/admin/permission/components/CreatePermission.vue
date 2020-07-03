@@ -17,7 +17,7 @@
         >
       </v-toolbar>
       <v-card-text>
-        <v-form>
+        <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
           <v-layout row>
             <v-flex xs9>
@@ -54,10 +54,18 @@
       <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn @click="updatePermission()" color="primary" v-if="update"
+        <v-btn
+          @click="updatePermission()"
+          color="primary"
+          v-if="update"
+          :disabled="!valid"
           >Cập nhập</v-btn
         >
-        <v-btn @click="createPermission()" color="primary" v-else
+        <v-btn
+          @click="createPermission()"
+          color="primary"
+          v-else
+          :disabled="!valid"
           >Thêm mới</v-btn
         >
       </v-card-actions>
@@ -80,25 +88,28 @@ export default class CreatePermission extends Vue {
   >;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) permission!: IPermission;
   @Prop(Boolean) update!: boolean;
 
-  permissionLocal = {} as IPermission;
+  permissionLocal = {
+    name: "",
+    description: ""
+  } as IPermission;
+  valid = false;
   created() {
-    this.permissionLocal = Object.assign({}, this.permission);
+    if (this.update) {
+      this.permissionLocal = Object.assign({}, this.permission);
+    }
   }
   createPermission() {
     if (this.permissionLocal) {
       createPermission(this.permissionLocal)
         .then(res => {
-          console.log(res.data);
           const response: IPermission = res.data;
-          console.log(response);
-          this.permissionLocal.id = response.id;
-          this.messageSync =
-            "Thêm mới thành công vai trò: " + this.permissionLocal.name;
-          this.permissionsSync.unshift(this.permissionLocal);
-          console.log(this.permissionsSync);
+          this.messageSync = "Thêm mới thành công vai trò: " + response.name;
+          this.permissionsSync.unshift(response);
+          this.totalItemsSync += 1;
         })
         .catch(err => {
           console.log(err);

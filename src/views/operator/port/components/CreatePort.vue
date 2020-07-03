@@ -17,11 +17,12 @@
         >
       </v-toolbar>
       <v-card-text>
-        <v-form>
+        <v-form v-model="valid" validation>
+          <small>*Dấu sao là trường bắt buộc</small>
           <v-layout row>
             <v-flex xs9>
               <v-text-field
-                label="Mã code"
+                label="Mã code*"
                 name="nameCode"
                 prepend-icon="mdi-account"
                 type="text"
@@ -33,7 +34,7 @@
           <v-layout row>
             <v-flex xs9>
               <v-text-field
-                label="Tên bến cảng"
+                label="Tên bến cảng*"
                 name="fullname"
                 prepend-icon="mdi-account"
                 type="text"
@@ -59,10 +60,16 @@
       <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn @click="updatePort()" color="primary" v-if="update"
+        <v-btn
+          @click="updatePort()"
+          color="primary"
+          v-if="update"
+          :disabled="!valid"
           >Cập nhập</v-btn
         >
-        <v-btn @click="createPort()" color="primary" v-else>Thêm mới</v-btn>
+        <v-btn @click="createPort()" color="primary" v-else :disabled="!valid"
+          >Thêm mới</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -70,7 +77,7 @@
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPort } from "@/entity/port";
-import { createPort, editPort } from "@/api/port";
+import { createPort, updatePort } from "@/api/port";
 import FormValidate from "@/mixin/form-validate";
 
 @Component({
@@ -81,12 +88,20 @@ export default class CreatePort extends Vue {
   @PropSync("ports", { type: Array }) portsSync!: Array<IPort>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Boolean) update!: boolean;
   @Prop(Object) port!: IPort;
 
-  portLocal = {} as IPort;
+  portLocal = {
+    fullname: "",
+    nameCode: "",
+    address: ""
+  } as IPort;
+  valid = false;
   created() {
-    this.portLocal = Object.assign({}, this.port);
+    if (this.update) {
+      this.portLocal = Object.assign({}, this.port);
+    }
   }
   createPort() {
     if (this.portLocal) {
@@ -94,10 +109,10 @@ export default class CreatePort extends Vue {
         .then(res => {
           console.log(res.data);
           const response: IPort = res.data;
-          this.portLocal = response;
           this.messageSync =
-            "Thêm mới thành công bến tàu: " + this.portLocal.fullname;
-          this.portsSync.unshift(this.portLocal);
+            "Thêm mới thành công bến tàu: " + response.fullname;
+          this.portsSync.unshift(response);
+          this.totalItemsSync += 1;
         })
         .catch(err => {
           console.log(err);
@@ -108,7 +123,7 @@ export default class CreatePort extends Vue {
   }
   updatePort() {
     if (this.portLocal.id) {
-      editPort(this.portLocal.id, this.portLocal)
+      updatePort(this.portLocal)
         .then(res => {
           console.log(res.data);
           const response: IPort = res.data;

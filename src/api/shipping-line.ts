@@ -19,13 +19,6 @@ export function getShippingLine(id: number) {
   });
 }
 
-export function getShippingLineByUsername(username: string) {
-  return Vue.axios.get(`/shipping-line/${username}`, {
-    headers: config
-  });
-}
-
-
 export function createShippingLine(shippingLine: IShippingLine) {
   return Vue.axios.post("/shipping-line", shippingLine, {
     headers: config
@@ -38,7 +31,7 @@ export function updateShippingLine(shippingLine: IShippingLine) {
   });
 }
 
-export function editShippingLine(id: number, updates: IShippingLine) {
+export function editShippingLine(id: number, updates: object) {
   return Vue.axios.patch(`/shipping-line/${id}`, updates, {
     headers: config
   });

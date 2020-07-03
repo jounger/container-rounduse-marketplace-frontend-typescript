@@ -13,12 +13,16 @@ export function getContainerTypes(paging: PaginationRequest) {
   });
 }
 
-export function getContainerTypeById(id: number) {
+export function getContainerType(id: number) {
   return Vue.axios.get(`/container-type/${id}`, {
     headers: config
   });
 }
-
+export function getContainerTypeByName(name: string) {
+  return Vue.axios.get(`/container-type/${name}`, {
+    headers: config
+  });
+}
 export function createContainerType(containerType: IContainerType) {
   return Vue.axios.post("/container-type", containerType, {
     headers: config
@@ -31,7 +35,7 @@ export function updateContainerType(containerType: IContainerType) {
   });
 }
 
-export function editContainerType(id: number, updates: IContainerType) {
+export function editContainerType(id: number, updates: object) {
   return Vue.axios.patch(`/container-type/${id}`, updates, {
     headers: config
   });

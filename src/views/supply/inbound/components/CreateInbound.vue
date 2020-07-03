@@ -416,10 +416,10 @@ import { IContainerType } from "@/entity/container-type";
 import { IDriver } from "@/entity/driver";
 import { getPorts } from "@/api/port";
 import { getShippingLines } from "@/api/shipping-line";
-import { getDriverByForwarder } from "@/api/driver";
+import { getDriversByForwarder } from "@/api/driver";
 import { getContainerTypes } from "@/api/container-type";
 import { PaginationResponse } from "@/api/payload";
-import { convertToDateTime } from "@/utils/tool";
+import { addTimeToDate } from "@/utils/tool";
 import { createInbound } from "@/api/inbound";
 
 @Component({
@@ -588,10 +588,10 @@ export default class CreateInbound extends Vue {
   // Inbound
   createInbound() {
     // TODO: API create inbound
-    this.inboundLocal.pickupTime = convertToDateTime(
+    this.inboundLocal.pickupTime = addTimeToDate(
       this.inboundLocal.pickupTime
     );
-    this.inboundLocal.billOfLading.freeTime = convertToDateTime(
+    this.inboundLocal.billOfLading.freeTime = addTimeToDate(
       this.inboundLocal.billOfLading.freeTime
     );
     this.inboundLocal.billOfLading.containers = this.containers;
@@ -644,7 +644,7 @@ export default class CreateInbound extends Vue {
       })
       .catch(err => console.log(err))
       .finally();
-    getDriverByForwarder(this.$auth.user().id, {
+    getDriversByForwarder(this.$auth.user().id, {
       page: 0,
       limit: 100
     })

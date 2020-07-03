@@ -18,6 +18,7 @@
           :permissions.sync="permissions"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
+          :totalItems.sync="options.totalItems"
           :snackbar.sync="snackbar"
           :update="update"
         />

@@ -6,22 +6,30 @@ const config = {
   Authorization: "Bearer {auth_token}"
 };
 
-export function getBookingByOutbound(id: number, paging: PaginationRequest) {
+export function getBookingsByOutbound(id: number, paging: PaginationRequest) {
   return Vue.axios.get(`/booking/outbound/${id}`, {
     params: paging,
     headers: config
   });
 }
-
+export function getBooking(id: number) {
+  return Vue.axios.get(`/booking/${id}`, {
+    headers: config
+  });
+}
+export function getBookingsByBookingNumber(bookingNumber: string) {
+  return Vue.axios.get(`/booking/${bookingNumber}`, {
+    headers: config
+  });
+}
 export function updateBooking(booking: IBooking) {
   return Vue.axios.put("/booking", booking, {
     headers: config
   });
 }
 
-export function editBooking(id: number, updates: IBooking) {
+export function editBooking(id: number, updates: object) {
   return Vue.axios.patch(`/booking/${id}`, updates, {
     headers: config
   });
 }
-

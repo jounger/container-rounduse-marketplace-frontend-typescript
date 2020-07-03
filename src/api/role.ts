@@ -13,12 +13,6 @@ export function getRoles(paging: PaginationRequest) {
   });
 }
 
-export function getRoleById(id: number) {
-  return Vue.axios.get(`/role/${id}`, {
-    headers: config
-  });
-}
-
 export function createRole(role: IRole) {
   return Vue.axios.post("/role", role, {
     headers: config
@@ -27,12 +21,6 @@ export function createRole(role: IRole) {
 
 export function updateRole(role: IRole) {
   return Vue.axios.put("/role", role, {
-    headers: config
-  });
-}
-
-export function editRole(id: number, updates: Map<string, object>) {
-  return Vue.axios.patch(`/role/${id}`, updates, {
     headers: config
   });
 }

@@ -13,8 +13,14 @@ export function getDiscounts(paging: PaginationRequest) {
   });
 }
 
-export function getDiscountById(id: number) {
+export function getDiscount(id: number) {
   return Vue.axios.get(`/discount/${id}`, {
+    headers: config
+  });
+}
+
+export function getDiscountByCode(code: string) {
+  return Vue.axios.get(`/discount/${code}`, {
     headers: config
   });
 }
@@ -31,7 +37,7 @@ export function updateDiscount(discount: IDiscount) {
   });
 }
 
-export function editDiscount(id: number, updates: IDiscount) {
+export function editDiscount(id: number, updates: object) {
   return Vue.axios.patch(`/discount/${id}`, updates, {
     headers: config
   });

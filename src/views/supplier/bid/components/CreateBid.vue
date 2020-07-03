@@ -323,9 +323,9 @@ import { getInboundsByOutbound } from "@/api/inbound";
 import { PaginationResponse } from "@/api/payload";
 import { createBid } from "@/api/bid";
 import { IBiddingDocument } from "@/entity/bidding-document";
-import { isEmptyObject } from "../../../../utils/tool";
-import { getBiddingNotificationsByUser } from "../../../../api/notification";
-import { IBiddingNotification } from "../../../../entity/bidding-notification";
+import { isEmptyObject } from "@/utils/tool";
+import { getBiddingNotificationsByUser } from "@/api/notification";
+import { IBiddingNotification } from "@/entity/bidding-notification";
 
 @Component({
   mixins: [FormValidate, Utils]

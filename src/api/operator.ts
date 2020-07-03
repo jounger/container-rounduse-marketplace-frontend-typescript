@@ -19,12 +19,6 @@ export function getOperatorById(id: number) {
   });
 }
 
-export function getOperatorByUsername(username: string) {
-  return Vue.axios.get(`/operator/${username}`, {
-    headers: config
-  });
-}
-
 export function createOperator(operator: IOperator) {
   return Vue.axios.post("/operator", operator, {
     headers: config
@@ -37,7 +31,7 @@ export function updateOperator(operator: IOperator) {
   });
 }
 
-export function editOperator(id: number, updates: IOperator) {
+export function editOperator(id: number, updates: object) {
   return Vue.axios.patch(`/operator/${id}`, updates, {
     headers: config
   });

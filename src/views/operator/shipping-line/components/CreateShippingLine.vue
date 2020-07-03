@@ -26,7 +26,7 @@
           </v-stepper-step>
 
           <v-stepper-content step="1">
-            <v-form ref="shippingLineForm" v-model="valid" lazy-validation>
+            <v-form ref="shippingLineForm" v-model="valid" validation>
               <small>*Dấu sao là trường bắt buộc</small>
               <v-layout col
                 ><v-layout row
@@ -50,7 +50,7 @@
                         minLength('password', 6),
                         maxLength('password', 120)
                       ]"
-                      type="text"
+                      type="password"
                       label="Mật khẩu*"
                     ></v-text-field> </v-flex></v-layout
               ></v-layout>
@@ -94,7 +94,10 @@
               ></v-layout>
               <v-btn
                 color="primary"
-                @click="valid ? (stepper = 2) : (stepper = 1)"
+                @click="
+                  stepper = 2;
+                  valid = false;
+                "
                 :disabled="!valid"
                 >Tiếp tục</v-btn
               >
@@ -107,7 +110,7 @@
           >
 
           <v-stepper-content step="2">
-            <v-form ref="bookingForm" v-model="valid" lazy-validation>
+            <v-form ref="bookingForm" v-model="valid" validation>
               <small>*Dấu sao là trường bắt buộc</small>
               <v-layout col>
                 <v-layout row>
@@ -223,10 +226,23 @@
                   </v-flex>
                 </v-layout>
               </v-layout>
-              <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
+              <v-btn
+                color="primary"
+                @click="
+                  stepper = 3;
+                  valid = true;
+                "
+                :disabled="!valid"
                 >Tiếp tục</v-btn
               >
-              <v-btn text @click="stepper = 1">Quay lại</v-btn>
+              <v-btn
+                text
+                @click="
+                  stepper = 1;
+                  valid = true;
+                "
+                >Quay lại</v-btn
+              >
             </v-form>
           </v-stepper-content>
 
@@ -235,10 +251,9 @@
           >
 
           <v-stepper-content step="3">
-            <v-form ref="finishForm" v-model="valid" lazy-validation>
+            <v-form ref="finishForm" v-model="valid" validation>
               <v-checkbox
                 v-model="checkbox"
-                :rules="[required('agree term')]"
                 label="Bạn đồng ý muốn thêm hãng tàu với những thông tin trên?"
               ></v-checkbox>
               <v-btn
@@ -247,7 +262,14 @@
                 :disabled="!valid || !checkbox"
                 >Hoàn tất</v-btn
               >
-              <v-btn text @click="stepper = 2">Quay lại</v-btn>
+              <v-btn
+                text
+                @click="
+                  stepper = 2;
+                  valid = true;
+                "
+                >Quay lại</v-btn
+              >
             </v-form>
           </v-stepper-content>
         </v-stepper>
@@ -273,12 +295,29 @@ export default class CreateShippingLine extends Vue {
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
-  shippingLineLocal = {} as IShippingLine;
+  shippingLineLocal = {
+    username: "",
+    email: "",
+    phone: "",
+    roles: ["ROLE_SHIPPINGLINE"],
+    status: "",
+    address: "",
+    password: "",
+    website: "",
+    contactPerson: "",
+    companyName: "",
+    companyCode: "",
+    companyDescription: "",
+    companyAddress: "",
+    tin: "",
+    fax: "",
+    ratingValue: 0
+  } as IShippingLine;
 
   checkbox = false;
   editable = false;
   stepper = 1;
-  valid = true;
+  valid = false;
 
   createShippingLine() {
     if (this.shippingLineLocal) {
@@ -286,11 +325,9 @@ export default class CreateShippingLine extends Vue {
       createShippingLine(this.shippingLineLocal)
         .then(res => {
           const response: IShippingLine = res.data;
-          this.shippingLineLocal = response;
           this.messageSync =
-            "Thêm mới thành công hãng tàu: " +
-            this.shippingLineLocal.companyCode;
-          this.shippingLinesSync.unshift(this.shippingLineLocal);
+            "Thêm mới thành công hãng tàu: " + response.companyCode;
+          this.shippingLinesSync.unshift(response);
         })
         .catch(err => {
           console.log(err);

@@ -14,8 +14,14 @@ export function getPorts(paging: PaginationRequest) {
   });
 }
 
-export function getPortById(id: number) {
+export function getPort(id: number) {
   return Vue.axios.get(`/port/${id}`, {
+    headers: config
+  });
+}
+
+export function getPortByNameCode(nameCode: string) {
+  return Vue.axios.get(`/port/${nameCode}`, {
     headers: config
   });
 }
@@ -32,7 +38,7 @@ export function updatePort(port: IPort) {
   });
 }
 
-export function editPort(id: number, updates: IPort) {
+export function editPort(id: number, updates: object) {
   return Vue.axios.patch(`/port/${id}`, updates, {
     headers: config
   });

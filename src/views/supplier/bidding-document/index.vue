@@ -115,7 +115,7 @@ import CreateBiddingDocument from "./components/CreateBiddingDocument.vue";
 import UpdateBiddingDocument from "./components/UpdateBiddingDocument.vue";
 import Snackbar from "@/components/Snackbar.vue";
 import { IOutbound } from "@/entity/outbound";
-import { getBiddingDocumentsByMerchant } from "@/api/bidding-document";
+import { getBiddingDocuments } from "@/api/bidding-document";
 import { PaginationResponse } from "@/api/payload";
 import DeleteBiddingDocument from "./components/DeleteBiddingDocument.vue";
 import CancelBiddingDocument from "./components/CancelBiddingDocument.vue";
@@ -185,7 +185,7 @@ export default class BiddingDocument extends Vue {
   onOptionsChange(val: object, oldVal: object) {
     console.log(this.$auth.user());
     if (val !== oldVal) {
-      getBiddingDocumentsByMerchant(this.$auth.user().id, {
+      getBiddingDocuments({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })
