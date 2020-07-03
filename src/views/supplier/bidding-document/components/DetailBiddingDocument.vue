@@ -3,10 +3,18 @@
     <v-container class="d-flex justify-space-around align-start">
       <!-- OUTOUNBD -->
       <v-card class="order-0 flex-grow-0 mx-auto mr-5 my-12" max-width="300">
-        <v-img
-          height="100"
-          src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
-        ></v-img>
+        <v-row justify="center">
+          <ConfirmBid
+            v-if="dialogConfirm"
+            :dialogConfirm.sync="dialogConfirm"
+            :biddingDocument.sync="biddingDocument"
+            :message.sync="message"
+            :snackbar.sync="snackbar"
+            :status="status"
+            :bid="bid"
+          />
+        </v-row>
+        <v-img height="150" src="@/assets/images/biddingdocument.jpg"></v-img>
 
         <v-card-title>Hồ sơ Mời thầu</v-card-title>
 
@@ -28,7 +36,7 @@
           <v-list dense>
             <v-subheader>Thong tin HSMT</v-subheader>
             <v-list-item-group color="primary">
-              <v-list-item>
+              <v-list-item @click="check()">
                 <v-list-item-icon>
                   <v-icon>mdi-flag</v-icon>
                 </v-list-item-icon>
@@ -99,7 +107,10 @@
                     "Đóng tại: " + biddingDocument.outbound.packingStation
                   }}</v-list-item-title>
                   <v-list-item-subtitle>
-                    {{ "Thời gian: " + biddingDocument.outbound.packingTime }}
+                    {{
+                      "Thời gian: " +
+                        convertDateTime(biddingDocument.outbound.packingTime)
+                    }}
                   </v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
@@ -135,14 +146,21 @@
             active-class="deep-purple accent-4 white--text"
             column
           >
-            <v-chip>Mở thầu: {{ biddingDocument.bidOpening }}</v-chip>
+            <v-chip
+              >Mở thầu:
+              {{ convertDateTime(biddingDocument.bidOpening) }}</v-chip
+            >
 
-            <v-chip>Đóng thầu: {{ biddingDocument.bidClosing }}</v-chip>
+            <v-chip
+              >Đóng thầu:
+              {{ convertDateTime(biddingDocument.bidClosing) }}</v-chip
+            >
           </v-chip-group>
         </v-card-text>
       </v-card>
       <!-- BIDDING -->
       <v-card class="order-1 flex-grow-1 mx-auto my-12">
+        <Snackbar :text="message" :snackbar.sync="snackbar" />
         <v-card-title>Thông tin đấu thầu</v-card-title>
 
         <v-card-text>
@@ -178,17 +196,24 @@
                   </v-list-item-icon>
                   <v-list-item-content>
                     <v-list-item-title>{{
-                      "Đóng thầu: " + biddingDocument.bidClosing
+                      "Đóng thầu: " +
+                        convertDateTime(biddingDocument.bidClosing)
                     }}</v-list-item-title>
                     <v-list-item-subtitle>
                       {{
-                        "Còn lại: " +
-                          Math.floor(
-                            Math.abs(
-                              new Date() - new Date(biddingDocument.bidClosing)
-                            ) / 86400000
-                          ) +
-                          " giờ"
+                        new Date(this.biddingDocument.bidClosing).getTime() -
+                          new Date() >
+                        0
+                          ? "Còn lại: " +
+                            Math.floor(
+                              (new Date(
+                                this.biddingDocument.bidClosing
+                              ).getTime() -
+                                new Date()) /
+                                3600000
+                            ) +
+                            " giờ"
+                          : "Đã hết hạn"
                       }}
                     </v-list-item-subtitle>
                   </v-list-item-content>
@@ -207,7 +232,9 @@
                     }}</v-list-item-title>
                     <v-list-item-subtitle>
                       {{
-                        "Nhiều thầu thắng: " + biddingDocument.isMultipleAward
+                        biddingDocument.isMultipleAward == true
+                          ? "Nhiều thầu thắng"
+                          : "Một thầu thắng"
                       }}
                     </v-list-item-subtitle>
                   </v-list-item-content>
@@ -224,7 +251,7 @@
         <!-- TODO: table bids -->
         <v-data-table
           :headers="bidHeaders"
-          :items="biddingDocument.bids"
+          :items="bids"
           :single-expand="singleExpand"
           :expanded.sync="expanded"
           show-expand
@@ -246,7 +273,8 @@
               tile
               outlined
               color="success"
-              @click.stop="acceptBid(item, true)"
+              @click.stop="openAcceptBid(item)"
+              v-if="item.status == 'PENDING'"
             >
               <v-icon left>library_add_check </v-icon>Đồng ý
             </v-btn>
@@ -256,10 +284,17 @@
               tile
               outlined
               color="error"
-              @click.stop="acceptBid(item, false)"
+              @click.stop="openRejectBid(item)"
+              v-if="item.status == 'PENDING'"
             >
               <v-icon left>remove_circle</v-icon>Từ chối
             </v-btn>
+            <span style="color: red;" v-if="item.status == 'REJECTED'">{{
+              item.status
+            }}</span>
+            <span style="color: red;" v-if="item.status == 'ACCEPTED'">{{
+              item.status
+            }}</span>
           </template>
 
           <template v-slot:expanded-item="{ headers, item }">
@@ -280,24 +315,67 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
 import { IBiddingDocument } from "@/entity/bidding-document";
-import { BiddingDocumentData } from "../data";
 import { IBid } from "@/entity/bid";
+import { getBiddingDocument } from "@/api/bidding-document";
+import { convertFromDateTime } from "@/utils/tool";
+import { getBidsByBiddingDocument } from "@/api/bid";
+import { PaginationResponse } from "@/api/payload";
+import ConfirmBid from "./ConfirmBid.vue";
+import Snackbar from "@/components/Snackbar.vue";
 
 @Component({
-  mixins: [FormValidate, Utils]
+  mixins: [FormValidate, Utils],
+  components: {
+    ConfirmBid,
+    Snackbar
+  }
 })
 export default class DetailBiddingDocument extends Vue {
-  biddingDocument = {} as IBiddingDocument;
+  biddingDocument = {
+    id: 0,
+    offeree: "",
+    outbound: {
+      id: 0,
+      shippingLine: "",
+      containerType: "",
+      status: "",
+      goodsDescription: "",
+      packingTime: "",
+      packingStation: "",
+      payload: 0,
+      unitOfMeasurement: "",
+      booking: {
+        bookingNumber: "",
+        unit: 0,
+        cutOffTime: "",
+        isFcl: true,
+        portOfLoading: ""
+      }
+    },
+    bids: [] as Array<IBid>,
+    bidDiscountCode: "",
+    isMultipleAward: true,
+    bidOpening: "",
+    bidClosing: "",
+    dateOfDecision: "",
+    currencyOfPayment: "",
+    bidPackagePrice: 0,
+    bidFloorPrice: 0,
+    priceLeadership: 0
+  } as IBiddingDocument;
   loading = false;
   selection = 1;
-
+  status = false;
+  dialogConfirm = false;
+  bid = {} as IBid;
   expanded: Array<IBid> = [];
   singleExpand = true;
-
+  message = "";
+  snackbar = false;
   options = {
     descending: true,
     page: 1,
@@ -305,7 +383,7 @@ export default class DetailBiddingDocument extends Vue {
     totalItems: 10,
     itemsPerPageItems: [5, 10, 20, 50]
   };
-
+  bids = [] as Array<IBid>;
   bidHeaders = [
     {
       text: "Mã",
@@ -317,7 +395,7 @@ export default class DetailBiddingDocument extends Vue {
     { text: "Giá thầu", value: "bidPrice" },
     { text: "Ngày thầu", value: "bidDate" },
     { text: "Hiệu lực", value: "bidValidityPeriod" },
-    { text: "Actions", value: "actions", sortable: false }
+    { text: "", value: "actions", sortable: false }
   ];
 
   containerHeaders = [
@@ -333,13 +411,20 @@ export default class DetailBiddingDocument extends Vue {
     { text: "Đầu kéo", value: "tractor" }
   ];
 
-  acceptBid(item: IBid, type: boolean) {
-    console.log(type);
-    // Animation
-    this.loading = true;
-    setTimeout(() => (this.loading = false), 2000);
+  openAcceptBid(item: IBid) {
+    this.bid = item;
+    console.log(this.biddingDocument);
+    this.status = true;
+    this.dialogConfirm = true;
   }
-
+  openRejectBid(item: IBid) {
+    this.bid = item;
+    this.status = false;
+    this.dialogConfirm = true;
+  }
+  convertDateTime(item: string) {
+    return convertFromDateTime(item);
+  }
   clicked(value: IBid) {
     console.log(value);
     if (this.singleExpand) {
@@ -358,11 +443,42 @@ export default class DetailBiddingDocument extends Vue {
       }
     }
   }
-
+  @Watch("options", { deep: true })
+  onOptionsChange(val: object, oldVal: object) {
+    const biddingDocumentId = parseInt(this.$route.params.id);
+    if (val !== oldVal) {
+      getBidsByBiddingDocument(biddingDocumentId, {
+        page: this.options.page - 1,
+        limit: this.options.itemsPerPage
+      })
+        .then(res => {
+          const response: PaginationResponse<IBid> = res.data;
+          console.log("watch", this.options);
+          this.bids = response.data;
+          this.options.totalItems = response.totalElements;
+        })
+        .catch(err => console.log(err))
+        .finally(() => (this.loading = false));
+    }
+  }
   created() {
     // TODO: API get Bidding Document
     console.log(this.$route.params.id);
-    this.biddingDocument = BiddingDocumentData[0];
+    const biddingDocumentId = parseInt(this.$route.params.id);
+    getBiddingDocument(biddingDocumentId)
+      .then(res => {
+        const response = res.data;
+        this.biddingDocument = response;
+      })
+      .catch(err => {
+        console.log(err);
+      })
+      .finally();
+  }
+  check() {
+    console.log(
+      new Date().getTime() - new Date(this.biddingDocument.bidClosing).getTime()
+    );
   }
 }
 </script>

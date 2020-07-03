@@ -6,7 +6,17 @@
         <DeleteBiddingDocument
           v-if="dialogDel"
           :dialogDel.sync="dialogDel"
-          :biddingDocument.sync="biddingDocument"
+          :biddingDocument="biddingDocument"
+          :biddingDocuments.sync="biddingDocuments"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
+        />
+      </v-row>
+      <v-row justify="center">
+        <CancelBiddingDocument
+          v-if="dialogDel"
+          :dialogDel.sync="dialogDel"
+          :biddingDocument="biddingDocument"
           :biddingDocuments.sync="biddingDocuments"
           :message.sync="message"
           :snackbar.sync="snackbar"
@@ -67,6 +77,22 @@
                   <v-list-item-title>Chỉnh sửa</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
+              <v-list-item @click="openDetailDialog(item)">
+                <v-list-item-icon>
+                  <v-icon small>details</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Xem trạng thái HSMT</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item @click="openCancelDialog(item)">
+                <v-list-item-icon>
+                  <v-icon small>cancel_presentation</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Đóng băng HSMT</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
               <v-list-item @click="openDeleteDialog(item)">
                 <v-list-item-icon>
                   <v-icon small>delete</v-icon>
@@ -83,7 +109,7 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, PropSync, Watch, Vue } from "vue-property-decorator";
+import { Component, Watch, Vue } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import CreateBiddingDocument from "./components/CreateBiddingDocument.vue";
 import UpdateBiddingDocument from "./components/UpdateBiddingDocument.vue";
@@ -92,18 +118,18 @@ import { IOutbound } from "@/entity/outbound";
 import { getBiddingDocumentsByMerchant } from "@/api/bidding-document";
 import { PaginationResponse } from "@/api/payload";
 import DeleteBiddingDocument from "./components/DeleteBiddingDocument.vue";
+import CancelBiddingDocument from "./components/CancelBiddingDocument.vue";
 
 @Component({
   components: {
     CreateBiddingDocument,
     UpdateBiddingDocument,
     DeleteBiddingDocument,
+    CancelBiddingDocument,
     Snackbar
   }
 })
 export default class BiddingDocument extends Vue {
-  @PropSync("layout") layoutSync!: object;
-
   biddingDocuments: Array<IBiddingDocument> = [];
   biddingDocument = {} as IBiddingDocument;
   outbounds: Array<IOutbound> = [];
@@ -151,6 +177,9 @@ export default class BiddingDocument extends Vue {
   openDeleteDialog(item: IBiddingDocument) {
     this.biddingDocument = item;
     this.dialogDel = true;
+  }
+  openDetailDialog(item: IBiddingDocument) {
+    this.$router.push({ path: `/bidding-document/${item.id}` });
   }
   @Watch("options", { deep: true })
   onOptionsChange(val: object, oldVal: object) {

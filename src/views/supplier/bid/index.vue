@@ -195,7 +195,7 @@ export default class Bid extends Vue {
       })
         .then(res => {
           const response: PaginationResponse<IBid> = res.data;
-          console.log("watch", this.options);
+          console.log("watch", response);
           this.bids = response.data;
           this.options.totalItems = response.totalElements;
         })

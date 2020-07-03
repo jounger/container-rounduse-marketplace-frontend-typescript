@@ -1,6 +1,6 @@
 import Vue from "vue";
 import { PaginationRequest } from "./payload";
-import { IOutbound } from "../entity/outbound";
+import { IOutbound } from '../entity/outbound';
 
 const config = {
   Authorization: "Bearer {auth_token}"
@@ -38,7 +38,7 @@ export function updateOutbound(outbound: IOutbound) {
   });
 }
 
-export function editOutbound(id: number, updates: Map<string, object>) {
+export function editOutbound(id: number, updates: IOutbound) {
   return Vue.axios.patch(`/outbound/${id}`, updates, {
     headers: config
   });

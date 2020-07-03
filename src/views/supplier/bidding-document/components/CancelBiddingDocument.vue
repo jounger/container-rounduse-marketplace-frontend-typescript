@@ -3,7 +3,7 @@
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">Xóa HSMT</span>
+          ><span class="headline" style="color:white;">Đóng băng HSMT</span>
           <v-btn
             icon
             dark
@@ -19,7 +19,7 @@
         <v-form>
           <v-container>
             <span style="color: black; font-size:22px;"
-              >Bạn có chắc chắn muốn xóa HSMT này?</span
+              >Bạn có chắc chắn muốn đóng băng HSMT này?</span
             >
             <div class="line"></div>
             <v-list>
@@ -47,10 +47,11 @@
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
-import { removeBiddingDocument } from "@/api/bidding-document";
+import { editOutbound } from "@/api/outbound";
+import { IOutbound } from "../../../../entity/outbound";
 
 @Component
-export default class DeleteBiddingDocument extends Vue {
+export default class CancelBiddingDocument extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
   @Prop(Object)
   biddingDocument!: IBiddingDocument;
@@ -60,16 +61,22 @@ export default class DeleteBiddingDocument extends Vue {
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
-  removeBiddingDocument() {
-    if (this.biddingDocument.id) {
-      removeBiddingDocument(this.biddingDocument.id)
+  freezeBiddingDocument() {
+    if (
+      typeof this.biddingDocument.outbound != "number" &&
+      this.biddingDocument.outbound.id
+    ) {
+      this.biddingDocument.outbound.status = "CANCELED";
+      const outbound = this.biddingDocument.outbound as IOutbound;
+      editOutbound(this.biddingDocument.outbound.id, outbound)
         .then(res => {
           console.log(res.data);
-          this.messageSync = "Xóa thành công HSMT: " + this.biddingDocument.id;
+          const response: IBiddingDocument = res.data;
+          this.messageSync = "Đóng băng thành công HSMT: " + response.id;
           const index = this.biddingDocumentsSync.findIndex(
-            x => x.id === this.biddingDocument.id
+            x => x.id === response.id
           );
-          this.biddingDocumentsSync.splice(index, 1);
+          this.biddingDocumentsSync.splice(index, 1, response);
         })
         .catch(err => {
           console.log(err);

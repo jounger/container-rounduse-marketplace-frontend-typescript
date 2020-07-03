@@ -71,7 +71,8 @@ import CreateBid from "./CreateBid.vue";
 import Snackbar from "@/components/Snackbar.vue";
 import { PaginationResponse } from "@/api/payload";
 import { IBiddingNotification } from "@/entity/bidding-notification";
-import { getBiddingNotificationsByUser } from "../../../../api/notification";
+import { getBiddingNotificationsByUser } from "@/api/notification";
+import { IBid } from "@/entity/bid";
 
 @Component({
   components: {
@@ -85,7 +86,7 @@ export default class InvitedNotify extends Vue {
 
   biddingDocuments: Array<IBiddingDocument> = [];
   biddingDocument = {} as IBiddingDocument;
-
+  bids: Array<IBid> = [];
   dialogAdd = false;
   dialogDel = false;
   search = "";

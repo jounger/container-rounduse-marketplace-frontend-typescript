@@ -94,7 +94,9 @@
               <v-text-field
                 v-model="bidLocal.bidPrice"
                 type="number"
-                :rules="[minNumber('bid price', 5), maxNumber('bid price', 50)]"
+                :rules="[
+                  minNumber('bid price', biddingDocumentSync.bidFloorPrice)
+                ]"
                 label="Giá gửi thầu"
               ></v-text-field>
               <v-menu
@@ -260,7 +262,7 @@
                 <v-container fluid>
                   <v-data-table
                     :headers="containerHeaders"
-                    :items="bidLocal.containers"
+                    :items="containers"
                     item-key="id"
                     :footer-props="{
                       'items-per-page-options': options.itemsPerPageItems
@@ -317,7 +319,7 @@ import { IContainer } from "@/entity/container";
 import FormValidate from "@/mixin/form-validate";
 import { IInbound } from "@/entity/inbound";
 import Utils from "@/mixin/utils";
-import { getInboundByForwarder } from "@/api/inbound";
+import { getInboundsByOutbound } from "@/api/inbound";
 import { PaginationResponse } from "@/api/payload";
 import { createBid } from "@/api/bid";
 import { IBiddingDocument } from "@/entity/bidding-document";
@@ -341,12 +343,12 @@ export default class CreateBid extends Vue {
   singleExpand = true;
   dateInit = new Date().toISOString().substr(0, 10);
   bidLocal = {
-    containers: [],
+    containers: [] as Array<number>,
     bidPrice: 0,
     bidDate: this.dateInit,
     bidValidityPeriod: this.dateInit,
     status: ""
-  } as IBid;
+  };
   loading = true;
   options = {
     descending: true,
@@ -369,6 +371,7 @@ export default class CreateBid extends Vue {
   // Inbound
   inbounds: Array<IInbound> = [];
   inbound = {} as IInbound;
+  containers: Array<IContainer> = [];
   headers = [
     {
       text: "Mã",
@@ -419,48 +422,69 @@ export default class CreateBid extends Vue {
   // Bid
   createBid() {
     // TODO: API create bid
-    createBid(this.bidLocal)
-      .then(res => {
-        console.log(res.data);
-        const response: IBid = res.data;
-        this.bidLocal = response;
-        this.messageSync =
-          "Thêm mới thành công Hồ sơ dự thầu: " + this.bidLocal.id;
-        this.readonlyInbound = true;
-      })
-      .catch(err => {
-        console.log(err);
-        this.messageSync = "Đã có lỗi xảy ra";
-      })
-      .finally(() => (this.snackbarSync = true));
+    if (this.biddingDocumentSync.id) {
+      // this.bidLocal.containers = this.bidLocal.containers.reduce(function(
+      //   pv: Array<number>,
+      //   cv: IContainer
+      // ) {
+      //   pv.push(cv.id);
+      //   return pv;
+      // },
+      // []);
+      this.bidLocal.containers = [] as Array<number>;
+      console.log(this.containers);
+      this.containers.forEach((element: IContainer) => {
+        if (element.id) {
+          this.bidLocal.containers.push(element.id);
+        }
+      });
+      const bidRequest = Object.assign({}, this.bidLocal);
+      createBid(this.biddingDocumentSync.id, bidRequest)
+        .then(res => {
+          console.log(res.data);
+          const response: IBid = res.data;
+          this.messageSync =
+            "Thêm mới thành công Hồ sơ dự thầu: " + response.id;
+          this.readonlyInbound = true;
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(() => (this.snackbarSync = true));
+    }
   }
-
   selectContainer(item: IContainer) {
     const isDuplicate = this.checkDuplicateSelect(item);
     if (!isDuplicate) {
-      this.bidLocal.containers.push(item);
+      this.containers.push(item);
     } else {
-      const index = this.bidLocal.containers.findIndex(x => x.id === item.id);
-      this.bidLocal.containers.splice(index, 1);
+      const index = this.containers.findIndex(x => x.id === item.id);
+      this.containers.splice(index, 1);
     }
   }
 
   checkDuplicateSelect(item: IContainer) {
-    return this.bidLocal.containers.filter(x => x.id == item.id).length > 0
+    return this.containers.filter(x => x.id == item.id).length > 0
       ? true
       : false;
   }
   created() {
-    getInboundByForwarder(this.$auth.user().id, {
-      page: 0,
-      limit: 100
-    })
-      .then(res => {
-        const response: PaginationResponse<IInbound> = res.data;
-        this.inbounds = response.data;
+    if (
+      typeof this.biddingDocumentSync.outbound != "number" &&
+      this.biddingDocumentSync.outbound.id
+    ) {
+      getInboundsByOutbound(this.biddingDocumentSync.outbound.id, {
+        page: 0,
+        limit: 100
       })
-      .catch(err => console.log(err))
-      .finally();
+        .then(res => {
+          const response: PaginationResponse<IInbound> = res.data;
+          this.inbounds = response.data;
+        })
+        .catch(err => console.log(err))
+        .finally();
+    }
   }
 
   selectBiddingDocument(item: IBiddingDocument) {

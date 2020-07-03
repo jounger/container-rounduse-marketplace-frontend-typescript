@@ -29,14 +29,14 @@ export function getBidsByBiddingDocument(
   id: number,
   paging: PaginationRequest
 ) {
-  return Vue.axios.get(`/bid/forwarder/${id}`, {
+  return Vue.axios.get(`/bid/merchant/${id}`, {
     params: paging,
     headers: config
   });
 }
 
-export function createBid(bid: IBid) {
-  return Vue.axios.post("/bid", bid, {
+export function createBid(id: number, bid: IBid) {
+  return Vue.axios.post(`/bid/bidding-document/${id}`, bid, {
     headers: config
   });
 }
@@ -47,7 +47,7 @@ export function updateBid(bid: IBid) {
   });
 }
 
-export function editBid(id: number, updates: Map<string, object>) {
+export function editBid(id: number, updates: IBid) {
   return Vue.axios.patch(`/bid/${id}`, updates, {
     headers: config
   });
