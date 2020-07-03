@@ -12,7 +12,7 @@
         </v-badge>
       </v-btn>
     </template>
-    <v-card max-width="450" class="mx-auto">
+    <v-card max-width="450" class="mx-auto" v-if="$auth.check()">
       <v-toolbar color="cyan" dark>
         <v-app-bar-nav-icon></v-app-bar-nav-icon>
         <v-toolbar-title>Notification</v-toolbar-title>
@@ -24,6 +24,11 @@
 
       <v-list three-line>
         <v-divider></v-divider>
+        <v-list-item v-if="notifications.length == 0">
+          <v-list-item-content>
+            {{ "Bạn có " + notifications.length + " thông báo!" }}
+          </v-list-item-content>
+        </v-list-item>
         <v-list-item
           v-for="item in notifications"
           :key="item.id"
@@ -69,6 +74,10 @@ export default class Notification extends Vue {
   loading = false;
   messageCount = 1;
 
+  connected = false;
+  socket = {} as WebSocket;
+  stompClient = {} as Client;
+
   gotoNotification(item: IBiddingNotification) {
     const ROUTER = "/bidding-document";
     return `${ROUTER}/${item.relatedResource.id}`;
@@ -80,7 +89,6 @@ export default class Notification extends Vue {
 
   @Watch("options", { deep: true })
   onOptionsChange(val: object, oldVal: object) {
-    console.log(this.$auth.user());
     if (val !== oldVal) {
       getBiddingNotificationsByUser({
         page: this.options.page - 1,
@@ -97,13 +105,12 @@ export default class Notification extends Vue {
     }
   }
 
-  connected = false;
-  socket = {} as WebSocket;
-  stompClient = {} as Client;
-
   connect() {
     this.socket = new SockJS("http://localhost:8085/stomp");
     this.stompClient = Stomp.over(this.socket);
+    this.stompClient.debug = () => {
+      // Disable Debug
+    };
     this.stompClient.connect(
       { Authorization: `Bearer ${this.$auth.token()}` },
       this.onConnected,
@@ -139,22 +146,29 @@ export default class Notification extends Vue {
     this.connected ? this.disconnect() : this.connect();
   }
 
+  created() {
+    // INIT NOTIFICATION
+    if (this.$auth.check()) {
+      getBiddingNotificationsByUser({
+        page: this.options.page - 1,
+        limit: this.options.itemsPerPage
+      })
+        .then(res => {
+          const response: PaginationResponse<IBiddingNotification> = res.data;
+          this.notifications = response.data;
+          this.options.totalItems = response.totalElements;
+          this.messageCount += this.notifications.length;
+        })
+        .catch(err => console.log(err))
+        .finally(() => (this.loading = false));
+    }
+  }
+
   mounted() {
     // CONNECT WEBSOCKET
-    this.connect();
-    // INIT NOTIFICATION
-    getBiddingNotificationsByUser({
-      page: this.options.page - 1,
-      limit: this.options.itemsPerPage
-    })
-      .then(res => {
-        const response: PaginationResponse<IBiddingNotification> = res.data;
-        this.notifications = response.data;
-        this.options.totalItems = response.totalElements;
-        this.messageCount += this.notifications.length;
-      })
-      .catch(err => console.log(err))
-      .finally(() => (this.loading = false));
+    if (this.$auth.check()) {
+      this.connect();
+    }
   }
 }
 </script>

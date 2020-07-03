@@ -25,13 +25,15 @@ export default class NavigationSupplier extends Vue {
   private merchantNavigation = [
     { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
     { title: "Quản lý hàng xuất", icon: "dashboard", link: "/outbound" },
-    { title: "Quản lý HSMT", icon: "dashboard", link: "/bidding-document" }
+    { title: "Quản lý HSMT", icon: "dashboard", link: "/bidding-document" },
+    { title: "Quản lý Hàng ghép", icon: "dashboard", link: "/combined" }
   ];
   private forwarderNavigation = [
     { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
     { title: "Quản lý hàng nhập", icon: "dashboard", link: "/inbound" },
     { title: "Quản lý HSDT", icon: "dashboard", link: "/bid" },
     { title: "HSMT Nhận được", icon: "dashboard", link: "/invited-bidding" },
+    { title: "Quản lý Hàng ghép", icon: "dashboard", link: "/combined" },
     { title: "Quản lý Driver", icon: "dashboard", link: "/driver" }
   ];
 

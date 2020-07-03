@@ -142,6 +142,33 @@ const routes: Array<RouteConfig> = [
       layout: "NavLayout"
     }
   },
+  {
+    path: "/combined",
+    name: "Combined",
+    component: () => import("@/views/supplier/combined/index.vue"),
+    meta: {
+      auth: ["ROLE_FORWARDER", "ROLE_MERCHANT"],
+      layout: "NavLayout"
+    }
+  },
+  {
+    path: "/bidding-document/:id",
+    name: "Bidding Document Detail",
+    component: () => import("@/views/supplier/bidding-document/components/DetailBiddingDocument.vue"),
+    meta: {
+      auth: ["ROLE_MERCHANT", "ROLE_FORWARDER"],
+      layout: "NavLayout"
+    }
+  },
+  {
+    path: "/combined/:id",
+    name: "Combined Detail",
+    component: () => import("@/views/supplier/combined/components/DetailCombined.vue"),
+    meta: {
+      auth: ["ROLE_MERCHANT", "ROLE_FORWARDER"],
+      layout: "NavLayout"
+    }
+  },
   // merchant
   {
     path: "/outbound",
@@ -158,15 +185,6 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/supplier/bidding-document/index.vue"),
     meta: {
       auth: ["ROLE_MERCHANT"],
-      layout: "NavLayout"
-    }
-  },
-  {
-    path: "/bidding-document/:id",
-    name: "Bidding Document Detail",
-    component: () => import("@/views/supplier/bidding-document/components/DetailBiddingDocument.vue"),
-    meta: {
-      auth: ["ROLE_MERCHANT", "ROLE_FORWARDER"],
       layout: "NavLayout"
     }
   },

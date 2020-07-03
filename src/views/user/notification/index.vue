@@ -86,7 +86,7 @@ export default class NotificationSetting extends Vue {
 
   mounted() {
     this.notifications = IBiddingNotificationData;
-    this.connect();
+    // this.connect();
   }
 }
 </script>
