@@ -50,45 +50,31 @@
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
-import { IBiddingDocument } from "@/entity/bidding-document";
 import { IBid } from "@/entity/bid";
 import { editBid } from "@/api/bid";
-import { IContainer } from "@/entity/container";
 
 @Component
 export default class ConfirmBid extends Vue {
   @PropSync("dialogConfirm", { type: Boolean }) dialogConfirmSync!: boolean;
-  @PropSync("biddingDocument", { type: Object })
-  biddingDocumentSync!: IBiddingDocument;
+  @PropSync("bids", { type: Array })
+  bidsSync!: Array<IBid>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Boolean) status!: boolean;
   @Prop(Object) bid!: IBid;
   reviewBid(status: boolean) {
     if (this.bid.id) {
-      status == true
-        ? (this.bid.status = "ACCEPTED")
-        : (this.bid.status = "REJECTED");
-      const bidContainerId: Array<number> = [];
-      this.bid.containers.forEach((element: IContainer | number) => {
-        if (typeof element != "number" && element.id) {
-          bidContainerId.push(element.id);
-        }
-      });
-      this.bid.containers = bidContainerId;
-      const bidPrice = this.bid.bidPrice;
-      this.bid.bidPrice = bidPrice + "";
-      editBid(this.bid.id, this.bid)
+      editBid(this.bid.id, {
+        status: status == true ? "ACCEPTED" : "REJECTED"
+      })
         .then(res => {
           console.log(res.data);
           const respone = res.data;
           status == true
-            ? (this.messageSync = "Đồng ý thành công HSDT: " + this.bid.id)
-            : (this.messageSync = "Từ chối thành công HSDT: " + this.bid.id);
-          const index = this.biddingDocumentSync.bids.findIndex(
-            x => x.id === respone.id
-          );
-          this.biddingDocumentSync.bids.splice(index, 1, respone);
+            ? (this.messageSync = "Đồng ý thành công HSDT: " + respone.id)
+            : (this.messageSync = "Từ chối thành công HSDT: " + respone.id);
+          const index = this.bidsSync.findIndex(x => x.id === respone.id);
+          this.bidsSync.splice(index, 1, respone);
         })
         .catch(err => {
           console.log(err);

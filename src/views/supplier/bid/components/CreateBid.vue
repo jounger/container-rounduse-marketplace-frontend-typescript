@@ -504,7 +504,6 @@ export default class CreateBid extends Vue {
   }
 
   @Watch("optionsBiddingDocument", { deep: true })
-  // TODO: API get
   onOptionsBiddingDocumentChange(val: object, oldVal: object) {
     if (
       this.biddingDocumentSync != null &&
@@ -517,13 +516,13 @@ export default class CreateBid extends Vue {
     } else {
       if (val !== oldVal) {
         getBiddingNotificationsByUser({
-          page: 0,
-          limit: 100,
+          page: this.optionsBiddingDocument.page - 1,
+          limit: this.optionsBiddingDocument.itemsPerPage,
           status: "ADDED"
         })
           .then(res => {
             const response: PaginationResponse<IBiddingNotification> = res.data;
-            console.log("watch", response);
+            console.log("watchNotify", response);
             this.biddingDocuments = response.data.reduce(function(
               pV: Array<IBiddingDocument>,
               cV: IBiddingNotification

@@ -7,7 +7,7 @@
           <ConfirmBid
             v-if="dialogConfirm"
             :dialogConfirm.sync="dialogConfirm"
-            :biddingDocument.sync="biddingDocument"
+            :bids.sync="bids"
             :message.sync="message"
             :snackbar.sync="snackbar"
             :status="status"
