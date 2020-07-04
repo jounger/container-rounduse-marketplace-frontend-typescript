@@ -89,7 +89,7 @@ export default class Notification extends Vue {
 
   @Watch("options", { deep: true })
   onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
+    if (val !== oldVal && this.$auth.check()) {
       getBiddingNotificationsByUser({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage

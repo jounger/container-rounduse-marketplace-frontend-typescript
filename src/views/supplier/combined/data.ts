@@ -9,7 +9,7 @@ export const CombinedData: ICombined[] = [
         id: 0,
         shippingLine: "APL",
         containerType: "40HC",
-        status: "CREATED",
+        status: "ACCEPTED",
         goodsDescription: "Hàng dệt may",
         packingTime: "2020-12-01T20:20",
         packingStation: "Hà Nội",
@@ -26,6 +26,7 @@ export const CombinedData: ICombined[] = [
       bids: [
         {
           id: 0,
+          bidder: "forwarder",
           containers: [
             {
               id: 0,
@@ -47,10 +48,12 @@ export const CombinedData: ICombined[] = [
           bidPrice: 2099,
           bidDate: "2020-12-01T20:20",
           bidValidityPeriod: "2020-12-01T20:20",
-          status: "CREATED"
+          dateOfDecision: "2020-12-02T20:20",
+          status: "ACCEPTED"
         },
         {
           id: 1,
+          bidder: "forwarder",
           containers: [
             {
               id: 2,
@@ -72,7 +75,8 @@ export const CombinedData: ICombined[] = [
           bidPrice: 2087,
           bidDate: "2020-12-01T20:20",
           bidValidityPeriod: "2020-12-01T20:20",
-          status: "CREATED"
+          dateOfDecision: "2020-12-02T20:20",
+          status: "ACCEPTED"
         }
       ],
       bidDiscountCode: "DISCOUNT01",
