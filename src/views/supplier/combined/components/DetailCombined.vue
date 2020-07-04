@@ -220,7 +220,7 @@
                           <v-list-item-subtitle>
                             {{
                               "Khối lượng: " +
-                                biddingDocument.outbound.payload +
+                                biddingDocument.outbound.grossWeight +
                                 biddingDocument.outbound.unitOfMeasurement
                             }}
                           </v-list-item-subtitle>

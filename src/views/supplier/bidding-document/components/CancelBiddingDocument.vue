@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogDelSync" persistent max-width="600px">
+  <v-dialog v-model="dialogCancelSync" persistent max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
@@ -7,7 +7,7 @@
           <v-btn
             icon
             dark
-            @click="dialogDelSync = false"
+            @click="dialogCancelSync = false"
             style="margin-left:403px;"
           >
             <v-icon>mdi-close</v-icon>
@@ -38,7 +38,7 @@
         </v-form>
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
-        <v-btn @click="dialogDelSync = false">Hủy</v-btn>
+        <v-btn @click="dialogCancelSync = false">Hủy</v-btn>
         <v-btn @click="removeBiddingDocument()" color="red">Xóa</v-btn>
       </v-card-actions>
     </v-card>
@@ -48,11 +48,11 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { editOutbound } from "@/api/outbound";
-import { IOutbound } from "../../../../entity/outbound";
+import { IOutbound } from "@/entity/outbound";
 
 @Component
 export default class CancelBiddingDocument extends Vue {
-  @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
+  @PropSync("dialogCancel", { type: Boolean }) dialogCancelSync!: boolean;
   @Prop(Object)
   biddingDocument!: IBiddingDocument;
   @PropSync("biddingDocuments", { type: Array }) biddingDocumentsSync!: Array<
@@ -83,7 +83,7 @@ export default class CancelBiddingDocument extends Vue {
           this.messageSync = "Đã có lỗi xảy ra";
         })
         .finally(
-          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
+          () => ((this.snackbarSync = true), (this.dialogCancelSync = false))
         );
     }
   }

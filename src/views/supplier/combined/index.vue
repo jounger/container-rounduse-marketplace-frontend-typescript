@@ -29,13 +29,13 @@
           {{ formatDatetime(item.booking.cutOffTime) }}
         </template>
         <template v-slot:item.grossWeight="{ item }">
-          {{ item.grossWeight }} {{ item.unitOfMesurement }}
+          {{ item.grossWeight + "" + item.unitOfMeasurement }}
         </template>
         <template v-slot:item.fcl="{ item }">
           {{ item.booking.isFcl ? "Có" : "Không" }}
         </template>
         <template v-slot:item.unit="{ item }">
-          {{ item.booking.unit }} x {{ item.containerType }}
+          {{ item.booking.unit + " x " + item.containerType }}
         </template>
         <template v-slot:item.actions="{ item }">
           <v-btn icon dark @click="gotoDetail(item)">
@@ -87,7 +87,7 @@ export default class Combined extends Vue {
     { text: "Thời gian tàu chạy", value: "cutOffTime" },
     { text: "Nơi đóng hàng", value: "packingStation" },
     { text: "Cảng đóng hàng", value: "booking.portOfLoading" },
-    { text: "Khối lượng hàng", value: "payload" },
+    { text: "Khối lượng hàng", value: "grossWeight" },
     { text: "Số cont", value: "unit" },
     { text: "FCL", value: "fcl" },
     {
@@ -126,10 +126,9 @@ export default class Combined extends Vue {
     this.options.totalItems = 10;
     this.loading = false;
   }
-  /*
+
   @Watch("options", { deep: true })
   onOptionsChange(val: object, oldVal: object) {
-    console.log(this.$auth.user());
     if (val !== oldVal) {
       getCombinedsByUser({
         page: this.options.page - 1,
@@ -137,6 +136,7 @@ export default class Combined extends Vue {
       })
         .then(res => {
           const response: PaginationResponse<ICombined> = res.data;
+          console.log("response", response);
           this.combineds = response.data;
           this.reduceData(this.combineds);
           this.options.totalItems = response.totalElements;
@@ -145,7 +145,6 @@ export default class Combined extends Vue {
         .finally(() => (this.loading = false));
     }
   }
-  */
 }
 </script>
 <style type="text/css">

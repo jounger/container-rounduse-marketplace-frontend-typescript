@@ -10,7 +10,7 @@
             :bids.sync="bids"
             :message.sync="message"
             :snackbar.sync="snackbar"
-            :status="status"
+            :isAccept="isAccept"
             :bid="bid"
           />
         </v-row>
@@ -126,7 +126,7 @@
                   <v-list-item-subtitle>
                     {{
                       "Khối lượng: " +
-                        biddingDocument.outbound.payload +
+                        biddingDocument.outbound.grossWeight +
                         biddingDocument.outbound.unitOfMeasurement
                     }}
                   </v-list-item-subtitle>
@@ -262,8 +262,14 @@
             'items-per-page-options': options.itemsPerPageItems
           }"
           :actions-append="options.page"
-          class="elevation-1"
+          class="elevation-0"
         >
+          <template v-slot:item.bidDate="{ item }">
+            {{ formatDatetime(item.bidDate) }}
+          </template>
+          <template v-slot:item.bidValidityPeriod="{ item }">
+            {{ formatDatetime(item.bidValidityPeriod) }}
+          </template>
           <template v-slot:item.actions="{ item }">
             <v-btn
               class="ma-1"
@@ -271,7 +277,7 @@
               tile
               outlined
               color="success"
-              @click.stop="openAcceptBid(item)"
+              @click.stop="openConfirmBid(item, true)"
               v-if="item.status == 'PENDING'"
             >
               <v-icon left>library_add_check </v-icon>Đồng ý
@@ -282,7 +288,7 @@
               tile
               outlined
               color="error"
-              @click.stop="openRejectBid(item)"
+              @click.stop="openConfirmBid(item, false)"
               v-if="item.status == 'PENDING'"
             >
               <v-icon left>remove_circle</v-icon>Từ chối
@@ -343,7 +349,7 @@ export default class DetailBiddingDocument extends Vue {
       goodsDescription: "",
       packingTime: "",
       packingStation: "",
-      payload: 0,
+      grossWeight: 0,
       unitOfMeasurement: "",
       booking: {
         bookingNumber: "",
@@ -366,7 +372,7 @@ export default class DetailBiddingDocument extends Vue {
   } as IBiddingDocument;
   loading = false;
   selection = 1;
-  status = false;
+  isAccept = false;
   dialogConfirm = false;
   bid = {} as IBid;
   expanded: Array<IBid> = [];
@@ -408,17 +414,12 @@ export default class DetailBiddingDocument extends Vue {
     { text: "Đầu kéo", value: "tractor" }
   ];
 
-  openAcceptBid(item: IBid) {
+  openConfirmBid(item: IBid, accept: boolean) {
     this.bid = item;
-    console.log(this.biddingDocument);
-    this.status = true;
+    this.isAccept = accept;
     this.dialogConfirm = true;
   }
-  openRejectBid(item: IBid) {
-    this.bid = item;
-    this.status = false;
-    this.dialogConfirm = true;
-  }
+
   clicked(value: IBid) {
     console.log(value);
     if (this.singleExpand) {

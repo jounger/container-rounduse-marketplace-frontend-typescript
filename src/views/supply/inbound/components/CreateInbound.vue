@@ -23,7 +23,7 @@
           </v-stepper-step>
 
           <v-stepper-content step="1">
-            <v-form ref="inboundForm" v-model="valid" lazy-validation>
+            <v-form ref="inboundForm" v-model="valid" validation>
               <small>*Dấu sao là trường bắt buộc</small>
               <v-layout col
                 ><v-layout row
@@ -97,10 +97,7 @@
                   </v-flex></v-layout
                 ></v-layout
               >
-              <v-btn
-                color="primary"
-                @click="valid ? (stepper = 2) : (stepper = 1)"
-                :disabled="!valid"
+              <v-btn color="primary" @click="stepper = 2" :disabled="!valid"
                 >Tiếp tục</v-btn
               >
               <!-- <v-btn text @click="dialogAddSync = false">Hủy</v-btn> -->
@@ -112,7 +109,7 @@
           >
 
           <v-stepper-content step="2">
-            <v-form ref="billOfLadingForm" v-model="valid" lazy-validation>
+            <v-form ref="billOfLadingForm" v-model="valid2" validation>
               <small>*Dấu sao là trường bắt buộc</small>
               <v-layout col
                 ><v-layout row
@@ -179,7 +176,7 @@
                   </v-flex></v-layout
                 ></v-layout
               >
-              <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
+              <v-btn color="primary" @click="stepper = 3" :disabled="!valid2"
                 >Tiếp tục</v-btn
               >
               <v-btn text @click="stepper = 1">Quay lại</v-btn>
@@ -384,7 +381,7 @@
 
           <v-stepper-step step="4">Hoàn thành</v-stepper-step>
           <v-stepper-content step="4">
-            <v-form ref="finishForm" v-model="valid" lazy-validation>
+            <v-form ref="finishForm" v-model="valid" validation>
               <v-checkbox
                 v-model="checkbox"
                 :rules="[required('agree term')]"
@@ -419,7 +416,7 @@ import { getShippingLines } from "@/api/shipping-line";
 import { getDriversByForwarder } from "@/api/driver";
 import { getContainerTypes } from "@/api/container-type";
 import { PaginationResponse } from "@/api/payload";
-import { addTimeToDate } from "@/utils/tool";
+import { addTimeToDate, addHoursToDate } from "@/utils/tool";
 import { createInbound } from "@/api/inbound";
 
 @Component({
@@ -428,6 +425,7 @@ import { createInbound } from "@/api/inbound";
 export default class CreateInbound extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("inbounds", { type: Array }) inboundsSync!: Array<IInbound>;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
@@ -451,6 +449,7 @@ export default class CreateInbound extends Vue {
   editable = false;
   stepper = 1;
   valid = true;
+  valid2 = true;
   title = "Thêm mới Container";
   checkAdd = true;
   // API list
@@ -588,14 +587,20 @@ export default class CreateInbound extends Vue {
   // Inbound
   createInbound() {
     // TODO: API create inbound
-    this.inboundLocal.pickupTime = addTimeToDate(
-      this.inboundLocal.pickupTime
-    );
+    this.inboundLocal.pickupTime = addTimeToDate(this.inboundLocal.pickupTime);
     this.inboundLocal.billOfLading.freeTime = addTimeToDate(
       this.inboundLocal.billOfLading.freeTime
     );
     this.inboundLocal.billOfLading.containers = this.containers;
-    createInbound(this.$auth.user().id, this.inboundLocal)
+
+    /* TODO: Calculate Empty Time:
+     * emptyTime = (duration: portOfDelivery -> returnStation) + pickupTime (+ bias)
+     */
+    this.inboundLocal.emptyTime = addHoursToDate(
+      new Date(this.inboundLocal.pickupTime),
+      5
+    );
+    createInbound(this.inboundLocal)
       .then(res => {
         console.log(res.data);
         const response: IInbound = res.data;
@@ -604,6 +609,7 @@ export default class CreateInbound extends Vue {
           "Thêm mới thành công hàng nhập: " +
           this.inboundLocal.billOfLading.billOfLadingNumber;
         this.inboundsSync.unshift(this.inboundLocal);
+        this.totalItemsSync += 1;
       })
       .catch(err => {
         console.log(err);

@@ -27,16 +27,17 @@
 
           <v-stepper-content step="1">
             <v-data-table
-              :headers="headers"
+              :headers="outboundHeaders"
               :items="outbounds"
               item-key="id"
               :loading="loading"
-              :options.sync="options"
-              :server-items-length="options.totalItems"
+              :options.sync="outboundOptions"
+              :server-items-length="outboundOptions.totalItems"
               :footer-props="{
-                'items-per-page-options': options.itemsPerPageItems
+                'items-per-page-outboundOptions':
+                  outboundOptions.itemsPerPageItems
               }"
-              :actions-append="options.page"
+              :actions-append="outboundOptions.page"
               class="elevation-1 my-1"
             >
               <!--  -->
@@ -58,13 +59,13 @@
                 {{ formatDatetime(item.booking.cutOffTime) }}
               </template>
               <template v-slot:item.grossWeight="{ item }">
-                {{ item.payload }} {{ item.unitOfMesurement }}
+                {{ item.grossWeight + "" + item.unitOfMeasurement }}
               </template>
               <template v-slot:item.fcl="{ item }">
                 {{ item.booking.isFcl ? "Có" : "Không" }}
               </template>
               <template v-slot:item.unit="{ item }">
-                {{ item.booking.unit }} x {{ item.containerType }}
+                {{ item.booking.unit + " x " + item.containerType }}
               </template>
               <template v-slot:item.actions="{ item }">
                 <v-btn
@@ -76,8 +77,7 @@
                 >
                   <v-icon left>mdi-pencil</v-icon>
                   {{
-                    biddingDocumentLocal.outbound != -1 &&
-                    biddingDocumentLocal.outbound == item.id
+                    selectedOutbound && selectedOutbound.id === item.id
                       ? "Bỏ"
                       : "Chọn"
                   }}
@@ -87,11 +87,9 @@
             <v-btn
               color="primary"
               @click="
-                !isEmptyObject(biddingDocumentLocal.outbound)
-                  ? (stepper = 2)
-                  : (stepper = 1)
+                !isEmptyObject(selectedOutbound) ? (stepper = 2) : (stepper = 1)
               "
-              :disabled="isEmptyObject(biddingDocumentLocal.outbound)"
+              :disabled="isEmptyObject(selectedOutbound)"
               >Tiếp tục</v-btn
             >
           </v-stepper-content>
@@ -101,7 +99,7 @@
           >
 
           <v-stepper-content step="2">
-            <v-form ref="billOfLadingForm" v-model="valid" lazy-validation>
+            <v-form ref="billOfLadingForm" v-model="valid" validation>
               <v-menu
                 ref="datePickerMenu"
                 v-model="datePickerMenu"
@@ -274,7 +272,7 @@ export default class CreateBiddingDocument extends Vue {
   dateInit = new Date().toISOString().substr(0, 10);
   biddingDocumentLocal = {
     offeree: this.$auth.user().username,
-    outbound: -1,
+    outbound: -1 as number,
     bidDiscountCode: "",
     isMultipleAward: false,
     bidOpening: this.dateInit,
@@ -293,7 +291,7 @@ export default class CreateBiddingDocument extends Vue {
   valid = true;
   // API list
   currencyOfPayments: Array<string> = [];
-  unitOfMesurements: Array<string> = [];
+  unitOfMeasurements: Array<string> = [];
 
   // biddingDocumentLocal form
   datePickerMenu = false;
@@ -301,15 +299,16 @@ export default class CreateBiddingDocument extends Vue {
 
   // Outbound form
   outbounds: Array<IOutbound> = [];
+  selectedOutbound = {} as IOutbound;
   loading = false;
-  options = {
+  outboundOptions = {
     descending: true,
     page: 1,
     itemsPerPage: 5,
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
-  headers = [
+  outboundHeaders = [
     {
       text: "Mã",
       align: "start",
@@ -333,16 +332,13 @@ export default class CreateBiddingDocument extends Vue {
   ];
 
   selectOutbound(item: IOutbound) {
-    if (
-      this.biddingDocumentLocal.outbound != -1 &&
-      this.biddingDocumentLocal.outbound === item.id
-    ) {
+    if (this.selectedOutbound && this.selectedOutbound.id === item.id) {
       // unselected item
-      this.biddingDocumentLocal.outbound = -1;
+      this.selectedOutbound = {} as IOutbound;
     } else {
       // select item
       if (item.id) {
-        this.biddingDocumentLocal.outbound = item.id;
+        this.selectedOutbound = item;
       }
     }
   }
@@ -350,22 +346,21 @@ export default class CreateBiddingDocument extends Vue {
   // BiddingDocument
   createBiddingDocument() {
     // TODO: API create biddingDocument
-    console.log(this.biddingDocumentLocal);
     this.biddingDocumentLocal.bidOpening = addTimeToDate(
       this.biddingDocumentLocal.bidOpening
     );
     this.biddingDocumentLocal.bidClosing = addTimeToDate(
       this.biddingDocumentLocal.bidClosing
     );
+    this.biddingDocumentLocal.outbound = this.selectedOutbound.id as number;
+    console.log(this.biddingDocumentLocal);
     createBiddingDocument(this.biddingDocumentLocal)
       .then(res => {
         console.log(res.data);
         const response: IBiddingDocument = res.data;
-        this.biddingDocumentLocal = response;
-        this.messageSync =
-          "Thêm mới thành công HSMT: " + this.biddingDocumentLocal.id;
+        this.messageSync = "Thêm mới thành công HSMT: " + response.id;
         if (typeof this.biddingDocumentsSync != "undefined") {
-          this.biddingDocumentsSync.unshift(this.biddingDocumentLocal);
+          this.biddingDocumentsSync.unshift(response);
         }
       })
       .catch(err => {
@@ -382,23 +377,25 @@ export default class CreateBiddingDocument extends Vue {
       this.selectOutbound(this.outboundSync);
     } else {
       getOutboundByMerchant(this.$auth.user().id, {
-        page: 0,
-        limit: 100
+        page: this.outboundOptions.page - 1,
+        limit: this.outboundOptions.itemsPerPage,
+        status: "CREATED"
       })
         .then(res => {
           const response: PaginationResponse<IOutbound> = res.data;
-          this.outbounds = response.data.filter(x => x.status == "CREATED");
-          this.options.totalItems = response.totalElements;
+          console.log("response", response);
+          this.outbounds = response.data;
+          this.outboundOptions.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
     }
 
-    this.options.totalItems = 10;
+    this.outboundOptions.totalItems = 10;
     this.loading = false;
     //
     this.currencyOfPayments = ["VND", "USD"];
-    this.unitOfMesurements = ["KG", "Ton"];
+    this.unitOfMeasurements = ["KG", "Ton"];
   }
 }
 </script>

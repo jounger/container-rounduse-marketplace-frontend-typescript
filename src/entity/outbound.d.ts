@@ -4,7 +4,8 @@ export interface IOutbound extends ISupply {
   goodsDescription: string;
   packingTime: string;
   packingStation: string;
-  payload: number;
+  deliveryTime?: string;
+  grossWeight: number;
   unitOfMeasurement: string;
   booking: IBooking;
 }

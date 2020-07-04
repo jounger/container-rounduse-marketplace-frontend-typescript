@@ -23,7 +23,7 @@
           </v-stepper-step>
 
           <v-stepper-content step="1">
-            <v-form ref="outboundForm" v-model="valid" lazy-validation>
+            <v-form ref="outboundForm" v-model="valid" validation>
               <small>*Dấu sao là trường bắt buộc</small>
               <v-layout col
                 ><v-layout row
@@ -101,7 +101,7 @@
                 ><v-layout row
                   ><v-flex xs10>
                     <v-text-field
-                      v-model="outboundLocal.payload"
+                      v-model="outboundLocal.grossWeight"
                       type="number"
                       label="Khối lượng hàng"
                     ></v-text-field> </v-flex></v-layout
@@ -109,7 +109,7 @@
                   ><v-flex xs10>
                     <v-select
                       v-model="outboundLocal.unitOfMeasurement"
-                      :items="unitOfMesurements"
+                      :items="unitOfMeasurements"
                       label="Đơn vị đo"
                     ></v-select> </v-flex></v-layout
               ></v-layout>
@@ -123,10 +123,7 @@
                     ></v-text-field> </v-flex></v-layout
               ></v-layout>
 
-              <v-btn
-                color="primary"
-                @click="valid ? (stepper = 2) : (stepper = 1)"
-                :disabled="!valid"
+              <v-btn color="primary" @click="stepper = 2" :disabled="!valid"
                 >Tiếp tục</v-btn
               >
               <!-- <v-btn text @click="dialogAddSync = false">Hủy</v-btn> -->
@@ -138,7 +135,7 @@
           >
 
           <v-stepper-content step="2">
-            <v-form ref="bookingForm" v-model="valid" lazy-validation>
+            <v-form ref="bookingForm" v-model="valid2" validation>
               <small>*Dấu sao là trường bắt buộc</small>
               <v-layout col
                 ><v-layout row
@@ -221,7 +218,7 @@
                 v-model="outboundLocal.booking.isFcl"
                 label="Hàng nguyên cont"
               ></v-checkbox>
-              <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
+              <v-btn color="primary" @click="stepper = 3" :disabled="!valid2"
                 >Tiếp tục</v-btn
               >
               <v-btn text @click="stepper = 1">Quay lại</v-btn>
@@ -233,7 +230,7 @@
           >
 
           <v-stepper-content step="3">
-            <v-form ref="finishForm" v-model="valid" lazy-validation>
+            <v-form ref="finishForm" v-model="checkbox" validation>
               <v-checkbox
                 v-model="checkbox"
                 :rules="[required('agree term')]"
@@ -267,6 +264,7 @@ import { IShippingLine } from "@/entity/shipping-line";
 import { getContainerTypes } from "@/api/container-type";
 import { IContainerType } from "@/entity/container-type";
 import { addTimeToDate } from "@/utils/tool";
+import { addHoursToDate } from "../../../../utils/tool";
 
 @Component({
   mixins: [FormValidate]
@@ -274,6 +272,7 @@ import { addTimeToDate } from "@/utils/tool";
 export default class CreateOutbound extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("outbounds", { type: Array }) outboundsSync!: Array<IOutbound>;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
@@ -285,7 +284,8 @@ export default class CreateOutbound extends Vue {
     packingTime: this.dateInit,
     goodsDescription: "",
     packingStation: "",
-    payload: 0,
+    deliveryTime: "",
+    grossWeight: 0,
     unitOfMeasurement: "KG",
     booking: {
       bookingNumber: "",
@@ -300,11 +300,12 @@ export default class CreateOutbound extends Vue {
   editable = false;
   stepper = 1;
   valid = true;
+  valid2 = true;
   // API list
   ports: Array<IPort> = [];
   shippingLines: Array<IShippingLine> = [];
   containerTypes: Array<IContainerType> = [];
-  unitOfMesurements: Array<string> = [];
+  unitOfMeasurements: Array<string> = [];
   // outboundLocal form
   packingTimePicker = false;
 
@@ -314,15 +315,21 @@ export default class CreateOutbound extends Vue {
   // Outbound
   createOutbound() {
     // TODO: API create outbound
-
     this.outboundLocal.packingTime = addTimeToDate(
       this.outboundLocal.packingTime
     );
     this.outboundLocal.booking.cutOffTime = addTimeToDate(
       this.outboundLocal.booking.cutOffTime
     );
+    /* TODO: Calculate Delivery Time:
+     * deliveryTime = (duration: packingStation -> portOfLoading) + packingTime (+ bias)
+     */
+    this.outboundLocal.deliveryTime = addHoursToDate(
+      new Date(this.outboundLocal.packingTime),
+      5
+    );
     console.log(this.outboundLocal);
-    createOutbound(this.$auth.user().id, this.outboundLocal)
+    createOutbound(this.outboundLocal)
       .then(res => {
         console.log(res.data);
         const response: IOutbound = res.data;
@@ -331,6 +338,7 @@ export default class CreateOutbound extends Vue {
           "Thêm mới thành công hàng xuất: " +
           this.outboundLocal.booking.bookingNumber;
         this.outboundsSync.unshift(this.outboundLocal);
+        this.totalItemsSync += 1;
       })
       .catch(err => {
         console.log(err);
@@ -355,9 +363,7 @@ export default class CreateOutbound extends Vue {
     })
       .then(res => {
         const response: PaginationResponse<IShippingLine> = res.data;
-        this.shippingLines = response.data.filter(
-          x => x.roles[0] == "ROLE_SHIPPINGLINE"
-        );
+        this.shippingLines = response.data;
       })
       .catch(err => console.log(err))
       .finally();
@@ -386,7 +392,7 @@ export default class CreateOutbound extends Vue {
     // TODO: API get Shipping Line
     // TODO: API get Container Type
     //TODO: API get unit of mesurement
-    this.unitOfMesurements = ["KG"];
+    this.unitOfMeasurements = ["KG"];
   }
 }
 </script>

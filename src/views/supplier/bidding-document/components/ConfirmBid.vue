@@ -40,10 +40,10 @@
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
         <v-btn @click="dialogConfirmSync = false">Hủy</v-btn>
-        <v-btn @click="reviewBid(status)" color="green" v-if="status"
+        <v-btn @click="reviewBid(isAccept)" color="green" v-if="status"
           >Đồng ý</v-btn
         >
-        <v-btn @click="reviewBid(status)" color="red" v-else>Từ chối</v-btn>
+        <v-btn @click="reviewBid(isAccept)" color="red" v-else>Từ chối</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -60,17 +60,18 @@ export default class ConfirmBid extends Vue {
   bidsSync!: Array<IBid>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @Prop(Boolean) status!: boolean;
+  @Prop(Boolean) isAccept!: boolean;
   @Prop(Object) bid!: IBid;
-  reviewBid(status: boolean) {
+
+  reviewBid(isAccept: boolean) {
     if (this.bid.id) {
       editBid(this.bid.id, {
-        status: status == true ? "ACCEPTED" : "REJECTED"
+        status: isAccept == true ? "ACCEPTED" : "REJECTED"
       })
         .then(res => {
-          console.log(res.data);
           const respone = res.data;
-          status == true
+          console.log("respone", respone);
+          isAccept == true
             ? (this.messageSync = "Đồng ý thành công HSDT: " + respone.id)
             : (this.messageSync = "Từ chối thành công HSDT: " + respone.id);
           const index = this.bidsSync.findIndex(x => x.id === respone.id);

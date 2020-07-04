@@ -82,7 +82,10 @@
                 v-model="bidLocal.bidPrice"
                 type="number"
                 :rules="[
-                  minNumber('bid price', biddingDocumentSync.bidFloorPrice + 1)
+                  minNumber(
+                    'bid price',
+                    biddingDocumentSelected.bidFloorPrice + 1
+                  )
                 ]"
                 label="Giá gửi thầu"
               ></v-text-field>
@@ -286,21 +289,14 @@
                 stepper = 4;
                 valid = false;
               "
-              :disabled="!valid"
+              :disabled="containers.length == 0"
               >Tiếp tục</v-btn
             >
-            <v-btn
-              text
-              @click="
-                stepper = 2;
-                valid = true;
-              "
-              >Quay lại</v-btn
-            >
+            <v-btn text @click="stepper = 2">Quay lại</v-btn>
           </v-stepper-content>
           <v-stepper-step step="4">Hoàn thành</v-stepper-step>
           <v-stepper-content step="4">
-            <v-form ref="finishForm" v-model="valid" lazy-validation>
+            <v-form ref="finishForm" v-model="checkbox" validation>
               <v-checkbox
                 v-model="checkbox"
                 :rules="[required('agree term')]"
@@ -332,13 +328,14 @@ import { IContainer } from "@/entity/container";
 import FormValidate from "@/mixin/form-validate";
 import { IInbound } from "@/entity/inbound";
 import Utils from "@/mixin/utils";
-import { getInboundsByOutbound } from "@/api/inbound";
+import { getInboundsByOutboundAndForwarder } from "@/api/inbound";
 import { PaginationResponse } from "@/api/payload";
 import { createBid } from "@/api/bid";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { isEmptyObject } from "@/utils/tool";
 import { getBiddingNotificationsByUser } from "@/api/notification";
 import { IBiddingNotification } from "@/entity/bidding-notification";
+import { IOutbound } from "@/entity/outbound";
 @Component({
   mixins: [FormValidate, Utils]
 })
@@ -432,27 +429,21 @@ export default class CreateBid extends Vue {
   // Bid
   createBid() {
     // TODO: API create bid
-    if (this.biddingDocumentSync.id) {
-      // this.bidLocal.containers = this.bidLocal.containers.reduce(function(
-      //   pv: Array<number>,
-      //   cv: IContainer
-      // ) {
-      //   pv.push(cv.id);
-      //   return pv;
-      // },
-      // []);
-      this.bidLocal.containers = [] as Array<number>;
-      console.log(this.containers);
-      this.containers.forEach((element: IContainer) => {
-        if (element.id) {
-          this.bidLocal.containers.push(element.id);
-        }
-      });
-      const bidRequest = Object.assign({}, this.bidLocal);
-      createBid(this.biddingDocumentSync.id, bidRequest)
+    this.bidLocal.containers = this.containers.reduce(function(
+      pV: Array<number>,
+      cV: IContainer
+    ) {
+      if (cV.id) {
+        pV.push(cV.id);
+      }
+      return pV;
+    },
+    []);
+    if (this.biddingDocumentSelected.id) {
+      createBid(this.biddingDocumentSelected.id, this.bidLocal)
         .then(res => {
-          console.log(res.data);
           const response: IBid = res.data;
+          console.log("response", response);
           this.messageSync =
             "Thêm mới thành công Hồ sơ dự thầu: " + response.id;
           this.readonlyInbound = true;
@@ -479,11 +470,10 @@ export default class CreateBid extends Vue {
       : false;
   }
   created() {
-    if (
-      typeof this.biddingDocumentSync.outbound != "number" &&
-      this.biddingDocumentSync.outbound.id
-    ) {
-      getInboundsByOutbound(this.biddingDocumentSync.outbound.id, {
+    if (this.biddingDocumentSync && this.biddingDocumentSync.outbound) {
+      const _outbound = this.biddingDocumentSync.outbound as IOutbound;
+      const _outboundId = _outbound.id as number;
+      getInboundsByOutboundAndForwarder(_outboundId, {
         page: 0,
         limit: 100
       })

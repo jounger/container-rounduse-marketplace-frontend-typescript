@@ -144,7 +144,6 @@ export default class InvitedNotify extends Vue {
 
   @Watch("options", { deep: true })
   onOptionsChange(val: object, oldVal: object) {
-    console.log(this.$auth.user());
     if (val !== oldVal) {
       getBiddingNotificationsByUser({
         page: this.options.page - 1,

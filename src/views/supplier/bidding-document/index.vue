@@ -14,8 +14,8 @@
       </v-row>
       <v-row justify="center">
         <CancelBiddingDocument
-          v-if="dialogDel"
-          :dialogDel.sync="dialogDel"
+          v-if="dialogCancel"
+          :dialogCancel.sync="dialogCancel"
           :biddingDocument="biddingDocument"
           :biddingDocuments.sync="biddingDocuments"
           :message.sync="message"
@@ -47,6 +47,7 @@
         :server-items-length="options.totalItems"
         :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
         :actions-append="options.page"
+        @click:row="clicked"
         class="elevation-1"
       >
         <!--  -->
@@ -69,7 +70,7 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item @click="openEditDialog(item)">
+              <v-list-item @click.stop="openEditDialog(item)">
                 <v-list-item-icon>
                   <v-icon small>edit</v-icon>
                 </v-list-item-icon>
@@ -77,7 +78,7 @@
                   <v-list-item-title>Chỉnh sửa</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item @click="openDetailDialog(item)">
+              <v-list-item @click.stop="openDetailDialog(item)">
                 <v-list-item-icon>
                   <v-icon small>details</v-icon>
                 </v-list-item-icon>
@@ -85,7 +86,7 @@
                   <v-list-item-title>Xem trạng thái HSMT</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item @click="openCancelDialog(item)">
+              <v-list-item @click.stop="openCancelDialog(item)">
                 <v-list-item-icon>
                   <v-icon small>cancel_presentation</v-icon>
                 </v-list-item-icon>
@@ -93,7 +94,7 @@
                   <v-list-item-title>Đóng băng HSMT</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item @click="openDeleteDialog(item)">
+              <v-list-item @click.stop="openDeleteDialog(item)">
                 <v-list-item-icon>
                   <v-icon small>delete</v-icon>
                 </v-list-item-icon>
@@ -135,6 +136,7 @@ export default class BiddingDocument extends Vue {
   outbounds: Array<IOutbound> = [];
   dialogAdd = false;
   dialogEdit = false;
+  dialogCancel = false;
   dialogDel = false;
   search = "";
   message = "";
@@ -174,6 +176,11 @@ export default class BiddingDocument extends Vue {
     this.dialogEdit = true;
   }
 
+  openCancelDialog(item: IBiddingDocument) {
+    this.biddingDocument = item;
+    this.dialogCancel = true;
+  }
+
   openDeleteDialog(item: IBiddingDocument) {
     this.biddingDocument = item;
     this.dialogDel = true;
@@ -181,9 +188,13 @@ export default class BiddingDocument extends Vue {
   openDetailDialog(item: IBiddingDocument) {
     this.$router.push({ path: `/bidding-document/${item.id}` });
   }
+
+  clicked(value: IBiddingDocument){
+    this.$router.push({ path: `/bidding-document/${value.id}` });
+  }
+
   @Watch("options", { deep: true })
   onOptionsChange(val: object, oldVal: object) {
-    console.log(this.$auth.user());
     if (val !== oldVal) {
       getBiddingDocuments({
         page: this.options.page - 1,

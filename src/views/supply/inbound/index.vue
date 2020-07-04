@@ -8,6 +8,7 @@
         :message.sync="message"
         :snackbar.sync="snackbar"
         :inbounds.sync="inbounds"
+        :totalItems.sync="options.totalItems"
       />
       <UpdateInbound
         v-if="dialogEdit"
@@ -178,7 +179,6 @@ export default class Inbound extends Vue {
 
   @Watch("options", { deep: true })
   onOptionsChange(val: object, oldVal: object) {
-    console.log(this.$auth.user());
     if (val !== oldVal) {
       getInboundsByForwarder(this.$auth.user().id, {
         page: this.options.page - 1,

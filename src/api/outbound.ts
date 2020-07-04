@@ -26,8 +26,8 @@ export function getOutboundByMerchant(id: number, paging: PaginationRequest) {
   });
 }
 
-export function createOutbound(id: number, outbound: IOutbound) {
-  return Vue.axios.post(`/outbound/merchant/${id}`, outbound, {
+export function createOutbound(outbound: IOutbound) {
+  return Vue.axios.post("/outbound", outbound, {
     headers: config
   });
 }

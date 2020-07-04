@@ -101,7 +101,7 @@
                 ><v-layout row
                   ><v-flex xs10>
                     <v-text-field
-                      v-model="outboundLocal.payload"
+                      v-model="outboundLocal.grossWeight"
                       type="number"
                       label="Khối lượng hàng"
                     ></v-text-field> </v-flex></v-layout
@@ -109,7 +109,7 @@
                   ><v-flex xs10>
                     <v-select
                       v-model="outboundLocal.unitOfMeasurement"
-                      :items="unitOfMesurements"
+                      :items="unitOfMeasurements"
                       label="Đơn vị đo"
                     ></v-select> </v-flex></v-layout
               ></v-layout>
@@ -266,7 +266,7 @@ export default class UpdateOutbound extends Vue {
   ports: Array<IPort> = [];
   shippingLines: Array<IShippingLine> = [];
   containerTypes: Array<IContainerType> = [];
-  unitOfMesurements: Array<string> = [];
+  unitOfMeasurements: Array<string> = [];
   outboundLocal = {} as IOutbound;
   // outboundLocal form
   packingTimePicker = false;
@@ -373,7 +373,7 @@ export default class UpdateOutbound extends Vue {
     // TODO: API get Shipping Line
     // TODO: API get Container Type
     //TODO: API get unit of mesurement
-    this.unitOfMesurements = ["KG"];
+    this.unitOfMeasurements = ["KG"];
   }
 }
 </script>

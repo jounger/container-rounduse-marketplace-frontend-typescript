@@ -49,13 +49,13 @@
                 {{ formatDatetime(item.booking.cutOffTime) }}
               </template>
               <template v-slot:item.grossWeight="{ item }">
-                {{ item.grossWeight }} {{ item.unitOfMesurement }}
+                {{ item.grossWeight + "" + item.unitOfMeasurement }}
               </template>
               <template v-slot:item.fcl="{ item }">
                 {{ item.booking.isFcl ? "Có" : "Không" }}
               </template>
               <template v-slot:item.unit="{ item }">
-                {{ item.booking.unit }} x {{ item.containerType }}
+                {{ item.booking.unit + " x " + item.containerType }}
               </template>
             </v-data-table>
             <v-btn
@@ -233,7 +233,6 @@ import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
 import { updateBiddingDocument } from "@/api/bidding-document";
 import { IOutbound } from "@/entity/outbound";
-import Outbound from "../../../supply/outbound/index.vue";
 
 @Component({
   mixins: [FormValidate, Utils]
@@ -255,7 +254,7 @@ export default class UpdateBiddingDocument extends Vue {
   valid = true;
   // API list
   currencyOfPayments: Array<string> = [];
-  unitOfMesurements: Array<string> = [];
+  unitOfMeasurements: Array<string> = [];
   outbound = [] as Array<IOutbound>;
   // biddingDocumentSync form
   datePickerMenu = false;
@@ -299,12 +298,11 @@ export default class UpdateBiddingDocument extends Vue {
           console.log(res.data);
           const response: IBiddingDocument = res.data;
           this.biddingDocumentSync = response;
-          this.messageSync =
-            "Cập nhập thành công HSMT: " + this.biddingDocumentSync.id;
+          this.messageSync = "Cập nhập thành công HSMT: " + response.id;
           const index = this.biddingDocumentsSync.findIndex(
-            x => x.id === this.biddingDocumentSync.id
+            x => x.id === response.id
           );
-          this.biddingDocumentsSync.splice(index, 1, this.biddingDocumentSync);
+          this.biddingDocumentsSync.splice(index, 1, response);
         })
         .catch(err => {
           console.log(err);
@@ -317,7 +315,7 @@ export default class UpdateBiddingDocument extends Vue {
   mounted() {
     //
     this.currencyOfPayments = ["VND", "USD"];
-    this.unitOfMesurements = ["KG", "Ton"];
+    this.unitOfMeasurements = ["KG", "Ton"];
   }
 }
 </script>

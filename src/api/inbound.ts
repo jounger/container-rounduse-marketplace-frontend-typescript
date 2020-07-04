@@ -39,8 +39,8 @@ export function getInboundsByOutboundAndForwarder(id: number, paging: Pagination
   });
 }
 
-export function createInbound(id: number, inbound: IInbound) {
-  return Vue.axios.post(`/inbound/forwarder/${id}`, inbound, {
+export function createInbound(inbound: IInbound) {
+  return Vue.axios.post("/inbound", inbound, {
     headers: config
   });
 }

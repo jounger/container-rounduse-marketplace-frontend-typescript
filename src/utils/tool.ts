@@ -18,3 +18,12 @@ export function addTimeToDate(input: string) {
   }
   return `${date}`;
 }
+
+export function addHoursToDate(d: Date, h: number) {
+  const date = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+  if (isValidDate(date)) {
+    return new Date(date.setHours(date.getHours() + h)).toISOString().substr(0, 16);
+  } else {
+    return date.toISOString().substr(0, 16);
+  }
+}

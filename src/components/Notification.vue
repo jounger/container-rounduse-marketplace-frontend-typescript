@@ -79,7 +79,12 @@ export default class Notification extends Vue {
   stompClient = {} as Client;
 
   gotoNotification(item: IBiddingNotification) {
-    const ROUTER = "/bidding-document";
+    let ROUTER = "#";
+    switch (item.type) {
+      case "ADDED":
+        ROUTER = "/bidding-document";
+        break;
+    }
     return `${ROUTER}/${item.relatedResource.id}`;
   }
 
