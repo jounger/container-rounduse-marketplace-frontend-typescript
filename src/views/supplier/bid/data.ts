@@ -24,6 +24,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
     bids: [
       {
         id: 0,
+        bidder: "forwader",
         containers: [
           {
             id: 0,
@@ -73,6 +74,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
       },
       {
         id: 1,
+        bidder: "forwader",
         containers: [
           {
             id: 0,
@@ -98,6 +100,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
       },
       {
         id: 2,
+        bidder: "forwader",
         containers: [
           {
             id: 0,
@@ -148,6 +151,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
     bids: [
       {
         id: 0,
+        bidder: "forwader",
         containers: [
           {
             id: 0,
@@ -173,6 +177,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
       },
       {
         id: 1,
+        bidder: "forwader",
         containers: [
           {
             id: 0,
@@ -198,6 +203,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
       },
       {
         id: 2,
+        bidder: "forwader",
         containers: [
           {
             id: 0,
@@ -256,6 +262,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
     bids: [
       {
         id: 0,
+        bidder: "forwader",
         containers: [
           {
             id: 0,
@@ -281,6 +288,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
       },
       {
         id: 1,
+        bidder: "forwader",
         containers: [
           {
             id: 0,
@@ -306,6 +314,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
       },
       {
         id: 2,
+        bidder: "forwader",
         containers: [
           {
             id: 0,
