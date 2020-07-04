@@ -11,13 +11,14 @@
         :message.sync="message"
         :snackbar.sync="snackbar"
       />
-      <!-- <UpdateBid
+      <UpdateBid
         v-if="dialogEdit"
         :bid.sync="bid"
+        :biddingDocument.sync="biddingDocument"
         :dialogEdit.sync="dialogEdit"
         :message.sync="message"
         :snackbar.sync="snackbar"
-      /> -->
+      />
       <v-data-table
         :headers="headers"
         :items="biddingDocuments"
@@ -54,18 +55,6 @@
         <template v-slot:item.bidClosingText="{ item }">
           {{ formatDatetime(item.bidClosing) }}
         </template>
-        <template v-slot:item.actions="{ item }">
-          <v-btn
-            class="ma-1"
-            tile
-            outlined
-            color="success"
-            @click="openAddDialog(item)"
-            small
-          >
-            <v-icon left>mdi-pencil</v-icon> Thêm HSDT
-          </v-btn>
-        </template>
         <!-- Show Bids expened -->
         <template v-slot:expanded-item="{ headers }">
           <td :colspan="headers.length" class="px-0">
@@ -83,12 +72,27 @@
                 {{ formatDatetime(item.bidValidityPeriod) }}
               </template>
               <template v-slot:item.actions="{ item }">
-                <v-icon small class="mr-2" @click="openEditDialog(item)">
+                <v-icon
+                  small
+                  class="mr-2"
+                  @click="openEditDialog(item)"
+                  v-if="item.status == 'PENDING'"
+                >
                   mdi-pencil
                 </v-icon>
-                <v-icon small @click="openDeleteDialog(item)">
+                <v-icon
+                  small
+                  @click="openDeleteDialog(item)"
+                  v-if="item.status == 'PENDING'"
+                >
                   mdi-delete
                 </v-icon>
+                <span style="color:red;" v-if="item.status == 'REJECTED'"
+                  >REJECTED</span
+                >
+                <span style="color:green;" v-if="item.status == 'ACCEPTED'"
+                  >ACCEPTED</span
+                >
               </template>
             </v-data-table>
           </td>
@@ -107,12 +111,13 @@ import Snackbar from "@/components/Snackbar.vue";
 import { PaginationResponse } from "@/api/payload";
 import { getBidByBiddingDocumentAndForwarder } from "@/api/bid";
 import Utils from "@/mixin/utils";
+import UpdateBid from "./components/UpdateBid.vue";
 
 @Component({
   mixins: [Utils],
   components: {
     CreateBid,
-    // UpdateBid,
+    UpdateBid,
     Snackbar
   }
 })
@@ -151,8 +156,7 @@ export default class Bid extends Vue {
     { text: "Giá gói thầu", value: "bidPackagePrice" },
     { text: "Mở thầu", value: "bidOpeningText" },
     { text: "Đóng thầu", value: "bidClosingText" },
-    { text: "Nhiều thầu win", value: "isMultipleAward" },
-    { text: "Actions", value: "actions", sortable: false }
+    { text: "Nhiều thầu win", value: "isMultipleAward" }
   ];
 
   bidHeaders = [
@@ -176,7 +180,7 @@ export default class Bid extends Vue {
       class: "elevation-1 primary"
     },
     {
-      text: "Actions",
+      text: "",
       value: "actions",
       sortable: false,
       class: "elevation-1 primary"
@@ -187,6 +191,7 @@ export default class Bid extends Vue {
       getBidByBiddingDocumentAndForwarder(item.id)
         .then(res => {
           const response = res.data;
+          console.log(response);
           if (this.bids.length == 0) {
             this.bids.push(response);
           } else {
@@ -220,18 +225,20 @@ export default class Bid extends Vue {
     }
   }
 
-  openAddDialog(item: IBiddingDocument) {
-    this.biddingDocument = item;
-    this.dialogAdd = true;
-  }
   openCreateDialog() {
     this.biddingDocument = {} as IBiddingDocument;
     this.dialogAdd = true;
   }
 
   openEditDialog(item: IBid) {
-    this.bid = item;
-    this.dialogEdit = true;
+    if (new Date().getTime() - new Date(item.bidValidityPeriod).getTime() > 0) {
+      this.bid = item;
+      this.dialogEdit = true;
+    } else {
+      this.message =
+        "Không thể sửa khi chưa vượt quá thời gian Validity Period";
+      this.snackbar = true;
+    }
   }
 
   openDeleteDialog(item: IBid) {

@@ -65,9 +65,8 @@
             <v-btn
               color="primary"
               @click="
-                !isEmptyObject(biddingDocumentSelected)
-                  ? (stepper = 2)
-                  : (stepper = 1)
+                stepper = 2;
+                valid = false;
               "
               :disabled="isEmptyObject(biddingDocumentSelected)"
               >Tiếp tục</v-btn
@@ -78,7 +77,7 @@
             <small>Thông tin chung</small>
           </v-stepper-step>
           <v-stepper-content step="2">
-            <v-form ref="bidForm" v-model="valid" lazy-validation>
+            <v-form ref="bidForm" v-model="valid" validation>
               <v-text-field
                 v-model="bidLocal.bidPrice"
                 type="number"
@@ -169,11 +168,21 @@
               ></v-text-field>
               <v-btn
                 color="primary"
-                @click="valid ? (stepper = 3) : (stepper = 2)"
+                @click="
+                  stepper = 3;
+                  valid = false;
+                "
                 :disabled="!valid"
                 >Tiếp tục</v-btn
               >
-              <v-btn text @click="stepper = 1">Quay lại</v-btn>
+              <v-btn
+                text
+                @click="
+                  stepper = 1;
+                  valid = true;
+                "
+                >Quay lại</v-btn
+              >
             </v-form>
           </v-stepper-content>
           <v-stepper-step :complete="stepper > 3" step="3" :editable="editable"
@@ -271,10 +280,23 @@
                 </v-container>
               </v-tab-item>
             </v-tabs>
-            <v-btn color="primary" @click="stepper = 4" :disabled="!valid"
+            <v-btn
+              color="primary"
+              @click="
+                stepper = 4;
+                valid = false;
+              "
+              :disabled="!valid"
               >Tiếp tục</v-btn
             >
-            <v-btn text @click="stepper = 2">Quay lại</v-btn>
+            <v-btn
+              text
+              @click="
+                stepper = 2;
+                valid = true;
+              "
+              >Quay lại</v-btn
+            >
           </v-stepper-content>
           <v-stepper-step step="4">Hoàn thành</v-stepper-step>
           <v-stepper-content step="4">
@@ -284,10 +306,17 @@
                 :rules="[required('agree term')]"
                 label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
               ></v-checkbox>
-              <v-btn color="primary" @click="createBid()" :disabled="!valid"
+              <v-btn color="primary" @click="createBid()" :disabled="!checkbox"
                 >Hoàn tất</v-btn
               >
-              <v-btn text @click="stepper = 3">Quay lại</v-btn>
+              <v-btn
+                text
+                @click="
+                  stepper = 3;
+                  valid = true;
+                "
+                >Quay lại</v-btn
+              >
             </v-form>
           </v-stepper-content>
         </v-stepper>
