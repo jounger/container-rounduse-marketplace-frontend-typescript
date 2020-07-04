@@ -24,20 +24,18 @@
             Chọn HSMT
             <small>Thông tin bắt buộc</small>
           </v-stepper-step>
-
           <v-stepper-content step="1">
             <v-data-table
               :headers="headers"
               :items="biddingDocuments"
               item-key="id"
               :loading="loading"
-              :optionsBiddingDocument.sync="optionsBiddingDocument"
-              :server-items-length="optionsBiddingDocument.totalItems"
+              :options.sync="options"
+              :server-items-length="options.totalItems"
               :footer-props="{
-                'items-per-page-options':
-                  optionsBiddingDocument.itemsPerPageItems
+                'items-per-page-options': options.itemsPerPageItems
               }"
-              :actions-append="optionsBiddingDocument.page"
+              :actions-append="options.page"
               class="elevation-1 my-1"
             >
               <template v-slot:top>
@@ -75,12 +73,10 @@
               >Tiếp tục</v-btn
             >
           </v-stepper-content>
-
           <v-stepper-step :complete="stepper > 2" step="2" :editable="editable">
             Thông tin HSDT
             <small>Thông tin chung</small>
           </v-stepper-step>
-
           <v-stepper-content step="2">
             <v-form ref="bidForm" v-model="valid" lazy-validation>
               <v-text-field
@@ -128,7 +124,6 @@
                   >
                 </v-date-picker>
               </v-menu>
-
               <v-menu
                 ref="datePickerMenu2"
                 v-model="datePickerMenu2"
@@ -181,11 +176,9 @@
               <v-btn text @click="stepper = 1">Quay lại</v-btn>
             </v-form>
           </v-stepper-content>
-
           <v-stepper-step :complete="stepper > 3" step="3" :editable="editable"
             >Chọn containers mong muốn</v-stepper-step
           >
-
           <!-- SELECT CONTAINER -->
           <v-stepper-content step="3">
             <v-tabs background-color="white" color="deep-purple accent-4" left>
@@ -283,7 +276,6 @@
             >
             <v-btn text @click="stepper = 2">Quay lại</v-btn>
           </v-stepper-content>
-
           <v-stepper-step step="4">Hoàn thành</v-stepper-step>
           <v-stepper-content step="4">
             <v-form ref="finishForm" v-model="valid" lazy-validation>
@@ -305,7 +297,7 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync, Watch } from "vue-property-decorator";
+import { Component, Vue, PropSync } from "vue-property-decorator";
 import { IBid } from "@/entity/bid";
 import { IContainer } from "@/entity/container";
 import FormValidate from "@/mixin/form-validate";
@@ -318,7 +310,6 @@ import { IBiddingDocument } from "@/entity/bidding-document";
 import { isEmptyObject } from "@/utils/tool";
 import { getBiddingNotificationsByUser } from "@/api/notification";
 import { IBiddingNotification } from "@/entity/bidding-notification";
-
 @Component({
   mixins: [FormValidate, Utils]
 })
@@ -343,13 +334,6 @@ export default class CreateBid extends Vue {
     status: "CREATED"
   };
   loading = true;
-  optionsBiddingDocument = {
-    descending: true,
-    page: 1,
-    itemsPerPage: 5,
-    totalItems: 0,
-    itemsPerPageItems: [5, 10, 20, 50]
-  };
   options = {
     descending: true,
     page: 1,
@@ -363,7 +347,6 @@ export default class CreateBid extends Vue {
   stepper = 1;
   valid = true;
   // API list
-
   // bidLocal form
   datePickerMenu = false;
   datePickerMenu2 = false;
@@ -388,7 +371,6 @@ export default class CreateBid extends Vue {
     { text: "Nhiều thầu win", value: "isMultipleAward" },
     { text: "Actions", value: "actions", sortable: false }
   ];
-
   inboundHeaders = [
     {
       text: "Mã",
@@ -418,7 +400,6 @@ export default class CreateBid extends Vue {
     { text: "Đầu kéo", value: "tractor" },
     { text: "Hành động", value: "actions" }
   ];
-
   // Bid
   createBid() {
     // TODO: API create bid
@@ -463,7 +444,6 @@ export default class CreateBid extends Vue {
       this.containers.splice(index, 1);
     }
   }
-
   checkDuplicateSelect(item: IContainer) {
     return this.containers.filter(x => x.id == item.id).length > 0
       ? true
@@ -486,7 +466,6 @@ export default class CreateBid extends Vue {
         .finally();
     }
   }
-
   selectBiddingDocument(item: IBiddingDocument) {
     if (
       this.biddingDocumentSelected &&
@@ -502,43 +481,36 @@ export default class CreateBid extends Vue {
       }
     }
   }
-
-  @Watch("optionsBiddingDocument", { deep: true })
-  onOptionsBiddingDocumentChange(val: object, oldVal: object) {
-    if (
-      this.biddingDocumentSync != null &&
-      !isEmptyObject(this.biddingDocumentSync)
-    ) {
+  mounted() {
+    // TODO: API get
+    if (this.biddingDocumentSync && !isEmptyObject(this.biddingDocumentSync)) {
       this.biddingDocuments.push(this.biddingDocumentSync);
       this.selectBiddingDocument(this.biddingDocumentSync);
-      this.optionsBiddingDocument.totalItems = 1;
-      this.loading = false;
     } else {
-      if (val !== oldVal) {
-        getBiddingNotificationsByUser({
-          page: this.optionsBiddingDocument.page - 1,
-          limit: this.optionsBiddingDocument.itemsPerPage,
-          status: "ADDED"
+      getBiddingNotificationsByUser({
+        page: 0,
+        limit: 100,
+        status: "ADDED"
+      })
+        .then(res => {
+          const response: PaginationResponse<IBiddingNotification> = res.data;
+          console.log("watch", response);
+          this.biddingDocuments = response.data.reduce(function(
+            pV: Array<IBiddingDocument>,
+            cV: IBiddingNotification
+          ) {
+            pV.push(cV.relatedResource);
+            return pV;
+          },
+          []);
+          this.options.totalItems = response.totalElements;
         })
-          .then(res => {
-            const response: PaginationResponse<IBiddingNotification> = res.data;
-            console.log("watchNotify", response);
-            this.biddingDocuments = response.data.reduce(function(
-              pV: Array<IBiddingDocument>,
-              cV: IBiddingNotification
-            ) {
-              pV.push(cV.relatedResource);
-              return pV;
-            },
-            []);
-            this.optionsBiddingDocument.totalItems = response.totalElements;
-          })
-          .catch(err => console.log(err))
-          .finally(() => (this.loading = false));
-      }
+        .catch(err => console.log(err))
+        .finally(() => (this.loading = false));
     }
+    this.options.totalItems = 10;
+    this.loading = false;
   }
-
   clicked(value: IInbound) {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {

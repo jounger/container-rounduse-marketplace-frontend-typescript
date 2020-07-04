@@ -3,6 +3,7 @@
     <v-card>
       <v-row justify="center">
         <DeleteDriver
+          v-if="dialogDel"
           :dialogDel.sync="dialogDel"
           :driver.sync="driver"
           :drivers.sync="drivers"
@@ -12,6 +13,7 @@
       </v-row>
       <v-row justify="center">
         <CreateDriver
+          v-if="dialogAdd"
           :driver="driver"
           :drivers.sync="drivers"
           :dialogAdd.sync="dialogAdd"

@@ -38,7 +38,12 @@
             <v-toolbar-title>Danh sách Hồ sơ dự thầu</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
-            <v-btn color="primary" dark class="mb-2" @click="dialogAdd = true">
+            <v-btn
+              color="primary"
+              dark
+              class="mb-2"
+              @click="openCreateDialog()"
+            >
               Thêm mới
             </v-btn>
           </v-toolbar>
@@ -217,6 +222,10 @@ export default class Bid extends Vue {
 
   openAddDialog(item: IBiddingDocument) {
     this.biddingDocument = item;
+    this.dialogAdd = true;
+  }
+  openCreateDialog() {
+    this.biddingDocument = {} as IBiddingDocument;
     this.dialogAdd = true;
   }
 

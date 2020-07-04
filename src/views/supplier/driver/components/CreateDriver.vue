@@ -10,7 +10,7 @@
             icon
             dark
             @click="dialogAddSync = false"
-            style="margin-left:412px;"
+            style="margin-left:344px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
@@ -156,8 +156,20 @@ export default class CreateDriver extends Vue {
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Boolean) update!: boolean;
 
-  driverLocal = {} as IDriver;
+  driverLocal = {
+    username: "",
+    email: "",
+    phone: "",
+    roles: ["ROLE_DRIVER"],
+    status: "ACTIVE",
+    address: "",
+    password: "",
+    fullname: "",
+    driverLicense: "",
+    location: ""
+  } as IDriver;
   created() {
+    console.log(this.driver);
     this.driverLocal = Object.assign({}, this.driver);
   }
   createDriver() {
@@ -166,10 +178,8 @@ export default class CreateDriver extends Vue {
         .then(res => {
           console.log(res.data);
           const response: IDriver = res.data;
-          this.driverLocal = response;
-          this.messageSync =
-            "Thêm mới thành công lái xe: " + this.driverLocal.id;
-          this.driversSync.unshift(this.driverLocal);
+          this.messageSync = "Thêm mới thành công lái xe: " + response.id;
+          this.driversSync.unshift(response);
         })
         .catch(err => {
           console.log(err);
