@@ -182,7 +182,7 @@
           </v-layout>
           <v-layout col>
             <v-layout row>
-              <v-flex xs8>
+              <v-flex xs4>
                 <v-text-field
                   label="Địa chỉ công ty"
                   name="companyAddress"

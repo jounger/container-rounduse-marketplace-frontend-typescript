@@ -31,27 +31,19 @@
               :items="biddingDocuments"
               item-key="id"
               :loading="loading"
-              :options.sync="options"
-              :server-items-length="options.totalItems"
+              :optionsBiddingDocument.sync="optionsBiddingDocument"
+              :server-items-length="optionsBiddingDocument.totalItems"
               :footer-props="{
-                'items-per-page-options': options.itemsPerPageItems
+                'items-per-page-options':
+                  optionsBiddingDocument.itemsPerPageItems
               }"
-              :actions-append="options.page"
+              :actions-append="optionsBiddingDocument.page"
               class="elevation-1 my-1"
             >
               <template v-slot:top>
                 <v-toolbar flat color="white">
                   <v-toolbar-title>HSMT nhận được</v-toolbar-title>
                   <v-divider class="mx-4" inset vertical></v-divider>
-                  <v-spacer></v-spacer>
-                  <v-btn
-                    color="primary"
-                    dark
-                    class="mb-2"
-                    @click="dialogAdd = true"
-                  >
-                    Thêm mới
-                  </v-btn>
                 </v-toolbar>
               </template>
               <template v-slot:item.actions="{ item }">
@@ -95,7 +87,7 @@
                 v-model="bidLocal.bidPrice"
                 type="number"
                 :rules="[
-                  minNumber('bid price', biddingDocumentSync.bidFloorPrice)
+                  minNumber('bid price', biddingDocumentSync.bidFloorPrice + 1)
                 ]"
                 label="Giá gửi thầu"
               ></v-text-field>
@@ -313,7 +305,7 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Watch } from "vue-property-decorator";
 import { IBid } from "@/entity/bid";
 import { IContainer } from "@/entity/container";
 import FormValidate from "@/mixin/form-validate";
@@ -343,13 +335,21 @@ export default class CreateBid extends Vue {
   singleExpand = true;
   dateInit = new Date().toISOString().substr(0, 10);
   bidLocal = {
+    bidder: this.$auth.user().username,
     containers: [] as Array<number>,
     bidPrice: 0,
     bidDate: this.dateInit,
     bidValidityPeriod: this.dateInit,
-    status: ""
+    status: "CREATED"
   };
   loading = true;
+  optionsBiddingDocument = {
+    descending: true,
+    page: 1,
+    itemsPerPage: 5,
+    totalItems: 0,
+    itemsPerPageItems: [5, 10, 20, 50]
+  };
   options = {
     descending: true,
     page: 1,
@@ -498,39 +498,46 @@ export default class CreateBid extends Vue {
       // select item
       if (item.id) {
         this.biddingDocumentSelected = item;
+        console.log(this.biddingDocumentSelected);
       }
     }
   }
 
-  mounted() {
-    // TODO: API get
-    if (this.biddingDocumentSync && !isEmptyObject(this.biddingDocumentSync)) {
+  @Watch("optionsBiddingDocument", { deep: true })
+  // TODO: API get
+  onOptionsBiddingDocumentChange(val: object, oldVal: object) {
+    if (
+      this.biddingDocumentSync != null &&
+      !isEmptyObject(this.biddingDocumentSync)
+    ) {
       this.biddingDocuments.push(this.biddingDocumentSync);
       this.selectBiddingDocument(this.biddingDocumentSync);
+      this.optionsBiddingDocument.totalItems = 1;
+      this.loading = false;
     } else {
-      getBiddingNotificationsByUser({
-        page: 0,
-        limit: 100,
-        status: "ADDED"
-      })
-        .then(res => {
-          const response: PaginationResponse<IBiddingNotification> = res.data;
-          console.log("watch", response);
-          this.biddingDocuments = response.data.reduce(function(
-            pV: Array<IBiddingDocument>,
-            cV: IBiddingNotification
-          ) {
-            pV.push(cV.relatedResource);
-            return pV;
-          },
-          []);
-          this.options.totalItems = response.totalElements;
+      if (val !== oldVal) {
+        getBiddingNotificationsByUser({
+          page: 0,
+          limit: 100,
+          status: "ADDED"
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+          .then(res => {
+            const response: PaginationResponse<IBiddingNotification> = res.data;
+            console.log("watch", response);
+            this.biddingDocuments = response.data.reduce(function(
+              pV: Array<IBiddingDocument>,
+              cV: IBiddingNotification
+            ) {
+              pV.push(cV.relatedResource);
+              return pV;
+            },
+            []);
+            this.optionsBiddingDocument.totalItems = response.totalElements;
+          })
+          .catch(err => console.log(err))
+          .finally(() => (this.loading = false));
+      }
     }
-    this.options.totalItems = 10;
-    this.loading = false;
   }
 
   clicked(value: IInbound) {

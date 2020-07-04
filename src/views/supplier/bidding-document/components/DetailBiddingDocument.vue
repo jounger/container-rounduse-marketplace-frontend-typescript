@@ -458,6 +458,7 @@ export default class DetailBiddingDocument extends Vue {
   created() {
     // TODO: API get Bidding Document
     console.log(this.$route.params.id);
+    console.log(this.biddingDocument);
     const biddingDocumentId = parseInt(this.$route.params.id);
     getBiddingDocument(biddingDocumentId)
       .then(res => {

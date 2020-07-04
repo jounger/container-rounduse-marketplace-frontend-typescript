@@ -5,6 +5,7 @@
       <CreateBid
         v-if="dialogAdd"
         :bid.sync="bid"
+        :biddingDocument.sync="biddingDocument"
         :bids.sync="bids"
         :dialogAdd.sync="dialogAdd"
         :message.sync="message"
@@ -42,6 +43,12 @@
             </v-btn>
           </v-toolbar>
         </template>
+        <template v-slot:item.bidOpeningText="{ item }">
+          {{ formatDatetime(item.bidOpening) }}
+        </template>
+        <template v-slot:item.bidClosingText="{ item }">
+          {{ formatDatetime(item.bidClosing) }}
+        </template>
         <template v-slot:item.actions="{ item }">
           <v-btn
             class="ma-1"
@@ -55,15 +62,21 @@
           </v-btn>
         </template>
         <!-- Show Bids expened -->
-        <template v-slot:expanded-item="{ headers, item }">
+        <template v-slot:expanded-item="{ headers }">
           <td :colspan="headers.length" class="px-0">
             <v-data-table
               :headers="bidHeaders"
-              :items="item.bids"
+              :items="bids"
               :hide-default-footer="true"
-              dark
               dense
+              dark
             >
+              <template v-slot:item.bidDateText="{ item }">
+                {{ formatDatetime(item.bidDate) }}
+              </template>
+              <template v-slot:item.bidValidityPeriodText="{ item }">
+                {{ formatDatetime(item.bidValidityPeriod) }}
+              </template>
               <template v-slot:item.actions="{ item }">
                 <v-icon small class="mr-2" @click="openEditDialog(item)">
                   mdi-pencil
@@ -84,14 +97,14 @@ import { Component, Watch, Vue } from "vue-property-decorator";
 import { IBid } from "@/entity/bid";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import CreateBid from "./components/CreateBid.vue";
-// import UpdateBid from "./components/UpdateBid.vue";
-// import { getBidByForwarder } from "@/api/bid";
-// import { PaginationResponse } from "@/api/payload";
+import { getBiddingDocuments } from "@/api/bidding-document";
 import Snackbar from "@/components/Snackbar.vue";
-import { getBidsByForwarder } from "@/api/bid";
 import { PaginationResponse } from "@/api/payload";
+import { getBidByBiddingDocumentAndForwarder } from "@/api/bid";
+import Utils from "@/mixin/utils";
 
 @Component({
+  mixins: [Utils],
   components: {
     CreateBid,
     // UpdateBid,
@@ -99,7 +112,6 @@ import { PaginationResponse } from "@/api/payload";
   }
 })
 export default class Bid extends Vue {
-
   biddingDocuments: Array<IBiddingDocument> = [];
   biddingDocument = {} as IBiddingDocument;
   bids: Array<IBid> = [];
@@ -132,8 +144,8 @@ export default class Bid extends Vue {
     { text: "Loại cont", value: "outbound.containerType" },
     { text: "Mã booking", value: "outbound.booking.bookingNumber" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
-    { text: "Mở thầu", value: "bidOpening" },
-    { text: "Đóng thầu", value: "bidClosing" },
+    { text: "Mở thầu", value: "bidOpeningText" },
+    { text: "Đóng thầu", value: "bidClosingText" },
     { text: "Nhiều thầu win", value: "isMultipleAward" },
     { text: "Actions", value: "actions", sortable: false }
   ];
@@ -143,26 +155,59 @@ export default class Bid extends Vue {
       text: "Mã",
       align: "start",
       sortable: false,
-      value: "id"
+      value: "id",
+      class: "elevation-1 primary"
     },
-    { text: "Cont qty", value: "containers.length" },
-    { text: "Giá thầu", value: "bidPrice" },
-    { text: "Ngày thầu", value: "bidDate" },
-    { text: "Hiệu lực", value: "bidValidityPeriod" },
-    { text: "Actions", value: "actions", sortable: false }
+    {
+      text: "Cont qty",
+      value: "containers.length",
+      class: "elevation-1 primary"
+    },
+    { text: "Giá thầu", value: "bidPrice", class: "elevation-1 primary" },
+    { text: "Ngày thầu", value: "bidDateText", class: "elevation-1 primary" },
+    {
+      text: "Hiệu lực",
+      value: "bidValidityPeriodText",
+      class: "elevation-1 primary"
+    },
+    {
+      text: "Actions",
+      value: "actions",
+      sortable: false,
+      class: "elevation-1 primary"
+    }
   ];
-
+  getBids(item: IBiddingDocument) {
+    if (item.id) {
+      getBidByBiddingDocumentAndForwarder(item.id)
+        .then(res => {
+          const response = res.data;
+          if (this.bids.length == 0) {
+            this.bids.push(response);
+          } else {
+            this.bids.splice(0, 1, response);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
+        .finally();
+    }
+    return this.bids;
+  }
   clicked(value: IBiddingDocument) {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
       } else {
         this.expanded.splice(0, this.expanded.length);
+        this.getBids(value);
         this.expanded.push(value);
       }
     } else {
       const index = this.expanded.findIndex(x => x.id === value.id);
       if (index === -1) {
+        this.getBids(value);
         this.expanded.push(value);
       } else {
         this.expanded.splice(index, 1);
@@ -189,14 +234,14 @@ export default class Bid extends Vue {
   onOptionsChange(val: object, oldVal: object) {
     console.log(this.$auth.user());
     if (val !== oldVal) {
-      getBidsByForwarder(this.$auth.user().id, {
+      getBiddingDocuments({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })
         .then(res => {
-          const response: PaginationResponse<IBid> = res.data;
-          console.log("watch", response);
-          this.bids = response.data;
+          const response: PaginationResponse<IBiddingDocument> = res.data;
+          console.log("watch", response.data);
+          this.biddingDocuments = response.data;
           this.options.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))

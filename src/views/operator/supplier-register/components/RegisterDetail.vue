@@ -6,6 +6,18 @@
     transition="dialog-bottom-transition"
   >
     <v-card>
+      <v-row justify="center">
+        <ConfirmReviewSupplier
+          v-if="dialogConfirm"
+          :dialogConfirm.sync="dialogConfirm"
+          :supplier="supplier"
+          :suppliersSync.sync="suppliersSync"
+          :messageSync.sync="messageSync"
+          :snackbarSync.sync="snackbarSync"
+          :finish.sync="finish"
+          :status="status"
+        />
+      </v-row>
       <v-toolbar color="primary" light flat>
         <v-btn icon dark @click="dialogDetailSync = false">
           <v-icon>mdi-close</v-icon>
@@ -21,11 +33,11 @@
           <v-btn
             dark
             color="error"
-            @click="reviewRegister(false)"
+            @click="openRejectConfirm()"
             :disabled="finish"
             >Từ chối</v-btn
           >
-          <v-btn @click="reviewRegister(true)" color="green" :disabled="finish"
+          <v-btn @click="openAcceptConfirm()" color="green" :disabled="finish"
             ><span style="color:white;">Cho phép</span></v-btn
           >
         </v-toolbar-items>
@@ -167,18 +179,6 @@
             <v-layout row>
               <v-flex xs8>
                 <v-text-field
-                  label="Địa chỉ công ty"
-                  name="companyAddress"
-                  prepend-icon="mdi-lock"
-                  type="text"
-                  v-model="supplier.companyAddress"
-                  readonly
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout row>
-              <v-flex xs8>
-                <v-text-field
                   label="Tin"
                   name="tin"
                   prepend-icon="mdi-lock"
@@ -201,6 +201,20 @@
               </v-flex>
             </v-layout>
           </v-layout>
+          <v-layout col>
+            <v-layout row>
+              <v-flex xs4>
+                <v-text-field
+                  label="Địa chỉ công ty"
+                  name="companyAddress"
+                  prepend-icon="mdi-lock"
+                  type="text"
+                  v-model="supplier.companyAddress"
+                  readonly
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-layout>
         </v-form>
       </v-card-text>
     </v-card>
@@ -209,9 +223,13 @@
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { ISupplier } from "@/entity/supplier";
-import { reviewSupplier } from "@/api/supplier";
+import ConfirmReviewSupplier from "./ConfirmReviewSupplier.vue";
 
-@Component
+@Component({
+  components: {
+    ConfirmReviewSupplier
+  }
+})
 export default class RegisterDetail extends Vue {
   @PropSync("dialogDetail", { type: Boolean }) dialogDetailSync!: boolean;
   @PropSync("suppliers", { type: Array }) suppliersSync!: Array<ISupplier>;
@@ -220,28 +238,15 @@ export default class RegisterDetail extends Vue {
   @Prop(Object) supplier!: ISupplier;
 
   finish = false;
-  reviewRegister(status: boolean) {
-    if (this.supplier.id) {
-      reviewSupplier(this.supplier.id, {
-        status: status == true ? "ACTIVE" : "BANNED"
-      })
-        .then(res => {
-          console.log(res.data);
-          const response: ISupplier = res.data;
-          this.messageSync =
-            response.status == "ACTIVE"
-              ? "Đồng ý thành công người dùng: " + response.username
-              : "Từ chối thành công người dùng: " + response.username;
-          const index = this.suppliersSync.findIndex(x => x.id == response.id);
-          this.suppliersSync.splice(index, 1);
-          this.finish = true;
-        })
-        .catch(err => {
-          console.log(err);
-          this.messageSync = "Error happend";
-        })
-        .finally(() => (this.snackbarSync = true));
-    }
+  status = false;
+  dialogConfirm = false;
+  openAcceptConfirm() {
+    this.status = true;
+    this.dialogConfirm = true;
+  }
+  openRejectConfirm() {
+    this.status = false;
+    this.dialogConfirm = true;
   }
 }
 </script>

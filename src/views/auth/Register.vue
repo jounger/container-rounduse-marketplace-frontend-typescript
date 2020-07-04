@@ -18,12 +18,13 @@
         </v-stepper-step>
 
         <v-stepper-content step="1">
-          <v-form ref="outboundForm" v-model="valid" lazy-validation>
+          <v-form ref="registerForm" v-model="valid" validation>
+            <small>*Dấu sao là trường bắt buộc</small>
             <v-layout col>
               <v-layout row>
                 <v-flex xs8>
                   <v-text-field
-                    label="Tên đăng nhập"
+                    label="Tên đăng nhập*"
                     name="username"
                     prepend-icon="mdi-account"
                     type="text"
@@ -39,7 +40,7 @@
               <v-layout row>
                 <v-flex xs8>
                   <v-text-field
-                    label="Mật khẩu"
+                    label="Mật khẩu*"
                     name="password"
                     prepend-icon="mdi-lock"
                     type="password"
@@ -53,7 +54,7 @@
                 </v-flex>
               </v-layout>
             </v-layout>
-            <v-radio-group v-model="roles" :mandatory="false" row>
+            <v-radio-group v-model="roles" :mandatory="true" row>
               <v-radio label="Đăng ký làm chủ xe" value="forwarder"></v-radio>
               <v-radio
                 label="Đăng ký làm chủ hàng"
@@ -65,20 +66,22 @@
               <v-layout row>
                 <v-flex xs8>
                   <v-text-field
-                    label="Email"
-                    name="email"
-                    prepend-icon="mdi-lock"
+                    label="Email*"
                     type="email"
+                    v-model="emailRegister"
                     :counter="50"
-                    :rules="[minLength('email', 5), maxLength('email', 50)]"
-                    v-model="email"
+                    :rules="[
+                      email('Register'),
+                      minLength('email', 5),
+                      maxLength('email', 50)
+                    ]"
                   ></v-text-field>
                 </v-flex>
               </v-layout>
               <v-layout row>
                 <v-flex xs8>
                   <v-text-field
-                    label="Số điện thoại"
+                    label="Số điện thoại*"
                     name="phone"
                     prepend-icon="mdi-lock"
                     type="text"
@@ -91,7 +94,7 @@
             </v-layout>
 
             <v-text-field
-              label="Địa chỉ"
+              label="Địa chỉ*"
               name="address"
               prepend-icon="mdi-lock"
               :counter="100"
@@ -101,7 +104,10 @@
             ></v-text-field>
             <v-btn
               color="primary"
-              @click="valid ? (stepper = 2) : (stepper = 1)"
+              @click="
+                stepper = 2;
+                valid = false;
+              "
               :disabled="!valid"
               >Tiếp tục</v-btn
             >
@@ -114,12 +120,13 @@
         }}</v-stepper-step>
 
         <v-stepper-content step="2">
-          <v-form ref="bookingForm" v-model="valid" lazy-validation>
+          <v-form ref="companyForm" v-model="valid" validation>
+            <small>*Dấu sao là trường bắt buộc</small>
             <v-layout col>
               <v-layout row>
                 <v-flex xs8>
                   <v-text-field
-                    label="Mã công ty"
+                    label="Mã công ty*"
                     name="companyCode"
                     prepend-icon="mdi-lock"
                     type="text"
@@ -135,7 +142,7 @@
               <v-layout row>
                 <v-flex xs8>
                   <v-text-field
-                    label="Tên công ty"
+                    label="Tên công ty*"
                     name="companyName"
                     prepend-icon="mdi-lock"
                     type="text"
@@ -154,7 +161,7 @@
               <v-layout row>
                 <v-flex xs8>
                   <v-text-field
-                    label="Người liên hệ"
+                    label="Người liên hệ*"
                     name="contactPerson"
                     prepend-icon="mdi-lock"
                     type="text"
@@ -170,7 +177,7 @@
               <v-layout row>
                 <v-flex xs8>
                   <v-text-field
-                    label="Website"
+                    label="Website*"
                     name="website"
                     prepend-icon="mdi-lock"
                     type="text"
@@ -185,7 +192,7 @@
               <v-layout row>
                 <v-flex xs8>
                   <v-text-field
-                    label="Tin"
+                    label="Tin*"
                     name="tin"
                     prepend-icon="mdi-lock"
                     :counter="20"
@@ -198,7 +205,7 @@
               <v-layout row>
                 <v-flex xs8>
                   <v-text-field
-                    label="Fax"
+                    label="Fax*"
                     name="fax"
                     prepend-icon="mdi-lock"
                     type="text"
@@ -213,7 +220,7 @@
               <v-layout row>
                 <v-flex xs8>
                   <v-text-field
-                    label="Mô tả"
+                    label="Mô tả*"
                     name="companyDescription"
                     prepend-icon="mdi-lock"
                     type="text"
@@ -229,7 +236,7 @@
               <v-layout row>
                 <v-flex xs8>
                   <v-text-field
-                    label="Địa chỉ công ty"
+                    label="Địa chỉ công ty*"
                     name="companyAddress"
                     prepend-icon="mdi-lock"
                     type="text"
@@ -244,10 +251,23 @@
               </v-layout>
             </v-layout>
 
-            <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
+            <v-btn
+              color="primary"
+              @click="
+                stepper = 3;
+                valid = false;
+              "
+              :disabled="!valid"
               >Tiếp tục</v-btn
             >
-            <v-btn text @click="stepper = 1">Quay lại</v-btn>
+            <v-btn
+              text
+              @click="
+                stepper = 1;
+                valid = true;
+              "
+              >Quay lại</v-btn
+            >
           </v-form>
         </v-stepper-content>
 
@@ -256,7 +276,7 @@
         >
 
         <v-stepper-content step="3">
-          <v-form ref="finishForm" v-model="valid" lazy-validation>
+          <v-form ref="finishForm" v-model="valid" validation>
             <v-checkbox
               v-model="checkbox"
               :rules="[required('agree term')]"
@@ -265,7 +285,14 @@
             <v-btn color="primary" @click="submit()" :disabled="!checkbox"
               >Hoàn tất</v-btn
             >
-            <v-btn text @click="stepper = 2">Quay lại</v-btn>
+            <v-btn
+              text
+              @click="
+                stepper = 2;
+                valid = true;
+              "
+              >Quay lại</v-btn
+            >
           </v-form>
         </v-stepper-content>
       </v-stepper>
@@ -284,12 +311,12 @@ import Snackbar from "@/components/Snackbar.vue";
   }
 })
 export default class Register extends Vue {
-  private username = "";
-  private password = "";
-  private email = "";
-  private phone = "";
-  private address = "";
-  private roles = "forwarder";
+  username = "";
+  password = "";
+  emailRegister = "";
+  phone = "";
+  address = "";
+  roles = "forwarder";
   website = "";
   contactPerson = "";
   companyName = "";
@@ -303,7 +330,7 @@ export default class Register extends Vue {
   snackbar = false;
   editable = false;
   stepper = 1;
-  valid = true;
+  valid = false;
   checkbox = false;
 
   public submit() {
@@ -315,7 +342,7 @@ export default class Register extends Vue {
       data: {
         username: this.username,
         password: this.password,
-        email: this.email,
+        email: this.emailRegister,
         phone: this.phone,
         roles: this.role,
         address: this.address,

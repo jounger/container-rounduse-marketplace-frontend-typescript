@@ -191,7 +191,7 @@ export default class BiddingDocument extends Vue {
       })
         .then(res => {
           const response: PaginationResponse<IBiddingDocument> = res.data;
-          console.log("watch", this.options);
+          console.log("watch", response);
           this.biddingDocuments = response.data;
           this.options.totalItems = response.totalElements;
         })
