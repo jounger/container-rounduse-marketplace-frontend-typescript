@@ -418,13 +418,18 @@ export default class CreateBid extends Vue {
       text: "Container No.",
       align: "start",
       sortable: false,
-      value: "containerNumber"
+      value: "containerNumber",
+      class: "elevation-1 primary"
     },
-    { text: "Biển kiểm sát", value: "licensePlate" },
-    { text: "Tài xế", value: "driver" },
-    { text: "Rơ mọt", value: "trailer" },
-    { text: "Đầu kéo", value: "tractor" },
-    { text: "Hành động", value: "actions" }
+    {
+      text: "Biển kiểm sát",
+      value: "licensePlate",
+      class: "elevation-1 primary"
+    },
+    { text: "Tài xế", value: "driver", class: "elevation-1 primary" },
+    { text: "Rơ mọt", value: "trailer", class: "elevation-1 primary" },
+    { text: "Đầu kéo", value: "tractor", class: "elevation-1 primary" },
+    { text: "Hành động", value: "actions", class: "elevation-1 primary" }
   ];
   // Bid
   createBid() {

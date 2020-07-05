@@ -24,7 +24,7 @@
               <v-text-field
                 label="Tên vai trò*"
                 name="name"
-                prepend-icon="mdi-account"
+                prepend-icon="enhanced_encryption"
                 type="text"
                 :counter="20"
                 :rules="[minLength('name', 5), maxLength('name', 20)]"
@@ -37,7 +37,7 @@
               <v-text-field
                 label="Mô tả*"
                 name="description"
-                prepend-icon="mdi-account"
+                prepend-icon="description"
                 type="text"
                 :counter="100"
                 :rules="[

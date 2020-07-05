@@ -39,6 +39,7 @@
                   <v-text-field
                     label="Tên đăng nhập*"
                     type="text"
+                    prepend-icon="mdi-account"
                     v-model="operatorLocal.username"
                     :readonly="update"
                     :counter="20"
@@ -54,6 +55,7 @@
                   <v-text-field
                     v-if="!update"
                     label="Mật khẩu*"
+                    prepend-icon="mdi-lock"
                     type="password"
                     v-model="operatorLocal.password"
                     :counter="120"
@@ -71,6 +73,7 @@
                   <v-text-field
                     label="Email*"
                     type="email"
+                    prepend-icon="alternate_email"
                     v-model="operatorLocal.email"
                     :counter="50"
                     :rules="[
@@ -86,6 +89,7 @@
                   <v-text-field
                     label="Số điện thoại*"
                     type="phone"
+                    prepend-icon="phone"
                     v-model="operatorLocal.phone"
                     :counter="10"
                     :rules="[minLength('phone', 10), maxLength('phone', 10)]"
@@ -98,7 +102,9 @@
                 <v-flex xs10>
                   <v-text-field
                     label="Họ và tên*"
-                    type="fullname"
+                    name="fullname"
+                    type="text"
+                    prepend-icon="perm_identity"
                     v-model="operatorLocal.fullname"
                     :rules="[required('fullname')]"
                   ></v-text-field>
@@ -109,6 +115,7 @@
                   <v-text-field
                     label="Địa chỉ*"
                     name="address"
+                    prepend-icon="location_on"
                     :counter="100"
                     :rules="[
                       minLength('address', 5),
@@ -122,9 +129,11 @@
             </v-layout>
             <v-layout col>
               <v-layout row>
-                <v-flex xs6>
+                <v-flex xs5>
                   <v-select
                     v-model="operatorLocal.roles[0]"
+                    name="roles"
+                    prepend-icon="security"
                     :items="roles"
                     label="Phân quyền*"
                     :rules="[required('role')]"

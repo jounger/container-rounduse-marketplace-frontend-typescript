@@ -12,10 +12,6 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <v-toolbar-title>Thêm mới</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-toolbar-items>
-          <v-btn dark text @click="dialogAddSync = false">Save</v-btn>
-        </v-toolbar-items>
       </v-toolbar>
       <!-- START CONTENT -->
       <v-list three-line subheader>
@@ -87,7 +83,8 @@
             <v-btn
               color="primary"
               @click="
-                !isEmptyObject(selectedOutbound) ? (stepper = 2) : (stepper = 1)
+                stepper = 2;
+                valid = false;
               "
               :disabled="isEmptyObject(selectedOutbound)"
               >Tiếp tục</v-btn
@@ -207,16 +204,29 @@
                 v-model="biddingDocumentLocal.isMultipleAward"
                 label="Cho phép nhiều nhà thầu cùng thắng"
               ></v-checkbox>
-              <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
+              <v-btn
+                color="primary"
+                @click="
+                  stepper = 3;
+                  valid = false;
+                "
+                :disabled="!valid"
                 >Tiếp tục</v-btn
               >
-              <v-btn text @click="stepper = 1">Quay lại</v-btn>
+              <v-btn
+                text
+                @click="
+                  stepper = 1;
+                  valid = true;
+                "
+                >Quay lại</v-btn
+              >
             </v-form>
           </v-stepper-content>
           <!-- FINISH -->
           <v-stepper-step step="3">Hoàn thành</v-stepper-step>
           <v-stepper-content step="3">
-            <v-form ref="finishForm" v-model="valid" lazy-validation>
+            <v-form ref="finishForm" v-model="valid" validation>
               <v-text-field
                 v-model="biddingDocumentLocal.bidDiscountCode"
                 prepend-icon="event"
@@ -234,10 +244,17 @@
               <v-btn
                 color="primary"
                 @click="createBiddingDocument()"
-                :disabled="!valid"
+                :disabled="!checkbox"
                 >Hoàn tất</v-btn
               >
-              <v-btn text @click="stepper = 2">Quay lại</v-btn>
+              <v-btn
+                text
+                @click="
+                  stepper = 2;
+                  valid = true;
+                "
+                >Quay lại</v-btn
+              >
             </v-form>
           </v-stepper-content>
         </v-stepper>

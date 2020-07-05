@@ -25,7 +25,7 @@
                 <v-text-field
                   label="Mã giảm giá*"
                   name="code"
-                  prepend-icon="mdi-account"
+                  prepend-icon="loyalty"
                   type="text"
                   v-model="discountLocal.code"
                   :rules="[required('code')]"
@@ -37,7 +37,7 @@
                 <v-text-field
                   label="Chi tiết"
                   name="detail"
-                  prepend-icon="mdi-account"
+                  prepend-icon="description"
                   type="text"
                   v-model="discountLocal.detail"
                 ></v-text-field>
@@ -48,6 +48,7 @@
             <v-layout row>
               <v-flex xs8>
                 <v-select
+                  prepend-icon="monetization_on"
                   :items="currencies"
                   attach
                   label="Loại tiền tệ"
@@ -60,7 +61,7 @@
                 <v-text-field
                   label="Phần trăm (%)"
                   name="percent"
-                  prepend-icon="mdi-account"
+                  prepend-icon="shopping_cart"
                   type="number"
                   v-model="discountLocal.percent"
                 ></v-text-field>
@@ -73,7 +74,7 @@
                 <v-text-field
                   label="Giảm giá nhiều nhất (%)"
                   name="maximumDiscount"
-                  prepend-icon="mdi-account"
+                  prepend-icon="swap_vert"
                   type="number"
                   v-model="discountLocal.maximumDiscount"
                 ></v-text-field>
@@ -96,7 +97,7 @@
                       label="Ngày hết hạn"
                       hint="YYYY/MM/DD"
                       persistent-hint
-                      prepend-icon="event"
+                      prepend-icon="remove_shopping_cart"
                       v-bind="attrs"
                       v-on="on"
                     ></v-text-field>

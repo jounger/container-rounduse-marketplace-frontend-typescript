@@ -3,7 +3,7 @@
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">Đóng băng HSMT</span>
+          ><span class="headline" style="color:white;">Hủy HSMT</span>
           <v-btn
             icon
             dark
@@ -19,7 +19,7 @@
         <v-form>
           <v-container>
             <span style="color: black; font-size:22px;"
-              >Bạn có chắc chắn muốn đóng băng HSMT này?</span
+              >Bạn có chắc chắn muốn hủy HSMT này?</span
             >
             <div class="line"></div>
             <v-list>
@@ -38,8 +38,10 @@
         </v-form>
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
-        <v-btn @click="dialogCancelSync = false">Hủy</v-btn>
-        <v-btn @click="removeBiddingDocument()" color="red">Xóa</v-btn>
+        <v-btn @click="dialogCancelSync = false">Trở về</v-btn>
+        <v-btn @click="cancelBiddingDocument()" color="red"
+          ><span style="color:white;">Hủy thầu</span></v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -47,8 +49,7 @@
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
-import { editOutbound } from "@/api/outbound";
-import { IOutbound } from "@/entity/outbound";
+import { editBiddingDocument } from "@/api/bidding-document";
 
 @Component
 export default class CancelBiddingDocument extends Vue {
@@ -61,18 +62,15 @@ export default class CancelBiddingDocument extends Vue {
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
-  freezeBiddingDocument() {
-    if (
-      typeof this.biddingDocument.outbound != "number" &&
-      this.biddingDocument.outbound.id
-    ) {
-      this.biddingDocument.outbound.status = "CANCELED";
-      const outbound = this.biddingDocument.outbound as IOutbound;
-      editOutbound(this.biddingDocument.outbound.id, outbound)
+  cancelBiddingDocument() {
+    if (this.biddingDocument.id) {
+      editBiddingDocument(this.biddingDocument.id, {
+        status: "CANCELED"
+      })
         .then(res => {
           console.log(res.data);
           const response: IBiddingDocument = res.data;
-          this.messageSync = "Đóng băng thành công HSMT: " + response.id;
+          this.messageSync = "Hủy thầu thành công HSMT: " + response.id;
           const index = this.biddingDocumentsSync.findIndex(
             x => x.id === response.id
           );

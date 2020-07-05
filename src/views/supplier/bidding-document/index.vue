@@ -70,12 +70,26 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item @click.stop="openEditDialog(item)">
+              <v-list-item
+                @click.stop="openEditDialog(item)"
+                v-if="item.status == 'BIDDING'"
+              >
                 <v-list-item-icon>
                   <v-icon small>edit</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>Chỉnh sửa</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item
+                @click.stop="openEditDialog(item)"
+                v-if="item.status == 'CANCELED'"
+              >
+                <v-list-item-icon>
+                  <v-icon small>edit</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Mở lại thầu</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
               <v-list-item @click.stop="openDetailDialog(item)">
@@ -86,15 +100,21 @@
                   <v-list-item-title>Xem trạng thái HSMT</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item @click.stop="openCancelDialog(item)">
+              <v-list-item
+                @click.stop="openCancelDialog(item)"
+                v-if="item.status == 'BIDDING'"
+              >
                 <v-list-item-icon>
                   <v-icon small>cancel_presentation</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
-                  <v-list-item-title>Đóng băng HSMT</v-list-item-title>
+                  <v-list-item-title>Hủy thầu</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item @click.stop="openDeleteDialog(item)">
+              <v-list-item
+                @click.stop="openDeleteDialog(item)"
+                v-if="item.status != 'COMBINED'"
+              >
                 <v-list-item-icon>
                   <v-icon small>delete</v-icon>
                 </v-list-item-icon>
@@ -104,6 +124,12 @@
               </v-list-item>
             </v-list>
           </v-menu>
+        </template>
+        <template v-slot:item.bidOpeningText="{ item }">
+          {{ formatDatetime(item.bidOpening) }}
+        </template>
+        <template v-slot:item.bidClosingText="{ item }">
+          {{ formatDatetime(item.bidClosing) }}
         </template>
       </v-data-table>
     </v-card>
@@ -120,8 +146,10 @@ import { getBiddingDocuments } from "@/api/bidding-document";
 import { PaginationResponse } from "@/api/payload";
 import DeleteBiddingDocument from "./components/DeleteBiddingDocument.vue";
 import CancelBiddingDocument from "./components/CancelBiddingDocument.vue";
+import Utils from "@/mixin/utils";
 
 @Component({
+  mixins: [Utils],
   components: {
     CreateBiddingDocument,
     UpdateBiddingDocument,
@@ -160,10 +188,10 @@ export default class BiddingDocument extends Vue {
     { text: "Hãng tàu", value: "outbound.shippingLine" },
     { text: "Loại cont", value: "outbound.containerType" },
     { text: "Mã booking", value: "outbound.booking.bookingNumber" },
-    { text: "Trạng thái", value: "outbound.status" },
+    { text: "Trạng thái", value: "status" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
-    { text: "Mở thầu", value: "bidOpening" },
-    { text: "Đóng thầu", value: "bidClosing" },
+    { text: "Mở thầu", value: "bidOpeningText" },
+    { text: "Đóng thầu", value: "bidClosingText" },
     { text: "Nhiều thầu win", value: "isMultipleAward" },
     {
       text: "Hành động",
@@ -173,6 +201,14 @@ export default class BiddingDocument extends Vue {
 
   openEditDialog(item: IBiddingDocument) {
     this.biddingDocument = item;
+    this.biddingDocument.bidOpening = this.biddingDocument.bidOpening.slice(
+      0,
+      10
+    );
+    this.biddingDocument.bidClosing = this.biddingDocument.bidClosing.slice(
+      0,
+      10
+    );
     this.dialogEdit = true;
   }
 
@@ -189,7 +225,7 @@ export default class BiddingDocument extends Vue {
     this.$router.push({ path: `/bidding-document/${item.id}` });
   }
 
-  clicked(value: IBiddingDocument){
+  clicked(value: IBiddingDocument) {
     this.$router.push({ path: `/bidding-document/${value.id}` });
   }
 

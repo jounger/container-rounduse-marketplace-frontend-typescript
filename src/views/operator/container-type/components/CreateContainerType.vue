@@ -46,7 +46,7 @@
                 <v-text-field
                   label="Tên loại Container*"
                   name="name"
-                  prepend-icon="mdi-account"
+                  prepend-icon="directions_bus"
                   type="text"
                   v-model="containerTypeLocal.name"
                   :rules="[required('name')]"
@@ -58,7 +58,7 @@
                 <v-text-field
                   label="Chi tiết"
                   name="description"
-                  prepend-icon="mdi-lock"
+                  prepend-icon="description"
                   type="text"
                   v-model="containerTypeLocal.description"
                 ></v-text-field>
@@ -71,7 +71,7 @@
                 <v-text-field
                   label="Khối lượng vỏ"
                   name="tareWeight"
-                  prepend-icon="mdi-lock"
+                  prepend-icon="airport_shuttle"
                   type="number"
                   v-model="containerTypeLocal.tareWeight"
                 ></v-text-field>
@@ -82,7 +82,7 @@
                 <v-text-field
                   label="Trọng tải"
                   name="payloadCapacity"
-                  prepend-icon="mdi-lock"
+                  prepend-icon="fitness_center"
                   type="number"
                   v-model="containerTypeLocal.payloadCapacity"
                 ></v-text-field>
@@ -95,7 +95,7 @@
                 <v-text-field
                   label="Công suất khối"
                   name="cubicCapacity"
-                  prepend-icon="mdi-lock"
+                  prepend-icon="network_check"
                   type="number"
                   v-model="containerTypeLocal.cubicCapacity"
                 ></v-text-field>
@@ -106,7 +106,7 @@
                 <v-text-field
                   label="Chiều dài trong"
                   name="internalLength"
-                  prepend-icon="mdi-lock"
+                  prepend-icon="border_outer"
                   type="number"
                   v-model="containerTypeLocal.internalLength"
                 ></v-text-field>
@@ -119,7 +119,7 @@
                 <v-text-field
                   label="Chiều rộng trong"
                   name="internalWidth"
-                  prepend-icon="mdi-lock"
+                  prepend-icon="border_bottom"
                   type="number"
                   v-model="containerTypeLocal.internalWidth"
                 ></v-text-field>
@@ -130,7 +130,7 @@
                 <v-text-field
                   label="Chiều cao trong"
                   name="internalHeight"
-                  prepend-icon="mdi-lock"
+                  prepend-icon="border_vertical"
                   type="number"
                   v-model="containerTypeLocal.internalHeight"
                 ></v-text-field>
@@ -143,7 +143,7 @@
                 <v-text-field
                   label="Chiều rộng cửa mở"
                   name="doorOpeningWidth"
-                  prepend-icon="mdi-lock"
+                  prepend-icon="flip_to_back"
                   type="number"
                   v-model="containerTypeLocal.doorOpeningWidth"
                 ></v-text-field>
@@ -154,7 +154,7 @@
                 <v-text-field
                   label="Chiều cao cửa mở"
                   name="doorOpeningHeight"
-                  prepend-icon="mdi-lock"
+                  prepend-icon="flip_to_front"
                   type="number"
                   v-model="containerTypeLocal.doorOpeningHeight"
                 ></v-text-field>

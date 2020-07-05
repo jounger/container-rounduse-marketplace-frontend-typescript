@@ -43,7 +43,7 @@
                 <v-card-text>
                   <v-row align="center" class="mx-0">
                     <div class="grey--text mr-4">
-                      {{ bids[0].bidder }}
+                      {{ bids[0] ? bids[0].bidder : "" }}
                     </div>
                     <v-rating
                       :value="4.5"
@@ -60,13 +60,17 @@
                   <v-stepper value="2" vertical class="elevation-0 pb-0">
                     <v-stepper-step step="1" complete
                       >Cảng lấy cont: HPH
-                      <small class="mt-1">Thời gian: 2020-12-05T20:20</small>
+                      <small class="mt-1"
+                        >Thời gian:
+                        {{ formatDatetime("2020-12-05T20:20") }}</small
+                      >
                     </v-stepper-step>
                     <v-stepper-content step="1"></v-stepper-content>
                     <v-stepper-step step="2"
                       >Nơi trả hàng: Bac Giang
                       <small class="mt-1"
-                        >Thời gian: 2020-12-05T20:20</small
+                        >Thời gian:
+                        {{ formatDatetime("2020-12-05T20:20") }}</small
                       ></v-stepper-step
                     >
                     <v-stepper-content step="2"></v-stepper-content>
@@ -324,7 +328,7 @@
   </v-content>
 </template>
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
 import { IBiddingDocument } from "@/entity/bidding-document";
@@ -332,7 +336,8 @@ import { IBid } from "@/entity/bid";
 import Snackbar from "@/components/Snackbar.vue";
 import { IOutbound } from "@/entity/outbound";
 import { ICombined } from "@/entity/combined";
-import { CombinedData } from "../data";
+import { getCombined } from "@/api/combined";
+import { getBidsByBiddingDocument } from "@/api/bid";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -341,8 +346,38 @@ import { CombinedData } from "../data";
   }
 })
 export default class DetailCombined extends Vue {
-  biddingDocument = {} as IBiddingDocument;
+  biddingDocument = {
+    offeree: "",
+    outbound: {
+      goodsDescription: "",
+      packingTime: "",
+      packingStation: "",
+      deliveryTime: "",
+      grossWeight: 0,
+      unitOfMeasurement: "",
+      booking: {
+        bookingNumber: "",
+        unit: 0,
+        cutOffTime: "",
+        isFcl: false,
+        portOfLoading: ""
+      }
+    },
+    bids: [] as Array<IBid>,
+    bidDiscountCode: "",
+    isMultipleAward: false,
+    bidOpening: "",
+    bidClosing: "",
+    dateOfDecision: "",
+    currencyOfPayment: "",
+    bidPackagePrice: 0,
+    bidFloorPrice: 0,
+    priceLeadership: 0,
+    status: "COMBINED"
+  } as IBiddingDocument;
   bids = [] as Array<IBid>;
+  bid = {} as IBid;
+  dialogDetail = false;
   outbound = {} as IOutbound;
   combined = {} as ICombined;
   loading = false;
@@ -436,15 +471,47 @@ export default class DetailCombined extends Vue {
     }
     return this.stepper;
   }
-
+  viewDetailBid(item: IBid) {
+    this.bid = item;
+    this.dialogDetail = true;
+  }
+  getBids(id: number) {
+    if (id) {
+      console.log(2);
+      getBidsByBiddingDocument(id, {
+        page: 0,
+        limit: 100
+      })
+        .then(res => {
+          const response = res.data;
+          this.bids = response.data;
+          console.log(this.bids);
+        })
+        .catch(err => {
+          console.log(err);
+        })
+        .finally(() => (this.loading = false));
+    }
+  }
   created() {
     // TODO: Fake data
-    this.combined = CombinedData[0]; // get first element
-    this.biddingDocument = this.combined.biddingDocument;
-    this.bids = this.biddingDocument.bids;
-    this.outbound = this.biddingDocument.outbound as IOutbound;
-    this.options.totalItems = 10;
-    this.loading = false;
+    const combinedId = parseInt(this.$route.params.id);
+    getCombined(combinedId)
+      .then(res => {
+        const response = res.data;
+        this.combined = response;
+        this.biddingDocument = this.combined.biddingDocument;
+        if (this.biddingDocument.id) {
+          console.log(0);
+          this.getBids(this.biddingDocument.id);
+        }
+        this.outbound = this.biddingDocument.outbound as IOutbound;
+        this.options.totalItems = 10;
+      })
+      .catch(err => {
+        console.log(err);
+      })
+      .finally();
   }
 }
 </script>

@@ -38,8 +38,15 @@
           {{ item.booking.unit + " x " + item.containerType }}
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-btn icon dark @click="gotoDetail(item)">
-            <v-icon>mdi-close</v-icon>
+          <v-btn
+            class="ma-1"
+            tile
+            outlined
+            color="success"
+            @click="gotoDetail(item)"
+            small
+          >
+            <v-icon left>mdi-pencil</v-icon> Xem chi tiết
           </v-btn>
         </template>
       </v-data-table>
@@ -54,7 +61,6 @@ import { getCombinedsByUser } from "@/api/combined";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { IOutbound } from "@/entity/outbound";
 import Utils from "@/mixin/utils";
-import { CombinedData } from "./data";
 
 @Component({
   mixins: [Utils]
@@ -97,7 +103,8 @@ export default class Combined extends Vue {
   ];
 
   gotoDetail(item: any) {
-    console.log(item);
+    const id = this.combineds[0].id;
+    this.$router.push({ path: `/combined/${id}` });
   }
 
   reduceData(combineds: Array<ICombined>) {
@@ -121,7 +128,6 @@ export default class Combined extends Vue {
 
   created() {
     // TODO: Fake data
-    this.combineds = CombinedData;
     this.reduceData(this.combineds);
     this.options.totalItems = 10;
     this.loading = false;

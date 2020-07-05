@@ -32,7 +32,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
             driver: "driver",
             trailer: "2",
             tractor: "3",
-            licensePlate: "90A-H0923",
+            licensePlate: "90A-H0923"
           },
           {
             id: 1,
@@ -40,7 +40,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
             driver: "driver1",
             trailer: "2",
             tractor: "3",
-            licensePlate: "90A-H0933",
+            licensePlate: "90A-H0933"
           },
           {
             id: 2,
@@ -48,7 +48,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
             driver: "driver1",
             trailer: "2",
             tractor: "3",
-            licensePlate: "90A-H0333",
+            licensePlate: "90A-H0333"
           },
           {
             id: 3,
@@ -56,7 +56,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
             driver: "driver1",
             trailer: "2",
             tractor: "3",
-            licensePlate: "90A-H0993",
+            licensePlate: "90A-H0993"
           },
           {
             id: 4,
@@ -64,7 +64,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
             driver: "driver1",
             trailer: "2",
             tractor: "3",
-            licensePlate: "90A-HA993",
+            licensePlate: "90A-HA993"
           }
         ],
         bidPrice: 2099,
@@ -82,7 +82,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
             driver: "driver",
             trailer: "2",
             tractor: "3",
-            licensePlate: "90A-H0923",
+            licensePlate: "90A-H0923"
           },
           {
             id: 1,
@@ -90,7 +90,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
             driver: "driver1",
             trailer: "2",
             tractor: "3",
-            licensePlate: "90A-H0933",
+            licensePlate: "90A-H0933"
           }
         ],
         bidPrice: 2099,
@@ -108,7 +108,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
             driver: "driver",
             trailer: "2",
             tractor: "3",
-            licensePlate: "90A-H0923",
+            licensePlate: "90A-H0923"
           }
         ],
         bidPrice: 2099,
@@ -126,6 +126,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
     bidPackagePrice: 200,
     bidFloorPrice: 100,
     priceLeadership: 150,
+    status: "BIDDING"
   },
   {
     id: 1,
@@ -159,7 +160,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
             driver: "driver",
             trailer: "2",
             tractor: "3",
-            licensePlate: "90A-H0923",
+            licensePlate: "90A-H0923"
           },
           {
             id: 1,
@@ -167,7 +168,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
             driver: "driver1",
             trailer: "2",
             tractor: "3",
-            licensePlate: "90A-H0933",
+            licensePlate: "90A-H0933"
           }
         ],
         bidPrice: 2099,
@@ -185,7 +186,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
             driver: "driver",
             trailer: "2",
             tractor: "3",
-            licensePlate: "90A-H0923",
+            licensePlate: "90A-H0923"
           },
           {
             id: 1,
@@ -193,7 +194,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
             driver: "driver1",
             trailer: "2",
             tractor: "3",
-            licensePlate: "90A-H0933",
+            licensePlate: "90A-H0933"
           }
         ],
         bidPrice: 2099,
@@ -211,7 +212,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
             driver: "driver",
             trailer: "2",
             tractor: "3",
-            licensePlate: "90A-H0923",
+            licensePlate: "90A-H0923"
           },
           {
             id: 1,
@@ -219,7 +220,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
             driver: "driver1",
             trailer: "2",
             tractor: "3",
-            licensePlate: "90A-H0933",
+            licensePlate: "90A-H0933"
           }
         ],
         bidPrice: 2099,
@@ -237,6 +238,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
     bidPackagePrice: 200,
     bidFloorPrice: 100,
     priceLeadership: 150,
+    status: "BIDDING"
   },
   {
     id: 2,
@@ -270,7 +272,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
             driver: "driver",
             trailer: "2",
             tractor: "3",
-            licensePlate: "90A-H0923",
+            licensePlate: "90A-H0923"
           },
           {
             id: 1,
@@ -278,7 +280,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
             driver: "driver1",
             trailer: "2",
             tractor: "3",
-            licensePlate: "90A-H0933",
+            licensePlate: "90A-H0933"
           }
         ],
         bidPrice: 2099,
@@ -296,7 +298,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
             driver: "driver",
             trailer: "2",
             tractor: "3",
-            licensePlate: "90A-H0923",
+            licensePlate: "90A-H0923"
           },
           {
             id: 1,
@@ -304,7 +306,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
             driver: "driver1",
             trailer: "2",
             tractor: "3",
-            licensePlate: "90A-H0933",
+            licensePlate: "90A-H0933"
           }
         ],
         bidPrice: 2099,
@@ -322,7 +324,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
             driver: "driver",
             trailer: "2",
             tractor: "3",
-            licensePlate: "90A-H0923",
+            licensePlate: "90A-H0923"
           },
           {
             id: 1,
@@ -330,7 +332,7 @@ export const BiddingDocumentData: IBiddingDocument[] = [
             driver: "driver1",
             trailer: "2",
             tractor: "3",
-            licensePlate: "90A-H0933",
+            licensePlate: "90A-H0933"
           }
         ],
         bidPrice: 2099,
@@ -348,5 +350,6 @@ export const BiddingDocumentData: IBiddingDocument[] = [
     bidPackagePrice: 200,
     bidFloorPrice: 100,
     priceLeadership: 150,
+    status: "BIDDING"
   }
-]
+];

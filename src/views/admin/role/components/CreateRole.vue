@@ -24,7 +24,7 @@
               <v-text-field
                 label="Tên quyền*"
                 name="name"
-                prepend-icon="mdi-account"
+                prepend-icon="security"
                 type="text"
                 v-model="roleLocal.name"
                 :counter="20"
@@ -34,14 +34,14 @@
           </v-layout>
           <v-layout row>
             <v-flex xs9>
-              <v-combobox
+              <v-select
                 v-model="roleLocal.permissions"
                 :items="permissionsToString"
                 chips
                 clearable
                 label="Phân vai trò"
                 multiple
-                prepend-icon="filter_list"
+                prepend-icon="enhanced_encryption"
               >
                 <template v-slot:selection="{ attrs, item, select, selected }">
                   <v-chip
@@ -54,7 +54,7 @@
                     {{ item }}
                   </v-chip>
                 </template>
-              </v-combobox>
+              </v-select>
             </v-flex>
           </v-layout>
           <v-btn type="submit" class="d-none" id="submitForm"></v-btn>

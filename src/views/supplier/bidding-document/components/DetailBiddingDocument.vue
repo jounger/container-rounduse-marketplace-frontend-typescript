@@ -189,7 +189,7 @@
             </v-col>
             <v-col cols="12" sm="6" md="4">
               <v-list dense>
-                <v-list-item>
+                <v-list-item v-if="biddingDocument.status == 'BIDDING'">
                   <v-list-item-icon>
                     <v-icon>mdi-flag</v-icon>
                   </v-list-item-icon>
@@ -214,6 +214,26 @@
                           : "Đã hết hạn"
                       }}
                     </v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item v-if="biddingDocument.status == 'CANCELED'">
+                  <v-list-item-icon>
+                    <v-icon>mdi-flag</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title style="color:red;"
+                      >Thầu đã hủy</v-list-item-title
+                    >
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item v-if="biddingDocument.status == 'COMBINED'">
+                  <v-list-item-icon>
+                    <v-icon>mdi-flag</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title style="color:green;"
+                      >Thầu thành công</v-list-item-title
+                    >
                   </v-list-item-content>
                 </v-list-item>
               </v-list>

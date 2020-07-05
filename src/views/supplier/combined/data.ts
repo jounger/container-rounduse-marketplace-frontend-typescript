@@ -88,6 +88,7 @@ export const CombinedData: ICombined[] = [
       bidPackagePrice: 200,
       bidFloorPrice: 100,
       priceLeadership: 150,
+      status: "BIDDING"
     },
     status: "INFO_RECEIVED"
   }

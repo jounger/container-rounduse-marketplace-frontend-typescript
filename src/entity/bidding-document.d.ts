@@ -14,4 +14,5 @@ export interface IBiddingDocument {
   bidPackagePrice: number;
   bidFloorPrice: number;
   priceLeadership: number;
+  status: string;
 }

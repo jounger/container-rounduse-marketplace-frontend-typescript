@@ -33,7 +33,7 @@
             <v-text-field
               label="Lý do khóa tài khoản"
               name="reason"
-              prepend-icon="mdi-lock"
+              prepend-icon="comment"
               type="text"
               v-model="reason"
               required

@@ -98,6 +98,7 @@ export default class Driver extends Vue {
       sortable: true,
       value: "username"
     },
+    { text: "Trạng thái", value: "status" },
     { text: "Email", value: "email" },
     { text: "Số điện thoại", value: "phone" },
     { text: "Tên đầy đủ", value: "fullname" },

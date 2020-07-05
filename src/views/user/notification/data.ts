@@ -1,4 +1,4 @@
-import { IBiddingNotification } from '@/entity/bidding-notification';
+import { IBiddingNotification } from "@/entity/bidding-notification";
 export const IBiddingNotificationData: IBiddingNotification[] = [
   {
     id: 100,
@@ -35,6 +35,7 @@ export const IBiddingNotificationData: IBiddingNotification[] = [
       bidPackagePrice: 200,
       bidFloorPrice: 100,
       priceLeadership: 150,
+      status: "BIDDING"
     },
     message: "Day la message",
     type: "CREATED"
@@ -74,6 +75,7 @@ export const IBiddingNotificationData: IBiddingNotification[] = [
       bidPackagePrice: 200,
       bidFloorPrice: 100,
       priceLeadership: 150,
+      status: "BIDDING"
     },
     message: "Day la message",
     type: "CREATED"

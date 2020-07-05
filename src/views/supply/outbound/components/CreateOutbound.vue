@@ -30,6 +30,7 @@
                   ><v-flex xs10>
                     <v-select
                       v-model="outboundLocal.shippingLine"
+                      prepend-icon="directions_boat"
                       :items="shippingLinesToString"
                       :rules="[required('shipping line')]"
                       label="Hãng tàu*"
@@ -38,6 +39,7 @@
                   ><v-flex xs10>
                     <v-select
                       v-model="outboundLocal.containerType"
+                      prepend-icon="directions_bus"
                       :items="containerTypesToString"
                       :rules="[required('container type')]"
                       label="Loại container*"
@@ -93,6 +95,7 @@
                   ><v-flex xs10>
                     <v-text-field
                       v-model="outboundLocal.packingStation"
+                      prepend-icon="location_on"
                       type="text"
                       label="Nơi đóng hàng"
                     ></v-text-field> </v-flex></v-layout
@@ -102,6 +105,7 @@
                   ><v-flex xs10>
                     <v-text-field
                       v-model="outboundLocal.grossWeight"
+                      prepend-icon="fitness_center"
                       type="number"
                       label="Khối lượng hàng"
                     ></v-text-field> </v-flex></v-layout

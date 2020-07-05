@@ -12,10 +12,6 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <v-toolbar-title>Cập nhập</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-toolbar-items>
-          <v-btn dark text @click="dialogEditSync = false">Save</v-btn>
-        </v-toolbar-items>
       </v-toolbar>
       <!-- START CONTENT -->
       <v-list three-line subheader>
@@ -214,7 +210,7 @@
               <v-btn
                 color="primary"
                 @click="updateBiddingDocument()"
-                :disabled="!valid"
+                :disabled="!checkbox"
                 >Hoàn tất</v-btn
               >
               <v-btn text @click="stepper = 2">Quay lại</v-btn>
@@ -292,7 +288,8 @@ export default class UpdateBiddingDocument extends Vue {
   // BiddingDocument
   updateBiddingDocument() {
     // TODO: API create biddingDocument
-    if (this.biddingDocumentSync) {
+    if (this.biddingDocumentLocal) {
+      this.biddingDocumentLocal.status = "BIDDING";
       updateBiddingDocument(this.biddingDocumentLocal)
         .then(res => {
           console.log(res.data);

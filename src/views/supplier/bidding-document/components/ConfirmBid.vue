@@ -4,13 +4,13 @@
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
-            status == true ? "Xác nhận đồng ý HSDT" : "Xác nhận từ chối HSDT"
+            isAccept == true ? "Xác nhận đồng ý HSDT" : "Xác nhận từ chối HSDT"
           }}</span>
           <v-btn
             icon
             dark
             @click="dialogConfirmSync = false"
-            style="margin-left:275px;"
+            style="margin-left:273px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
@@ -22,7 +22,7 @@
           <v-container>
             <span style="color: black; font-size:22px;"
               >Bạn có chắc chắn muốn
-              {{ status == true ? "đồng ý" : "từ chối" }} HSDT này?</span
+              {{ isAccept == true ? "đồng ý" : "từ chối" }} HSDT này?</span
             >
             <div class="line"></div>
             <v-list>
@@ -40,10 +40,12 @@
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
         <v-btn @click="dialogConfirmSync = false">Hủy</v-btn>
-        <v-btn @click="reviewBid(isAccept)" color="green" v-if="status"
-          >Đồng ý</v-btn
+        <v-btn @click="reviewBid(isAccept)" color="green" v-if="isAccept"
+          ><span style="color:white;">Đồng ý</span></v-btn
         >
-        <v-btn @click="reviewBid(isAccept)" color="red" v-else>Từ chối</v-btn>
+        <v-btn @click="reviewBid(isAccept)" color="red" v-else
+          ><span style="color:white;">Từ chối</span></v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>

@@ -33,6 +33,7 @@
                   ><v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.username"
+                      prepend-icon="mdi-account"
                       :counter="20"
                       :rules="[
                         minLength('username', 2),
@@ -45,6 +46,7 @@
                   ><v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.password"
+                      prepend-icon="mdi-lock"
                       :counter="120"
                       :rules="[
                         minLength('password', 6),
@@ -59,6 +61,7 @@
                   ><v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.email"
+                      prepend-icon="alternate_email"
                       :counter="50"
                       :rules="[
                         email('Shipping Line'),
@@ -72,6 +75,7 @@
                   ><v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.phone"
+                      prepend-icon="phone"
                       :counter="10"
                       :rules="[minLength('phone', 10), maxLength('phone', 10)]"
                       type="text"
@@ -83,6 +87,7 @@
                   ><v-flex xs11>
                     <v-text-field
                       v-model="shippingLineLocal.address"
+                      prepend-icon="location_on"
                       type="text"
                       :counter="100"
                       :rules="[
@@ -117,6 +122,7 @@
                   <v-flex xs8>
                     <v-text-field
                       v-model="shippingLineLocal.companyCode"
+                      prepend-icon="verified_user"
                       :counter="10"
                       :rules="[
                         minLength('Company code', 2),
@@ -131,6 +137,7 @@
                   <v-flex xs8>
                     <v-text-field
                       v-model="shippingLineLocal.companyName"
+                      prepend-icon="directions_boat"
                       :counter="100"
                       :rules="[
                         minLength('Company name', 5),
@@ -147,6 +154,7 @@
                   <v-flex xs8>
                     <v-text-field
                       v-model="shippingLineLocal.contactPerson"
+                      prepend-icon="add_ic_call"
                       :counter="50"
                       :rules="[
                         minLength('contact person', 5),
@@ -161,6 +169,7 @@
                   <v-flex xs8>
                     <v-text-field
                       v-model="shippingLineLocal.website"
+                      prepend-icon="copyright"
                       :counter="50"
                       :rules="[
                         minLength('website', 5),
@@ -178,6 +187,7 @@
                     <v-text-field
                       v-model="shippingLineLocal.companyDescription"
                       label="Mô tả*"
+                      prepend-icon="description"
                       :counter="200"
                       :rules="[
                         minLength('company description', 5),
@@ -191,6 +201,7 @@
                   <v-flex xs8>
                     <v-text-field
                       v-model="shippingLineLocal.companyAddress"
+                      prepend-icon="location_city"
                       :counter="200"
                       :rules="[
                         minLength('company address', 5),
@@ -207,6 +218,7 @@
                   <v-flex xs8>
                     <v-text-field
                       v-model="shippingLineLocal.tin"
+                      prepend-icon="contact_phone"
                       :counter="20"
                       :rules="[minLength('tin', 5), maxLength('tin', 20)]"
                       label="Tin*"
@@ -218,6 +230,7 @@
                   <v-flex xs8>
                     <v-text-field
                       v-model="shippingLineLocal.fax"
+                      prepend-icon="perm_phone_msg"
                       :counter="20"
                       :rules="[minLength('fax', 5), maxLength('fax', 20)]"
                       label="Fax*"

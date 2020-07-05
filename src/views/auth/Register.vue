@@ -68,6 +68,7 @@
                   <v-text-field
                     label="Email*"
                     type="email"
+                    prepend-icon="alternate_email"
                     v-model="emailRegister"
                     :counter="50"
                     :rules="[
@@ -83,7 +84,7 @@
                   <v-text-field
                     label="Số điện thoại*"
                     name="phone"
-                    prepend-icon="mdi-lock"
+                    prepend-icon="phone"
                     type="text"
                     :counter="10"
                     :rules="[minLength('phone', 10), maxLength('phone', 10)]"
@@ -96,7 +97,7 @@
             <v-text-field
               label="Địa chỉ*"
               name="address"
-              prepend-icon="mdi-lock"
+              prepend-icon="location_on"
               :counter="100"
               :rules="[minLength('address', 5), maxLength('address', 100)]"
               type="text"
@@ -128,7 +129,7 @@
                   <v-text-field
                     label="Mã công ty*"
                     name="companyCode"
-                    prepend-icon="mdi-lock"
+                    prepend-icon="verified_user"
                     type="text"
                     :counter="10"
                     :rules="[
@@ -144,7 +145,7 @@
                   <v-text-field
                     label="Tên công ty*"
                     name="companyName"
-                    prepend-icon="mdi-lock"
+                    prepend-icon="contacts"
                     type="text"
                     :counter="100"
                     :rules="[
@@ -163,7 +164,7 @@
                   <v-text-field
                     label="Người liên hệ*"
                     name="contactPerson"
-                    prepend-icon="mdi-lock"
+                    prepend-icon="add_ic_call"
                     type="text"
                     :counter="50"
                     :rules="[
@@ -179,7 +180,7 @@
                   <v-text-field
                     label="Website*"
                     name="website"
-                    prepend-icon="mdi-lock"
+                    prepend-icon="copyright"
                     type="text"
                     :counter="50"
                     :rules="[minLength('website', 5), maxLength('website', 50)]"
@@ -194,7 +195,7 @@
                   <v-text-field
                     label="Tin*"
                     name="tin"
-                    prepend-icon="mdi-lock"
+                    prepend-icon="contact_phone"
                     :counter="20"
                     :rules="[minLength('tin', 5), maxLength('tin', 20)]"
                     type="text"
@@ -207,7 +208,7 @@
                   <v-text-field
                     label="Fax*"
                     name="fax"
-                    prepend-icon="mdi-lock"
+                    prepend-icon="perm_phone_msg"
                     type="text"
                     :counter="20"
                     :rules="[minLength('fax', 5), maxLength('fax', 20)]"
@@ -222,7 +223,7 @@
                   <v-text-field
                     label="Mô tả*"
                     name="companyDescription"
-                    prepend-icon="mdi-lock"
+                    prepend-icon="description"
                     type="text"
                     :counter="200"
                     :rules="[
@@ -238,7 +239,7 @@
                   <v-text-field
                     label="Địa chỉ công ty*"
                     name="companyAddress"
-                    prepend-icon="mdi-lock"
+                    prepend-icon="location_city"
                     type="text"
                     :counter="200"
                     :rules="[

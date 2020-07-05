@@ -24,7 +24,7 @@
               <v-text-field
                 label="Mã code*"
                 name="nameCode"
-                prepend-icon="mdi-account"
+                prepend-icon="verified_user"
                 type="text"
                 v-model="portLocal.nameCode"
                 :rules="[required('namecode')]"
@@ -36,7 +36,7 @@
               <v-text-field
                 label="Tên bến cảng*"
                 name="fullname"
-                prepend-icon="mdi-account"
+                prepend-icon="directions_boat"
                 type="text"
                 v-model="portLocal.fullname"
                 :rules="[required('fullname')]"
@@ -48,7 +48,7 @@
               <v-text-field
                 label="Vị trí"
                 name="address"
-                prepend-icon="mdi-account"
+                prepend-icon="room"
                 type="text"
                 v-model="portLocal.address"
               ></v-text-field>
