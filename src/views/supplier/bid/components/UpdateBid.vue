@@ -28,6 +28,7 @@
             <v-form ref="bidForm" v-model="valid" lazy-validation>
               <v-text-field
                 v-model="bidLocal.bidPrice"
+                prepend-icon="monetization_on"
                 type="number"
                 :rules="[
                   minNumber('bid price', biddingDocumentSync.bidFloorPrice + 1)
@@ -35,8 +36,8 @@
                 label="Giá gửi thầu"
               ></v-text-field>
               <v-menu
-                ref="datePickerMenu"
-                v-model="datePickerMenu"
+                ref="bidDatePicker"
+                v-model="bidDatePicker"
                 :close-on-content-click="false"
                 :return-value.sync="bidLocal.bidDate"
                 transition="scale-transition"
@@ -47,7 +48,7 @@
                   <v-text-field
                     v-model="bidLocal.bidDate"
                     label="Thời gian gửi thầu"
-                    prepend-icon="event"
+                    prepend-icon="event_available"
                     v-bind="attrs"
                     v-on="on"
                   ></v-text-field>
@@ -60,20 +61,20 @@
                   disabled
                 >
                   <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="datePickerMenu = false"
+                  <v-btn text color="primary" @click="bidDatePicker = false"
                     >Cancel</v-btn
                   >
                   <v-btn
                     text
                     color="primary"
-                    @click="$refs.datePickerMenu.save(bidLocal.bidDate)"
+                    @click="$refs.bidDatePicker.save(bidLocal.bidDate)"
                     >OK</v-btn
                   >
                 </v-date-picker>
               </v-menu>
               <v-menu
-                ref="datePickerMenu2"
-                v-model="datePickerMenu2"
+                ref="bidValidityPeriodPicker"
+                v-model="bidValidityPeriodPicker"
                 :close-on-content-click="false"
                 :return-value.sync="bidLocal.bidValidityPeriod"
                 transition="scale-transition"
@@ -84,7 +85,7 @@
                   <v-text-field
                     v-model="bidLocal.bidValidityPeriod"
                     label="Hiệu lực HSDT"
-                    prepend-icon="event"
+                    prepend-icon="date_range"
                     v-bind="attrs"
                     v-on="on"
                   ></v-text-field>
@@ -95,14 +96,19 @@
                   scrollable
                 >
                   <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="datePickerMenu2 = false"
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="bidValidityPeriodPicker = false"
                     >Cancel</v-btn
                   >
                   <v-btn
                     text
                     color="primary"
                     @click="
-                      $refs.datePickerMenu2.save(bidLocal.bidValidityPeriod)
+                      $refs.bidValidityPeriodPicker.save(
+                        bidLocal.bidValidityPeriod
+                      )
                     "
                     >OK</v-btn
                   >
@@ -220,7 +226,10 @@
                 </v-container>
               </v-tab-item>
             </v-tabs>
-            <v-btn color="primary" @click="updateBid()" :disabled="!valid"
+            <v-btn
+              color="primary"
+              @click="updateBid()"
+              :disabled="containers.length == 0"
               >Hoàn thành</v-btn
             >
             <v-btn
@@ -246,23 +255,28 @@ import { updateBid } from "@/api/bid";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { IInbound } from "@/entity/inbound";
 import { IContainer } from "@/entity/container";
+import { getInboundsByOutboundAndForwarder } from "@/api/inbound";
+import { PaginationResponse } from "@/api/payload";
+import { IOutbound } from "@/entity/outbound";
+import Utils from "@/mixin/utils";
 
 @Component({
-  mixins: [FormValidate]
+  mixins: [FormValidate, Utils]
 })
 export default class UpdateBid extends Vue {
   @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @PropSync("bid", { type: Object }) bidSync!: IBid;
+  @Prop(Object) bid!: IBid;
+  @PropSync("bids", { type: Array }) bidsSync!: Array<IBid>;
   @PropSync("biddingDocument", { type: Object })
   biddingDocumentSync!: IBiddingDocument;
 
   // Form validate
   checkbox = false;
   editable = true;
-  datePickerMenu = false;
-  datePickerMenu2 = false;
+  bidDatePicker = false;
+  bidValidityPeriodPicker = false;
   expanded: Array<IInbound> = [];
   singleExpand = true;
   loading = true;
@@ -307,17 +321,52 @@ export default class UpdateBid extends Vue {
   inbounds = [] as Array<IInbound>;
   containers = [] as Array<IContainer>;
   created() {
-    this.bidLocal = Object.assign({}, this.bidSync);
+    this.bidLocal = Object.assign({}, this.bid);
+    this.containers = this.bidLocal.containers as IContainer[];
+    this.bidLocal.bidDate = this.bidLocal.bidDate.slice(0, 10);
+    this.bidLocal.bidValidityPeriod = this.bidLocal.bidValidityPeriod.slice(
+      0,
+      10
+    );
+    console.log(this.biddingDocumentSync);
+    if (this.biddingDocumentSync && this.biddingDocumentSync.outbound) {
+      const _outbound = this.biddingDocumentSync.outbound as IOutbound;
+      const _outboundId = _outbound.id as number;
+      getInboundsByOutboundAndForwarder(_outboundId, {
+        page: 0,
+        limit: 100
+      })
+        .then(res => {
+          const response: PaginationResponse<IInbound> = res.data;
+          this.inbounds = response.data;
+          this.options.totalItems = response.totalElements;
+          console.log(this.inbounds);
+        })
+        .catch(err => console.log(err))
+        .finally(() => (this.loading = false));
+    }
   }
   // Bid Update
   updateBid() {
     if (this.bidLocal.id) {
+      this.bidLocal.containers = this.containers.reduce(function(
+        pV: Array<number>,
+        cV: IContainer
+      ) {
+        if (cV.id) {
+          pV.push(cV.id);
+        }
+        return pV;
+      },
+      []);
       updateBid(this.bidLocal)
         .then(res => {
           console.log(res.data);
           const response: IBid = res.data;
           this.messageSync = "Cập nhập thành công HSDT: " + response.id;
-          this.bidSync = response;
+          const index = this.bidsSync.findIndex(x => x.id == response.id);
+          this.bidsSync.splice(index, 1, response);
+          this.stepper = 2;
         })
         .catch(err => {
           console.log(err);
@@ -342,6 +391,11 @@ export default class UpdateBid extends Vue {
         this.expanded.splice(index, 1);
       }
     }
+  }
+  checkDuplicateSelect(item: IContainer) {
+    return this.containers.filter(x => x.id == item.id).length > 0
+      ? true
+      : false;
   }
 }
 </script>

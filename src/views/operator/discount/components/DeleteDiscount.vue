@@ -51,6 +51,7 @@ export default class DeleteDiscount extends Vue {
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("discounts", { type: Array }) discountsSync!: Array<IDiscount>;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) discount!: IDiscount;
 
   removeDiscount() {
@@ -64,6 +65,7 @@ export default class DeleteDiscount extends Vue {
             x => x.id === this.discount.id
           );
           this.discountsSync.splice(index, 1);
+          this.totalItemsSync -= 1;
         })
         .catch(err => {
           console.log(err);

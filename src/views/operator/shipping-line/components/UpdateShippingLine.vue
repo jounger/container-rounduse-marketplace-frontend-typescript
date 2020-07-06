@@ -100,7 +100,7 @@
           >
 
           <v-stepper-content step="2">
-            <v-form ref="bookingForm" v-model="valid" lazy-validation>
+            <v-form ref="bookingForm" v-model="valid1" lazy-validation>
               <small>*Dấu sao là trường bắt buộc</small>
               <v-layout col>
                 <v-layout row>
@@ -239,7 +239,7 @@
               <v-btn
                 color="primary"
                 @click="updateShippingLine()"
-                :disabled="!valid"
+                :disabled="!valid1"
                 >Hoàn tất</v-btn
               >
               <v-btn text @click="stepper = 1">Quay lại</v-btn>
@@ -274,9 +274,11 @@ export default class UpdateShippingLine extends Vue {
   editable = true;
   stepper = 1;
   valid = true;
+  valid1 = true;
   allStatus = ["PENDING", "ACTIVE", "BANNED"];
   shippingLineLocal = {} as IShippingLine;
   created() {
+    console.log(this.shippingLine);
     this.shippingLineLocal = Object.assign({}, this.shippingLine);
   }
   // ShippingLine Update

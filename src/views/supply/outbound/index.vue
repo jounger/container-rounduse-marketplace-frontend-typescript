@@ -185,11 +185,6 @@ export default class Outbound extends Vue {
 
   openUpdateDialog(item: IOutbound) {
     this.outbound = item;
-    this.outbound.packingTime = this.outbound.packingTime.slice(0, 10);
-    this.outbound.booking.cutOffTime = this.outbound.booking.cutOffTime.slice(
-      0,
-      10
-    );
     this.dialogEdit = true;
   }
 

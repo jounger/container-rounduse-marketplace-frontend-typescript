@@ -17,7 +17,7 @@
         >
       </v-toolbar>
       <v-card-text>
-        <v-form>
+        <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
           <v-layout col>
             <v-layout row>
@@ -31,32 +31,6 @@
                   :readonly="update"
                   :counter="20"
                   :rules="[minLength('username', 2), maxLength('username', 20)]"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout row>
-              <v-flex xs8>
-                <v-text-field
-                  label="Tên lái xe"
-                  name="fullname"
-                  prepend-icon="mdi-account"
-                  type="text"
-                  v-model="driverLocal.fullname"
-                  :rules="[required('fullname')]"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
-                <v-text-field
-                  label="Số bằng lái"
-                  name="driverLocalLicense"
-                  prepend-icon="mdi-account"
-                  type="text"
-                  v-model="driverLocal.driverLicense"
-                  :rules="[required('driverLocal license')]"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -82,13 +56,41 @@
             <v-layout row>
               <v-flex xs8>
                 <v-text-field
+                  label="Tên lái xe"
+                  name="fullname"
+                  prepend-icon="airline_seat_recline_normal"
+                  type="text"
+                  v-model="driverLocal.fullname"
+                  :counter="50"
+                  :rules="[minLength('fullname', 5), maxLength('fullname', 50)]"
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+            <v-layout row>
+              <v-flex xs8>
+                <v-text-field
+                  label="Số bằng lái"
+                  name="driverLocalLicense"
+                  prepend-icon="payment"
+                  type="text"
+                  v-model="driverLocal.driverLicense"
+                  :counter="50"
+                  :rules="[minLength('fullname', 5), maxLength('fullname', 50)]"
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-layout>
+          <v-layout col>
+            <v-layout row>
+              <v-flex xs8>
+                <v-text-field
                   label="Email"
                   name="email"
-                  prepend-icon="mdi-account"
+                  prepend-icon="alternate_email"
                   type="text"
                   :counter="50"
                   :rules="[
-                    email('Operator'),
+                    email('Driver'),
                     minLength('email', 5),
                     maxLength('email', 50)
                   ]"
@@ -101,7 +103,7 @@
                 <v-text-field
                   label="Số điện thoại"
                   name="phone"
-                  prepend-icon="mdi-account"
+                  prepend-icon="call"
                   type="text"
                   :counter="10"
                   :rules="[minLength('phone', 10), maxLength('phone', 10)]"
@@ -112,11 +114,11 @@
           </v-layout>
           <v-layout col>
             <v-layout row>
-              <v-flex xs8>
+              <v-flex xs10>
                 <v-text-field
                   label="Địa chỉ"
                   name="address"
-                  prepend-icon="mdi-lock"
+                  prepend-icon="location_on"
                   type="text"
                   :counter="100"
                   :rules="[minLength('address', 5), maxLength('address', 100)]"
@@ -131,10 +133,16 @@
       <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn @click="updateDriver()" color="primary" v-if="update"
+        <v-btn
+          @click="updateDriver()"
+          color="primary"
+          v-if="update"
+          :disabled="!valid"
           >Cập nhập</v-btn
         >
-        <v-btn @click="createDriver()" color="primary" v-else>Thêm mới</v-btn>
+        <v-btn @click="createDriver()" color="primary" v-else :disabled="!valid"
+          >Thêm mới</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -143,7 +151,7 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IDriver } from "@/entity/driver";
 import FormValidate from "@/mixin/form-validate";
-import { createDriver, updateDriver } from "@/api/driver";
+import { createDriver, editDriver } from "@/api/driver";
 
 @Component({
   mixins: [FormValidate]
@@ -154,6 +162,7 @@ export default class CreateDriver extends Vue {
   @PropSync("drivers", { type: Array }) driversSync!: Array<IDriver>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Boolean) update!: boolean;
 
   driverLocal = {
@@ -168,6 +177,7 @@ export default class CreateDriver extends Vue {
     driverLicense: "",
     location: ""
   } as IDriver;
+  valid = false;
   created() {
     console.log(this.driver);
     this.driverLocal = Object.assign({}, this.driver);
@@ -180,6 +190,7 @@ export default class CreateDriver extends Vue {
           const response: IDriver = res.data;
           this.messageSync = "Thêm mới thành công lái xe: " + response.id;
           this.driversSync.unshift(response);
+          this.totalItemsSync += 1;
         })
         .catch(err => {
           console.log(err);
@@ -190,7 +201,7 @@ export default class CreateDriver extends Vue {
   }
   updateDriver() {
     if (this.driverLocal.id) {
-      updateDriver(this.driverLocal)
+      editDriver(this.driverLocal.id, this.driverLocal)
         .then(res => {
           console.log(res.data);
           const response: IDriver = res.data;

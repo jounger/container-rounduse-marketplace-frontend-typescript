@@ -13,12 +13,23 @@
       />
       <UpdateBid
         v-if="dialogEdit"
-        :bid.sync="bid"
+        :bid="bid"
+        :bids.sync="bids"
         :biddingDocument.sync="biddingDocument"
         :dialogEdit.sync="dialogEdit"
         :message.sync="message"
         :snackbar.sync="snackbar"
       />
+      <v-row justify="center">
+        <CancelBid
+          v-if="dialogCancel"
+          :dialogCancel.sync="dialogCancel"
+          :bid="bid"
+          :bids.sync="bids"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
+        />
+      </v-row>
       <v-data-table
         :headers="headers"
         :items="biddingDocuments"
@@ -82,10 +93,10 @@
                 </v-icon>
                 <v-icon
                   small
-                  @click="openDeleteDialog(item)"
+                  @click="openCancelDialog(item)"
                   v-if="item.status == 'PENDING'"
                 >
-                  mdi-delete
+                  close
                 </v-icon>
                 <span style="color:red;" v-if="item.status == 'REJECTED'"
                   >REJECTED</span
@@ -112,12 +123,14 @@ import { PaginationResponse } from "@/api/payload";
 import { getBidByBiddingDocumentAndForwarder } from "@/api/bid";
 import Utils from "@/mixin/utils";
 import UpdateBid from "./components/UpdateBid.vue";
+import CancelBid from "./components/CancelBid.vue";
 
 @Component({
   mixins: [Utils],
   components: {
     CreateBid,
     UpdateBid,
+    CancelBid,
     Snackbar
   }
 })
@@ -130,7 +143,7 @@ export default class Bid extends Vue {
   singleExpand = true;
   dialogAdd = false;
   dialogEdit = false;
-  dialogDel = false;
+  dialogCancel = false;
   search = "";
   message = "";
   snackbar = false;
@@ -209,18 +222,22 @@ export default class Bid extends Vue {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
+        this.biddingDocument = {} as IBiddingDocument;
       } else {
         this.expanded.splice(0, this.expanded.length);
         this.getBids(value);
         this.expanded.push(value);
+        this.biddingDocument = value;
       }
     } else {
       const index = this.expanded.findIndex(x => x.id === value.id);
       if (index === -1) {
         this.getBids(value);
         this.expanded.push(value);
+        this.biddingDocument = value;
       } else {
         this.expanded.splice(index, 1);
+        this.biddingDocument = {} as IBiddingDocument;
       }
     }
   }
@@ -241,9 +258,9 @@ export default class Bid extends Vue {
     }
   }
 
-  openDeleteDialog(item: IBid) {
+  openCancelDialog(item: IBid) {
     this.bid = item;
-    this.dialogDel = true;
+    this.dialogCancel = true;
   }
 
   @Watch("options", { deep: true })

@@ -5,6 +5,7 @@
         <DeletePort
           v-if="dialogDel"
           :dialogDel.sync="dialogDel"
+          :totalItems.sync="options.totalItems"
           :port="port"
           :ports.sync="ports"
           :message.sync="message"
@@ -14,7 +15,7 @@
       <v-row justify="center">
         <CreatePort
           v-if="dialogAdd"
-          :totalItems="options.totalItems"
+          :totalItems.sync="options.totalItems"
           :port="port"
           :ports.sync="ports"
           :dialogAdd.sync="dialogAdd"

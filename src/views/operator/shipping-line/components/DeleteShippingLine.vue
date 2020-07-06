@@ -55,6 +55,7 @@ export default class DeleteShippingLine extends Vue {
   @PropSync("shippingLines", { type: Array }) shippingLinesSync!: Array<
     IShippingLine
   >;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) shippingLine!: IShippingLine;
 
   removeShippingLine() {
@@ -68,6 +69,7 @@ export default class DeleteShippingLine extends Vue {
             x => x.id === this.shippingLine.id
           );
           this.shippingLinesSync.splice(index, 1);
+          this.totalItemsSync -= 1;
         })
         .catch(err => {
           console.log(err);

@@ -1,13 +1,13 @@
 <template>
-  <v-dialog v-model="dialogDelSync" persistent max-width="600px">
+  <v-dialog v-model="dialogCancelSync" persistent max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">Xóa hàng</span>
+          ><span class="headline" style="color:white;">Hủy HSDT</span>
           <v-btn
             icon
             dark
-            @click="dialogDelSync = false"
+            @click="dialogCancelSync = false"
             style="margin-left:403px;"
           >
             <v-icon>mdi-close</v-icon>
@@ -19,16 +19,14 @@
         <v-form>
           <v-container>
             <span style="color: black; font-size:22px;"
-              >Bạn có chắc chắn muốn xóa hàng nhập này?</span
+              >Bạn có chắc chắn muốn hủy HSDT này?</span
             >
             <div class="line"></div>
             <v-list>
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title>{{
-                    typeof inbound.billOfLading !== "undefined"
-                      ? inbound.billOfLading.billOfLadingNumber
-                      : ""
+                    typeof bid.id !== "undefined" ? bid.id : ""
                   }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -38,46 +36,46 @@
         </v-form>
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
-        <v-btn @click="dialogDelSync = false">Hủy</v-btn>
-        <v-btn @click="removeInbound()" color="red">Xóa</v-btn>
+        <v-btn @click="dialogCancelSync = false">Trở về</v-btn>
+        <v-btn @click="cancelBid()" color="red"
+          ><span style="color:white;">Hủy thầu</span></v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
-import { IInbound } from "@/entity/inbound";
-import { removeInbound } from "@/api/inbound";
+import { IBid } from "@/entity/bid";
+import { editBid } from "@/api/bid";
 
 @Component
-export default class DeleteInbound extends Vue {
-  @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("inbounds", { type: Array }) inboundsSync!: Array<IInbound>;
+export default class CancelBid extends Vue {
+  @PropSync("dialogCancel", { type: Boolean }) dialogCancelSync!: boolean;
+  @Prop(Object)
+  bid!: IBid;
+  @PropSync("bids", { type: Array }) bidsSync!: Array<IBid>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
-  @Prop(Object) inbound!: IInbound;
 
-  removeInbound() {
-    if (this.inbound.id) {
-      removeInbound(this.inbound.id)
+  cancelBid() {
+    if (this.bid.id) {
+      editBid(this.bid.id, {
+        status: "CANCELED"
+      })
         .then(res => {
           console.log(res.data);
-          this.messageSync =
-            "Xóa thành công hàng nhập: " +
-            this.inbound.billOfLading.billOfLadingNumber;
-          const index = this.inboundsSync.findIndex(
-            x => x.id === this.inbound.id
-          );
-          this.inboundsSync.splice(index, 1);
-          this.totalItemsSync -= 1;
+          const response: IBid = res.data;
+          this.messageSync = "Hủy thầu thành công HSMT: " + response.id;
+          const index = this.bidsSync.findIndex(x => x.id === response.id);
+          this.bidsSync.splice(index, 1, response);
         })
         .catch(err => {
           console.log(err);
           this.messageSync = "Đã có lỗi xảy ra";
         })
         .finally(
-          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
+          () => ((this.snackbarSync = true), (this.dialogCancelSync = false))
         );
     }
   }

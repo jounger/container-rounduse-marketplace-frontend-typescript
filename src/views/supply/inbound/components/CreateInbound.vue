@@ -11,14 +11,14 @@
         <v-btn icon dark @click="dialogAddSync = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title>Thêm mới</v-toolbar-title>
+        <v-toolbar-title>Thêm mới Hàng nhập</v-toolbar-title>
         <v-spacer></v-spacer>
       </v-toolbar>
       <!-- START CONTENT -->
       <v-list three-line subheader>
         <v-stepper v-model="stepper" vertical>
           <v-stepper-step :complete="stepper > 1" step="1" :editable="editable">
-            Tạo hàng nhập
+            Thêm mới Hàng nhập
             <small>Thông tin chung</small>
           </v-stepper-step>
 
@@ -30,6 +30,7 @@
                   ><v-flex xs10>
                     <v-select
                       v-model="inboundLocal.shippingLine"
+                      prepend-icon="directions_boat"
                       :items="shippingLinesToString"
                       :rules="[required('shipping line')]"
                       label="Hãng tàu*"
@@ -38,6 +39,7 @@
                   ><v-flex xs10>
                     <v-select
                       v-model="inboundLocal.containerType"
+                      prepend-icon="directions_bus"
                       :items="containerTypesToString"
                       :rules="[required('container type')]"
                       label="Loại container*"
@@ -48,6 +50,7 @@
                   ><v-flex xs10>
                     <v-text-field
                       v-model="inboundLocal.returnStation"
+                      prepend-icon="location_on"
                       :rules="[required('return station')]"
                       label="Nơi trả hàng*"
                     ></v-text-field> </v-flex></v-layout
@@ -57,26 +60,22 @@
                       ref="pickupTimePicker"
                       v-model="pickupTimePicker"
                       :close-on-content-click="false"
-                      :return-value.sync="inboundLocal.pickupTime"
+                      :return-value.sync="pickupTime"
                       transition="scale-transition"
                       offset-y
                       min-width="290px"
                     >
                       <template v-slot:activator="{ on, attrs }">
                         <v-text-field
-                          v-model="inboundLocal.pickupTime"
+                          v-model="pickupTime"
                           label="Thời gian lấy containers đặc từ cảng*"
-                          prepend-icon="event"
+                          prepend-icon="flight_land"
                           v-bind="attrs"
                           v-on="on"
                           :rules="[required('pickup time')]"
                         ></v-text-field>
                       </template>
-                      <v-date-picker
-                        v-model="inboundLocal.pickupTime"
-                        no-title
-                        scrollable
-                      >
+                      <v-date-picker v-model="pickupTime" no-title scrollable>
                         <v-spacer></v-spacer>
                         <v-btn
                           text
@@ -87,9 +86,7 @@
                         <v-btn
                           text
                           color="primary"
-                          @click="
-                            $refs.pickupTimePicker.save(inboundLocal.pickupTime)
-                          "
+                          @click="$refs.pickupTimePicker.save(pickupTime)"
                           >OK</v-btn
                         >
                       </v-date-picker>
@@ -116,6 +113,7 @@
                   ><v-flex xs10>
                     <v-text-field
                       v-model="inboundLocal.billOfLading.billOfLadingNumber"
+                      prepend-icon="play_for_work"
                       :rules="[required('B/L No.')]"
                       label="B/L No.*"
                     ></v-text-field> </v-flex></v-layout
@@ -123,6 +121,7 @@
                   ><v-flex xs10>
                     <v-select
                       v-model="inboundLocal.billOfLading.portOfDelivery"
+                      prepend-icon="flag"
                       :items="portsToString"
                       :rules="[required('port of loading')]"
                       label="Cảng lấy container đặc*"
@@ -135,25 +134,21 @@
                       ref="freeTimePicker"
                       v-model="freeTimePicker"
                       :close-on-content-click="false"
-                      :return-value.sync="inboundLocal.billOfLading.freeTime"
+                      :return-value.sync="freeTime"
                       transition="scale-transition"
                       offset-y
                       min-width="290px"
                     >
                       <template v-slot:activator="{ on, attrs }">
                         <v-text-field
-                          v-model="inboundLocal.billOfLading.freeTime"
+                          v-model="freeTime"
                           label="Thời gian được thuê cont"
-                          prepend-icon="event"
+                          prepend-icon="event_available"
                           v-bind="attrs"
                           v-on="on"
                         ></v-text-field>
                       </template>
-                      <v-date-picker
-                        v-model="inboundLocal.billOfLading.freeTime"
-                        no-title
-                        scrollable
-                      >
+                      <v-date-picker v-model="freeTime" no-title scrollable>
                         <v-spacer></v-spacer>
                         <v-btn
                           text
@@ -164,11 +159,7 @@
                         <v-btn
                           text
                           color="primary"
-                          @click="
-                            $refs.freeTimePicker.save(
-                              inboundLocal.billOfLading.freeTime
-                            )
-                          "
+                          @click="$refs.freeTimePicker.save(freeTime)"
                           >OK</v-btn
                         >
                       </v-date-picker>
@@ -284,62 +275,71 @@
                       </v-toolbar>
 
                       <v-card-text>
-                        <v-container>
-                          <small>*Dấu sao là trường bắt buộc</small>
-                          <v-layout col>
-                            <v-layout row>
-                              <v-flex xs8>
-                                <v-text-field
-                                  v-model="containerLocal.containerNumber"
-                                  label="Container No."
-                                  :readonly="!checkAdd"
-                                ></v-text-field>
-                              </v-flex>
+                        <v-form v-model="valid3" validation>
+                          <v-container>
+                            <small>*Dấu sao là trường bắt buộc</small>
+                            <v-layout col>
+                              <v-layout row>
+                                <v-flex xs8>
+                                  <v-text-field
+                                    v-model="containerLocal.containerNumber"
+                                    prepend-icon="directions_bus"
+                                    :rules="[required('container number')]"
+                                    label="Container No.*"
+                                    :readonly="!checkAdd"
+                                  ></v-text-field>
+                                </v-flex>
+                              </v-layout>
+                              <v-layout row>
+                                <v-flex xs8>
+                                  <v-text-field
+                                    v-model="containerLocal.licensePlate"
+                                    prepend-icon="payment"
+                                    :rules="[required('container license')]"
+                                    label="Biển kiểm sát*"
+                                  ></v-text-field>
+                                </v-flex>
+                              </v-layout>
                             </v-layout>
-                            <v-layout row>
-                              <v-flex xs8>
-                                <v-text-field
-                                  v-model="containerLocal.licensePlate"
-                                  label="Biển kiểm sát"
-                                ></v-text-field>
-                              </v-flex>
+                            <v-layout col>
+                              <v-layout row>
+                                <v-flex xs8>
+                                  <v-select
+                                    v-model="containerLocal.tractor"
+                                    prepend-icon="tram"
+                                    :items="tractors"
+                                    :rules="[required('tractor')]"
+                                    label="Loại đầu kéo*"
+                                  ></v-select>
+                                </v-flex>
+                              </v-layout>
+                              <v-layout row>
+                                <v-flex xs8>
+                                  <v-select
+                                    v-model="containerLocal.trailer"
+                                    prepend-icon="format_strikethrough"
+                                    :items="trailers"
+                                    :rules="[required('trailer')]"
+                                    label="Loại rờ mọt*"
+                                  ></v-select>
+                                </v-flex>
+                              </v-layout>
                             </v-layout>
-                          </v-layout>
-                          <v-layout col>
-                            <v-layout row>
-                              <v-flex xs8>
-                                <v-select
-                                  v-model="containerLocal.tractor"
-                                  :items="tractors"
-                                  :rules="[required('tractor')]"
-                                  label="Loại đầu kéo"
-                                ></v-select>
-                              </v-flex>
+                            <v-layout col>
+                              <v-layout row>
+                                <v-flex xs5>
+                                  <v-select
+                                    v-model="containerLocal.driver"
+                                    prepend-icon="airline_seat_recline_normal"
+                                    :items="driversToString"
+                                    :rules="[required('driver')]"
+                                    label="Tài xế*"
+                                  ></v-select>
+                                </v-flex>
+                              </v-layout>
                             </v-layout>
-                            <v-layout row>
-                              <v-flex xs8>
-                                <v-select
-                                  v-model="containerLocal.trailer"
-                                  :items="trailers"
-                                  :rules="[required('trailer')]"
-                                  label="Loại rờ mọt"
-                                ></v-select>
-                              </v-flex>
-                            </v-layout>
-                          </v-layout>
-                          <v-layout col>
-                            <v-layout row>
-                              <v-flex xs5>
-                                <v-select
-                                  v-model="containerLocal.driver"
-                                  :items="driversToString"
-                                  :rules="[required('driver')]"
-                                  label="Tài xế"
-                                ></v-select>
-                              </v-flex>
-                            </v-layout>
-                          </v-layout>
-                        </v-container>
+                          </v-container>
+                        </v-form>
                       </v-card-text>
 
                       <v-card-actions>
@@ -348,14 +348,14 @@
                         <v-btn
                           color="primary"
                           v-if="checkAdd"
-                          :disabled="!valid"
+                          :disabled="!valid3"
                           @click="createContainer()"
                           >Thêm mới</v-btn
                         >
                         <v-btn
                           color="primary"
                           v-if="!checkAdd"
-                          :disabled="!valid"
+                          :disabled="!valid3"
                           @click="updateContainer()"
                           >Cập nhập</v-btn
                         >
@@ -373,7 +373,10 @@
                 </v-icon>
               </template>
             </v-data-table>
-            <v-btn color="primary" @click="stepper = 4" :disabled="!valid"
+            <v-btn
+              color="primary"
+              @click="stepper = 4"
+              :disabled="containers.length == 0"
               >Tiếp tục</v-btn
             >
             <v-btn text @click="stepper = 2">Quay lại</v-btn>
@@ -450,6 +453,7 @@ export default class CreateInbound extends Vue {
   stepper = 1;
   valid = true;
   valid2 = true;
+  valid3 = true;
   title = "Thêm mới Container";
   checkAdd = true;
   // API list
@@ -458,7 +462,8 @@ export default class CreateInbound extends Vue {
   containerTypes: Array<IContainerType> = [];
   trailers: Array<string> = [];
   tractors: Array<string> = [];
-
+  pickupTime = this.dateInit;
+  freeTime = this.dateInit;
   // inboundLocal form
   pickupTimePicker = false;
 
@@ -587,10 +592,8 @@ export default class CreateInbound extends Vue {
   // Inbound
   createInbound() {
     // TODO: API create inbound
-    this.inboundLocal.pickupTime = addTimeToDate(this.inboundLocal.pickupTime);
-    this.inboundLocal.billOfLading.freeTime = addTimeToDate(
-      this.inboundLocal.billOfLading.freeTime
-    );
+    this.inboundLocal.pickupTime = addTimeToDate(this.pickupTime);
+    this.inboundLocal.billOfLading.freeTime = addTimeToDate(this.freeTime);
     this.inboundLocal.billOfLading.containers = this.containers;
 
     /* TODO: Calculate Empty Time:
@@ -604,11 +607,10 @@ export default class CreateInbound extends Vue {
       .then(res => {
         console.log(res.data);
         const response: IInbound = res.data;
-        this.inboundLocal = response;
         this.messageSync =
           "Thêm mới thành công hàng nhập: " +
           this.inboundLocal.billOfLading.billOfLadingNumber;
-        this.inboundsSync.unshift(this.inboundLocal);
+        this.inboundsSync.unshift(response);
         this.totalItemsSync += 1;
       })
       .catch(err => {

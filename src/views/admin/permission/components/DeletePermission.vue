@@ -48,12 +48,13 @@ import { removePermission } from "@/api/permission";
 @Component
 export default class DeletePermission extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @Prop(Object) permission!: IPermission;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("permissions", { type: Array }) permissionsSync!: Array<
     IPermission
   >;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
+  @Prop(Object) permission!: IPermission;
 
   removePermission() {
     if (this.permission.id) {
@@ -65,6 +66,7 @@ export default class DeletePermission extends Vue {
             x => x.id === this.permission.id
           );
           this.permissionsSync.splice(index, 1);
+          this.totalItemsSync -= 1;
         })
         .catch(err => {
           console.log(err);

@@ -98,103 +98,92 @@
           <v-stepper-content step="2">
             <v-form ref="billOfLadingForm" v-model="valid" validation>
               <v-menu
-                ref="datePickerMenu"
-                v-model="datePickerMenu"
+                ref="bidOpeningPicker"
+                v-model="bidOpeningPicker"
                 :close-on-content-click="false"
-                :return-value.sync="biddingDocumentLocal.bidOpening"
+                :return-value.sync="bidOpening"
                 transition="scale-transition"
                 offset-y
                 min-width="290px"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    v-model="biddingDocumentLocal.bidOpening"
+                    v-model="bidOpening"
                     label="Thời gian mở thầu"
-                    prepend-icon="event"
+                    prepend-icon="event_available"
                     v-bind="attrs"
                     v-on="on"
                     :rules="[required('bid opening')]"
                   ></v-text-field>
                 </template>
-                <v-date-picker
-                  v-model="biddingDocumentLocal.bidOpening"
-                  no-title
-                  scrollable
-                >
+                <v-date-picker v-model="bidOpening" no-title scrollable>
                   <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="datePickerMenu = false"
+                  <v-btn text color="primary" @click="bidOpeningPicker = false"
                     >Cancel</v-btn
                   >
                   <v-btn
                     text
                     color="primary"
-                    @click="
-                      $refs.datePickerMenu.save(biddingDocumentLocal.bidOpening)
-                    "
+                    @click="$refs.bidOpeningPicker.save(bidOpening)"
                     >OK</v-btn
                   >
                 </v-date-picker>
               </v-menu>
               <!-- Bid Closing -->
               <v-menu
-                ref="datePickerMenu2"
-                v-model="datePickerMenu2"
+                ref="bidClosingPicker"
+                v-model="bidClosingPicker"
                 :close-on-content-click="false"
-                :return-value.sync="biddingDocumentLocal.bidClosing"
+                :return-value.sync="bidClosing"
                 transition="scale-transition"
                 offset-y
                 min-width="290px"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    v-model="biddingDocumentLocal.bidClosing"
+                    v-model="bidClosing"
                     label="Thời gian đóng thầu"
-                    prepend-icon="event"
+                    prepend-icon="event_busy"
                     v-bind="attrs"
                     v-on="on"
                     :rules="[required('bid closing')]"
                   ></v-text-field>
                 </template>
-                <v-date-picker
-                  v-model="biddingDocumentLocal.bidClosing"
-                  no-title
-                  scrollable
-                >
+                <v-date-picker v-model="bidClosing" no-title scrollable>
                   <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="datePickerMenu2 = false"
+                  <v-btn text color="primary" @click="bidClosingPicker = false"
                     >Cancel</v-btn
                   >
                   <v-btn
                     text
                     color="primary"
-                    @click="
-                      $refs.datePickerMenu2.save(
-                        biddingDocumentLocal.bidClosing
-                      )
-                    "
+                    @click="$refs.bidClosingPicker.save(bidClosing)"
                     >OK</v-btn
                   >
                 </v-date-picker>
               </v-menu>
               <v-select
                 v-model="biddingDocumentLocal.currencyOfPayment"
+                prepend-icon="strikethrough_s"
                 :items="currencyOfPayments"
                 :rules="[required('currency')]"
                 label="Đồng tiền thanh toán"
               ></v-select>
               <v-text-field
                 v-model="biddingDocumentLocal.bidPackagePrice"
+                prepend-icon="money"
                 :rules="[required('bid package price')]"
                 type="number"
                 label="Giá gói thầu"
               ></v-text-field>
               <v-text-field
                 v-model="biddingDocumentLocal.bidFloorPrice"
+                prepend-icon="local_atm"
                 :rules="[
                   required('bid floor price'),
                   maxNumber(
                     'bid floor price',
-                    biddingDocumentLocal.bidPackagePrice
+                    parseInt(biddingDocumentLocal.bidPackagePrice)
                   )
                 ]"
                 type="number"
@@ -204,32 +193,19 @@
                 v-model="biddingDocumentLocal.isMultipleAward"
                 label="Cho phép nhiều nhà thầu cùng thắng"
               ></v-checkbox>
-              <v-btn
-                color="primary"
-                @click="
-                  stepper = 3;
-                  valid = false;
-                "
-                :disabled="!valid"
+              <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
                 >Tiếp tục</v-btn
               >
-              <v-btn
-                text
-                @click="
-                  stepper = 1;
-                  valid = true;
-                "
-                >Quay lại</v-btn
-              >
+              <v-btn text @click="stepper = 1">Quay lại</v-btn>
             </v-form>
           </v-stepper-content>
           <!-- FINISH -->
           <v-stepper-step step="3">Hoàn thành</v-stepper-step>
           <v-stepper-content step="3">
-            <v-form ref="finishForm" v-model="valid" validation>
+            <v-form ref="finishForm">
               <v-text-field
                 v-model="biddingDocumentLocal.bidDiscountCode"
-                prepend-icon="event"
+                prepend-icon="loyalty"
                 label="Mã giảm giá"
               ></v-text-field>
               <v-checkbox
@@ -247,14 +223,7 @@
                 :disabled="!checkbox"
                 >Hoàn tất</v-btn
               >
-              <v-btn
-                text
-                @click="
-                  stepper = 2;
-                  valid = true;
-                "
-                >Quay lại</v-btn
-              >
+              <v-btn text @click="stepper = 2">Quay lại</v-btn>
             </v-form>
           </v-stepper-content>
         </v-stepper>
@@ -285,6 +254,7 @@ export default class CreateBiddingDocument extends Vue {
   outboundSync?: IOutbound;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
 
   dateInit = new Date().toISOString().substr(0, 10);
   biddingDocumentLocal = {
@@ -298,7 +268,8 @@ export default class CreateBiddingDocument extends Vue {
     currencyOfPayment: "VND",
     bidPackagePrice: 0,
     bidFloorPrice: 0,
-    priceLeadership: 0
+    priceLeadership: 0,
+    status: "BIDDING"
   } as IBiddingDocument;
   // Form validate
   autoSendCheckbox = true;
@@ -309,10 +280,12 @@ export default class CreateBiddingDocument extends Vue {
   // API list
   currencyOfPayments: Array<string> = [];
   unitOfMeasurements: Array<string> = [];
+  bidOpening = this.dateInit;
+  bidClosing = this.dateInit;
 
   // biddingDocumentLocal form
-  datePickerMenu = false;
-  datePickerMenu2 = false;
+  bidOpeningPicker = false;
+  bidClosingPicker = false;
 
   // Outbound form
   outbounds: Array<IOutbound> = [];
@@ -363,12 +336,8 @@ export default class CreateBiddingDocument extends Vue {
   // BiddingDocument
   createBiddingDocument() {
     // TODO: API create biddingDocument
-    this.biddingDocumentLocal.bidOpening = addTimeToDate(
-      this.biddingDocumentLocal.bidOpening
-    );
-    this.biddingDocumentLocal.bidClosing = addTimeToDate(
-      this.biddingDocumentLocal.bidClosing
-    );
+    this.biddingDocumentLocal.bidOpening = addTimeToDate(this.bidOpening);
+    this.biddingDocumentLocal.bidClosing = addTimeToDate(this.bidClosing);
     this.biddingDocumentLocal.outbound = this.selectedOutbound.id as number;
     console.log(this.biddingDocumentLocal);
     createBiddingDocument(this.biddingDocumentLocal)
@@ -378,6 +347,7 @@ export default class CreateBiddingDocument extends Vue {
         this.messageSync = "Thêm mới thành công HSMT: " + response.id;
         if (typeof this.biddingDocumentsSync != "undefined") {
           this.biddingDocumentsSync.unshift(response);
+          this.totalItemsSync += 1;
         }
       })
       .catch(err => {

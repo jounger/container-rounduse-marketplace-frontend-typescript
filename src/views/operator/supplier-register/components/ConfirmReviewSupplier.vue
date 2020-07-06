@@ -65,6 +65,7 @@ export default class ConfirmReviewSupplier extends Vue {
   @PropSync("suppliersSync", { type: Array }) suppliersSyncSync!: Array<
     ISupplier
   >;
+  @PropSync("totalItemsSync", { type: Number }) totalItemsSyncSync!: number;
   @Prop(Boolean) status!: boolean;
   @Prop(Object) supplier!: ISupplier;
   reviewSupplier(status: boolean) {
@@ -83,6 +84,7 @@ export default class ConfirmReviewSupplier extends Vue {
             x => x.id == response.id
           );
           this.suppliersSyncSync.splice(index, 1);
+          this.totalItemsSyncSync -= 1;
           this.finishSync = true;
         })
         .catch(err => {

@@ -30,6 +30,7 @@
                   ><v-flex xs10>
                     <v-select
                       v-model="outboundLocal.shippingLine"
+                      prepend-icon="directions_boat"
                       :items="shippingLinesToString"
                       :rules="[required('shipping line')]"
                       label="Hãng tàu*"
@@ -38,6 +39,7 @@
                   ><v-flex xs10>
                     <v-select
                       v-model="outboundLocal.containerType"
+                      prepend-icon="directions_bus"
                       :items="containerTypesToString"
                       :rules="[required('container type')]"
                       label="Loại container*"
@@ -50,25 +52,21 @@
                       ref="packingTimePicker"
                       v-model="packingTimePicker"
                       :close-on-content-click="false"
-                      :return-value.sync="outboundLocal.packingTime"
+                      :return-value.sync="packingTime"
                       transition="scale-transition"
                       offset-y
                       min-width="290px"
                     >
                       <template v-slot:activator="{ on, attrs }">
                         <v-text-field
-                          v-model="outboundLocal.packingTime"
+                          v-model="packingTime"
                           label="Thời gian đóng hàng"
                           prepend-icon="event"
                           v-bind="attrs"
                           v-on="on"
                         ></v-text-field>
                       </template>
-                      <v-date-picker
-                        v-model="outboundLocal.packingTime"
-                        no-title
-                        scrollable
-                      >
+                      <v-date-picker v-model="packingTime" no-title scrollable>
                         <v-spacer></v-spacer>
                         <v-btn
                           text
@@ -79,11 +77,7 @@
                         <v-btn
                           text
                           color="primary"
-                          @click="
-                            $refs.packingTimePicker.save(
-                              outboundLocal.packingTime
-                            )
-                          "
+                          @click="$refs.packingTimePicker.save(packingTime)"
                           >OK</v-btn
                         >
                       </v-date-picker>
@@ -93,6 +87,7 @@
                   ><v-flex xs10>
                     <v-text-field
                       v-model="outboundLocal.packingStation"
+                      prepend-icon="location_on"
                       type="text"
                       label="Nơi đóng hàng"
                     ></v-text-field> </v-flex></v-layout
@@ -102,6 +97,7 @@
                   ><v-flex xs10>
                     <v-text-field
                       v-model="outboundLocal.grossWeight"
+                      prepend-icon="fitness_center"
                       type="number"
                       label="Khối lượng hàng"
                     ></v-text-field> </v-flex></v-layout
@@ -109,6 +105,7 @@
                   ><v-flex xs10>
                     <v-select
                       v-model="outboundLocal.unitOfMeasurement"
+                      prepend-icon="strikethrough_s"
                       :items="unitOfMeasurements"
                       label="Đơn vị đo"
                     ></v-select> </v-flex></v-layout
@@ -118,6 +115,7 @@
                   ><v-flex xs5>
                     <v-text-field
                       v-model="outboundLocal.goodsDescription"
+                      prepend-icon="description"
                       type="text"
                       label="Mô tả"
                     ></v-text-field> </v-flex></v-layout
@@ -137,13 +135,14 @@
           >
 
           <v-stepper-content step="2">
-            <v-form ref="bookingForm" v-model="valid" lazy-validation>
+            <v-form ref="bookingForm" v-model="valid2" lazy-validation>
               <small>*Dấu sao là trường bắt buộc</small>
               <v-layout col
                 ><v-layout row
                   ><v-flex xs10>
                     <v-text-field
                       v-model="outboundLocal.booking.bookingNumber"
+                      prepend-icon="child_friendly"
                       :rules="[required('booking number')]"
                       label="bookingNumber*"
                       required
@@ -152,6 +151,7 @@
                   ><v-flex xs10>
                     <v-select
                       v-model="outboundLocal.booking.portOfLoading"
+                      prepend-icon="flag"
                       :items="portsToString"
                       :rules="[required('port of loading')]"
                       label="Cảng nhận container rỗng*"
@@ -165,27 +165,23 @@
                       ref="cutOffTimePicker"
                       v-model="cutOffTimePicker"
                       :close-on-content-click="false"
-                      :return-value.sync="outboundLocal.booking.cutOffTime"
+                      :return-value.sync="cutOffTime"
                       transition="scale-transition"
                       offset-y
                       min-width="290px"
                     >
                       <template v-slot:activator="{ on, attrs }">
                         <v-text-field
-                          v-model="outboundLocal.booking.cutOffTime"
+                          v-model="cutOffTime"
                           label="Thời gian tàu chạy*"
-                          prepend-icon="event"
+                          prepend-icon="flight_takeoff"
                           v-bind="attrs"
                           v-on="on"
                           required
                           :rules="[required('cut off time')]"
                         ></v-text-field>
                       </template>
-                      <v-date-picker
-                        v-model="outboundLocal.booking.cutOffTime"
-                        no-title
-                        scrollable
-                      >
+                      <v-date-picker v-model="cutOffTime" no-title scrollable>
                         <v-spacer></v-spacer>
                         <v-btn
                           text
@@ -196,11 +192,7 @@
                         <v-btn
                           text
                           color="primary"
-                          @click="
-                            $refs.cutOffTimePicker.save(
-                              outboundLocal.booking.cutOffTime
-                            )
-                          "
+                          @click="$refs.cutOffTimePicker.save(cutOffTime)"
                           >OK</v-btn
                         >
                       </v-date-picker>
@@ -210,6 +202,7 @@
                   ><v-flex xs10>
                     <v-text-field
                       v-model="outboundLocal.booking.unit"
+                      prepend-icon="commute"
                       :rules="[required('unit')]"
                       label="Số lượng Container*"
                       type="number"
@@ -220,9 +213,13 @@
                 v-model="outboundLocal.booking.isFcl"
                 label="Hàng nguyên cont"
               ></v-checkbox>
-              <v-btn color="primary" @click="updateBooking()" :disabled="!valid"
+              <v-btn
+                color="primary"
+                @click="updateBooking()"
+                :disabled="!valid2"
                 >Hoàn tất</v-btn
               >
+              <v-btn text @click="stepper = 1">Quay lại</v-btn>
             </v-form>
           </v-stepper-content>
         </v-stepper>
@@ -246,6 +243,7 @@ import { updateOutbound } from "@/api/outbound";
 import { updateBooking } from "@/api/booking";
 import { IBooking } from "@/entity/booking";
 import { addTimeToDate } from "@/utils/tool";
+import { addHoursToDate } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate]
@@ -262,12 +260,16 @@ export default class UpdateOutbound extends Vue {
   editable = true;
   stepper = 1;
   valid = true;
+  valid2 = true;
   // API list
+  dateInit = new Date().toISOString().substr(0, 10);
   ports: Array<IPort> = [];
   shippingLines: Array<IShippingLine> = [];
   containerTypes: Array<IContainerType> = [];
   unitOfMeasurements: Array<string> = [];
   outboundLocal = {} as IOutbound;
+  packingTime = this.dateInit;
+  cutOffTime = this.dateInit;
   // outboundLocal form
   packingTimePicker = false;
 
@@ -277,11 +279,11 @@ export default class UpdateOutbound extends Vue {
   // Outbound Update
   updateOutbound() {
     // TODO
-    this.outboundLocal.packingTime = addTimeToDate(
-      this.outboundLocal.packingTime
-    );
-    this.outboundLocal.booking.cutOffTime = addTimeToDate(
-      this.outboundLocal.booking.cutOffTime
+    this.outboundLocal.packingTime = addTimeToDate(this.packingTime);
+    this.outboundLocal.booking.cutOffTime = addTimeToDate(this.cutOffTime);
+    this.outboundLocal.deliveryTime = addHoursToDate(
+      new Date(this.outboundLocal.packingTime),
+      5
     );
     updateOutbound(this.outboundLocal)
       .then(res => {
@@ -304,9 +306,7 @@ export default class UpdateOutbound extends Vue {
       .finally(() => (this.snackbarSync = true));
   }
   updateBooking() {
-    this.outboundLocal.booking.cutOffTime = addTimeToDate(
-      this.outboundLocal.booking.cutOffTime
-    );
+    this.outboundLocal.booking.cutOffTime = addTimeToDate(this.cutOffTime);
     updateBooking(this.outboundLocal.booking)
       .then(res => {
         const response: IBooking = res.data;
@@ -326,6 +326,8 @@ export default class UpdateOutbound extends Vue {
 
   created() {
     this.outboundLocal = Object.assign({}, this.outbound);
+    this.packingTime = this.outboundLocal.packingTime.slice(0, 10);
+    this.cutOffTime = this.outboundLocal.booking.cutOffTime.slice(0, 10);
     getPorts({
       page: 0,
       limit: 100

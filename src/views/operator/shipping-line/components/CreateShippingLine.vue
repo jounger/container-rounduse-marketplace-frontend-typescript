@@ -11,7 +11,7 @@
         <v-btn icon dark @click="dialogAddSync = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title>Thêm mới</v-toolbar-title>
+        <v-toolbar-title>Thêm mới Hãng tàu</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
           <v-btn dark text @click="addShippingLine()">Thêm mới</v-btn>
@@ -97,13 +97,7 @@
                       label="Địa chỉ*"
                     ></v-text-field> </v-flex></v-layout
               ></v-layout>
-              <v-btn
-                color="primary"
-                @click="
-                  stepper = 2;
-                  valid = false;
-                "
-                :disabled="!valid"
+              <v-btn color="primary" @click="stepper = 2" :disabled="!valid"
                 >Tiếp tục</v-btn
               >
               <!-- <v-btn text @click="dialogAddSync = false">Hủy</v-btn> -->
@@ -115,7 +109,7 @@
           >
 
           <v-stepper-content step="2">
-            <v-form ref="bookingForm" v-model="valid" validation>
+            <v-form ref="bookingForm" v-model="valid2" validation>
               <small>*Dấu sao là trường bắt buộc</small>
               <v-layout col>
                 <v-layout row>
@@ -239,23 +233,10 @@
                   </v-flex>
                 </v-layout>
               </v-layout>
-              <v-btn
-                color="primary"
-                @click="
-                  stepper = 3;
-                  valid = true;
-                "
-                :disabled="!valid"
+              <v-btn color="primary" @click="stepper = 3" :disabled="!valid2"
                 >Tiếp tục</v-btn
               >
-              <v-btn
-                text
-                @click="
-                  stepper = 1;
-                  valid = true;
-                "
-                >Quay lại</v-btn
-              >
+              <v-btn text @click="stepper = 1">Quay lại</v-btn>
             </v-form>
           </v-stepper-content>
 
@@ -264,7 +245,7 @@
           >
 
           <v-stepper-content step="3">
-            <v-form ref="finishForm" v-model="valid" validation>
+            <v-form ref="finishForm">
               <v-checkbox
                 v-model="checkbox"
                 label="Bạn đồng ý muốn thêm hãng tàu với những thông tin trên?"
@@ -272,17 +253,10 @@
               <v-btn
                 color="primary"
                 @click="createShippingLine()"
-                :disabled="!valid || !checkbox"
+                :disabled="!checkbox"
                 >Hoàn tất</v-btn
               >
-              <v-btn
-                text
-                @click="
-                  stepper = 2;
-                  valid = true;
-                "
-                >Quay lại</v-btn
-              >
+              <v-btn text @click="stepper = 2">Quay lại</v-btn>
             </v-form>
           </v-stepper-content>
         </v-stepper>
@@ -307,6 +281,7 @@ export default class CreateShippingLine extends Vue {
   >;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
 
   shippingLineLocal = {
     username: "",
@@ -331,6 +306,7 @@ export default class CreateShippingLine extends Vue {
   editable = false;
   stepper = 1;
   valid = false;
+  valid2 = false;
 
   createShippingLine() {
     if (this.shippingLineLocal) {
@@ -341,6 +317,7 @@ export default class CreateShippingLine extends Vue {
           this.messageSync =
             "Thêm mới thành công hãng tàu: " + response.companyCode;
           this.shippingLinesSync.unshift(response);
+          this.totalItemsSync += 1;
         })
         .catch(err => {
           console.log(err);

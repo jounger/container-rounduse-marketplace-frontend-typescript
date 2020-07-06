@@ -5,7 +5,8 @@
         <DeleteDriver
           v-if="dialogDel"
           :dialogDel.sync="dialogDel"
-          :driver.sync="driver"
+          :totalItems.sync="options.totalItems"
+          :driver="driver"
           :drivers.sync="drivers"
           :message.sync="message"
           :snackbar.sync="snackbar"
@@ -16,6 +17,7 @@
           v-if="dialogAdd"
           :driver="driver"
           :drivers.sync="drivers"
+          :totalItems.sync="options.totalItems"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
           :snackbar.sync="snackbar"

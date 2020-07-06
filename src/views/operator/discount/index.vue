@@ -7,6 +7,7 @@
           :dialogDel.sync="dialogDel"
           :discount="discount"
           :discounts.sync="discounts"
+          :totalItems.sync="options.totalItems"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
@@ -14,10 +15,10 @@
       <v-row justify="center">
         <CreateDiscount
           v-if="dialogAdd"
-          :totalItems="options.totalItems"
           :discount="discount"
           :discounts.sync="discounts"
           :dialogAdd.sync="dialogAdd"
+          :totalItems.sync="options.totalItems"
           :message.sync="message"
           :snackbar.sync="snackbar"
           :update="update"

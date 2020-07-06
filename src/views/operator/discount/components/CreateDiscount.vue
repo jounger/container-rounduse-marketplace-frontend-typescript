@@ -156,9 +156,10 @@ export default class CreateDiscount extends Vue {
 
   currencies = ["USD", "VND"];
   valid = false;
-  expiredDate = "";
+  abc = 0;
   expiredDatePicker = false;
   initDate = new Date().toISOString().substr(0, 10);
+  expiredDate = this.initDate;
   discountLocal = {
     code: "",
     detail: "",
@@ -167,11 +168,12 @@ export default class CreateDiscount extends Vue {
     maximumDiscount: 0,
     expiredDate: this.initDate
   } as IDiscount;
+  test = 0;
   created() {
     if (this.update) {
       this.discountLocal = Object.assign({}, this.discount);
+      this.expiredDate = this.discountLocal.expiredDate;
     }
-    this.expiredDate = this.discountLocal.expiredDate;
   }
   createDiscount() {
     if (this.discountLocal) {
@@ -183,6 +185,7 @@ export default class CreateDiscount extends Vue {
             "Thêm mới thành công mã giảm giá: " + response.code;
           this.discountsSync.unshift(response);
           this.totalItemsSync += 1;
+          console.log(this.totalItemsSync);
         })
         .catch(err => {
           console.log(err);

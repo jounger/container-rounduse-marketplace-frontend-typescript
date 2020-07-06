@@ -103,13 +103,7 @@
               type="text"
               v-model="address"
             ></v-text-field>
-            <v-btn
-              color="primary"
-              @click="
-                stepper = 2;
-                valid = false;
-              "
-              :disabled="!valid"
+            <v-btn color="primary" @click="stepper = 2" :disabled="!valid"
               >Tiếp tục</v-btn
             >
             <!-- <v-btn text @click="dialogAddSync = false">Hủy</v-btn> -->
@@ -121,7 +115,7 @@
         }}</v-stepper-step>
 
         <v-stepper-content step="2">
-          <v-form ref="companyForm" v-model="valid" validation>
+          <v-form ref="companyForm" v-model="valid2" validation>
             <small>*Dấu sao là trường bắt buộc</small>
             <v-layout col>
               <v-layout row>
@@ -252,23 +246,10 @@
               </v-layout>
             </v-layout>
 
-            <v-btn
-              color="primary"
-              @click="
-                stepper = 3;
-                valid = false;
-              "
-              :disabled="!valid"
+            <v-btn color="primary" @click="stepper = 3" :disabled="!valid2"
               >Tiếp tục</v-btn
             >
-            <v-btn
-              text
-              @click="
-                stepper = 1;
-                valid = true;
-              "
-              >Quay lại</v-btn
-            >
+            <v-btn text @click="stepper = 1">Quay lại</v-btn>
           </v-form>
         </v-stepper-content>
 
@@ -277,10 +258,9 @@
         >
 
         <v-stepper-content step="3">
-          <v-form ref="finishForm" v-model="valid" validation>
+          <v-form ref="finishForm">
             <v-checkbox
               v-model="checkbox"
-              :rules="[required('agree term')]"
               label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
             ></v-checkbox>
             <v-btn color="primary" @click="submit()" :disabled="!checkbox"
@@ -332,6 +312,7 @@ export default class Register extends Vue {
   editable = false;
   stepper = 1;
   valid = false;
+  valid2 = false;
   checkbox = false;
 
   public submit() {

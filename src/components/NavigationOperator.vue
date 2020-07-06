@@ -24,22 +24,42 @@ import { Component, Vue } from "vue-property-decorator";
 export default class NavigationOperator extends Vue {
   private adminNavigation = [
     { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
-    { title: "Quản lý Quản trị viên", icon: "dashboard", link: "/operator" },
-    { title: "Quản lý Quyền", icon: "dashboard", link: "/role" },
-    { title: "Quản lý Vai trò", icon: "dashboard", link: "/permission" }
+    {
+      title: "Quản lý Quản trị viên",
+      icon: "verified_user",
+      link: "/operator"
+    },
+    { title: "Quản lý Quyền", icon: "security", link: "/role" },
+    {
+      title: "Quản lý Vai trò",
+      icon: "enhanced_encryption",
+      link: "/permission"
+    }
   ];
   private moderatorNavigation = [
     { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
     {
       title: "Quản lý Đơn đăng ký",
-      icon: "dashboard",
+      icon: "account_balance",
       link: "/supplier-register"
     },
-    { title: "Quản lý Người dùng", icon: "dashboard", link: "/supplier" },
-    { title: "Quản lý Hãng tàu", icon: "dashboard", link: "/shipping-line" },
-    { title: "Quản lý Bến cảng", icon: "dashboard", link: "/port" },
-    { title: "Quản lý Loại Cont", icon: "dashboard", link: "/container-type" },
-    { title: "Quản lý Mã giảm giá", icon: "dashboard", link: "/discount" }
+    {
+      title: "Quản lý Người dùng",
+      icon: "people_alt",
+      link: "/supplier"
+    },
+    {
+      title: "Quản lý Hãng tàu",
+      icon: "directions_boat",
+      link: "/shipping-line"
+    },
+    { title: "Quản lý Bến cảng", icon: "flag", link: "/port" },
+    {
+      title: "Quản lý Loại Cont",
+      icon: "directions_bus",
+      link: "/container-type"
+    },
+    { title: "Quản lý Mã giảm giá", icon: "loyalty", link: "/discount" }
   ];
 
   get getNavigation() {

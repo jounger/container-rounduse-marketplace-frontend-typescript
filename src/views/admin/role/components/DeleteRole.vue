@@ -51,6 +51,7 @@ export default class DeleteRole extends Vue {
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("roles", { type: Array }) rolesSync!: Array<IRole>;
+    @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) role!: IRole;
 
   removeRole() {
@@ -61,6 +62,7 @@ export default class DeleteRole extends Vue {
           this.messageSync = "Xóa thành công quyền: " + this.role.name;
           const index = this.rolesSync.findIndex(x => x.id === this.role.id);
           this.rolesSync.splice(index, 1);
+          this.totalItemsSync -= 1;
         })
         .catch(err => {
           console.log(err);

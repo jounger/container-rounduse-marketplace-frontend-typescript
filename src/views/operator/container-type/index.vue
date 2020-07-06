@@ -7,6 +7,7 @@
           :dialogDel.sync="dialogDel"
           :containerType="containerType"
           :containerTypes.sync="containerTypes"
+          :totalItems.sync="options.totalItems"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
@@ -14,7 +15,7 @@
       <v-row justify="center">
         <CreateContainerType
           v-if="dialogAdd"
-          :totalItems="options.totalItems"
+          :totalItems.sync="options.totalItems"
           :containerType="containerType"
           :containerTypes.sync="containerTypes"
           :dialogAdd.sync="dialogAdd"

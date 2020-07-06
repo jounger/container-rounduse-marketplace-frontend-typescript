@@ -52,13 +52,14 @@ import { removeBiddingDocument } from "@/api/bidding-document";
 @Component
 export default class DeleteBiddingDocument extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @Prop(Object)
-  biddingDocument!: IBiddingDocument;
   @PropSync("biddingDocuments", { type: Array }) biddingDocumentsSync!: Array<
     IBiddingDocument
   >;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
+  @Prop(Object)
+  biddingDocument!: IBiddingDocument;
 
   removeBiddingDocument() {
     if (this.biddingDocument.id) {
@@ -70,6 +71,7 @@ export default class DeleteBiddingDocument extends Vue {
             x => x.id === this.biddingDocument.id
           );
           this.biddingDocumentsSync.splice(index, 1);
+          this.totalItemsSync -= 1;
         })
         .catch(err => {
           console.log(err);

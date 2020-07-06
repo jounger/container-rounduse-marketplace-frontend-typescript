@@ -6,6 +6,7 @@
           :dialogDel.sync="dialogDel"
           :operator="operator"
           :operators.sync="operators"
+          :totalItems.sync="options.totalItems"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />

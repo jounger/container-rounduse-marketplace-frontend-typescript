@@ -25,9 +25,7 @@
             <v-list>
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title>{{
-                    driverSync.username
-                  }}</v-list-item-title>
+                  <v-list-item-title>{{ driver.username }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -43,31 +41,29 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IDriver } from "@/entity/driver";
 import { removeDriver } from "@/api/driver";
 
 @Component
 export default class DeleteDriver extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("driver", { type: Object }) driverSync!: IDriver;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("drivers", { type: Array }) driversSync!: Array<IDriver>;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
+  @Prop(Object) driver!: IDriver;
 
   removeDriver() {
-    if (this.driverSync.id) {
-      removeDriver(this.driverSync.id)
+    if (this.driver.id) {
+      removeDriver(this.driver.id)
         .then(res => {
           console.log(res.data);
           const response: IDriver = res.data;
-          this.driverSync = response;
-          this.messageSync =
-            "Xóa thành công mã lái xe: " + this.driverSync.username;
-          const index = this.driversSync.findIndex(
-            x => x.id === this.driverSync.id
-          );
+          this.messageSync = "Xóa thành công mã lái xe: " + this.driver.username;
+          const index = this.driversSync.findIndex(x => x.id === response.id);
           this.driversSync.splice(index, 1);
+          this.totalItemsSync -= 1;
         })
         .catch(err => {
           console.log(err);

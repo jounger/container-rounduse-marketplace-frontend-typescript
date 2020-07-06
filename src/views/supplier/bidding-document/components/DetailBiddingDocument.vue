@@ -20,7 +20,7 @@
 
         <v-card-text>
           <v-row align="center" class="mx-0">
-            <div class="grey--text mr-4">{{ biddingDocument.offeree }}</div>
+            <div class="grey--text mr-4">{{ biddingDocument.merchant }}</div>
             <v-rating
               :value="4.5"
               color="amber"
@@ -38,7 +38,7 @@
             <v-list-item-group color="primary">
               <v-list-item @click="check()">
                 <v-list-item-icon>
-                  <v-icon>mdi-flag</v-icon>
+                  <v-icon>monetization_on</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>{{
@@ -63,7 +63,7 @@
             <v-list-item-group color="primary">
               <v-list-item>
                 <v-list-item-icon>
-                  <v-icon>mdi-flag</v-icon>
+                  <v-icon>child_friendly</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>{{
@@ -81,7 +81,7 @@
 
               <v-list-item>
                 <v-list-item-icon>
-                  <v-icon>mdi-flag</v-icon>
+                  <v-icon>directions_boat</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>{{
@@ -100,7 +100,7 @@
 
               <v-list-item>
                 <v-list-item-icon>
-                  <v-icon>mdi-flag</v-icon>
+                  <v-icon>location_on</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>{{
@@ -117,7 +117,7 @@
 
               <v-list-item>
                 <v-list-item-icon>
-                  <v-icon>mdi-flag</v-icon>
+                  <v-icon>description</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>{{
@@ -168,7 +168,7 @@
               <v-list dense>
                 <v-list-item>
                   <v-list-item-icon>
-                    <v-icon>mdi-flag</v-icon>
+                    <v-icon>attach_money</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
                     <v-list-item-title>{{
@@ -191,7 +191,7 @@
               <v-list dense>
                 <v-list-item v-if="biddingDocument.status == 'BIDDING'">
                   <v-list-item-icon>
-                    <v-icon>mdi-flag</v-icon>
+                    <v-icon>date_range</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
                     <v-list-item-title>{{
@@ -218,7 +218,7 @@
                 </v-list-item>
                 <v-list-item v-if="biddingDocument.status == 'CANCELED'">
                   <v-list-item-icon>
-                    <v-icon>mdi-flag</v-icon>
+                    <v-icon>mood_bad</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
                     <v-list-item-title style="color:red;"
@@ -228,7 +228,7 @@
                 </v-list-item>
                 <v-list-item v-if="biddingDocument.status == 'COMBINED'">
                   <v-list-item-icon>
-                    <v-icon>mdi-flag</v-icon>
+                    <v-icon>mood</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
                     <v-list-item-title style="color:green;"
@@ -242,7 +242,7 @@
               <v-list dense>
                 <v-list-item>
                   <v-list-item-icon>
-                    <v-icon>mdi-flag</v-icon>
+                    <v-icon>people</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
                     <v-list-item-title>{{
@@ -426,12 +426,17 @@ export default class DetailBiddingDocument extends Vue {
       text: "Container No.",
       align: "start",
       sortable: false,
-      value: "containerNumber"
+      value: "containerNumber",
+      class: "elevation-1 primary"
     },
-    { text: "Biển kiểm sát", value: "licensePlate" },
-    { text: "Tài xế", value: "driver" },
-    { text: "Rơ mọt", value: "trailer" },
-    { text: "Đầu kéo", value: "tractor" }
+    {
+      text: "Biển kiểm sát",
+      value: "licensePlate",
+      class: "elevation-1 primary"
+    },
+    { text: "Tài xế", value: "driver", class: "elevation-1 primary" },
+    { text: "Rơ mọt", value: "trailer", class: "elevation-1 primary" },
+    { text: "Đầu kéo", value: "tractor", class: "elevation-1 primary" }
   ];
 
   openConfirmBid(item: IBid, accept: boolean) {
@@ -485,6 +490,7 @@ export default class DetailBiddingDocument extends Vue {
       .then(res => {
         const response = res.data;
         this.biddingDocument = response;
+        console.log(this.biddingDocument);
       })
       .catch(err => {
         console.log(err);

@@ -51,6 +51,7 @@ export default class DeletePort extends Vue {
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("ports", { type: Array }) portsSync!: Array<IPort>;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) port!: IPort;
 
   removePort() {
@@ -61,6 +62,7 @@ export default class DeletePort extends Vue {
           this.messageSync = "Xóa thành công bến cảng: " + this.port.fullname;
           const index = this.portsSync.findIndex(x => x.id === this.port.id);
           this.portsSync.splice(index, 1);
+          this.totalItemsSync -= 1;
         })
         .catch(err => {
           console.log(err);

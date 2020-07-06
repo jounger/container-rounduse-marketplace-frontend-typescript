@@ -7,6 +7,7 @@
           :dialogDetail.sync="dialogDetail"
           :supplier="supplier"
           :suppliers.sync="suppliers"
+          :totalItems.sync="options.totalItems"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />

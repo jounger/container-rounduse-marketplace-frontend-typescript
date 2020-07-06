@@ -24,17 +24,29 @@ import { Component, Vue } from "vue-property-decorator";
 export default class NavigationSupplier extends Vue {
   private merchantNavigation = [
     { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
-    { title: "Quản lý hàng xuất", icon: "dashboard", link: "/outbound" },
-    { title: "Quản lý HSMT", icon: "dashboard", link: "/bidding-document" },
-    { title: "Quản lý Hàng ghép", icon: "dashboard", link: "/combined" }
+    { title: "Quản lý hàng xuất", icon: "flight_takeoff", link: "/outbound" },
+    {
+      title: "Quản lý HSMT",
+      icon: "business_center",
+      link: "/bidding-document"
+    },
+    { title: "Quản lý Hàng ghép", icon: "table_chart", link: "/combined" }
   ];
   private forwarderNavigation = [
     { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
-    { title: "Quản lý hàng nhập", icon: "dashboard", link: "/inbound" },
-    { title: "Quản lý HSDT", icon: "dashboard", link: "/bid" },
-    { title: "HSMT Nhận được", icon: "dashboard", link: "/invited-bidding" },
-    { title: "Quản lý Hàng ghép", icon: "dashboard", link: "/combined" },
-    { title: "Quản lý Driver", icon: "dashboard", link: "/driver" }
+    { title: "Quản lý hàng nhập", icon: "flight_land", link: "/inbound" },
+    { title: "Quản lý HSDT", icon: "business_center", link: "/bid" },
+    {
+      title: "HSMT Nhận được",
+      icon: "compass_calibration",
+      link: "/invited-bidding"
+    },
+    { title: "Quản lý Hàng ghép", icon: "table_chart", link: "/combined" },
+    {
+      title: "Quản lý Driver",
+      icon: "airline_seat_recline_normal",
+      link: "/driver"
+    }
   ];
 
   private supplierRegisterNavigation = [

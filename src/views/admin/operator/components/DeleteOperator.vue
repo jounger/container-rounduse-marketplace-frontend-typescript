@@ -51,6 +51,7 @@ export default class DeleteOperator extends Vue {
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("operators", { type: Array }) operatorsSync!: Array<IOperator>;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) operator!: IOperator;
 
   removeOperator() {
@@ -64,6 +65,7 @@ export default class DeleteOperator extends Vue {
             x => x.id === this.operator.id
           );
           this.operatorsSync.splice(index, 1);
+          this.totalItemsSync -= 1;
         })
         .catch(err => {
           console.log(err);

@@ -36,7 +36,7 @@
               <v-text-field
                 label="Tên bến cảng*"
                 name="fullname"
-                prepend-icon="directions_boat"
+                prepend-icon="flag"
                 type="text"
                 v-model="portLocal.fullname"
                 :rules="[required('fullname')]"

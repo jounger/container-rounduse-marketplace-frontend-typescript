@@ -55,6 +55,7 @@ export default class DeleteContainerType extends Vue {
   @PropSync("containerTypes", { type: Array }) containerTypesSync!: Array<
     IContainerType
   >;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object)
   containerType!: IContainerType;
 
@@ -70,6 +71,7 @@ export default class DeleteContainerType extends Vue {
             x => x.id === this.containerType.id
           );
           this.containerTypesSync.splice(index, 1);
+          this.totalItemsSync -= 1;
         })
         .catch(err => {
           console.log(err);

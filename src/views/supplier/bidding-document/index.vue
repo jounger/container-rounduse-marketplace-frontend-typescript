@@ -8,6 +8,7 @@
           :dialogDel.sync="dialogDel"
           :biddingDocument="biddingDocument"
           :biddingDocuments.sync="biddingDocuments"
+          :totalItems.sync="options.totalItems"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
@@ -27,12 +28,13 @@
         :biddingDocuments.sync="biddingDocuments"
         :outbounds.sync="outbounds"
         :dialogAdd.sync="dialogAdd"
+        :totalItems.sync="options.totalItems"
         :message.sync="message"
         :snackbar.sync="snackbar"
       />
       <UpdateBiddingDocument
         v-if="dialogEdit"
-        :biddingDocument.sync="biddingDocument"
+        :biddingDocument="biddingDocument"
         :biddingDocuments.sync="biddingDocuments"
         :dialogEdit.sync="dialogEdit"
         :message.sync="message"

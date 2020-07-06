@@ -14,6 +14,7 @@
           :suppliersSync.sync="suppliersSync"
           :messageSync.sync="messageSync"
           :snackbarSync.sync="snackbarSync"
+          :totalItemsSync.sync="totalItemsSync"
           :finish.sync="finish"
           :status="status"
         />
@@ -235,6 +236,7 @@ export default class RegisterDetail extends Vue {
   @PropSync("suppliers", { type: Array }) suppliersSync!: Array<ISupplier>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) supplier!: ISupplier;
 
   finish = false;

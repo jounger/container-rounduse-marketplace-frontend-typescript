@@ -7,6 +7,7 @@
           :dialogDel.sync="dialogDel"
           :role="role"
           :roles.sync="roles"
+          :totalItems.sync="options.totalItems"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
@@ -16,7 +17,7 @@
           v-if="dialogAdd"
           :role="role"
           :roles.sync="roles"
-          :totalItems="options.totalItems"
+          :totalItems.sync="options.totalItems"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
           :snackbar.sync="snackbar"

@@ -12,10 +12,6 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <v-toolbar-title>Thêm mới Bid</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-toolbar-items>
-          <v-btn dark text @click="dialogAddSync = false">Save</v-btn>
-        </v-toolbar-items>
       </v-toolbar>
       <!-- START CONTENT -->
       <v-list three-line subheader>
@@ -64,10 +60,7 @@
             </v-data-table>
             <v-btn
               color="primary"
-              @click="
-                stepper = 2;
-                valid = false;
-              "
+              @click="stepper = 2"
               :disabled="isEmptyObject(biddingDocumentSelected)"
               >Tiếp tục</v-btn
             >
@@ -80,6 +73,7 @@
             <v-form ref="bidForm" v-model="valid" validation>
               <v-text-field
                 v-model="bidLocal.bidPrice"
+                prepend-icon="monetization_on"
                 type="number"
                 :rules="[
                   minNumber(
@@ -90,8 +84,8 @@
                 label="Giá gửi thầu"
               ></v-text-field>
               <v-menu
-                ref="datePickerMenu"
-                v-model="datePickerMenu"
+                ref="bidDatePicker"
+                v-model="bidDatePicker"
                 :close-on-content-click="false"
                 :return-value.sync="bidLocal.bidDate"
                 transition="scale-transition"
@@ -102,7 +96,7 @@
                   <v-text-field
                     v-model="bidLocal.bidDate"
                     label="Thời gian gửi thầu"
-                    prepend-icon="event"
+                    prepend-icon="event_available"
                     v-bind="attrs"
                     v-on="on"
                   ></v-text-field>
@@ -115,20 +109,20 @@
                   disabled
                 >
                   <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="datePickerMenu = false"
+                  <v-btn text color="primary" @click="bidDatePicker = false"
                     >Cancel</v-btn
                   >
                   <v-btn
                     text
                     color="primary"
-                    @click="$refs.datePickerMenu.save(bidLocal.bidDate)"
+                    @click="$refs.bidDatePicker.save(bidLocal.bidDate)"
                     >OK</v-btn
                   >
                 </v-date-picker>
               </v-menu>
               <v-menu
-                ref="datePickerMenu2"
-                v-model="datePickerMenu2"
+                ref="bidValidityPeriodPicker"
+                v-model="bidValidityPeriodPicker"
                 :close-on-content-click="false"
                 :return-value.sync="bidLocal.bidValidityPeriod"
                 transition="scale-transition"
@@ -139,7 +133,7 @@
                   <v-text-field
                     v-model="bidLocal.bidValidityPeriod"
                     label="Hiệu lực HSDT"
-                    prepend-icon="event"
+                    prepend-icon="date_range"
                     v-bind="attrs"
                     v-on="on"
                   ></v-text-field>
@@ -150,14 +144,19 @@
                   scrollable
                 >
                   <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="datePickerMenu2 = false"
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="bidValidityPeriodPicker = false"
                     >Cancel</v-btn
                   >
                   <v-btn
                     text
                     color="primary"
                     @click="
-                      $refs.datePickerMenu2.save(bidLocal.bidValidityPeriod)
+                      $refs.bidValidityPeriodPicker.save(
+                        bidLocal.bidValidityPeriod
+                      )
                     "
                     >OK</v-btn
                   >
@@ -169,23 +168,10 @@
                 type="time"
                 suffix="PST"
               ></v-text-field>
-              <v-btn
-                color="primary"
-                @click="
-                  stepper = 3;
-                  valid = false;
-                "
-                :disabled="!valid"
+              <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
                 >Tiếp tục</v-btn
               >
-              <v-btn
-                text
-                @click="
-                  stepper = 1;
-                  valid = true;
-                "
-                >Quay lại</v-btn
-              >
+              <v-btn text @click="stepper = 1">Quay lại</v-btn>
             </v-form>
           </v-stepper-content>
           <v-stepper-step :complete="stepper > 3" step="3" :editable="editable"
@@ -285,10 +271,7 @@
             </v-tabs>
             <v-btn
               color="primary"
-              @click="
-                stepper = 4;
-                valid = false;
-              "
+              @click="stepper = 4"
               :disabled="containers.length == 0"
               >Tiếp tục</v-btn
             >
@@ -296,23 +279,15 @@
           </v-stepper-content>
           <v-stepper-step step="4">Hoàn thành</v-stepper-step>
           <v-stepper-content step="4">
-            <v-form ref="finishForm" v-model="checkbox" validation>
+            <v-form ref="finishForm">
               <v-checkbox
                 v-model="checkbox"
-                :rules="[required('agree term')]"
                 label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
               ></v-checkbox>
               <v-btn color="primary" @click="createBid()" :disabled="!checkbox"
                 >Hoàn tất</v-btn
               >
-              <v-btn
-                text
-                @click="
-                  stepper = 3;
-                  valid = true;
-                "
-                >Quay lại</v-btn
-              >
+              <v-btn text @click="stepper = 3">Quay lại</v-btn>
             </v-form>
           </v-stepper-content>
         </v-stepper>
@@ -374,9 +349,10 @@ export default class CreateBid extends Vue {
   valid = true;
   // API list
   // bidLocal form
-  datePickerMenu = false;
-  datePickerMenu2 = false;
-  readonlyInbound = false;
+  bidDatePicker = false;
+  bidValidityPeriodPicker = false;
+  bidDate = this.dateInit;
+  bidValidityPeriod = this.dateInit;
   // Inbound
   inbounds: Array<IInbound> = [];
   inbound = {} as IInbound;
@@ -434,24 +410,23 @@ export default class CreateBid extends Vue {
   // Bid
   createBid() {
     // TODO: API create bid
-    this.bidLocal.containers = this.containers.reduce(function(
-      pV: Array<number>,
-      cV: IContainer
-    ) {
-      if (cV.id) {
-        pV.push(cV.id);
-      }
-      return pV;
-    },
-    []);
     if (this.biddingDocumentSelected.id) {
+      this.bidLocal.containers = this.containers.reduce(function(
+        pV: Array<number>,
+        cV: IContainer
+      ) {
+        if (cV.id) {
+          pV.push(cV.id);
+        }
+        return pV;
+      },
+      []);
       createBid(this.biddingDocumentSelected.id, this.bidLocal)
         .then(res => {
           const response: IBid = res.data;
           console.log("response", response);
           this.messageSync =
             "Thêm mới thành công Hồ sơ dự thầu: " + response.id;
-          this.readonlyInbound = true;
         })
         .catch(err => {
           console.log(err);

@@ -8,7 +8,7 @@
           color="green"
           overlap
         >
-          <v-icon dark>mdi-email</v-icon>
+          <v-icon dark> notifications_active</v-icon>
         </v-badge>
       </v-btn>
     </template>

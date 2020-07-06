@@ -136,7 +136,7 @@
                     <v-list-item-group color="primary">
                       <v-list-item :to="gotoDetailBiddingDocument">
                         <v-list-item-icon>
-                          <v-icon>mdi-flag</v-icon>
+                          <v-icon>monetization_on</v-icon>
                         </v-list-item-icon>
                         <v-list-item-content>
                           <v-list-item-title>{{
@@ -157,7 +157,7 @@
                     <v-list-item-group color="primary">
                       <v-list-item>
                         <v-list-item-icon>
-                          <v-icon>mdi-flag</v-icon>
+                          <v-icon>child_friendly</v-icon>
                         </v-list-item-icon>
                         <v-list-item-content>
                           <v-list-item-title>{{
@@ -175,7 +175,7 @@
 
                       <v-list-item>
                         <v-list-item-icon>
-                          <v-icon>mdi-flag</v-icon>
+                          <v-icon>directions_boat</v-icon>
                         </v-list-item-icon>
                         <v-list-item-content>
                           <v-list-item-title>{{
@@ -194,7 +194,7 @@
 
                       <v-list-item>
                         <v-list-item-icon>
-                          <v-icon>mdi-flag</v-icon>
+                          <v-icon>location_on</v-icon>
                         </v-list-item-icon>
                         <v-list-item-content>
                           <v-list-item-title>{{
@@ -214,7 +214,7 @@
 
                       <v-list-item>
                         <v-list-item-icon>
-                          <v-icon>mdi-flag</v-icon>
+                          <v-icon>description</v-icon>
                         </v-list-item-icon>
                         <v-list-item-content>
                           <v-list-item-title>{{
@@ -411,13 +411,23 @@ export default class DetailCombined extends Vue {
       text: "Container No.",
       align: "start",
       sortable: false,
-      value: "containerNumber"
+      value: "containerNumber",
+      class: "elevation-1 primary"
     },
-    { text: "Biển kiểm sát", value: "licensePlate" },
-    { text: "Tài xế", value: "driver" },
-    { text: "Rơ mọt", value: "trailer" },
-    { text: "Đầu kéo", value: "tractor" },
-    { text: "Actions", value: "actions", sortable: false }
+    {
+      text: "Biển kiểm sát",
+      value: "licensePlate",
+      class: "elevation-1 primary"
+    },
+    { text: "Tài xế", value: "driver", class: "elevation-1 primary" },
+    { text: "Rơ mọt", value: "trailer", class: "elevation-1 primary" },
+    { text: "Đầu kéo", value: "tractor", class: "elevation-1 primary" },
+    {
+      text: "Actions",
+      value: "actions",
+      sortable: false,
+      class: "elevation-1 primary"
+    }
   ];
 
   get gotoDetailBiddingDocument() {

@@ -6,6 +6,7 @@
           v-if="dialogDel"
           :dialogDel.sync="dialogDel"
           :permission="permission"
+          :totalItems.sync="options.totalItems"
           :permissions.sync="permissions"
           :message.sync="message"
           :snackbar.sync="snackbar"

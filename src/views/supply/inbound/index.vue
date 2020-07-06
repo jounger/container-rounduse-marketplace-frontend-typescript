@@ -26,6 +26,7 @@
           :inbounds.sync="inbounds"
           :message.sync="message"
           :snackbar.sync="snackbar"
+          :totalItems.sync="options.totalItems"
         />
       </v-row>
       <v-data-table
@@ -164,11 +165,6 @@ export default class Inbound extends Vue {
 
   openUpdateDialog(item: IInbound) {
     this.inbound = item;
-    this.inbound.pickupTime = this.inbound.pickupTime.slice(0, 10);
-    this.inbound.billOfLading.freeTime = this.inbound.billOfLading.freeTime.slice(
-      0,
-      10
-    );
     this.dialogEdit = true;
   }
 

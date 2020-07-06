@@ -6,6 +6,7 @@
         v-if="dialogAdd"
         :shippingLines.sync="shippingLines"
         :dialogAdd.sync="dialogAdd"
+        :totalItems.sync="options.totalItems"
         :message.sync="message"
         :snackbar.sync="snackbar"
       />
@@ -23,6 +24,7 @@
           :dialogDel.sync="dialogDel"
           :shippingLine="shippingLine"
           :shippingLines.sync="shippingLines"
+          :totalItems.sync="options.totalItems"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
@@ -44,12 +46,7 @@
             <v-toolbar-title>Danh sách hãng tàu</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
-            <v-btn
-              color="primary"
-              dark
-              class="mb-2"
-              @click="openCreateDialog()"
-            >
+            <v-btn color="primary" dark class="mb-2" @click="dialogAdd = true">
               Thêm mới
             </v-btn>
           </v-toolbar>
@@ -136,11 +133,6 @@ export default class ShippingLine extends Vue {
       align: "center"
     }
   ];
-
-  openCreateDialog() {
-    this.shippingLine = {} as IShippingLine;
-    this.dialogAdd = true;
-  }
   openUpdateDialog(item: IShippingLine) {
     console.log(item);
     this.shippingLine = item;

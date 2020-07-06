@@ -24,7 +24,7 @@
           <v-stepper-content step="1">
             <v-data-table
               :headers="headers"
-              :items="[biddingDocumentSync.outbound]"
+              :items="[biddingDocument.outbound]"
               item-key="id"
               :hide-default-footer="true"
               class="elevation-1 my-1"
@@ -56,12 +56,8 @@
             </v-data-table>
             <v-btn
               color="primary"
-              @click="
-                !isEmptyObject(biddingDocumentSync.outbound)
-                  ? (stepper = 2)
-                  : (stepper = 1)
-              "
-              :disabled="isEmptyObject(biddingDocumentSync.outbound)"
+              @click="stepper = 2"
+              :disabled="isEmptyObject(biddingDocumentLocal.outbound)"
               >Tiếp tục</v-btn
             >
           </v-stepper-content>
@@ -73,96 +69,87 @@
           <v-stepper-content step="2">
             <v-form ref="billOfLadingForm" v-model="valid" lazy-validation>
               <v-menu
-                ref="datePickerMenu"
-                v-model="datePickerMenu"
+                ref="bidOpeningPicker"
+                v-model="bidOpeningPicker"
                 :close-on-content-click="false"
-                :return-value.sync="biddingDocumentLocal.bidOpening"
+                :return-value.sync="bidOpening"
                 transition="scale-transition"
                 offset-y
                 min-width="290px"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    v-model="biddingDocumentLocal.bidOpening"
+                    v-model="bidOpening"
                     label="Thời gian mở thầu"
-                    prepend-icon="event"
+                    prepend-icon="event_available"
                     v-bind="attrs"
                     v-on="on"
                     :rules="[required('bid opening')]"
                   ></v-text-field>
                 </template>
-                <v-date-picker
-                  v-model="biddingDocumentLocal.bidOpening"
-                  no-title
-                  scrollable
-                >
+                <v-date-picker v-model="bidOpening" no-title scrollable>
                   <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="datePickerMenu = false"
+                  <v-btn text color="primary" @click="bidOpeningPicker = false"
                     >Cancel</v-btn
                   >
                   <v-btn
                     text
                     color="primary"
-                    @click="
-                      $refs.datePickerMenu.save(biddingDocumentSync.bidOpening)
-                    "
+                    @click="$refs.bidOpeningPicker.save(bidOpening)"
                     >OK</v-btn
                   >
                 </v-date-picker>
               </v-menu>
               <!-- Bid Closing -->
               <v-menu
-                ref="datePickerMenu2"
-                v-model="datePickerMenu2"
+                ref="bidClosingPicker"
+                v-model="bidClosingPicker"
                 :close-on-content-click="false"
-                :return-value.sync="biddingDocumentLocal.bidClosing"
+                :return-value.sync="bidClosing"
                 transition="scale-transition"
                 offset-y
                 min-width="290px"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    v-model="biddingDocumentLocal.bidClosing"
+                    v-model="bidClosing"
                     label="Thời gian đóng thầu"
-                    prepend-icon="event"
+                    prepend-icon="event_busy"
                     v-bind="attrs"
                     v-on="on"
                     :rules="[required('bid closing')]"
                   ></v-text-field>
                 </template>
-                <v-date-picker
-                  v-model="biddingDocumentLocal.bidClosing"
-                  no-title
-                  scrollable
-                >
+                <v-date-picker v-model="bidClosing" no-title scrollable>
                   <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="datePickerMenu2 = false"
+                  <v-btn text color="primary" @click="bidClosingPicker = false"
                     >Cancel</v-btn
                   >
                   <v-btn
                     text
                     color="primary"
-                    @click="
-                      $refs.datePickerMenu2.save(biddingDocumentSync.bidClosing)
-                    "
+                    @click="$refs.bidClosingPicker.save(bidClosing)"
                     >OK</v-btn
                   >
                 </v-date-picker>
               </v-menu>
               <v-select
                 v-model="biddingDocumentLocal.currencyOfPayment"
+                prepend-icon="strikethrough_s"
                 :items="currencyOfPayments"
                 :rules="[required('currency')]"
                 label="Đồng tiền thanh toán"
               ></v-select>
               <v-text-field
                 v-model="biddingDocumentLocal.bidPackagePrice"
+                prepend-icon="money"
                 :rules="[required('bid package price')]"
                 type="number"
                 label="Giá gói thầu"
               ></v-text-field>
               <v-text-field
                 v-model="biddingDocumentLocal.bidFloorPrice"
+                prepend-icon="local_atm"
                 :rules="[
                   required('bid floor price'),
                   maxNumber(
@@ -179,10 +166,7 @@
               ></v-checkbox>
               <v-btn
                 color="primary"
-                @click="
-                  updateBiddingDocument();
-                  stepper = 3;
-                "
+                @click="updateBiddingDocument()"
                 :disabled="!valid"
                 >Lưu và Tiếp tục</v-btn
               >
@@ -192,10 +176,10 @@
           <!-- FINISH -->
           <v-stepper-step step="3">Hoàn thành</v-stepper-step>
           <v-stepper-content step="3">
-            <v-form ref="finishForm" v-model="valid" lazy-validation>
+            <v-form ref="finishForm">
               <v-text-field
                 v-model="biddingDocumentLocal.bidDiscountCode"
-                prepend-icon="event"
+                prepend-icon="loyalty"
                 label="Mã giảm giá"
               ></v-text-field>
               <v-checkbox
@@ -223,25 +207,41 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
 import { updateBiddingDocument } from "@/api/bidding-document";
 import { IOutbound } from "@/entity/outbound";
+import { addTimeToDate } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate, Utils]
 })
 export default class UpdateBiddingDocument extends Vue {
   @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
-  @PropSync("biddingDocument", { type: Object })
-  biddingDocumentSync!: IBiddingDocument;
   @PropSync("biddingDocuments", { type: Array })
   biddingDocumentsSync!: Array<IBiddingDocument>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @Prop(Object)
+  biddingDocument!: IBiddingDocument;
 
+  dateInit = new Date().toISOString().substr(0, 10);
+  biddingDocumentLocal = {
+    offeree: this.$auth.user().username,
+    outbound: -1 as number,
+    bidDiscountCode: "",
+    isMultipleAward: false,
+    bidOpening: this.dateInit,
+    bidClosing: this.dateInit,
+    dateOfDecision: this.dateInit,
+    currencyOfPayment: "VND",
+    bidPackagePrice: 0,
+    bidFloorPrice: 0,
+    priceLeadership: 0,
+    status: "BIDDING"
+  } as IBiddingDocument;
   // Form validate
   autoSendCheckbox = true;
   checkbox = false;
@@ -252,10 +252,12 @@ export default class UpdateBiddingDocument extends Vue {
   currencyOfPayments: Array<string> = [];
   unitOfMeasurements: Array<string> = [];
   outbound = [] as Array<IOutbound>;
-  // biddingDocumentSync form
-  datePickerMenu = false;
-  datePickerMenu2 = false;
-  biddingDocumentLocal = {} as IBiddingDocument;
+  bidOpening = this.dateInit;
+  bidClosing = this.dateInit;
+
+  // biddingDocument form
+  bidOpeningPicker = false;
+  bidClosingPicker = false;
   // Outbound form
   headers = [
     {
@@ -277,29 +279,32 @@ export default class UpdateBiddingDocument extends Vue {
   ];
 
   created() {
-    this.biddingDocumentLocal = Object.assign({}, this.biddingDocumentSync);
+    this.biddingDocumentLocal = Object.assign({}, this.biddingDocument);
+    this.bidOpening = this.biddingDocumentLocal.bidOpening.slice(0, 10);
+    this.bidClosing = this.biddingDocumentLocal.bidClosing.slice(0, 10);
     if (
-      typeof this.biddingDocumentSync.outbound != "number" &&
-      typeof this.biddingDocumentSync.outbound.id != "undefined"
+      typeof this.biddingDocument.outbound != "number" &&
+      typeof this.biddingDocument.outbound.id != "undefined"
     ) {
-      this.biddingDocumentLocal.outbound = this.biddingDocumentSync.outbound.id;
+      this.biddingDocumentLocal.outbound = this.biddingDocument.outbound.id;
     }
   }
   // BiddingDocument
   updateBiddingDocument() {
     // TODO: API create biddingDocument
     if (this.biddingDocumentLocal) {
-      this.biddingDocumentLocal.status = "BIDDING";
+      this.biddingDocumentLocal.bidOpening = addTimeToDate(this.bidOpening);
+      this.biddingDocumentLocal.bidClosing = addTimeToDate(this.bidClosing);
       updateBiddingDocument(this.biddingDocumentLocal)
         .then(res => {
           console.log(res.data);
           const response: IBiddingDocument = res.data;
-          this.biddingDocumentSync = response;
           this.messageSync = "Cập nhập thành công HSMT: " + response.id;
           const index = this.biddingDocumentsSync.findIndex(
             x => x.id === response.id
           );
           this.biddingDocumentsSync.splice(index, 1, response);
+          this.stepper = 3;
         })
         .catch(err => {
           console.log(err);
