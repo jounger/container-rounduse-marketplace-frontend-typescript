@@ -98,7 +98,7 @@ export default class CreateRole extends Vue {
   @Prop(Boolean) update!: boolean;
   @Prop(Object) role!: IRole;
 
-  permissions = [] as Array<IPermission>;
+  permissions: Array<IPermission> = [];
   valid = false;
   roleLocal = {
     name: "",

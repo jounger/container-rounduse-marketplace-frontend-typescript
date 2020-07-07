@@ -81,7 +81,6 @@ export default class Port extends Vue {
   port = {} as IPort;
   dialogAdd = false;
   dialogDel = false;
-  search = "";
   message = "";
   snackbar = false;
   loading = true;

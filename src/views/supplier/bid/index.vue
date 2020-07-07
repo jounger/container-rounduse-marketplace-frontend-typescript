@@ -144,7 +144,6 @@ export default class Bid extends Vue {
   dialogAdd = false;
   dialogEdit = false;
   dialogCancel = false;
-  search = "";
   message = "";
   snackbar = false;
   loading = true;

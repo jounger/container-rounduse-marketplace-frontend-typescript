@@ -380,7 +380,7 @@ export default class DetailBiddingDocument extends Vue {
       }
     },
     bids: [] as Array<IBid>,
-    bidDiscountCode: "",
+    discount: "",
     isMultipleAward: true,
     bidOpening: "",
     bidClosing: "",

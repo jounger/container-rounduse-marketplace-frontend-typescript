@@ -51,6 +51,7 @@
                     <v-text-field
                       v-model="inboundLocal.returnStation"
                       prepend-icon="location_on"
+                      type="text"
                       :rules="[required('return station')]"
                       label="Nơi trả hàng*"
                     ></v-text-field> </v-flex></v-layout
@@ -114,6 +115,7 @@
                     <v-text-field
                       v-model="inboundLocal.billOfLading.billOfLadingNumber"
                       prepend-icon="play_for_work"
+                      type="text"
                       :rules="[required('B/L No.')]"
                       label="B/L No.*"
                     ></v-text-field> </v-flex></v-layout
@@ -129,7 +131,7 @@
               ></v-layout>
               <v-layout col
                 ><v-layout row
-                  ><v-flex xs5>
+                  ><v-flex xs10>
                     <v-menu
                       ref="freeTimePicker"
                       v-model="freeTimePicker"
@@ -165,20 +167,48 @@
                       </v-date-picker>
                     </v-menu>
                   </v-flex></v-layout
-                ></v-layout
-              >
+                >
+                <v-layout row
+                  ><v-flex xs10>
+                    <v-text-field
+                      v-model="inboundLocal.billOfLading.unit"
+                      prepend-icon="local_shipping"
+                      type="number"
+                      :rules="[required('unit')]"
+                      label="Số lượng Cont*"
+                    ></v-text-field> </v-flex
+                ></v-layout>
+              </v-layout>
               <v-btn color="primary" @click="stepper = 3" :disabled="!valid2"
                 >Tiếp tục</v-btn
               >
               <v-btn text @click="stepper = 1">Quay lại</v-btn>
             </v-form>
           </v-stepper-content>
-
           <v-stepper-step :complete="stepper > 3" step="3" :editable="editable"
-            >Containers hàng nhập</v-stepper-step
+            >Tạo hàng nhập</v-stepper-step
+          >
+          <v-stepper-content step="3">
+            <v-form ref="finishForm" v-model="valid" validation>
+              <v-checkbox
+                v-model="checkbox"
+                :rules="[required('agree term')]"
+                label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
+              ></v-checkbox>
+              <v-btn
+                color="primary"
+                @click="createInbound()"
+                :disabled="!checkbox"
+                >Tạo hàng nhập</v-btn
+              >
+              <v-btn text @click="stepper = 3">Quay lại</v-btn>
+            </v-form>
+          </v-stepper-content>
+          <v-stepper-step :complete="stepper > 4" step="4" :editable="editable"
+            >Thêm mới Containers hàng nhập</v-stepper-step
           >
           <!-- CREATE CONTAINER -->
-          <v-stepper-content step="3">
+          <v-stepper-content step="4">
             <v-data-table
               :headers="containerHeaders"
               :items="containers"
@@ -280,7 +310,7 @@
                             <small>*Dấu sao là trường bắt buộc</small>
                             <v-layout col>
                               <v-layout row>
-                                <v-flex xs8>
+                                <v-flex xs10>
                                   <v-text-field
                                     v-model="containerLocal.containerNumber"
                                     prepend-icon="directions_bus"
@@ -291,49 +321,37 @@
                                 </v-flex>
                               </v-layout>
                               <v-layout row>
-                                <v-flex xs8>
-                                  <v-text-field
-                                    v-model="containerLocal.licensePlate"
-                                    prepend-icon="payment"
-                                    :rules="[required('container license')]"
-                                    label="Biển kiểm sát*"
-                                  ></v-text-field>
-                                </v-flex>
-                              </v-layout>
-                            </v-layout>
-                            <v-layout col>
-                              <v-layout row>
-                                <v-flex xs8>
-                                  <v-select
-                                    v-model="containerLocal.tractor"
-                                    prepend-icon="tram"
-                                    :items="tractors"
-                                    :rules="[required('tractor')]"
-                                    label="Loại đầu kéo*"
-                                  ></v-select>
-                                </v-flex>
-                              </v-layout>
-                              <v-layout row>
-                                <v-flex xs8>
-                                  <v-select
-                                    v-model="containerLocal.trailer"
-                                    prepend-icon="format_strikethrough"
-                                    :items="trailers"
-                                    :rules="[required('trailer')]"
-                                    label="Loại rờ mọt*"
-                                  ></v-select>
-                                </v-flex>
-                              </v-layout>
-                            </v-layout>
-                            <v-layout col>
-                              <v-layout row>
-                                <v-flex xs5>
+                                <v-flex xs10>
                                   <v-select
                                     v-model="containerLocal.driver"
                                     prepend-icon="airline_seat_recline_normal"
                                     :items="driversToString"
                                     :rules="[required('driver')]"
                                     label="Tài xế*"
+                                  ></v-select>
+                                </v-flex>
+                              </v-layout>
+                            </v-layout>
+                            <v-layout col>
+                              <v-layout row>
+                                <v-flex xs10>
+                                  <v-select
+                                    v-model="containerLocal.tractor"
+                                    prepend-icon="tram"
+                                    :items="tractorsToString"
+                                    :rules="[required('tractor')]"
+                                    label="Chọn đầu kéo*"
+                                  ></v-select>
+                                </v-flex>
+                              </v-layout>
+                              <v-layout row>
+                                <v-flex xs10>
+                                  <v-select
+                                    v-model="containerLocal.trailer"
+                                    prepend-icon="format_strikethrough"
+                                    :items="trailersToString"
+                                    :rules="[required('trailer')]"
+                                    label="Chọn rơ moóc*"
                                   ></v-select>
                                 </v-flex>
                               </v-layout>
@@ -379,25 +397,7 @@
               :disabled="containers.length == 0"
               >Tiếp tục</v-btn
             >
-            <v-btn text @click="stepper = 2">Quay lại</v-btn>
-          </v-stepper-content>
-
-          <v-stepper-step step="4">Hoàn thành</v-stepper-step>
-          <v-stepper-content step="4">
-            <v-form ref="finishForm" v-model="valid" validation>
-              <v-checkbox
-                v-model="checkbox"
-                :rules="[required('agree term')]"
-                label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
-              ></v-checkbox>
-              <v-btn
-                color="primary"
-                @click="createInbound()"
-                :disabled="!checkbox"
-                >Hoàn tất</v-btn
-              >
-              <v-btn text @click="stepper = 3">Quay lại</v-btn>
-            </v-form>
+            <v-btn text @click="stepper = 3">Quay lại</v-btn>
           </v-stepper-content>
         </v-stepper>
       </v-list>
@@ -421,6 +421,13 @@ import { getContainerTypes } from "@/api/container-type";
 import { PaginationResponse } from "@/api/payload";
 import { addTimeToDate, addHoursToDate } from "@/utils/tool";
 import { createInbound } from "@/api/inbound";
+import { IContainerSemiTrailer } from "@/entity/container-semi-trailer";
+import { IContainerTractor } from "@/entity/container-tractor";
+import {
+  createContainer,
+  updateContainer,
+  removeContainer
+} from "@/api/container";
 
 @Component({
   mixins: [FormValidate]
@@ -444,7 +451,8 @@ export default class CreateInbound extends Vue {
       billOfLadingNumber: "",
       containers: [] as Array<IContainer>,
       portOfDelivery: "",
-      freeTime: this.dateInit
+      freeTime: this.dateInit,
+      unit: 0
     }
   } as IInbound;
   // Form validate
@@ -460,8 +468,8 @@ export default class CreateInbound extends Vue {
   ports: Array<IPort> = [];
   shippingLines: Array<IShippingLine> = [];
   containerTypes: Array<IContainerType> = [];
-  trailers: Array<string> = [];
-  tractors: Array<string> = [];
+  trailers: Array<IContainerSemiTrailer> = [];
+  tractors: Array<IContainerTractor> = [];
   pickupTime = this.dateInit;
   freeTime = this.dateInit;
   // inboundLocal form
@@ -495,35 +503,20 @@ export default class CreateInbound extends Vue {
   dialogDelCont = false;
   createContainer() {
     // TODO: API create Container
-    if (this.containers.length != 0) {
-      if (
-        this.containers.findIndex(
-          x =>
-            x.containerNumber == this.containerLocal.containerNumber ||
-            x.licensePlate == this.containerLocal.licensePlate
-        ) != -1
-      ) {
-        this.messageSync = "Container đã tồn tại";
-        this.snackbarSync = true;
-      } else if (
-        this.containers.findIndex(
-          x => x.driver == this.containerLocal.driver
-        ) != -1
-      ) {
-        this.messageSync = "Lái xe đã thuộc Container khác";
-        this.snackbarSync = true;
-      } else {
-        this.containers.unshift(this.containerLocal);
-        this.messageSync =
-          "Thêm mới thành công Container: " +
-          this.containerLocal.containerNumber;
-        this.snackbarSync = true;
-      }
-    } else {
-      this.containers.unshift(this.containerLocal);
-      this.messageSync =
-        "Thêm mới thành công Container: " + this.containerLocal.containerNumber;
-      this.snackbarSync = true;
+    if (this.inboundLocal.billOfLading.id) {
+      createContainer(this.inboundLocal.billOfLading.id, this.containerLocal)
+        .then(res => {
+          console.log(res.data);
+          const response: IContainer = res.data;
+          this.messageSync =
+            "Thêm mới thành công Container: " + response.containerNumber;
+          this.containers.unshift(response);
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(() => (this.snackbarSync = true));
     }
   }
   openCreateContainer() {
@@ -544,49 +537,41 @@ export default class CreateInbound extends Vue {
     this.dialogDelCont = true;
   }
   updateContainer() {
-    if (
-      (this.containers.findIndex(
-        x => x.containerNumber == this.containerLocal.containerNumber
-      ) != -1 &&
-        this.containerLocal.containerNumber !=
-          this.container.containerNumber) ||
-      (this.containers.findIndex(
-        x => x.licensePlate == this.containerLocal.licensePlate
-      ) != -1 &&
-        this.containerLocal.licensePlate != this.container.licensePlate)
-    ) {
-      this.messageSync = "Container đã tồn tại";
-      this.snackbarSync = true;
-    } else if (
-      this.containers.findIndex(x => x.driver == this.containerLocal.driver) !=
-        -1 &&
-      this.containerLocal.driver != this.container.driver
-    ) {
-      this.messageSync = "Lái xe đã thuộc Container khác";
-      this.snackbarSync = true;
-    } else {
-      const copyContainer = Object.assign({}, this.containerLocal);
-      this.container = Object.assign({}, this.containerLocal);
-      const index = this.containers.findIndex(
-        x => x.containerNumber === copyContainer.containerNumber
-      );
-      this.containers.splice(index, 1, copyContainer);
-      this.messageSync =
-        "Cập nhập thành công Container: " + copyContainer.containerNumber;
-      this.snackbarSync = true;
-    }
+    updateContainer(this.containerLocal)
+      .then(res => {
+        const response: IContainer = res.data;
+        this.messageSync =
+          "Cập nhập thành công Container: " + response.containerNumber;
+        const index = this.containers.findIndex(x => x.id === response.id);
+        this.containers.splice(index, 1, response);
+      })
+      .catch(err => {
+        console.log(err);
+        this.messageSync = "Đã có lỗi xảy ra";
+      })
+      .finally(() => (this.snackbarSync = true));
   }
   removeContainer() {
     // TODO
-    const index = this.containers.findIndex(
-      x => x.containerNumber === this.container.containerNumber
-    );
-    this.containers.splice(index, 1);
-    console.log(this.containers);
-    this.messageSync =
-      "Xóa thành công Container: " + this.container.containerNumber;
-    this.snackbarSync = true;
-    this.dialogDelCont = false;
+    if (this.container.id) {
+      removeContainer(this.container.id)
+        .then(res => {
+          console.log(res.data);
+          this.messageSync =
+            "Xóa thành công Container: " + this.container.containerNumber;
+          const index = this.containers.findIndex(
+            x => x.id === this.container.id
+          );
+          this.containers.splice(index, 1);
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Error happend";
+        })
+        .finally(
+          () => ((this.snackbarSync = true), (this.dialogDelCont = false))
+        );
+    }
   }
 
   // Inbound
@@ -612,6 +597,7 @@ export default class CreateInbound extends Vue {
           this.inboundLocal.billOfLading.billOfLadingNumber;
         this.inboundsSync.unshift(response);
         this.totalItemsSync += 1;
+        this.stepper = 4;
       })
       .catch(err => {
         console.log(err);
@@ -676,11 +662,43 @@ export default class CreateInbound extends Vue {
   get containerTypesToString() {
     return this.containerTypes.map(x => x.name);
   }
+  get trailersToString() {
+    return this.trailers.map(x => x.licensePlate);
+  }
+  get tractorsToString() {
+    return this.tractors.map(x => x.licensePlate);
+  }
 
   mounted() {
     // trailers & tractors
-    this.trailers = ["2", "3"];
-    this.tractors = ["2", "3"];
+    this.trailers = [
+      {
+        id: 0,
+        type: "T28",
+        unitOfMeasurement: "ft",
+        licensePlate: "51234",
+        numberOfAxles: 2
+      },
+      {
+        id: 1,
+        type: "T32",
+        unitOfMeasurement: "ft",
+        licensePlate: "51242",
+        numberOfAxles: 3
+      }
+    ];
+    this.tractors = [
+      {
+        id: 0,
+        licensePlate: "12345",
+        numberOfAxles: 2
+      },
+      {
+        id: 1,
+        licensePlate: "12432",
+        numberOfAxles: 3
+      }
+    ];
   }
 }
 </script>

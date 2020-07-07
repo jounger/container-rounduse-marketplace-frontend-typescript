@@ -81,7 +81,6 @@ export default class Permission extends Vue {
   permission = {} as IPermission;
   dialogAdd = false;
   dialogDel = false;
-  search = "";
   message = "";
   snackbar = false;
   loading = true;

@@ -129,7 +129,7 @@
               ></v-layout>
               <v-layout col
                 ><v-layout row
-                  ><v-flex xs5>
+                  ><v-flex xs10>
                     <v-menu
                       ref="freeTimePicker"
                       v-model="freeTimePicker"
@@ -165,8 +165,18 @@
                       </v-date-picker>
                     </v-menu>
                   </v-flex></v-layout
-                ></v-layout
-              >
+                >
+                <v-layout row
+                  ><v-flex xs10>
+                    <v-text-field
+                      v-model="inboundLocal.billOfLading.unit"
+                      prepend-icon="local_shipping"
+                      type="number"
+                      :rules="[required('unit')]"
+                      label="Số lượng Cont*"
+                    ></v-text-field> </v-flex
+                ></v-layout>
+              </v-layout>
               <v-btn
                 color="primary"
                 @click="updateBillOfLading()"
@@ -427,20 +437,7 @@ export default class UpdateInbound extends Vue {
   // Form validate
 
   dateInit = new Date().toISOString().substr(0, 10);
-  inboundLocal = {
-    shippingLine: "",
-    containerType: "",
-    returnStation: "",
-    status: "",
-    emptyTime: "",
-    pickupTime: this.dateInit,
-    billOfLading: {
-      billOfLadingNumber: "",
-      containers: [] as Array<IContainer>,
-      portOfDelivery: "",
-      freeTime: this.dateInit
-    }
-  } as IInbound;
+  inboundLocal = {} as IInbound;
   checkbox = false;
   editable = true;
   stepper = 1;

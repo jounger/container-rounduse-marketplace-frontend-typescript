@@ -142,6 +142,7 @@
                       v-model="outboundLocal.booking.bookingNumber"
                       prepend-icon="child_friendly"
                       :rules="[required('booking number')]"
+                      type="text"
                       label="bookingNumber*"
                       required
                     ></v-text-field> </v-flex></v-layout

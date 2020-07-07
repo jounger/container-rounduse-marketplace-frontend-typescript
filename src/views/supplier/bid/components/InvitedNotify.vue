@@ -84,7 +84,6 @@ export default class InvitedNotify extends Vue {
   bids: Array<IBid> = [];
   dialogAdd = false;
   dialogDel = false;
-  search = "";
   message = "";
   snackbar = false;
   loading = true;

@@ -81,7 +81,6 @@ export default class Role extends Vue {
   role = {} as IRole;
   dialogAdd = false;
   dialogDel = false;
-  search = "";
   message = "";
   snackbar = false;
   loading = true;

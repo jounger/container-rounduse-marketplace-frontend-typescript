@@ -145,6 +145,7 @@
                       prepend-icon="child_friendly"
                       :rules="[required('booking number')]"
                       label="bookingNumber*"
+                      type="text"
                       required
                     ></v-text-field> </v-flex></v-layout
                 ><v-layout row

@@ -154,7 +154,10 @@ const routes: Array<RouteConfig> = [
   {
     path: "/bidding-document/:id",
     name: "Bidding Document Detail",
-    component: () => import("@/views/supplier/bidding-document/components/DetailBiddingDocument.vue"),
+    component: () =>
+      import(
+        "@/views/supplier/bidding-document/components/DetailBiddingDocument.vue"
+      ),
     meta: {
       auth: ["ROLE_MERCHANT", "ROLE_FORWARDER"],
       layout: "NavLayout"
@@ -163,7 +166,8 @@ const routes: Array<RouteConfig> = [
   {
     path: "/combined/:id",
     name: "Combined Detail",
-    component: () => import("@/views/supplier/combined/components/DetailCombined.vue"),
+    component: () =>
+      import("@/views/supplier/combined/components/DetailCombined.vue"),
     meta: {
       auth: ["ROLE_MERCHANT", "ROLE_FORWARDER"],
       layout: "NavLayout"
@@ -210,7 +214,8 @@ const routes: Array<RouteConfig> = [
   {
     path: "/invited-bidding",
     name: "Invited Bidding Document",
-    component: () => import("@/views/supplier/bid/components/InvitedNotify.vue"),
+    component: () =>
+      import("@/views/supplier/bid/components/InvitedNotify.vue"),
     meta: {
       auth: ["ROLE_FORWARDER"],
       layout: "NavLayout"
@@ -232,6 +237,24 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/operator/supplier/index.vue"),
     meta: {
       auth: ["ROLE_MODERATOR"],
+      layout: "NavLayout"
+    }
+  },
+  {
+    path: "/trailer",
+    name: "Trailer",
+    component: () => import("@/views/supplier/trailer/index.vue"),
+    meta: {
+      auth: ["ROLE_FORWARDER"],
+      layout: "NavLayout"
+    }
+  },
+  {
+    path: "/tractor",
+    name: "Tractor",
+    component: () => import("@/views/supplier/tractor/index.vue"),
+    meta: {
+      auth: ["ROLE_FORWARDER"],
       layout: "NavLayout"
     }
   }

@@ -364,7 +364,7 @@ export default class DetailCombined extends Vue {
       }
     },
     bids: [] as Array<IBid>,
-    bidDiscountCode: "",
+    discount: "",
     isMultipleAward: false,
     bidOpening: "",
     bidClosing: "",
@@ -510,7 +510,7 @@ export default class DetailCombined extends Vue {
       .then(res => {
         const response = res.data;
         this.combined = response;
-        this.biddingDocument = this.combined.biddingDocument;
+        this.bid = this.combined.bid;
         if (this.biddingDocument.id) {
           console.log(0);
           this.getBids(this.biddingDocument.id);

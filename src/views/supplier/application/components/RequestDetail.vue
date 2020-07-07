@@ -56,7 +56,7 @@
                   label="Số điện thoại"
                   name="phone"
                   prepend-icon="phone"
-                  type="number"
+                  type="text"
                   v-model="supplier.phone"
                   readonly
                 ></v-text-field>

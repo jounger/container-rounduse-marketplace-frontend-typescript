@@ -46,6 +46,16 @@ export default class NavigationSupplier extends Vue {
       title: "Quản lý Driver",
       icon: "airline_seat_recline_normal",
       link: "/driver"
+    },
+    {
+      title: "Quản lý Đầu kéo",
+      icon: "tram",
+      link: "/tractor"
+    },
+    {
+      title: "Quản lý Rơ moóc",
+      icon: "format_strikethrough",
+      link: "/trailer"
     }
   ];
 

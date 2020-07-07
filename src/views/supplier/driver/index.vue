@@ -56,6 +56,9 @@
             mdi-delete
           </v-icon>
         </template>
+        <template v-slot:item.geolocation="{ item }">
+          {{ item.location.latitude }} ; {{ item.location.longitude }}
+        </template>
       </v-data-table>
     </v-card>
   </v-content>
@@ -81,7 +84,6 @@ export default class Driver extends Vue {
   driver = {} as IDriver;
   dialogAdd = false;
   dialogDel = false;
-  search = "";
   message = "";
   snackbar = false;
   loading = true;
@@ -105,7 +107,7 @@ export default class Driver extends Vue {
     { text: "Số điện thoại", value: "phone" },
     { text: "Tên đầy đủ", value: "fullname" },
     { text: "Số bằng lái", value: "driverLicense" },
-    { text: "Vị trí", value: "location" },
+    { text: "Vị trí", value: "geolocation" },
     {
       text: "Hành động",
       value: "actions"

@@ -306,7 +306,7 @@ export default class Register extends Vue {
   companyAddress = "";
   tin = "";
   fax = "";
-  role = [] as Array<string>;
+  role: Array<string> = [];
   message = "";
   snackbar = false;
   editable = false;

@@ -144,7 +144,6 @@ export default class Outbound extends Vue {
   dialogEdit = false;
   dialogDel = false;
   dialogCreateBiddingDocument = false;
-  search = "";
   message = "";
   snackbar = false;
   loading = true;

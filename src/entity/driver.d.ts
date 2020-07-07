@@ -1,7 +1,7 @@
 import { IUser } from "./user";
+import { IGeolocation } from './geolocation';
 export interface IDriver extends IUser {
-  id?: number;
   fullname: string;
   driverLicense: string;
-  location?: string;
+  location?: IGeolocation;
 }

@@ -154,9 +154,8 @@ export default class CreateDiscount extends Vue {
   @Prop(Object) discount!: IDiscount;
   @Prop(Boolean) update!: boolean;
 
-  currencies = ["USD", "VND"];
+  currencies: Array<string> = [];
   valid = false;
-  abc = 0;
   expiredDatePicker = false;
   initDate = new Date().toISOString().substr(0, 10);
   expiredDate = this.initDate;
@@ -170,6 +169,7 @@ export default class CreateDiscount extends Vue {
   } as IDiscount;
   test = 0;
   created() {
+    this.currencies = ["USD", "VND"];
     if (this.update) {
       this.discountLocal = Object.assign({}, this.discount);
       this.expiredDate = this.discountLocal.expiredDate;

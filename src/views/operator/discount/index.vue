@@ -86,7 +86,6 @@ export default class Discount extends Vue {
   discount = {} as IDiscount;
   dialogAdd = false;
   dialogDel = false;
-  search = "";
   message = "";
   snackbar = false;
   loading = true;

@@ -69,7 +69,10 @@ export default class Navigation extends Vue {
   }
 
   get getUserRole() {
-    if (typeof this.$auth.user().roles !== "undefined") {
+    if (
+      typeof this.$auth.user().roles !== "undefined" &&
+      this.$auth.user().roles
+    ) {
       return this.$auth
         .user()
         .roles[0].toLowerCase()

@@ -11,4 +11,5 @@ export interface IContainerType {
   internalHeight: number;
   doorOpeningWidth: number;
   doorOpeningHeight: number;
+  unitOfMeasurement: string;
 }

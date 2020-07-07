@@ -166,7 +166,7 @@ export default class CreateOperator extends Vue {
   @Prop(Boolean) update!: boolean;
 
   valid = false;
-  roles = ["ROLE_ADMIN", "ROLE_MODERATOR"];
+  roles: Array<string> = [];
   operatorLocal = {
     username: "",
     email: "",
@@ -179,6 +179,7 @@ export default class CreateOperator extends Vue {
     isRoot: false
   } as IOperator;
   created() {
+    this.roles = ["ROLE_ADMIN", "ROLE_MODERATOR"];
     if (this.update) {
       this.operatorLocal = Object.assign({}, this.operator);
     }

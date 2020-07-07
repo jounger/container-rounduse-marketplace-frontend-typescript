@@ -175,7 +175,10 @@ export default class CreateDriver extends Vue {
     password: "",
     fullname: "",
     driverLicense: "",
-    location: ""
+    location: {
+      latitude: "",
+      longitude: ""
+    }
   } as IDriver;
   valid = false;
   created() {

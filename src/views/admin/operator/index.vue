@@ -93,7 +93,6 @@ export default class Operator extends Vue {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
-  rolesSearch = ["ROLE_ADMIN", "ROLE_MODERATOR"];
   headers = [
     {
       text: "Tên đăng nhập",

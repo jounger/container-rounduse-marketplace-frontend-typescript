@@ -275,10 +275,10 @@ export default class UpdateShippingLine extends Vue {
   stepper = 1;
   valid = true;
   valid1 = true;
-  allStatus = ["PENDING", "ACTIVE", "BANNED"];
+  allStatus: Array<string> = [];
   shippingLineLocal = {} as IShippingLine;
   created() {
-    console.log(this.shippingLine);
+    this.allStatus = ["PENDING", "ACTIVE", "BANNED"];
     this.shippingLineLocal = Object.assign({}, this.shippingLine);
   }
   // ShippingLine Update

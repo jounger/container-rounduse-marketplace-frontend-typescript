@@ -198,7 +198,8 @@ export default class CreateContainerType extends Vue {
     internalWidth: 0,
     internalHeight: 0,
     doorOpeningWidth: 0,
-    doorOpeningHeight: 0
+    doorOpeningHeight: 0,
+    unitOfMeasurement: "M"
   } as IContainerType;
   valid = false;
   created() {

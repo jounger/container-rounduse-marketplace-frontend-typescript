@@ -168,7 +168,6 @@ export default class BiddingDocument extends Vue {
   dialogEdit = false;
   dialogCancel = false;
   dialogDel = false;
-  search = "";
   message = "";
   snackbar = false;
   loading = true;

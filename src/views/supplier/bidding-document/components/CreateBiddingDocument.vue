@@ -204,7 +204,8 @@
           <v-stepper-content step="3">
             <v-form ref="finishForm">
               <v-text-field
-                v-model="biddingDocumentLocal.bidDiscountCode"
+                v-model="biddingDocumentLocal.discount"
+                type="text"
                 prepend-icon="loyalty"
                 label="Mã giảm giá"
               ></v-text-field>
@@ -260,7 +261,7 @@ export default class CreateBiddingDocument extends Vue {
   biddingDocumentLocal = {
     offeree: this.$auth.user().username,
     outbound: -1 as number,
-    bidDiscountCode: "",
+    discount: "",
     isMultipleAward: false,
     bidOpening: this.dateInit,
     bidClosing: this.dateInit,

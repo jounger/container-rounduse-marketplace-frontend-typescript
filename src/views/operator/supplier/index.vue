@@ -34,7 +34,6 @@
         :headers="headers"
         :items="suppliers"
         item-key="username"
-        :search="search"
         :loading="loading"
         :options.sync="options"
         :server-items-length="options.totalItems"
@@ -98,7 +97,6 @@ export default class Supplier extends Vue {
   loading = true;
   message = "";
   snackbar = false;
-  search = "";
   options = {
     descending: true,
     page: 1,
