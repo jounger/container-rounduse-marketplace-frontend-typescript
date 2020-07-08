@@ -4,13 +4,13 @@
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
-            update ? "Cập nhập Đầu kéo" : "Thêm mới Đầu kéo"
+            update ? "Cập nhập Phản hồi" : "Thêm mới Phản hồi"
           }}</span>
           <v-btn
             icon
             dark
             @click="dialogAddSync = false"
-            style="margin-left:319px;"
+            style="margin-left:337px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
@@ -22,28 +22,27 @@
           <v-layout row>
             <v-flex xs9>
               <v-text-field
-                label="Biển số*"
-                name="licensePlate"
-                prepend-icon="tram"
+                label="Người gửi*"
+                name="sender"
+                prepend-icon="enhanced_encryption"
                 type="text"
+                readonly
                 :counter="20"
-                :rules="[
-                  minLength('licensePlate', 5),
-                  maxLength('licensePlate', 20)
-                ]"
-                v-model="tractorLocal.licensePlate"
+                :rules="[minLength('sender', 5), maxLength('sender', 20)]"
+                v-model="feedbackLocal.sender"
               ></v-text-field>
             </v-flex>
           </v-layout>
           <v-layout row>
             <v-flex xs9>
               <v-text-field
-                label="Số lượng trục*"
-                name="numberOfAxles"
-                prepend-icon="format_size"
-                type="number"
-                :rules="[required('numberOfAxles')]"
-                v-model="tractorLocal.numberOfAxles"
+                label="Nội dung*"
+                name="message"
+                prepend-icon="enhanced_encryption"
+                type="text"
+                :counter="20"
+                :rules="[minLength('message', 5), maxLength('message', 20)]"
+                v-model="feedbackLocal.message"
               ></v-text-field>
             </v-flex>
           </v-layout>
@@ -54,14 +53,14 @@
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
         <v-btn
-          @click="updateTractor()"
+          @click="updateFeedback()"
           color="primary"
           v-if="update"
           :disabled="!valid"
           >Cập nhập</v-btn
         >
         <v-btn
-          @click="createTractor()"
+          @click="createFeedback()"
           color="primary"
           v-else
           :disabled="!valid"
@@ -72,42 +71,40 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync, Prop, Watch } from "vue-property-decorator";
-import { IContainerTractor } from "@/entity/container-tractor";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
+import { IFeedback } from "@/entity/feedback";
 import FormValidate from "@/mixin/form-validate";
-import Utils from "@/mixin/utils";
+// import { createFeedback, updateFeedback } from "@/api/feedback";
 
 @Component({
-  mixins: [FormValidate, Utils]
+  mixins: [FormValidate]
 })
-export default class CreateTractor extends Vue {
+export default class CreateFeedback extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("tractors", { type: Array }) tractorsSync!: Array<
-    IContainerTractor
-  >;
+  @PropSync("feedbacks", { type: Array }) feedbacksSync!: Array<IFeedback>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
-  @Prop(Object) tractor!: IContainerTractor;
+  @Prop(Object) feedback!: IFeedback;
   @Prop(Boolean) update!: boolean;
 
-  tractorLocal = {
-    licensePlate: "",
-    numberOfAxles: 0
-  } as IContainerTractor;
+  feedbackLocal = {
+    sender: this.$auth.user().username,
+    message: "",
+    satisfactionPoints: 0
+  } as IFeedback;
   valid = false;
   created() {
     if (this.update) {
-      this.tractorLocal = Object.assign({}, this.tractor);
+      this.feedbackLocal = Object.assign({}, this.feedback);
     }
   }
-  createTractor() {
-    if (this.tractorLocal) {
-      // createTractor(this.tractorLocal)
+  createFeedback() {
+    if (this.feedbackLocal) {
+      // createFeedback(this.feedbackLocal)
       //   .then(res => {
-      //     const response: IContainerTractor = res.data;
-      //     this.messageSync = "Thêm mới thành công vai trò: " + response.name;
-      //     this.tractorsSync.unshift(response);
+      //     const response: IFeedback = res.data;
+      //     this.messageSync = "Thêm mới thành công Phản hồi: " + response.id;
+      //     this.feedbacksSync.unshift(response);
       //     this.totalItemsSync += 1;
       //   })
       //   .catch(err => {
@@ -115,22 +112,23 @@ export default class CreateTractor extends Vue {
       //     this.messageSync = "Đã có lỗi xảy ra";
       //   })
       //   .finally(() => (this.snackbarSync = true));
+      this.feedbackLocal.id = 1;
       this.messageSync =
-        "Thêm mới thành công Đầu kéo: " + this.tractorLocal.licensePlate;
-      this.tractorsSync.unshift(this.tractorLocal);
-      this.totalItemsSync += 1;
+        "Thêm mới thành công Phản hồi: " + this.feedbackLocal.id;
+      this.feedbacksSync.unshift(this.feedbackLocal);
+
       this.snackbarSync = true;
     }
   }
-  updateTractor() {
-    if (this.tractorLocal.id) {
-      // updateTractor(this.tractorLocal)
+  updateFeedback() {
+    if (this.feedbackLocal.id) {
+      // updateFeedback(this.feedbackLocal)
       //   .then(res => {
       //     console.log(res.data);
-      //     const response: IContainerTractor = res.data;
-      //     this.messageSync = "Cập nhập thành công vai trò: " + response.name;
-      //     const index = this.tractorsSync.findIndex(x => x.id == response.id);
-      //     this.tractorsSync.splice(index, 1, response);
+      //     const response: IFeedback = res.data;
+      //     this.messageSync = "Cập nhập thành công Phản hồi: " + response.id;
+      //     const index = this.feedbacksSync.findIndex(x => x.id == response.id);
+      //     this.feedbacksSync.splice(index, 1, response);
       //   })
       //   .catch(err => {
       //     console.log(err);
@@ -138,11 +136,12 @@ export default class CreateTractor extends Vue {
       //   })
       //   .finally(() => (this.snackbarSync = true));
       this.messageSync =
-        "Cập nhập thành công Đầu kéo: " + this.tractorLocal.licensePlate;
-      const index = this.tractorsSync.findIndex(
-        x => x.id == this.tractorLocal.id
+        "Cập nhập thành công Phản hồi: " + this.feedbackLocal.id;
+      const index = this.feedbacksSync.findIndex(
+        x => x.id == this.feedbackLocal.id
       );
-      this.tractorsSync.splice(index, 1, this.tractorLocal);
+      this.feedbacksSync.splice(index, 1, this.feedbackLocal);
+
       this.snackbarSync = true;
     }
   }

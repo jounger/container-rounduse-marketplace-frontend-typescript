@@ -224,10 +224,9 @@
           >
 
           <v-stepper-content step="3">
-            <v-form ref="finishForm" v-model="checkbox" validation>
+            <v-form ref="finishForm">
               <v-checkbox
                 v-model="checkbox"
-                :rules="[required('agree term')]"
                 label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
               ></v-checkbox>
               <v-btn

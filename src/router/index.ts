@@ -159,7 +159,7 @@ const routes: Array<RouteConfig> = [
         "@/views/supplier/bidding-document/components/DetailBiddingDocument.vue"
       ),
     meta: {
-      auth: ["ROLE_MERCHANT", "ROLE_FORWARDER"],
+      auth: ["ROLE_MERCHANT", "ROLE_FORWARDER", "ROLE_MODERATOR"],
       layout: "NavLayout"
     }
   },
@@ -255,6 +255,42 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/supplier/tractor/index.vue"),
     meta: {
       auth: ["ROLE_FORWARDER"],
+      layout: "NavLayout"
+    }
+  },
+  {
+    path: "/contract",
+    name: "Contract",
+    component: () => import("@/views/supplier/contract/index.vue"),
+    meta: {
+      auth: ["ROLE_FORWARDER", "ROLE_MERCHANT"],
+      layout: "NavLayout"
+    }
+  },
+  {
+    path: "/payment",
+    name: "Payment",
+    component: () => import("@/views/supplier/payment/index.vue"),
+    meta: {
+      auth: ["ROLE_FORWARDER", "ROLE_MERCHANT"],
+      layout: "NavLayout"
+    }
+  },
+  {
+    path: "/supplier-report",
+    name: "SupplierReport",
+    component: () => import("@/views/operator/supplier-report/index.vue"),
+    meta: {
+      auth: ["ROLE_MODERATOR"],
+      layout: "NavLayout"
+    }
+  },
+  {
+    path: "/report",
+    name: "Report",
+    component: () => import("@/views/supplier/report/index.vue"),
+    meta: {
+      auth: ["ROLE_FORWARDER", "ROLE_MERCHANT"],
       layout: "NavLayout"
     }
   }

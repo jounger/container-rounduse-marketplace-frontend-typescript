@@ -4,13 +4,13 @@
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
-            update ? "Cập nhập Đầu kéo" : "Thêm mới Đầu kéo"
+            update ? "Cập nhập Hợp đồng" : "Thêm mới Hợp đồng"
           }}</span>
           <v-btn
             icon
             dark
             @click="dialogAddSync = false"
-            style="margin-left:319px;"
+            style="margin-left:308px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
@@ -22,28 +22,38 @@
           <v-layout row>
             <v-flex xs9>
               <v-text-field
-                label="Biển số*"
-                name="licensePlate"
-                prepend-icon="tram"
+                label="Người gửi*"
+                name="sender"
+                prepend-icon="person"
                 type="text"
+                :readonly="update"
                 :counter="20"
-                :rules="[
-                  minLength('licensePlate', 5),
-                  maxLength('licensePlate', 20)
-                ]"
-                v-model="tractorLocal.licensePlate"
+                :rules="[minLength('sender', 5), maxLength('sender', 20)]"
+                v-model="contractLocal.sender"
               ></v-text-field>
             </v-flex>
           </v-layout>
           <v-layout row>
             <v-flex xs9>
               <v-text-field
-                label="Số lượng trục*"
-                name="numberOfAxles"
-                prepend-icon="format_size"
-                type="number"
-                :rules="[required('numberOfAxles')]"
-                v-model="tractorLocal.numberOfAxles"
+                label="% Tiền phạt*"
+                name="finesAgainstContractViolations"
+                prepend-icon="monetization_on"
+                type="text"
+                :rules="[required('finesAgainstContractViolations')]"
+                v-model="contractLocal.finesAgainstContractViolations"
+              ></v-text-field>
+            </v-flex>
+          </v-layout>
+          <v-layout row>
+            <v-flex xs9>
+              <v-text-field
+                label="Chứng cớ*"
+                name="evidence"
+                prepend-icon="description"
+                type="text"
+                :rules="[required('evidence')]"
+                v-model="contractLocal.evidence"
               ></v-text-field>
             </v-flex>
           </v-layout>
@@ -54,14 +64,14 @@
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
         <v-btn
-          @click="updateTractor()"
+          @click="updateContract()"
           color="primary"
           v-if="update"
           :disabled="!valid"
           >Cập nhập</v-btn
         >
         <v-btn
-          @click="createTractor()"
+          @click="createContract()"
           color="primary"
           v-else
           :disabled="!valid"
@@ -72,42 +82,43 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync, Prop, Watch } from "vue-property-decorator";
-import { IContainerTractor } from "@/entity/container-tractor";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
+import { IContract } from "@/entity/contract";
 import FormValidate from "@/mixin/form-validate";
-import Utils from "@/mixin/utils";
 
 @Component({
-  mixins: [FormValidate, Utils]
+  mixins: [FormValidate]
 })
-export default class CreateTractor extends Vue {
+export default class CreateContract extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("tractors", { type: Array }) tractorsSync!: Array<
-    IContainerTractor
-  >;
+  @PropSync("contracts", { type: Array }) contractsSync!: Array<IContract>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
-  @Prop(Object) tractor!: IContainerTractor;
+  @Prop(Object) contract!: IContract;
   @Prop(Boolean) update!: boolean;
 
-  tractorLocal = {
-    licensePlate: "",
-    numberOfAxles: 0
-  } as IContainerTractor;
+  contractLocal = {
+    sender: "",
+    finesAgainstContractViolations: 50,
+    evidence: "",
+    isValid: true,
+    required: false
+  } as IContract;
   valid = false;
+  contractDatePicker = false;
   created() {
     if (this.update) {
-      this.tractorLocal = Object.assign({}, this.tractor);
+      this.contractLocal = Object.assign({}, this.contract);
     }
   }
-  createTractor() {
-    if (this.tractorLocal) {
-      // createTractor(this.tractorLocal)
+  createContract() {
+    if (this.contractLocal) {
+      // createContract(this.contractLocal)
       //   .then(res => {
-      //     const response: IContainerTractor = res.data;
+      //     const response: IContract = res.data;
       //     this.messageSync = "Thêm mới thành công vai trò: " + response.name;
-      //     this.tractorsSync.unshift(response);
+      //     this.contractsSync.unshift(response);
       //     this.totalItemsSync += 1;
       //   })
       //   .catch(err => {
@@ -116,21 +127,21 @@ export default class CreateTractor extends Vue {
       //   })
       //   .finally(() => (this.snackbarSync = true));
       this.messageSync =
-        "Thêm mới thành công Đầu kéo: " + this.tractorLocal.licensePlate;
-      this.tractorsSync.unshift(this.tractorLocal);
+        "Thêm mới thành công hợp đồng: " + this.contractLocal.id;
+      this.contractsSync.unshift(this.contractLocal);
       this.totalItemsSync += 1;
-      this.snackbarSync = true;
+      this.messageSync = "Đã có lỗi xảy ra";
     }
   }
-  updateTractor() {
-    if (this.tractorLocal.id) {
-      // updateTractor(this.tractorLocal)
+  updateContract() {
+    if (this.contractLocal.id) {
+      // updateContract(this.contractLocal)
       //   .then(res => {
       //     console.log(res.data);
-      //     const response: IContainerTractor = res.data;
+      //     const response: IContract = res.data;
       //     this.messageSync = "Cập nhập thành công vai trò: " + response.name;
-      //     const index = this.tractorsSync.findIndex(x => x.id == response.id);
-      //     this.tractorsSync.splice(index, 1, response);
+      //     const index = this.contractsSync.findIndex(x => x.id == response.id);
+      //     this.contractsSync.splice(index, 1, response);
       //   })
       //   .catch(err => {
       //     console.log(err);
@@ -138,12 +149,12 @@ export default class CreateTractor extends Vue {
       //   })
       //   .finally(() => (this.snackbarSync = true));
       this.messageSync =
-        "Cập nhập thành công Đầu kéo: " + this.tractorLocal.licensePlate;
-      const index = this.tractorsSync.findIndex(
-        x => x.id == this.tractorLocal.id
+        "Cập nhập thành công hợp đồng: " + this.contractLocal.id;
+      const index = this.contractsSync.findIndex(
+        x => x.id == this.contractLocal.id
       );
-      this.tractorsSync.splice(index, 1, this.tractorLocal);
-      this.snackbarSync = true;
+      this.contractsSync.splice(index, 1, this.contractLocal);
+      this.messageSync = "Đã có lỗi xảy ra";
     }
   }
 }

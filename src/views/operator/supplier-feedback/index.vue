@@ -2,11 +2,11 @@
   <v-content>
     <v-card>
       <v-row justify="center">
-        <RegisterDetail
+        <FeedbackDetail
           v-if="dialogDetail"
           :dialogDetail.sync="dialogDetail"
-          :supplier="supplier"
-          :suppliers.sync="suppliers"
+          :feedback="feedback"
+          :feedbacks.sync="feedbacks"
           :totalItems.sync="options.totalItems"
           :message.sync="message"
           :snackbar.sync="snackbar"
@@ -18,7 +18,7 @@
       </v-card-title>
       <v-data-table
         :headers="headers"
-        :items="suppliers"
+        :items="feedbacks"
         item-key="id"
         :loading="loading"
         :options.sync="options"
@@ -47,21 +47,21 @@
 </template>
 <script lang="ts">
 import { Component, Watch, Vue } from "vue-property-decorator";
-import { ISupplier } from "@/entity/supplier";
-import { getSuppliersByStatus } from "@/api/supplier";
+import { IFeedback } from "@/entity/feedback";
+// import { getFeedbacksByStatus } from "@/api/feedback";
 import { PaginationResponse } from "@/api/payload";
-import RegisterDetail from "./components/RegisterDetail.vue";
+import FeedbackDetail from "./components/FeedbackDetail.vue";
 import Snackbar from "@/components/Snackbar.vue";
 
 @Component({
   components: {
-    RegisterDetail,
+    FeedbackDetail,
     Snackbar
   }
 })
-export default class Supplier extends Vue {
-  suppliers: Array<ISupplier> = [];
-  supplier = {} as ISupplier;
+export default class Feedback extends Vue {
+  feedbacks: Array<IFeedback> = [];
+  feedback = {} as IFeedback;
 
   dialogDetail = false;
   loading = true;
@@ -90,34 +90,34 @@ export default class Supplier extends Vue {
     }
   ];
 
-  openDetailDialog(item: ISupplier) {
-    this.supplier = item;
+  openDetailDialog(item: IFeedback) {
+    this.feedback = item;
     this.dialogDetail = true;
   }
 
-  @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
-      getSuppliersByStatus({
-        page: this.options.page - 1,
-        limit: this.options.itemsPerPage,
-        status: "PENDING"
-      })
-        .then(res => {
-          const response: PaginationResponse<ISupplier> = res.data;
-          console.log("watch", this.options);
-          this.suppliers = response.data.filter(
-            x =>
-              (x.roles[0] == "ROLE_FORWARDER" ||
-                x.roles[0] == "ROLE_MERCHANT") &&
-              x.status == "PENDING"
-          );
-          this.options.totalItems = response.totalElements;
-        })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
-    }
-  }
+  // @Watch("options", { deep: true })
+  // onOptionsChange(val: object, oldVal: object) {
+  //   if (val !== oldVal) {
+  //     getFeedbacksByStatus({
+  //       page: this.options.page - 1,
+  //       limit: this.options.itemsPerPage,
+  //       status: "PENDING"
+  //     })
+  //       .then(res => {
+  //         const response: PaginationResponse<IFeedback> = res.data;
+  //         console.log("watch", this.options);
+  //         this.feedbacks = response.data.filter(
+  //           x =>
+  //             (x.roles[0] == "ROLE_FORWARDER" ||
+  //               x.roles[0] == "ROLE_MERCHANT") &&
+  //             x.status == "PENDING"
+  //         );
+  //         this.options.totalItems = response.totalElements;
+  //       })
+  //       .catch(err => console.log(err))
+  //       .finally(() => (this.loading = false));
+  //   }
+  // }
 }
 </script>
 <style type="text/css">

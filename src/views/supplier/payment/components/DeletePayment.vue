@@ -3,12 +3,12 @@
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">Xóa đầu kéo</span>
+          ><span class="headline" style="color:white;">Xóa hóa đơn</span>
           <v-btn
             icon
             dark
             @click="dialogDelSync = false"
-            style="margin-left:387px;"
+            style="margin-left:383px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
@@ -19,15 +19,13 @@
         <v-form>
           <v-container>
             <span style="color: black; font-size:22px;"
-              >Bạn có chắc chắn muốn xóa đầu kéo này?</span
+              >Bạn có chắc chắn muốn xóa hóa đơn này?</span
             >
             <div class="line"></div>
             <v-list>
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title>{{
-                    tractor.licensePlate
-                  }}</v-list-item-title>
+                  <v-list-item-title>{{ payment.id }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -37,36 +35,34 @@
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
         <v-btn @click="dialogDelSync = false">Hủy</v-btn>
-        <v-btn @click="removeTractor()" color="red">Xóa</v-btn>
+        <v-btn @click="removePayment()" color="red">Xóa</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
-import { IContainerTractor } from "@/entity/container-tractor";
+import { IPayment } from "@/entity/payment";
 
 @Component
-export default class DeleteTractor extends Vue {
+export default class DeletePayment extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @PropSync("tractors", { type: Array }) tractorsSync!: Array<
-    IContainerTractor
-  >;
+  @PropSync("payments", { type: Array }) paymentsSync!: Array<IPayment>;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
-  @Prop(Object) tractor!: IContainerTractor;
+  @Prop(Object) payment!: IPayment;
 
-  removeTractor() {
-    if (this.tractor.id) {
-      // removeTractor(this.tractor.id)
+  removePayment() {
+    if (this.payment.id) {
+      // removePayment(this.payment.id)
       //   .then(res => {
       //     console.log(res.data);
-      //     this.messageSync = "Xóa thành công vai trò: " + this.tractor.name;
-      //     const index = this.tractorsSync.findIndex(
-      //       x => x.id === this.tractor.id
+      //     this.messageSync = "Xóa thành công vai trò: " + this.payment.name;
+      //     const index = this.paymentsSync.findIndex(
+      //       x => x.id === this.payment.id
       //     );
-      //     this.tractorsSync.splice(index, 1);
+      //     this.paymentsSync.splice(index, 1);
       //     this.totalItemsSync -= 1;
       //   })
       //   .catch(err => {
@@ -76,9 +72,9 @@ export default class DeleteTractor extends Vue {
       //   .finally(
       //     () => ((this.snackbarSync = true), (this.dialogDelSync = false))
       //   );
-      this.messageSync = "Xóa thành công đầu kéo: " + this.tractor.licensePlate;
-      const index = this.tractorsSync.findIndex(x => x.id === this.tractor.id);
-      this.tractorsSync.splice(index, 1);
+      this.messageSync = "Xóa thành công hóa đơn: " + this.payment.id;
+      const index = this.paymentsSync.findIndex(x => x.id === this.payment.id);
+      this.paymentsSync.splice(index, 1);
       this.totalItemsSync -= 1;
       this.snackbarSync = true;
       this.dialogDelSync = false;

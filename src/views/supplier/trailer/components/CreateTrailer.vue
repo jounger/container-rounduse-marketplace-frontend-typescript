@@ -133,7 +133,7 @@ export default class CreateTrailer extends Vue {
         "Thêm mới thành công rơ moóc: " + this.trailerLocal.licensePlate;
       this.trailersSync.unshift(this.trailerLocal);
       this.totalItemsSync += 1;
-      this.messageSync = "Đã có lỗi xảy ra";
+      this.snackbarSync = true;
     }
   }
   updateTrailer() {
@@ -157,7 +157,7 @@ export default class CreateTrailer extends Vue {
         x => x.id == this.trailerLocal.id
       );
       this.trailersSync.splice(index, 1, this.trailerLocal);
-      this.messageSync = "Đã có lỗi xảy ra";
+      this.snackbarSync = true;
     }
   }
 }

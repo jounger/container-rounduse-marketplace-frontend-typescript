@@ -21,14 +21,6 @@
       <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-card-title>
         Danh sách Supplier
-        <v-spacer></v-spacer>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>
       </v-card-title>
       <v-data-table
         :headers="headers"

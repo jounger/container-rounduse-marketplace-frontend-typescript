@@ -22,8 +22,22 @@ export function addTimeToDate(input: string) {
 export function addHoursToDate(d: Date, h: number) {
   const date = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
   if (isValidDate(date)) {
-    return new Date(date.setHours(date.getHours() + h)).toISOString().substr(0, 16);
+    return new Date(date.setHours(date.getHours() + h))
+      .toISOString()
+      .substr(0, 16);
   } else {
     return date.toISOString().substr(0, 16);
   }
+}
+export function formatPrice(value: string) {
+  if (value.length > 0) {
+    const val = parseInt(value) / 1;
+    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  } else {
+    return "";
+  }
+}
+export function convertCurrencyToNumber(value: string) {
+  const number = value.replace(/[$,.]+/g, "");
+  return number;
 }

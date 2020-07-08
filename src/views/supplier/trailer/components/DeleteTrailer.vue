@@ -76,7 +76,7 @@ export default class DeleteTrailer extends Vue {
       //   .finally(
       //     () => ((this.snackbarSync = true), (this.dialogDelSync = false))
       //   );
-      this.messageSync = "Xóa thành công vai trò: " + this.trailer.licensePlate;
+      this.messageSync = "Xóa thành công rơ moóc: " + this.trailer.licensePlate;
       const index = this.trailersSync.findIndex(x => x.id === this.trailer.id);
       this.trailersSync.splice(index, 1);
       this.totalItemsSync -= 1;
