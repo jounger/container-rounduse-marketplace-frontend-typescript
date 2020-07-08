@@ -13,6 +13,7 @@
     "@types/sockjs-client": "^1.1.1",
     "axios": "^0.19.2",
     "core-js": "^3.6.5",
+    "google-maps": "^4.3.2",
     "install": "^0.13.0",
     "sockjs-client": "^1.4.0",
     "vue": "^2.6.11",

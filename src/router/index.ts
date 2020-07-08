@@ -5,6 +5,14 @@ Vue.use(VueRouter);
 
 // DIVICE BY PERMISSION
 const routes: Array<RouteConfig> = [
+  {
+    path: "/googlemap",
+    name: "Googlemap",
+    meta: {
+      layout: "NavLayout"
+    },
+    component: () => import("@/views/user/googlemap/index.vue")
+  },
   // AUTH
   {
     path: "/login",
