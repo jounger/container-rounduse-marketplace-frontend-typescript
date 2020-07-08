@@ -1,8 +1,7 @@
+import { IEvidence } from "./evidence";
 export interface IContract {
   id?: number;
-  sender: string;
   finesAgainstContractViolations: number;
-  evidence: string;
-  isValid: boolean;
+  evidence: IEvidence;
   required: boolean;
 }

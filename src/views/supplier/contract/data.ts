@@ -1,19 +1,25 @@
 import { IContract } from "@/entity/contract";
 export const ContractData: IContract[] = [
   {
-    id: 0,
-    sender: "merchant",
+    id: 1,
     finesAgainstContractViolations: 50,
-    evidence: "abc",
-    isValid: false,
+    evidence: {
+      id: 1,
+      sender: "merchant",
+      evidence: "Oke",
+      isValid: false
+    },
     required: false
   },
   {
-    id: 1,
-    sender: "merchant",
-    finesAgainstContractViolations: 30,
-    evidence: "abc",
-    isValid: true,
-    required: true
+    id: 2,
+    finesAgainstContractViolations: 50,
+    evidence: {
+      id: 1,
+      sender: "merchant",
+      evidence: "Oke",
+      isValid: false
+    },
+    required: false
   }
 ];

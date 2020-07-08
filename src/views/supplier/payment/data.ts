@@ -1,7 +1,7 @@
 import { IPayment } from "@/entity/payment";
 export const PaymentData: IPayment[] = [
   {
-    id: 0,
+    id: 2,
     sender: "admin",
     recipient: "merchant",
     detail: "abc",

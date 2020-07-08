@@ -29,7 +29,7 @@
                 :readonly="update"
                 :counter="20"
                 :rules="[minLength('sender', 5), maxLength('sender', 20)]"
-                v-model="contractLocal.sender"
+                v-model="contractLocal.evidence.sender"
               ></v-text-field>
             </v-flex>
           </v-layout>
@@ -53,7 +53,7 @@
                 prepend-icon="description"
                 type="text"
                 :rules="[required('evidence')]"
-                v-model="contractLocal.evidence"
+                v-model="contractLocal.evidence.evidence"
               ></v-text-field>
             </v-flex>
           </v-layout>
@@ -99,10 +99,12 @@ export default class CreateContract extends Vue {
   @Prop(Boolean) update!: boolean;
 
   contractLocal = {
-    sender: "",
     finesAgainstContractViolations: 50,
-    evidence: "",
-    isValid: true,
+    evidence: {
+      sender: this.$auth.user().username,
+      evidence: "",
+      isValid: false
+    },
     required: false
   } as IContract;
   valid = false;

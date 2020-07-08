@@ -97,13 +97,13 @@ export default class Contract extends Vue {
       align: "start",
       value: "id"
     },
-    { text: "Người gửi", value: "sender" },
+    { text: "Người gửi", value: "evidence.sender" },
     {
       text: "% Tiền phạt",
       value: "finesAgainstContractViolations"
     },
-    { text: "Chứng cớ", value: "evidence" },
-    { text: "Hợp lệ", value: "isValid" },
+    { text: "Chứng cớ", value: "evidence.evidence" },
+    { text: "Hợp lệ", value: "evidence.isValid" },
     { text: "Bắt buộc", value: "required" },
     {
       text: "Hành động",
