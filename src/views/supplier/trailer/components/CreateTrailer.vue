@@ -39,7 +39,7 @@
             <v-flex xs9>
               <v-select
                 v-model="trailerLocal.type"
-                prepend-icon="format_strikethrough"
+                prepend-icon="timeline"
                 :items="types"
                 :rules="[required('type')]"
                 label="Loại rơ moóc*"
@@ -86,6 +86,10 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContainerSemiTrailer } from "@/entity/container-semi-trailer";
 import FormValidate from "@/mixin/form-validate";
+import {
+  createContainerSemiTrailer,
+  updateContainerSemiTrailer
+} from "@/api/container-semi-trailer";
 
 @Component({
   mixins: [FormValidate]
@@ -117,47 +121,37 @@ export default class CreateTrailer extends Vue {
   }
   createTrailer() {
     if (this.trailerLocal) {
-      // createTrailer(this.trailerLocal)
-      //   .then(res => {
-      //     const response: IContainerSemiTrailer = res.data;
-      //     this.messageSync = "Thêm mới thành công vai trò: " + response.name;
-      //     this.trailersSync.unshift(response);
-      //     this.totalItemsSync += 1;
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //     this.messageSync = "Đã có lỗi xảy ra";
-      //   })
-      //   .finally(() => (this.snackbarSync = true));
-      this.messageSync =
-        "Thêm mới thành công rơ moóc: " + this.trailerLocal.licensePlate;
-      this.trailersSync.unshift(this.trailerLocal);
-      this.totalItemsSync += 1;
-      this.snackbarSync = true;
+      createContainerSemiTrailer(this.trailerLocal)
+        .then(res => {
+          const response: IContainerSemiTrailer = res.data;
+          this.messageSync =
+            "Thêm mới thành công Rơ moóc: " + response.licensePlate;
+          this.trailersSync.unshift(response);
+          this.totalItemsSync += 1;
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(() => (this.snackbarSync = true));
     }
   }
   updateTrailer() {
     if (this.trailerLocal.id) {
-      // updateTrailer(this.trailerLocal)
-      //   .then(res => {
-      //     console.log(res.data);
-      //     const response: IContainerSemiTrailer = res.data;
-      //     this.messageSync = "Cập nhập thành công vai trò: " + response.name;
-      //     const index = this.trailersSync.findIndex(x => x.id == response.id);
-      //     this.trailersSync.splice(index, 1, response);
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //     this.messageSync = "Đã có lỗi xảy ra";
-      //   })
-      //   .finally(() => (this.snackbarSync = true));
-      this.messageSync =
-        "Cập nhập thành công rơ moóc: " + this.trailerLocal.licensePlate;
-      const index = this.trailersSync.findIndex(
-        x => x.id == this.trailerLocal.id
-      );
-      this.trailersSync.splice(index, 1, this.trailerLocal);
-      this.snackbarSync = true;
+      updateContainerSemiTrailer(this.trailerLocal)
+        .then(res => {
+          console.log(res.data);
+          const response: IContainerSemiTrailer = res.data;
+          this.messageSync =
+            "Cập nhập thành công Rơ moóc: " + response.licensePlate;
+          const index = this.trailersSync.findIndex(x => x.id == response.id);
+          this.trailersSync.splice(index, 1, response);
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(() => (this.snackbarSync = true));
     }
   }
 }

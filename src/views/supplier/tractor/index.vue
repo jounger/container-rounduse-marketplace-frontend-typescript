@@ -67,7 +67,7 @@ import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 import DeleteTractor from "./components/DeleteTractor.vue";
 import CreateTractor from "./components/CreateTractor.vue";
-import { TractorData } from "./data";
+import { getContainerTractors } from "@/api/container-tractor";
 
 @Component({
   components: {
@@ -122,28 +122,22 @@ export default class Tractor extends Vue {
     this.dialogDel = true;
   }
 
-  created() {
-    this.tractors = TractorData;
-    this.options.totalItems = this.tractors.length;
-    this.loading = false;
+  @Watch("options", { deep: true })
+  onOptionsChange(val: object, oldVal: object) {
+    if (val !== oldVal) {
+      getContainerTractors({
+        page: this.options.page - 1,
+        limit: this.options.itemsPerPage
+      })
+        .then(res => {
+          const response: PaginationResponse<IContainerTractor> = res.data;
+          this.tractors = response.data;
+          this.options.totalItems = response.totalElements;
+        })
+        .catch(err => console.log(err))
+        .finally(() => (this.loading = false));
+    }
   }
-
-  // @Watch("options", { deep: true })
-  // onOptionsChange(val: object, oldVal: object) {
-  //   if (val !== oldVal) {
-  //     getTractors({
-  //       page: this.options.page - 1,
-  //       limit: this.options.itemsPerPage
-  //     })
-  //       .then(res => {
-  //         const response: PaginationResponse<IContainerTractor> = res.data;
-  //         this.tractors = response.data;
-  //         this.options.totalItems = response.totalElements;
-  //       })
-  //       .catch(err => console.log(err))
-  //       .finally(() => (this.loading = false));
-  //   }
-  // }
 }
 </script>
 <style type="text/css">

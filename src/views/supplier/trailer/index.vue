@@ -70,7 +70,7 @@ import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 import DeleteTrailer from "./components/DeleteTrailer.vue";
 import CreateTrailer from "./components/CreateTrailer.vue";
-import { TrailerData } from "./data";
+import { getContainerSemiTrailers } from "@/api/container-semi-trailer";
 
 @Component({
   components: {
@@ -126,28 +126,22 @@ export default class Trailer extends Vue {
     this.dialogDel = true;
   }
 
-  created() {
-    this.trailers = TrailerData;
-    this.options.totalItems = this.trailers.length;
-    this.loading = false;
+  @Watch("options", { deep: true })
+  onOptionsChange(val: object, oldVal: object) {
+    if (val !== oldVal) {
+      getContainerSemiTrailers({
+        page: this.options.page - 1,
+        limit: this.options.itemsPerPage
+      })
+        .then(res => {
+          const response: PaginationResponse<IContainerSemiTrailer> = res.data;
+          this.trailers = response.data;
+          this.options.totalItems = response.totalElements;
+        })
+        .catch(err => console.log(err))
+        .finally(() => (this.loading = false));
+    }
   }
-
-  // @Watch("options", { deep: true })
-  // onOptionsChange(val: object, oldVal: object) {
-  //   if (val !== oldVal) {
-  //     getTrailers({
-  //       page: this.options.page - 1,
-  //       limit: this.options.itemsPerPage
-  //     })
-  //       .then(res => {
-  //         const response: PaginationResponse<IContainerSemiTrailer> = res.data;
-  //         this.trailers = response.data;
-  //         this.options.totalItems = response.totalElements;
-  //       })
-  //       .catch(err => console.log(err))
-  //       .finally(() => (this.loading = false));
-  //   }
-  // }
 }
 </script>
 <style type="text/css">

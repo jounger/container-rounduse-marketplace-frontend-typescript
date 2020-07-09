@@ -85,6 +85,7 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContract } from "@/entity/contract";
 import FormValidate from "@/mixin/form-validate";
+import { createContract, editContract } from "@/api/contract";
 
 @Component({
   mixins: [FormValidate]
@@ -116,47 +117,35 @@ export default class CreateContract extends Vue {
   }
   createContract() {
     if (this.contractLocal) {
-      // createContract(this.contractLocal)
-      //   .then(res => {
-      //     const response: IContract = res.data;
-      //     this.messageSync = "Thêm mới thành công vai trò: " + response.name;
-      //     this.contractsSync.unshift(response);
-      //     this.totalItemsSync += 1;
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //     this.messageSync = "Đã có lỗi xảy ra";
-      //   })
-      //   .finally(() => (this.snackbarSync = true));
-      this.messageSync =
-        "Thêm mới thành công hợp đồng: " + this.contractLocal.id;
-      this.contractsSync.unshift(this.contractLocal);
-      this.totalItemsSync += 1;
-      this.messageSync = "Đã có lỗi xảy ra";
+      createContract(this.contractLocal)
+        .then(res => {
+          const response: IContract = res.data;
+          this.messageSync = "Thêm mới thành công Hợp đồng: " + response.id;
+          this.contractsSync.unshift(response);
+          this.totalItemsSync += 1;
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(() => (this.snackbarSync = true));
     }
   }
   updateContract() {
     if (this.contractLocal.id) {
-      // updateContract(this.contractLocal)
-      //   .then(res => {
-      //     console.log(res.data);
-      //     const response: IContract = res.data;
-      //     this.messageSync = "Cập nhập thành công vai trò: " + response.name;
-      //     const index = this.contractsSync.findIndex(x => x.id == response.id);
-      //     this.contractsSync.splice(index, 1, response);
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //     this.messageSync = "Đã có lỗi xảy ra";
-      //   })
-      //   .finally(() => (this.snackbarSync = true));
-      this.messageSync =
-        "Cập nhập thành công hợp đồng: " + this.contractLocal.id;
-      const index = this.contractsSync.findIndex(
-        x => x.id == this.contractLocal.id
-      );
-      this.contractsSync.splice(index, 1, this.contractLocal);
-      this.messageSync = "Đã có lỗi xảy ra";
+      editContract(this.contractLocal.id, this.contractLocal)
+        .then(res => {
+          console.log(res.data);
+          const response: IContract = res.data;
+          this.messageSync = "Cập nhập thành công Hợp đồng: " + response.id;
+          const index = this.contractsSync.findIndex(x => x.id == response.id);
+          this.contractsSync.splice(index, 1, response);
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(() => (this.snackbarSync = true));
     }
   }
 }

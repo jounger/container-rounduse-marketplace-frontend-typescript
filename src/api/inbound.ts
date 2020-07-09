@@ -19,8 +19,8 @@ export function getInbound(id: number) {
   });
 }
 
-export function getInboundsByForwarder(id: number, paging: PaginationRequest) {
-  return Vue.axios.get(`/inbound/forwarder/${id}`, {
+export function getInboundsByForwarder(paging: PaginationRequest) {
+  return Vue.axios.get("/inbound/forwarder", {
     params: paging,
     headers: config
   });
@@ -32,7 +32,10 @@ export function getInboundsByOutbound(id: number, paging: PaginationRequest) {
   });
 }
 
-export function getInboundsByOutboundAndForwarder(id: number, paging: PaginationRequest) {
+export function getInboundsByOutboundAndForwarder(
+  id: number,
+  paging: PaginationRequest
+) {
   return Vue.axios.get(`/inbound/outbound-match/${id}`, {
     params: paging,
     headers: config

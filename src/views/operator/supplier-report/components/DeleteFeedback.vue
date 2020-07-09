@@ -66,7 +66,7 @@ export default class DeleteFeedback extends Vue {
       //   })
       //   .catch(err => {
       //     console.log(err);
-      //     this.messageSync = "Error happend";
+      //     this.messageSync = "Đã có lỗi xảy ra";
       //   })
       //   .finally(
       //     () => ((this.snackbarSync = true), (this.dialogDelSync = false))

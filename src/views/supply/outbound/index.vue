@@ -200,7 +200,7 @@ export default class Outbound extends Vue {
   @Watch("options", { deep: true })
   onOptionsChange(val: object, oldVal: object) {
     if (val !== oldVal) {
-      getOutboundByMerchant(this.$auth.user().id, {
+      getOutboundByMerchant({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })

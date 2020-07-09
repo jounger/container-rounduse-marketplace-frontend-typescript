@@ -45,6 +45,7 @@
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContainerTractor } from "@/entity/container-tractor";
+import { removeContainerTractor } from "@/api/container-tractor";
 
 @Component
 export default class DeleteTractor extends Vue {
@@ -59,29 +60,24 @@ export default class DeleteTractor extends Vue {
 
   removeTractor() {
     if (this.tractor.id) {
-      // removeTractor(this.tractor.id)
-      //   .then(res => {
-      //     console.log(res.data);
-      //     this.messageSync = "Xóa thành công vai trò: " + this.tractor.name;
-      //     const index = this.tractorsSync.findIndex(
-      //       x => x.id === this.tractor.id
-      //     );
-      //     this.tractorsSync.splice(index, 1);
-      //     this.totalItemsSync -= 1;
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //     this.messageSync = "Error happend";
-      //   })
-      //   .finally(
-      //     () => ((this.snackbarSync = true), (this.dialogDelSync = false))
-      //   );
-      this.messageSync = "Xóa thành công đầu kéo: " + this.tractor.licensePlate;
-      const index = this.tractorsSync.findIndex(x => x.id === this.tractor.id);
-      this.tractorsSync.splice(index, 1);
-      this.totalItemsSync -= 1;
-      this.snackbarSync = true;
-      this.dialogDelSync = false;
+      removeContainerTractor(this.tractor.id)
+        .then(res => {
+          console.log(res.data);
+          this.messageSync =
+            "Xóa thành công Đầu kéo: " + this.tractor.licensePlate;
+          const index = this.tractorsSync.findIndex(
+            x => x.id === this.tractor.id
+          );
+          this.tractorsSync.splice(index, 1);
+          this.totalItemsSync -= 1;
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(
+          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
+        );
     }
   }
 }

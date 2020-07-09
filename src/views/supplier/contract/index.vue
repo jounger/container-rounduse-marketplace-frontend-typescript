@@ -65,6 +65,7 @@ import DeleteContract from "./components/DeleteContract.vue";
 import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 import { ContractData } from "./data";
+import { searchContracts, getContractsByUser } from "@/api/contract";
 
 @Component({
   components: {
@@ -128,29 +129,24 @@ export default class Contract extends Vue {
     this.contract = item;
     this.dialogDel = true;
   }
-  created() {
-    this.contracts = ContractData;
-    this.options.totalItems = this.contracts.length;
-    this.loading = false;
-  }
 
-  // @Watch("options", { deep: true })
-  // onOptionsChange(val: object, oldVal: object) {
-  //   if (val !== oldVal) {
-  //     getContracts({
-  //       page: this.options.page - 1,
-  //       limit: this.options.itemsPerPage
-  //     })
-  //       .then(res => {
-  //         const response: PaginationResponse<IContract> = res.data;
-  //         console.log("watch", response);
-  //         this.contracts = response.data;
-  //         this.options.totalItems = response.totalElements;
-  //       })
-  //       .catch(err => console.log(err))
-  //       .finally(() => (this.loading = false));
-  //   }
-  // }
+  @Watch("options", { deep: true })
+  onOptionsChange(val: object, oldVal: object) {
+    if (val !== oldVal) {
+      getContractsByUser({
+        page: this.options.page - 1,
+        limit: this.options.itemsPerPage
+      })
+        .then(res => {
+          const response: PaginationResponse<IContract> = res.data;
+          console.log("watch", response);
+          this.contracts = response.data;
+          this.options.totalItems = response.totalElements;
+        })
+        .catch(err => console.log(err))
+        .finally(() => (this.loading = false));
+    }
+  }
 }
 </script>
 <style type="text/css">

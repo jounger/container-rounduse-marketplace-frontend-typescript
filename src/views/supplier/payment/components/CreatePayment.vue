@@ -158,6 +158,7 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPayment } from "@/entity/payment";
 import FormValidate from "@/mixin/form-validate";
+import { createPayment, editPayment } from "@/api/payment";
 
 @Component({
   mixins: [FormValidate]
@@ -194,45 +195,35 @@ export default class CreatePayment extends Vue {
   }
   createPayment() {
     if (this.paymentLocal) {
-      // createPayment(this.paymentLocal)
-      //   .then(res => {
-      //     const response: IPayment = res.data;
-      //     this.messageSync = "Thêm mới thành công vai trò: " + response.name;
-      //     this.paymentsSync.unshift(response);
-      //     this.totalItemsSync += 1;
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //     this.messageSync = "Đã có lỗi xảy ra";
-      //   })
-      //   .finally(() => (this.snackbarSync = true));
-      this.messageSync = "Thêm mới thành công hóa đơn: " + this.paymentLocal.id;
-      this.paymentsSync.unshift(this.paymentLocal);
-      this.totalItemsSync += 1;
-      this.messageSync = "Đã có lỗi xảy ra";
+      createPayment(this.paymentLocal)
+        .then(res => {
+          const response: IPayment = res.data;
+          this.messageSync = "Thêm mới thành công Hóa đơn: " + response.id;
+          this.paymentsSync.unshift(response);
+          this.totalItemsSync += 1;
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(() => (this.snackbarSync = true));
     }
   }
   updatePayment() {
     if (this.paymentLocal.id) {
-      // updatePayment(this.paymentLocal)
-      //   .then(res => {
-      //     console.log(res.data);
-      //     const response: IPayment = res.data;
-      //     this.messageSync = "Cập nhập thành công vai trò: " + response.name;
-      //     const index = this.paymentsSync.findIndex(x => x.id == response.id);
-      //     this.paymentsSync.splice(index, 1, response);
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //     this.messageSync = "Đã có lỗi xảy ra";
-      //   })
-      //   .finally(() => (this.snackbarSync = true));
-      this.messageSync = "Cập nhập thành công hóa đơn: " + this.paymentLocal.id;
-      const index = this.paymentsSync.findIndex(
-        x => x.id == this.paymentLocal.id
-      );
-      this.paymentsSync.splice(index, 1, this.paymentLocal);
-      this.messageSync = "Đã có lỗi xảy ra";
+      editPayment(this.paymentLocal.id, this.paymentLocal)
+        .then(res => {
+          console.log(res.data);
+          const response: IPayment = res.data;
+          this.messageSync = "Cập nhập thành công Hóa đơn: " + response.id;
+          const index = this.paymentsSync.findIndex(x => x.id == response.id);
+          this.paymentsSync.splice(index, 1, response);
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(() => (this.snackbarSync = true));
     }
   }
 }

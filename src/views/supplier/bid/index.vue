@@ -10,6 +10,7 @@
         :dialogAdd.sync="dialogAdd"
         :message.sync="message"
         :snackbar.sync="snackbar"
+        :totalItems.sync="options.totalItems"
       />
       <UpdateBid
         v-if="dialogEdit"

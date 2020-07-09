@@ -43,6 +43,7 @@
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContract } from "@/entity/contract";
+import { removeContract } from "@/api/contract";
 
 @Component
 export default class DeleteContract extends Vue {
@@ -55,31 +56,23 @@ export default class DeleteContract extends Vue {
 
   removeContract() {
     if (this.contract.id) {
-      // removeContract(this.contract.id)
-      //   .then(res => {
-      //     console.log(res.data);
-      //     this.messageSync = "Xóa thành công vai trò: " + this.contract.name;
-      //     const index = this.contractsSync.findIndex(
-      //       x => x.id === this.contract.id
-      //     );
-      //     this.contractsSync.splice(index, 1);
-      //     this.totalItemsSync -= 1;
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //     this.messageSync = "Error happend";
-      //   })
-      //   .finally(
-      //     () => ((this.snackbarSync = true), (this.dialogDelSync = false))
-      //   );
-      this.messageSync = "Xóa thành công hợp đồng: " + this.contract.id;
-      const index = this.contractsSync.findIndex(
-        x => x.id === this.contract.id
-      );
-      this.contractsSync.splice(index, 1);
-      this.totalItemsSync -= 1;
-      this.snackbarSync = true;
-      this.dialogDelSync = false;
+      removeContract(this.contract.id)
+        .then(res => {
+          console.log(res.data);
+          this.messageSync = "Xóa thành công Hợp đồng: " + this.contract.id;
+          const index = this.contractsSync.findIndex(
+            x => x.id === this.contract.id
+          );
+          this.contractsSync.splice(index, 1);
+          this.totalItemsSync -= 1;
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(
+          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
+        );
     }
   }
 }

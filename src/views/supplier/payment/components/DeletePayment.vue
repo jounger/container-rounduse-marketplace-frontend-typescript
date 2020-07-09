@@ -43,6 +43,7 @@
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPayment } from "@/entity/payment";
+import { removePayment } from '@/api/payment';
 
 @Component
 export default class DeletePayment extends Vue {
@@ -55,29 +56,23 @@ export default class DeletePayment extends Vue {
 
   removePayment() {
     if (this.payment.id) {
-      // removePayment(this.payment.id)
-      //   .then(res => {
-      //     console.log(res.data);
-      //     this.messageSync = "Xóa thành công vai trò: " + this.payment.name;
-      //     const index = this.paymentsSync.findIndex(
-      //       x => x.id === this.payment.id
-      //     );
-      //     this.paymentsSync.splice(index, 1);
-      //     this.totalItemsSync -= 1;
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //     this.messageSync = "Error happend";
-      //   })
-      //   .finally(
-      //     () => ((this.snackbarSync = true), (this.dialogDelSync = false))
-      //   );
-      this.messageSync = "Xóa thành công hóa đơn: " + this.payment.id;
-      const index = this.paymentsSync.findIndex(x => x.id === this.payment.id);
-      this.paymentsSync.splice(index, 1);
-      this.totalItemsSync -= 1;
-      this.snackbarSync = true;
-      this.dialogDelSync = false;
+      removePayment(this.payment.id)
+        .then(res => {
+          console.log(res.data);
+          this.messageSync = "Xóa thành công Hóa đơn: " + this.payment.id;
+          const index = this.paymentsSync.findIndex(
+            x => x.id === this.payment.id
+          );
+          this.paymentsSync.splice(index, 1);
+          this.totalItemsSync -= 1;
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(
+          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
+        );
     }
   }
 }

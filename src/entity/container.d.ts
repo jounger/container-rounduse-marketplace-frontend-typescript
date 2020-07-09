@@ -3,8 +3,8 @@ import { IContainerTractor } from './container-tractor';
 export interface IContainer {
   id?: number;
   containerNumber: string;
-  trailer: IContainerSemiTrailer;
-  tractor: IContainerTractor;
+  trailer: IContainerSemiTrailer| string;
+  tractor: IContainerTractor | string;
   driver: string; // driver username
   status: string;
 }

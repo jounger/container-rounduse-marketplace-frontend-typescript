@@ -45,6 +45,7 @@
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContainerSemiTrailer } from "@/entity/container-semi-trailer";
+import { removeContainerSemiTrailer } from "@/api/container-semi-trailer";
 
 @Component
 export default class DeleteTrailer extends Vue {
@@ -59,29 +60,24 @@ export default class DeleteTrailer extends Vue {
 
   removeTrailer() {
     if (this.trailer.id) {
-      // removeTrailer(this.trailer.id)
-      //   .then(res => {
-      //     console.log(res.data);
-      //     this.messageSync = "Xóa thành công vai trò: " + this.trailer.name;
-      //     const index = this.trailersSync.findIndex(
-      //       x => x.id === this.trailer.id
-      //     );
-      //     this.trailersSync.splice(index, 1);
-      //     this.totalItemsSync -= 1;
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //     this.messageSync = "Error happend";
-      //   })
-      //   .finally(
-      //     () => ((this.snackbarSync = true), (this.dialogDelSync = false))
-      //   );
-      this.messageSync = "Xóa thành công rơ moóc: " + this.trailer.licensePlate;
-      const index = this.trailersSync.findIndex(x => x.id === this.trailer.id);
-      this.trailersSync.splice(index, 1);
-      this.totalItemsSync -= 1;
-      this.snackbarSync = true;
-      this.dialogDelSync = false;
+      removeContainerSemiTrailer(this.trailer.id)
+        .then(res => {
+          console.log(res.data);
+          this.messageSync =
+            "Xóa thành công Rơ moóc: " + this.trailer.licensePlate;
+          const index = this.trailersSync.findIndex(
+            x => x.id === this.trailer.id
+          );
+          this.trailersSync.splice(index, 1);
+          this.totalItemsSync -= 1;
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(
+          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
+        );
     }
   }
 }

@@ -5,6 +5,28 @@
     hide-overlay
     transition="dialog-bottom-transition"
   >
+    <v-row justify="center">
+      <DeleteContainer
+        v-if="dialogDelCont"
+        :message.sync="messageSync"
+        :snackbar.sync="snackbarSync"
+        :container="container"
+        :containers.sync="containers"
+        :dialogDelCont.sync="dialogDelCont"
+      />
+    </v-row>
+    <v-row justify="center">
+      <CreateContainer
+        v-if="dialogAddCont"
+        :message.sync="messageSync"
+        :snackbar.sync="snackbarSync"
+        :container="container"
+        :containers.sync="containers"
+        :dialogAddCont.sync="dialogAddCont"
+        :billOfLading="inboundLocal.billOfLading"
+        :update="update"
+      />
+    </v-row>
     <v-card tile>
       <!-- TITLE -->
       <v-toolbar dark color="primary">
@@ -219,167 +241,13 @@
                   <v-toolbar-title>Danh sách Container</v-toolbar-title>
                   <v-divider class="mx-4" inset vertical></v-divider>
                   <v-spacer></v-spacer>
-                  <v-row justify="center">
-                    <v-dialog
-                      v-model="dialogDelCont"
-                      persistent
-                      max-width="600px"
-                    >
-                      <v-card>
-                        <v-toolbar color="primary" light flat>
-                          <v-toolbar-title
-                            ><span class="headline" style="color:white;"
-                              >Xóa Container</span
-                            >
-                            <v-btn
-                              icon
-                              dark
-                              @click="dialogDelCont = false"
-                              style="margin-left:369px;"
-                            >
-                              <v-icon>mdi-close</v-icon>
-                            </v-btn></v-toolbar-title
-                          >
-                        </v-toolbar>
-
-                        <v-card-text>
-                          <v-form>
-                            <v-container>
-                              <span style="color: black; font-size:22px;"
-                                >Bạn có chắc chắn muốn xóa Container này?</span
-                              >
-                              <div class="line"></div>
-                              <v-list>
-                                <v-list-item>
-                                  <v-list-item-content>
-                                    <v-list-item-title>{{
-                                      container.containerNumber
-                                    }}</v-list-item-title>
-                                  </v-list-item-content>
-                                </v-list-item>
-                              </v-list>
-                            </v-container>
-                            <v-btn
-                              type="submit"
-                              class="d-none"
-                              id="submitForm"
-                            ></v-btn>
-                          </v-form>
-                        </v-card-text>
-                        <v-card-actions style="margin-left: 205px;">
-                          <v-btn @click="dialogDelCont = false">Hủy</v-btn>
-                          <v-btn @click="removeContainer()" color="red"
-                            >Xóa</v-btn
-                          >
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
-                  </v-row>
-                  <v-dialog v-model="dialogAddCont" max-width="500px">
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-btn
-                        color="primary"
-                        dark
-                        class="mb-2"
-                        @click="openCreateContainer()"
-                        v-bind="attrs"
-                        v-on="on"
-                        >Thêm mới</v-btn
-                      >
-                    </template>
-                    <v-card>
-                      <v-toolbar color="primary" light flat>
-                        <v-toolbar-title
-                          ><span class="headline" style="color:white;">{{
-                            title
-                          }}</span>
-                          <v-btn
-                            icon
-                            dark
-                            @click="dialogAddCont = false"
-                            style="margin-left:205px;"
-                          >
-                            <v-icon>mdi-close</v-icon>
-                          </v-btn></v-toolbar-title
-                        >
-                      </v-toolbar>
-
-                      <v-card-text>
-                        <v-form v-model="valid3" validation>
-                          <v-container>
-                            <small>*Dấu sao là trường bắt buộc</small>
-                            <v-layout col>
-                              <v-layout row>
-                                <v-flex xs10>
-                                  <v-text-field
-                                    v-model="containerLocal.containerNumber"
-                                    prepend-icon="directions_bus"
-                                    :rules="[required('container number')]"
-                                    label="Container No.*"
-                                    :readonly="!checkAdd"
-                                  ></v-text-field>
-                                </v-flex>
-                              </v-layout>
-                              <v-layout row>
-                                <v-flex xs10>
-                                  <v-select
-                                    v-model="containerLocal.driver"
-                                    prepend-icon="airline_seat_recline_normal"
-                                    :items="driversToString"
-                                    :rules="[required('driver')]"
-                                    label="Tài xế*"
-                                  ></v-select>
-                                </v-flex>
-                              </v-layout>
-                            </v-layout>
-                            <v-layout col>
-                              <v-layout row>
-                                <v-flex xs10>
-                                  <v-select
-                                    v-model="containerLocal.tractor"
-                                    prepend-icon="tram"
-                                    :items="tractorsToString"
-                                    :rules="[required('tractor')]"
-                                    label="Chọn đầu kéo*"
-                                  ></v-select>
-                                </v-flex>
-                              </v-layout>
-                              <v-layout row>
-                                <v-flex xs10>
-                                  <v-select
-                                    v-model="containerLocal.trailer"
-                                    prepend-icon="format_strikethrough"
-                                    :items="trailersToString"
-                                    :rules="[required('trailer')]"
-                                    label="Chọn rơ moóc*"
-                                  ></v-select>
-                                </v-flex>
-                              </v-layout>
-                            </v-layout>
-                          </v-container>
-                        </v-form>
-                      </v-card-text>
-
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn @click="dialogAddCont = false">Trở về</v-btn>
-                        <v-btn
-                          color="primary"
-                          v-if="checkAdd"
-                          :disabled="!valid3"
-                          @click="createContainer()"
-                          >Thêm mới</v-btn
-                        >
-                        <v-btn
-                          color="primary"
-                          v-if="!checkAdd"
-                          :disabled="!valid3"
-                          @click="updateContainer()"
-                          >Cập nhập</v-btn
-                        >
-                      </v-card-actions>
-                    </v-card>
-                  </v-dialog>
+                  <v-btn
+                    color="primary"
+                    dark
+                    class="mb-2"
+                    @click="openCreateContainer()"
+                    >Thêm mới</v-btn
+                  >
                 </v-toolbar>
               </template>
               <template v-slot:item.actions="{ item }">
@@ -390,12 +258,18 @@
                   mdi-delete
                 </v-icon>
               </template>
+              <template v-slot:item.trailer="{ item }">
+                {{ item.trailer.licensePlate }}
+              </template>
+              <template v-slot:item.tractor="{ item }">
+                {{ item.tractor.licensePlate }}
+              </template>
             </v-data-table>
             <v-btn
               color="primary"
-              @click="stepper = 4"
+              @click="dialogAddSync = false"
               :disabled="containers.length == 0"
-              >Tiếp tục</v-btn
+              >Hoàn tất</v-btn
             >
             <v-btn text @click="stepper = 3">Quay lại</v-btn>
           </v-stepper-content>
@@ -413,24 +287,21 @@ import FormValidate from "@/mixin/form-validate";
 import { IPort } from "@/entity/port";
 import { IShippingLine } from "@/entity/shipping-line";
 import { IContainerType } from "@/entity/container-type";
-import { IDriver } from "@/entity/driver";
 import { getPorts } from "@/api/port";
 import { getShippingLines } from "@/api/shipping-line";
-import { getDriversByForwarder } from "@/api/driver";
 import { getContainerTypes } from "@/api/container-type";
 import { PaginationResponse } from "@/api/payload";
 import { addTimeToDate, addHoursToDate } from "@/utils/tool";
 import { createInbound } from "@/api/inbound";
-import { IContainerSemiTrailer } from "@/entity/container-semi-trailer";
-import { IContainerTractor } from "@/entity/container-tractor";
-import {
-  createContainer,
-  updateContainer,
-  removeContainer
-} from "@/api/container";
+import DeleteContainer from "./DeleteContainer.vue";
+import CreateContainer from "./CreateContainer.vue";
 
 @Component({
-  mixins: [FormValidate]
+  mixins: [FormValidate],
+  components: {
+    DeleteContainer,
+    CreateContainer
+  }
 })
 export default class CreateInbound extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
@@ -461,15 +332,11 @@ export default class CreateInbound extends Vue {
   stepper = 1;
   valid = true;
   valid2 = true;
-  valid3 = true;
-  title = "Thêm mới Container";
-  checkAdd = true;
+  update = true;
   // API list
   ports: Array<IPort> = [];
   shippingLines: Array<IShippingLine> = [];
   containerTypes: Array<IContainerType> = [];
-  trailers: Array<IContainerSemiTrailer> = [];
-  tractors: Array<IContainerTractor> = [];
   pickupTime = this.dateInit;
   freeTime = this.dateInit;
   // inboundLocal form
@@ -486,7 +353,6 @@ export default class CreateInbound extends Vue {
       sortable: false,
       value: "containerNumber"
     },
-    { text: "Biển kiểm sát", value: "licensePlate" },
     { text: "Tài xế", value: "driver" },
     { text: "Rơ mọt", value: "trailer" },
     { text: "Đầu kéo", value: "tractor" },
@@ -497,81 +363,22 @@ export default class CreateInbound extends Vue {
   ];
   containers = [] as Array<IContainer>;
   container = {} as IContainer;
-  containerLocal = {} as IContainer;
-  drivers: Array<IDriver> = [];
   dialogAddCont = false;
   dialogDelCont = false;
-  createContainer() {
-    // TODO: API create Container
-    if (this.inboundLocal.billOfLading.id) {
-      createContainer(this.inboundLocal.billOfLading.id, this.containerLocal)
-        .then(res => {
-          console.log(res.data);
-          const response: IContainer = res.data;
-          this.messageSync =
-            "Thêm mới thành công Container: " + response.containerNumber;
-          this.containers.unshift(response);
-        })
-        .catch(err => {
-          console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
-        })
-        .finally(() => (this.snackbarSync = true));
-    }
-  }
   openCreateContainer() {
-    this.title = "Thêm mới container";
-    this.checkAdd = true;
-    this.containerLocal = {} as IContainer;
+    this.update = false;
+    this.container = {} as IContainer;
+    this.dialogAddCont = true;
   }
   openUpdateContainer(item: IContainer) {
     // TODO
-    this.title = "Cập nhập Container";
-    this.checkAdd = false;
-    this.containerLocal = Object.assign({}, item);
-    this.container = Object.assign({}, this.containerLocal);
+    this.update = true;
+    this.container = item;
     this.dialogAddCont = true;
   }
   openRemoveContainer(item: IContainer) {
     this.container = item;
     this.dialogDelCont = true;
-  }
-  updateContainer() {
-    updateContainer(this.containerLocal)
-      .then(res => {
-        const response: IContainer = res.data;
-        this.messageSync =
-          "Cập nhập thành công Container: " + response.containerNumber;
-        const index = this.containers.findIndex(x => x.id === response.id);
-        this.containers.splice(index, 1, response);
-      })
-      .catch(err => {
-        console.log(err);
-        this.messageSync = "Đã có lỗi xảy ra";
-      })
-      .finally(() => (this.snackbarSync = true));
-  }
-  removeContainer() {
-    // TODO
-    if (this.container.id) {
-      removeContainer(this.container.id)
-        .then(res => {
-          console.log(res.data);
-          this.messageSync =
-            "Xóa thành công Container: " + this.container.containerNumber;
-          const index = this.containers.findIndex(
-            x => x.id === this.container.id
-          );
-          this.containers.splice(index, 1);
-        })
-        .catch(err => {
-          console.log(err);
-          this.messageSync = "Error happend";
-        })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogDelCont = false))
-        );
-    }
   }
 
   // Inbound
@@ -592,6 +399,7 @@ export default class CreateInbound extends Vue {
       .then(res => {
         console.log(res.data);
         const response: IInbound = res.data;
+        this.inboundLocal = response;
         this.messageSync =
           "Thêm mới thành công hàng nhập: " +
           this.inboundLocal.billOfLading.billOfLadingNumber;
@@ -638,20 +446,6 @@ export default class CreateInbound extends Vue {
       })
       .catch(err => console.log(err))
       .finally();
-    getDriversByForwarder(this.$auth.user().id, {
-      page: 0,
-      limit: 100
-    })
-      .then(res => {
-        const response: PaginationResponse<IDriver> = res.data;
-        console.log("watch", response);
-        this.drivers = response.data;
-      })
-      .catch(err => console.log(err))
-      .finally();
-  }
-  get driversToString() {
-    return this.drivers.map(x => x.username);
   }
   get portsToString() {
     return this.ports.map(x => x.nameCode);
@@ -661,44 +455,6 @@ export default class CreateInbound extends Vue {
   }
   get containerTypesToString() {
     return this.containerTypes.map(x => x.name);
-  }
-  get trailersToString() {
-    return this.trailers.map(x => x.licensePlate);
-  }
-  get tractorsToString() {
-    return this.tractors.map(x => x.licensePlate);
-  }
-
-  mounted() {
-    // trailers & tractors
-    this.trailers = [
-      {
-        id: 0,
-        type: "T28",
-        unitOfMeasurement: "ft",
-        licensePlate: "51234",
-        numberOfAxles: 2
-      },
-      {
-        id: 1,
-        type: "T32",
-        unitOfMeasurement: "ft",
-        licensePlate: "51242",
-        numberOfAxles: 3
-      }
-    ];
-    this.tractors = [
-      {
-        id: 0,
-        licensePlate: "12345",
-        numberOfAxles: 2
-      },
-      {
-        id: 1,
-        licensePlate: "12432",
-        numberOfAxles: 3
-      }
-    ];
   }
 }
 </script>

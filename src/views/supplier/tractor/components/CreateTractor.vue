@@ -76,6 +76,10 @@ import { Component, Vue, PropSync, Prop, Watch } from "vue-property-decorator";
 import { IContainerTractor } from "@/entity/container-tractor";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
+import {
+  createContainerTractor,
+  updateContainerTractor
+} from "@/api/container-tractor";
 
 @Component({
   mixins: [FormValidate, Utils]
@@ -103,47 +107,37 @@ export default class CreateTractor extends Vue {
   }
   createTractor() {
     if (this.tractorLocal) {
-      // createTractor(this.tractorLocal)
-      //   .then(res => {
-      //     const response: IContainerTractor = res.data;
-      //     this.messageSync = "Thêm mới thành công vai trò: " + response.name;
-      //     this.tractorsSync.unshift(response);
-      //     this.totalItemsSync += 1;
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //     this.messageSync = "Đã có lỗi xảy ra";
-      //   })
-      //   .finally(() => (this.snackbarSync = true));
-      this.messageSync =
-        "Thêm mới thành công Đầu kéo: " + this.tractorLocal.licensePlate;
-      this.tractorsSync.unshift(this.tractorLocal);
-      this.totalItemsSync += 1;
-      this.snackbarSync = true;
+      createContainerTractor(this.tractorLocal)
+        .then(res => {
+          const response: IContainerTractor = res.data;
+          this.messageSync =
+            "Thêm mới thành công Đầu kéo: " + response.licensePlate;
+          this.tractorsSync.unshift(response);
+          this.totalItemsSync += 1;
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(() => (this.snackbarSync = true));
     }
   }
   updateTractor() {
     if (this.tractorLocal.id) {
-      // updateTractor(this.tractorLocal)
-      //   .then(res => {
-      //     console.log(res.data);
-      //     const response: IContainerTractor = res.data;
-      //     this.messageSync = "Cập nhập thành công vai trò: " + response.name;
-      //     const index = this.tractorsSync.findIndex(x => x.id == response.id);
-      //     this.tractorsSync.splice(index, 1, response);
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //     this.messageSync = "Đã có lỗi xảy ra";
-      //   })
-      //   .finally(() => (this.snackbarSync = true));
-      this.messageSync =
-        "Cập nhập thành công Đầu kéo: " + this.tractorLocal.licensePlate;
-      const index = this.tractorsSync.findIndex(
-        x => x.id == this.tractorLocal.id
-      );
-      this.tractorsSync.splice(index, 1, this.tractorLocal);
-      this.snackbarSync = true;
+      updateContainerTractor(this.tractorLocal)
+        .then(res => {
+          console.log(res.data);
+          const response: IContainerTractor = res.data;
+          this.messageSync =
+            "Cập nhập thành công Đầu kéo: " + response.licensePlate;
+          const index = this.tractorsSync.findIndex(x => x.id == response.id);
+          this.tractorsSync.splice(index, 1, response);
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(() => (this.snackbarSync = true));
     }
   }
 }
