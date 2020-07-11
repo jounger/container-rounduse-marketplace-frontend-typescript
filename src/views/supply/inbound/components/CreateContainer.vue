@@ -161,7 +161,7 @@ export default class CreateContainer extends Vue {
       })
       .catch(err => console.log(err))
       .finally();
-    getDriversByForwarder(this.$auth.user().id, {
+    getDriversByForwarder({
       page: 0,
       limit: 100
     })

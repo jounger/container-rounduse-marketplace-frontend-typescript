@@ -137,7 +137,7 @@ export default class Driver extends Vue {
   @Watch("options", { deep: true })
   onOptionsChange(val: object, oldVal: object) {
     if (val !== oldVal) {
-      getDriversByForwarder(this.$auth.user().id, {
+      getDriversByForwarder({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })

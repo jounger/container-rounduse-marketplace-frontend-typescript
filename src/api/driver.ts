@@ -13,8 +13,8 @@ export function getDrivers(paging: PaginationRequest) {
   });
 }
 
-export function getDriversByForwarder(id: number, paging: PaginationRequest) {
-  return Vue.axios.get(`/driver/forwarder/${id}`, {
+export function getDriversByForwarder(paging: PaginationRequest) {
+  return Vue.axios.get("/driver/forwarder", {
     params: paging,
     headers: config
   });
