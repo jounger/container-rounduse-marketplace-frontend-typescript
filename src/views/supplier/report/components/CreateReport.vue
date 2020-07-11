@@ -40,28 +40,23 @@
                   <v-divider class="mx-4" inset vertical></v-divider>
                 </v-toolbar>
               </template>
+              <template v-slot:item.bidOpening="{ item }">
+                {{ formatDatetime(item.bidOpening) }}
+              </template>
+              <template v-slot:item.bidClosing="{ item }">
+                {{ formatDatetime(item.bidClosing) }}
+              </template>
               <template v-slot:item.actions="{ item }">
-                <v-btn
-                  class="ma-2"
-                  tile
-                  outlined
-                  color="success"
-                  @click="selectBiddingDocument(item)"
-                >
-                  <v-icon left>mdi-pencil</v-icon>
-                  {{
-                    biddingDocumentSelected &&
-                    biddingDocumentSelected.id == item.id
-                      ? "Bỏ"
-                      : "Chọn"
-                  }}
-                </v-btn>
+                <v-switch
+                  v-model="biddingDocumentSelected"
+                  :value="item"
+                ></v-switch>
               </template>
             </v-data-table>
             <v-btn
               color="primary"
               @click="stepper = 2"
-              :disabled="isEmptyObject(biddingDocumentSelected)"
+              :disabled="!biddingDocumentSelected"
               >Tiếp tục</v-btn
             >
           </v-stepper-content>
@@ -130,25 +125,28 @@ import Utils from "@/mixin/utils";
 import { PaginationResponse } from "@/api/payload";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { isEmptyObject } from "@/utils/tool";
-import { BiddingDocumentData } from "../../bidding-document/data";
 import { IReport } from "@/entity/report";
+import { IBiddingNotification } from "@/entity/bidding-notification";
+import { getBiddingNotificationsByUser } from "@/api/notification";
+import { createReport } from "@/api/report";
 @Component({
   mixins: [FormValidate, Utils]
 })
 export default class CreateReport extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("biddingDocument", { type: Object })
-  biddingDocumentSync!: IBiddingDocument;
+  biddingDocumentSync?: IBiddingDocument;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @PropSync("reports", { type: Array }) reportsSync!: Array<IReport>;
+  @PropSync("reports", { type: Array }) reportsSync?: Array<IReport>;
+  @PropSync("totalItems", { type: Number }) totalItemsSync?: number;
 
   biddingDocuments: Array<IBiddingDocument> = [];
-  biddingDocumentSelected = {} as IBiddingDocument;
+  biddingDocumentSelected = null as IBiddingDocument | null;
   dateInit = new Date().toISOString().substr(0, 10);
   reportLocal = {
     sender: this.$auth.user().username,
-    report: {} as IBiddingDocument,
+    report: 0,
     title: "",
     detail: "",
     status: "PENDING"
@@ -185,37 +183,51 @@ export default class CreateReport extends Vue {
   ];
   createReport() {
     // TODO: API create bid
-    if (this.biddingDocumentSelected.id) {
-      this.reportLocal.report = this.biddingDocumentSelected;
+    if (this.biddingDocumentSelected && this.biddingDocumentSelected.id) {
+      this.reportLocal.report = this.biddingDocumentSelected.id as number;
     }
-    this.reportLocal.id = 2;
-    this.reportsSync.unshift(this.reportLocal);
-    this.messageSync = "Thêm mới thành công Report " + this.reportLocal.id;
-    this.snackbarSync = true;
+    createReport(this.reportLocal)
+      .then(res => {
+        const response: IReport = res.data;
+        this.messageSync = "Thêm mới thành công Report: " + response.id;
+        if (this.reportsSync && this.totalItemsSync) {
+          this.reportsSync.unshift(response);
+          this.totalItemsSync += 1;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        this.messageSync = "Đã có lỗi xảy ra";
+      })
+      .finally(() => (this.snackbarSync = true));
   }
   created() {
     if (this.biddingDocumentSync && !isEmptyObject(this.biddingDocumentSync)) {
       this.biddingDocuments.push(this.biddingDocumentSync);
-      this.selectBiddingDocument(this.biddingDocumentSync);
+      this.biddingDocumentSelected = this.biddingDocumentSync;
+      this.options.totalItems = 1;
+      this.loading = false;
     } else {
-      this.biddingDocuments = BiddingDocumentData;
-    }
-    this.options.totalItems = 10;
-    this.loading = false;
-  }
-  selectBiddingDocument(item: IBiddingDocument) {
-    if (
-      this.biddingDocumentSelected &&
-      this.biddingDocumentSelected.id === item.id
-    ) {
-      // unselected item
-      this.biddingDocumentSelected = {} as IBiddingDocument;
-    } else {
-      // select item
-      if (item.id) {
-        this.biddingDocumentSelected = item;
-        console.log(this.biddingDocumentSelected);
-      }
+      getBiddingNotificationsByUser({
+        page: 0,
+        limit: 100,
+        status: "ADDED"
+      })
+        .then(res => {
+          const response: PaginationResponse<IBiddingNotification> = res.data;
+          console.log("watch", response);
+          this.biddingDocuments = response.data.reduce(function(
+            pV: Array<IBiddingDocument>,
+            cV: IBiddingNotification
+          ) {
+            pV.push(cV.relatedResource);
+            return pV;
+          },
+          []);
+          this.options.totalItems = response.totalElements;
+        })
+        .catch(err => console.log(err))
+        .finally(() => (this.loading = false));
     }
   }
 }

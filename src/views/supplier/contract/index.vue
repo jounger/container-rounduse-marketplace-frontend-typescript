@@ -64,8 +64,7 @@ import DeleteContract from "./components/DeleteContract.vue";
 // import { getContracts } from "@/api/contract";
 import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
-import { ContractData } from "./data";
-import { searchContracts, getContractsByUser } from "@/api/contract";
+import { getContractsByUser } from "@/api/contract";
 
 @Component({
   components: {

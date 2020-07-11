@@ -55,6 +55,12 @@
             <v-icon left>mdi-pencil</v-icon> Từ chối
           </v-btn>
         </template>
+        <template v-slot:item.bidOpening="{ item }">
+          {{ formatDatetime(item.bidOpening) }}
+        </template>
+        <template v-slot:item.bidClosing="{ item }">
+          {{ formatDatetime(item.bidClosing) }}
+        </template>
       </v-data-table>
     </v-card>
   </v-content>
@@ -68,8 +74,10 @@ import { PaginationResponse } from "@/api/payload";
 import { IBiddingNotification } from "@/entity/bidding-notification";
 import { getBiddingNotificationsByUser } from "@/api/notification";
 import { IBid } from "@/entity/bid";
+import Utils from "@/mixin/utils";
 
 @Component({
+  mixins: [Utils],
   components: {
     CreateBid,
     Snackbar

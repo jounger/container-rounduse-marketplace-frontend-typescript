@@ -406,7 +406,7 @@ export default class DetailBiddingDocument extends Vue {
     totalItems: 10,
     itemsPerPageItems: [5, 10, 20, 50]
   };
-  bids = [] as Array<IBid>;
+  bids: Array<IBid> = [];
   bidHeaders = [
     {
       text: "Mã",
@@ -429,14 +429,17 @@ export default class DetailBiddingDocument extends Vue {
       value: "containerNumber",
       class: "elevation-1 primary"
     },
+    { text: "Tài xế", value: "driver", class: "elevation-1 primary" },
     {
-      text: "Biển kiểm sát",
-      value: "licensePlate",
+      text: "Rơ moóc",
+      value: "trailer.licensePlate",
       class: "elevation-1 primary"
     },
-    { text: "Tài xế", value: "driver", class: "elevation-1 primary" },
-    { text: "Rơ mọt", value: "trailer", class: "elevation-1 primary" },
-    { text: "Đầu kéo", value: "tractor", class: "elevation-1 primary" }
+    {
+      text: "Đầu kéo",
+      value: "tractor.licensePlate",
+      class: "elevation-1 primary"
+    }
   ];
 
   openConfirmBid(item: IBid, accept: boolean) {

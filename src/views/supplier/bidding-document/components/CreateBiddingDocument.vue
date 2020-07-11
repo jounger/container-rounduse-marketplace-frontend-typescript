@@ -59,20 +59,7 @@
                 {{ item.booking.unit + " x " + item.containerType }}
               </template>
               <template v-slot:item.actions="{ item }">
-                <v-btn
-                  class="ma-2"
-                  tile
-                  outlined
-                  color="success"
-                  @click="selectOutbound(item)"
-                >
-                  <v-icon left>mdi-pencil</v-icon>
-                  {{
-                    selectedOutbound && selectedOutbound.id === item.id
-                      ? "Bỏ"
-                      : "Chọn"
-                  }}
-                </v-btn>
+                <v-switch v-model="selectedOutbound" :value="item"></v-switch>
               </template>
             </v-data-table>
             <v-btn
@@ -81,7 +68,7 @@
                 stepper = 2;
                 valid = false;
               "
-              :disabled="isEmptyObject(selectedOutbound)"
+              :disabled="!selectedOutbound"
               >Tiếp tục</v-btn
             >
           </v-stepper-content>
@@ -285,7 +272,7 @@ export default class CreateBiddingDocument extends Vue {
 
   // Outbound form
   outbounds: Array<IOutbound> = [];
-  selectedOutbound = {} as IOutbound;
+  selectedOutbound = null as IOutbound | null;
   loading = false;
   outboundOptions = {
     descending: true,
@@ -312,29 +299,19 @@ export default class CreateBiddingDocument extends Vue {
     { text: "Số cont", value: "unit" },
     { text: "FCL", value: "fcl" },
     {
-      text: "Hành động",
+      text: "Chọn hàng xuất",
       value: "actions"
     }
   ];
-
-  selectOutbound(item: IOutbound) {
-    if (this.selectedOutbound && this.selectedOutbound.id === item.id) {
-      // unselected item
-      this.selectedOutbound = {} as IOutbound;
-    } else {
-      // select item
-      if (item.id) {
-        this.selectedOutbound = item;
-      }
-    }
-  }
 
   // BiddingDocument
   createBiddingDocument() {
     // TODO: API create biddingDocument
     this.biddingDocumentLocal.bidOpening = addTimeToDate(this.bidOpening);
     this.biddingDocumentLocal.bidClosing = addTimeToDate(this.bidClosing);
-    this.biddingDocumentLocal.outbound = this.selectedOutbound.id as number;
+    if (this.selectedOutbound && this.selectedOutbound.id) {
+      this.biddingDocumentLocal.outbound = this.selectedOutbound.id as number;
+    }
     console.log(this.biddingDocumentLocal);
     createBiddingDocument(this.biddingDocumentLocal)
       .then(res => {
@@ -353,11 +330,13 @@ export default class CreateBiddingDocument extends Vue {
       .finally(() => (this.snackbarSync = true));
   }
 
-  mounted() {
+  created() {
     // TODO: API get Outbound
     if (this.outboundSync && !isEmptyObject(this.outboundSync)) {
       this.outbounds.push(this.outboundSync);
-      this.selectOutbound(this.outboundSync);
+      this.selectedOutbound = this.outboundSync;
+      this.outboundOptions.totalItems = 1;
+      this.loading = false;
     } else {
       getOutboundByMerchant({
         page: this.outboundOptions.page - 1,
@@ -373,9 +352,6 @@ export default class CreateBiddingDocument extends Vue {
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
     }
-
-    this.outboundOptions.totalItems = 10;
-    this.loading = false;
     //
     this.currencyOfPayments = ["VND", "USD"];
     this.unitOfMeasurements = ["KG", "Ton"];

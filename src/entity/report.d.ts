@@ -2,7 +2,7 @@ import { IBiddingDocument } from './bidding-document';
 export interface IReport {
   id?: number;
   sender: string;
-  report: IBiddingDocument;
+  report: number;
   title: string;
   detail: string;
   status: string;

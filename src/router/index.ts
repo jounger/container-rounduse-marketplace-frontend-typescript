@@ -169,7 +169,19 @@ const routes: Array<RouteConfig> = [
     component: () =>
       import("@/views/supplier/combined/components/DetailCombined.vue"),
     meta: {
-      auth: ["ROLE_MERCHANT", "ROLE_FORWARDER"],
+      auth: ["ROLE_MERCHANT"],
+      layout: "NavLayout"
+    }
+  },
+  {
+    path: "/combined-forwarder/:id",
+    name: "Combined Forwarder Detail",
+    component: () =>
+      import(
+        "@/views/supplier/combined/components/DetailCombinedForwarder.vue"
+      ),
+    meta: {
+      auth: ["ROLE_FORWARDER"],
       layout: "NavLayout"
     }
   },

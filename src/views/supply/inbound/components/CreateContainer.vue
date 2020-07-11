@@ -10,7 +10,7 @@
             icon
             dark
             @click="dialogAddContSync = false"
-            style="margin-left:205px;"
+            style="margin-left:202px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title

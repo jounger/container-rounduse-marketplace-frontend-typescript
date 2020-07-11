@@ -347,7 +347,8 @@ export default class Register extends Vue {
         console.error("ERROR! in register", err);
         this.message = "Đã có lỗi xảy ra";
         this.snackbar = true;
-      });
+      })
+      .finally(() => (this.role = [] as Array<string>));
   }
   public cancel(): void {
     this.$router.push("/login");

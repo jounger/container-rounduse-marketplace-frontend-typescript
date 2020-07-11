@@ -190,7 +190,7 @@ export default class Report extends Vue {
     this.loading = false;
   }
   viewDetailReport(item: IReport) {
-    this.$router.push({ path: `/bidding-document/${item.report.id}` });
+    this.$router.push({ path: `/bidding-document/${item.report}` });
   }
   clicked(value: IReport) {
     if (this.singleExpand) {

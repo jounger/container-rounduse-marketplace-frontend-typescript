@@ -106,12 +106,8 @@ export default class Supplier extends Vue {
         .then(res => {
           const response: PaginationResponse<ISupplier> = res.data;
           console.log("watch", this.options);
-          this.suppliers = response.data.filter(
-            x =>
-              (x.roles[0] == "ROLE_FORWARDER" ||
-                x.roles[0] == "ROLE_MERCHANT") &&
-              x.status == "PENDING"
-          );
+          console.log(response.data);
+          this.suppliers = response.data;
           this.options.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))

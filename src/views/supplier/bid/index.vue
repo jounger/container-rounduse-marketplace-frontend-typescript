@@ -259,8 +259,14 @@ export default class Bid extends Vue {
   }
 
   openCancelDialog(item: IBid) {
-    this.bid = item;
-    this.dialogCancel = true;
+    if (new Date().getTime() - new Date(item.bidValidityPeriod).getTime() > 0) {
+      this.bid = item;
+      this.dialogCancel = true;
+    } else {
+      this.message =
+        "Không thể hủy khi chưa vượt quá thời gian Validity Period";
+      this.snackbar = true;
+    }
   }
 
   @Watch("options", { deep: true })

@@ -26,12 +26,13 @@
               :items="biddingDocuments"
               item-key="id"
               :loading="loading"
-              :options.sync="options"
-              :server-items-length="options.totalItems"
+              :options.sync="biddingDocumentOptions"
+              :server-items-length="biddingDocumentOptions.totalItems"
               :footer-props="{
-                'items-per-page-options': options.itemsPerPageItems
+                'items-per-page-options':
+                  biddingDocumentOptions.itemsPerPageItems
               }"
-              :actions-append="options.page"
+              :actions-append="biddingDocumentOptions.page"
               class="elevation-1 my-1"
             >
               <template v-slot:top>
@@ -82,91 +83,12 @@
                 ]"
                 label="Giá gửi thầu"
               ></v-text-field>
-              <v-menu
-                ref="bidDatePicker"
-                v-model="bidDatePicker"
-                :close-on-content-click="false"
-                :return-value.sync="bidLocal.bidDate"
-                transition="scale-transition"
-                offset-y
-                min-width="290px"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
-                    v-model="bidLocal.bidDate"
-                    label="Thời gian gửi thầu"
-                    prepend-icon="event_available"
-                    v-bind="attrs"
-                    v-on="on"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
-                  v-model="bidLocal.bidDate"
-                  no-title
-                  scrollable
-                  readonly
-                  disabled
-                >
-                  <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="bidDatePicker = false"
-                    >Cancel</v-btn
-                  >
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="$refs.bidDatePicker.save(bidLocal.bidDate)"
-                    >OK</v-btn
-                  >
-                </v-date-picker>
-              </v-menu>
-              <v-menu
-                ref="bidValidityPeriodPicker"
-                v-model="bidValidityPeriodPicker"
-                :close-on-content-click="false"
-                :return-value.sync="bidLocal.bidValidityPeriod"
-                transition="scale-transition"
-                offset-y
-                min-width="290px"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
-                    v-model="bidLocal.bidValidityPeriod"
-                    label="Hiệu lực HSDT"
-                    prepend-icon="date_range"
-                    v-bind="attrs"
-                    v-on="on"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
-                  v-model="bidLocal.bidValidityPeriod"
-                  no-title
-                  scrollable
-                >
-                  <v-spacer></v-spacer>
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="bidValidityPeriodPicker = false"
-                    >Cancel</v-btn
-                  >
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="
-                      $refs.bidValidityPeriodPicker.save(
-                        bidLocal.bidValidityPeriod
-                      )
-                    "
-                    >OK</v-btn
-                  >
-                </v-date-picker>
-              </v-menu>
-              <v-text-field
+              <!-- <v-text-field
                 label="Label Text"
                 value="12:30:00"
                 type="time"
                 suffix="PST"
-              ></v-text-field>
+              ></v-text-field> -->
               <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
                 >Tiếp tục</v-btn
               >
@@ -215,17 +137,14 @@
                           dense
                         >
                           <template v-slot:item.actions="{ item }">
-                            <v-btn
-                              class="ma-1"
-                              x-small
-                              tile
-                              outlined
-                              color="success"
-                              @click="selectContainer(item)"
-                            >
-                              <v-icon left>mdi-pencil</v-icon>
-                              {{ checkDuplicateSelect(item) ? "Bỏ" : "Chọn" }}
-                            </v-btn>
+                            <v-checkbox
+                              v-model="containers"
+                              :value="item"
+                              :disabled="
+                                containers.length >= unit &&
+                                  containers.indexOf(item) === -1
+                              "
+                            ></v-checkbox>
                           </template>
                         </v-data-table>
                       </td>
@@ -245,17 +164,10 @@
                     dense
                   >
                     <template v-slot:item.actions="{ item }">
-                      <v-btn
-                        class="ma-1"
-                        x-small
-                        tile
-                        outlined
-                        color="success"
-                        @click="selectContainer(item)"
-                      >
-                        <v-icon left>mdi-pencil</v-icon>
-                        {{ checkDuplicateSelect(item) ? "Bỏ" : "Chọn" }}
-                      </v-btn>
+                      <v-checkbox
+                        v-model="containers"
+                        :value="item"
+                      ></v-checkbox>
                     </template>
                   </v-data-table>
                 </v-container>
@@ -337,17 +249,19 @@ export default class CreateBid extends Vue {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
+  biddingDocumentOptions = {
+    descending: true,
+    page: 1,
+    itemsPerPage: 5,
+    totalItems: 0,
+    itemsPerPageItems: [5, 10, 20, 50]
+  };
   // Form validate
   checkbox = false;
   editable = false;
+  unit = 0;
   stepper = 1;
   valid = true;
-  // API list
-  // bidLocal form
-  bidDatePicker = false;
-  bidValidityPeriodPicker = false;
-  bidDate = this.dateInit;
-  bidValidityPeriod = this.dateInit;
   // Inbound
   inbounds: Array<IInbound> = [];
   inbound = {} as IInbound;
@@ -366,7 +280,7 @@ export default class CreateBid extends Vue {
     { text: "Mở thầu", value: "bidOpening" },
     { text: "Đóng thầu", value: "bidClosing" },
     { text: "Nhiều thầu win", value: "isMultipleAward" },
-    { text: "Actions", value: "actions", sortable: false }
+    { text: "Chọn HSMT", value: "actions", sortable: false }
   ];
   inboundHeaders = [
     {
@@ -403,7 +317,7 @@ export default class CreateBid extends Vue {
       value: "tractor.licensePlate",
       class: "elevation-1 primary"
     },
-    { text: "Hành động", value: "actions", class: "elevation-1 primary" }
+    { text: "Chọn Cont", value: "actions", class: "elevation-1 primary" }
   ];
   // Bid
   createBid() {
@@ -435,23 +349,26 @@ export default class CreateBid extends Vue {
         .finally(() => (this.snackbarSync = true));
     }
   }
-  selectContainer(item: IContainer) {
-    const isDuplicate = this.checkDuplicateSelect(item);
-    if (!isDuplicate) {
-      this.containers.push(item);
-    } else {
-      const index = this.containers.findIndex(x => x.id === item.id);
-      this.containers.splice(index, 1);
+  checkNumberContainer() {
+    if (
+      this.biddingDocumentSelected &&
+      typeof this.biddingDocumentSelected.outbound != "number"
+    ) {
+      if (
+        this.containers.length >=
+        this.biddingDocumentSelected.outbound.booking.unit
+      ) {
+        return true;
+      } else {
+        return false;
+      }
     }
-  }
-  checkDuplicateSelect(item: IContainer) {
-    return this.containers.filter(x => x.id == item.id).length > 0
-      ? true
-      : false;
+    return false;
   }
   getInbounds() {
     if (this.biddingDocumentSelected && this.biddingDocumentSelected.outbound) {
       const _outbound = this.biddingDocumentSelected.outbound as IOutbound;
+      this.unit = _outbound.booking.unit;
       const _outboundId = _outbound.id as number;
       getInboundsByOutboundAndForwarder(_outboundId, {
         page: 0,
@@ -460,6 +377,7 @@ export default class CreateBid extends Vue {
         .then(res => {
           const response: PaginationResponse<IInbound> = res.data;
           this.inbounds = response.data;
+          this.options.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally();
@@ -469,6 +387,8 @@ export default class CreateBid extends Vue {
     if (this.biddingDocumentSync && !isEmptyObject(this.biddingDocumentSync)) {
       this.biddingDocuments.push(this.biddingDocumentSync);
       this.biddingDocumentSelected = this.biddingDocumentSync;
+      this.biddingDocumentOptions.totalItems = 1;
+      this.loading = false;
     } else {
       getBiddingNotificationsByUser({
         page: 0,
@@ -486,7 +406,7 @@ export default class CreateBid extends Vue {
             return pV;
           },
           []);
-          this.options.totalItems = response.totalElements;
+          this.biddingDocumentOptions.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
@@ -509,6 +429,7 @@ export default class CreateBid extends Vue {
     }
   }
   clicked(value: IInbound) {
+    console.log(this.containers);
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);

@@ -92,11 +92,11 @@ import { createContract, editContract } from "@/api/contract";
 })
 export default class CreateContract extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("contracts", { type: Array }) contractsSync!: Array<IContract>;
+  @PropSync("contracts", { type: Array }) contractsSync?: Array<IContract>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
-  @Prop(Object) contract!: IContract;
+  @PropSync("totalItems", { type: Number }) totalItemsSync?: number;
+  @Prop(Object) contract?: IContract;
   @Prop(Boolean) update!: boolean;
 
   contractLocal = {
@@ -121,8 +121,12 @@ export default class CreateContract extends Vue {
         .then(res => {
           const response: IContract = res.data;
           this.messageSync = "Thêm mới thành công Hợp đồng: " + response.id;
-          this.contractsSync.unshift(response);
-          this.totalItemsSync += 1;
+          if (this.contractsSync) {
+            this.contractsSync.unshift(response);
+          }
+          if (this.totalItemsSync) {
+            this.totalItemsSync += 1;
+          }
         })
         .catch(err => {
           console.log(err);
@@ -138,8 +142,12 @@ export default class CreateContract extends Vue {
           console.log(res.data);
           const response: IContract = res.data;
           this.messageSync = "Cập nhập thành công Hợp đồng: " + response.id;
-          const index = this.contractsSync.findIndex(x => x.id == response.id);
-          this.contractsSync.splice(index, 1, response);
+          if (this.contractsSync) {
+            const index = this.contractsSync.findIndex(
+              x => x.id == response.id
+            );
+            this.contractsSync.splice(index, 1, response);
+          }
         })
         .catch(err => {
           console.log(err);

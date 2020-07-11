@@ -115,7 +115,7 @@ export default class CreateFeedback extends Vue {
       this.feedbackLocal.id = 1;
       this.messageSync =
         "Thêm mới thành công Phản hồi: " + this.feedbackLocal.id;
-      this.feedbacksSync.unshift(this.feedbackLocal);
+      this.feedbacksSync.push(this.feedbackLocal);
 
       this.snackbarSync = true;
     }
