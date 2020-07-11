@@ -2,11 +2,10 @@
   <v-content>
     <v-card>
       <v-row justify="center">
-        <DeleteFeedback
-          v-if="dialogDel"
-          :dialogDel.sync="dialogDel"
-          :feedback="feedback"
-          :feedbacks.sync="feedbacks"
+        <ReportDetail
+          v-if="dialogDetail"
+          :dialogDetail.sync="dialogDetail"
+          :report="report"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
@@ -30,9 +29,6 @@
       <v-data-table
         :headers="headers"
         :items="reports"
-        :single-expand="singleExpand"
-        :expanded.sync="expanded"
-        show-expand
         @click:row="clicked"
         item-key="id"
         :loading="loading"
@@ -66,26 +62,6 @@
             <v-icon left>mdi-pencil</v-icon> Feedback
           </v-btn>
         </template>
-        <template v-slot:expanded-item="{ headers }">
-          <td :colspan="headers.length" class="px-0">
-            <v-data-table
-              :headers="feedbackHeaders"
-              :items="feedbacks"
-              :hide-default-footer="true"
-              dark
-              dense
-            >
-              <template v-slot:item.actions="{ item }">
-                <v-icon small class="mr-2" @click="openUpdateDialog(item)">
-                  mdi-pencil
-                </v-icon>
-                <v-icon small @click="openDeleteDialog(item)">
-                  delete
-                </v-icon>
-              </template>
-            </v-data-table>
-          </td>
-        </template>
       </v-data-table>
     </v-card>
   </v-content>
@@ -99,12 +75,12 @@ import Snackbar from "@/components/Snackbar.vue";
 import { ReportData } from "./data";
 import { IFeedback } from "@/entity/feedback";
 import CreateFeedback from "./components/CreateFeedback.vue";
-import DeleteFeedback from "./components/DeleteFeedback.vue";
+import ReportDetail from "../../supplier/report/components/ReportDetail.vue";
 
 @Component({
   components: {
     CreateFeedback,
-    DeleteFeedback,
+    ReportDetail,
     Snackbar
   }
 })
@@ -113,11 +89,9 @@ export default class Report extends Vue {
   report = {} as IReport;
 
   dialogAdd = false;
-  dialogDel = false;
-  singleExpand = true;
+  dialogDetail = false;
   feedbacks: Array<IFeedback> = [];
   feedback = {} as IFeedback;
-  expanded: Array<IReport> = [];
   loading = true;
   update = false;
   message = "";
@@ -146,43 +120,11 @@ export default class Report extends Vue {
       align: "center"
     }
   ];
-  feedbackHeaders = [
-    {
-      text: "Mã Feedback",
-      value: "id",
-      class: "elevation-1 primary"
-    },
-    { text: "Người gửi", value: "sender", class: "elevation-1 primary" },
-    { text: "Nội dung", value: "message", class: "elevation-1 primary" },
-    {
-      text: "Chấm điểm",
-      value: "satisfactionPoints",
-      class: "elevation-1 primary"
-    },
-    {
-      text: "Hành động",
-      class: "elevation-1 primary",
-      value: "actions",
-      sortable: false,
-      align: "center"
-    }
-  ];
 
   openCreateDialog() {
     this.update = false;
     this.feedback = {} as IFeedback;
     this.dialogAdd = true;
-  }
-
-  openUpdateDialog(item: IFeedback) {
-    this.update = true;
-    this.feedback = item;
-    this.dialogAdd = true;
-  }
-
-  openDeleteDialog(item: IFeedback) {
-    this.feedback = item;
-    this.dialogDel = true;
   }
   created() {
     this.reports = ReportData;
@@ -193,21 +135,8 @@ export default class Report extends Vue {
     this.$router.push({ path: `/bidding-document/${item.report}` });
   }
   clicked(value: IReport) {
-    if (this.singleExpand) {
-      if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
-        this.expanded.splice(0, this.expanded.length);
-      } else {
-        this.expanded.splice(0, this.expanded.length);
-        this.expanded.push(value);
-      }
-    } else {
-      const index = this.expanded.findIndex(x => x.id === value.id);
-      if (index === -1) {
-        this.expanded.push(value);
-      } else {
-        this.expanded.splice(index, 1);
-      }
-    }
+    this.report = value;
+    this.dialogDetail = true;
   }
 
   // @Watch("options", { deep: true })

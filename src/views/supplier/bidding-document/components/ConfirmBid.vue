@@ -1,6 +1,13 @@
 <template>
   <v-dialog v-model="dialogConfirmSync" persistent max-width="600px">
     <v-card>
+      <CreateCombined
+        :dialogAdd.sync="dialogContract"
+        :message.sync="messageSync"
+        :snackbar.sync="snackbarSync"
+        :bids.sync="bidsSync"
+        :bid="bid"
+      />
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{

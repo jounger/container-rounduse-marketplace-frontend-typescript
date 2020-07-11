@@ -35,91 +35,12 @@
                 ]"
                 label="Giá gửi thầu"
               ></v-text-field>
-              <v-menu
-                ref="bidDatePicker"
-                v-model="bidDatePicker"
-                :close-on-content-click="false"
-                :return-value.sync="bidLocal.bidDate"
-                transition="scale-transition"
-                offset-y
-                min-width="290px"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
-                    v-model="bidLocal.bidDate"
-                    label="Thời gian gửi thầu"
-                    prepend-icon="event_available"
-                    v-bind="attrs"
-                    v-on="on"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
-                  v-model="bidLocal.bidDate"
-                  no-title
-                  scrollable
-                  readonly
-                  disabled
-                >
-                  <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="bidDatePicker = false"
-                    >Cancel</v-btn
-                  >
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="$refs.bidDatePicker.save(bidLocal.bidDate)"
-                    >OK</v-btn
-                  >
-                </v-date-picker>
-              </v-menu>
-              <v-menu
-                ref="bidValidityPeriodPicker"
-                v-model="bidValidityPeriodPicker"
-                :close-on-content-click="false"
-                :return-value.sync="bidLocal.bidValidityPeriod"
-                transition="scale-transition"
-                offset-y
-                min-width="290px"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
-                    v-model="bidLocal.bidValidityPeriod"
-                    label="Hiệu lực HSDT"
-                    prepend-icon="date_range"
-                    v-bind="attrs"
-                    v-on="on"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
-                  v-model="bidLocal.bidValidityPeriod"
-                  no-title
-                  scrollable
-                >
-                  <v-spacer></v-spacer>
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="bidValidityPeriodPicker = false"
-                    >Cancel</v-btn
-                  >
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="
-                      $refs.bidValidityPeriodPicker.save(
-                        bidLocal.bidValidityPeriod
-                      )
-                    "
-                    >OK</v-btn
-                  >
-                </v-date-picker>
-              </v-menu>
-              <v-text-field
+              <!-- <v-text-field
                 label="Label Text"
                 value="12:30:00"
                 type="time"
                 suffix="PST"
-              ></v-text-field>
+              ></v-text-field> -->
               <v-btn
                 color="primary"
                 @click="
@@ -275,8 +196,6 @@ export default class UpdateBid extends Vue {
   // Form validate
   checkbox = false;
   editable = true;
-  bidDatePicker = false;
-  bidValidityPeriodPicker = false;
   expanded: Array<IInbound> = [];
   singleExpand = true;
   loading = true;

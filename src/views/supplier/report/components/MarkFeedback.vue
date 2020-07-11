@@ -45,6 +45,7 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IFeedback } from "@/entity/feedback";
 import FormValidate from "@/mixin/form-validate";
+import { editFeedback } from "@/api/feedback";
 // import { createFeedback, updateFeedback } from "@/api/feedback";
 
 @Component({
@@ -65,27 +66,21 @@ export default class MarkFeedback extends Vue {
   }
   markFeedback() {
     if (this.feedbackLocal.id) {
-      // updateFeedback(this.feedbackLocal)
-      //   .then(res => {
-      //     console.log(res.data);
-      //     const response: IFeedback = res.data;
-      //     this.messageSync = "Cập nhập thành công Phản hồi: " + response.id;
-      //     const index = this.feedbacksSync.findIndex(x => x.id == response.id);
-      //     this.feedbacksSync.splice(index, 1, response);
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //     this.messageSync = "Đã có lỗi xảy ra";
-      //   })
-      //   .finally(() => (this.snackbarSync = true));
-      this.messageSync =
-        "Chấm điểm thành công Phản hồi: " + this.feedbackLocal.id;
-      const index = this.feedbacksSync.findIndex(
-        x => x.id == this.feedbackLocal.id
-      );
-      this.feedbacksSync.splice(index, 1, this.feedbackLocal);
-
-      this.snackbarSync = true;
+      editFeedback(this.feedbackLocal.id, {
+        satisfactionPoints: this.feedbackLocal.satisfactionPoints
+      })
+        .then(res => {
+          console.log(res.data);
+          const response: IFeedback = res.data;
+          this.messageSync = "Chấm điểm thành công Phản hồi: " + response.id;
+          const index = this.feedbacksSync.findIndex(x => x.id == response.id);
+          this.feedbacksSync.splice(index, 1, response);
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(() => (this.snackbarSync = true));
     }
   }
 }

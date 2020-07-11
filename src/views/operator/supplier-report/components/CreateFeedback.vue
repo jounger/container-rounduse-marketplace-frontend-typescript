@@ -10,7 +10,7 @@
             icon
             dark
             @click="dialogAddSync = false"
-            style="margin-left:337px;"
+            style="margin-left:312px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
@@ -24,11 +24,9 @@
               <v-text-field
                 label="Người gửi*"
                 name="sender"
-                prepend-icon="enhanced_encryption"
+                prepend-icon="person"
                 type="text"
                 readonly
-                :counter="20"
-                :rules="[minLength('sender', 5), maxLength('sender', 20)]"
                 v-model="feedbackLocal.sender"
               ></v-text-field>
             </v-flex>
@@ -38,10 +36,10 @@
               <v-text-field
                 label="Nội dung*"
                 name="message"
-                prepend-icon="enhanced_encryption"
+                prepend-icon="description"
                 type="text"
-                :counter="20"
-                :rules="[minLength('message', 5), maxLength('message', 20)]"
+                :counter="200"
+                :rules="[minLength('message', 5), maxLength('message', 200)]"
                 v-model="feedbackLocal.message"
               ></v-text-field>
             </v-flex>
@@ -74,6 +72,7 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IFeedback } from "@/entity/feedback";
 import FormValidate from "@/mixin/form-validate";
+import { createFeedback, editFeedback } from "@/api/feedback";
 // import { createFeedback, updateFeedback } from "@/api/feedback";
 
 @Component({
@@ -100,49 +99,34 @@ export default class CreateFeedback extends Vue {
   }
   createFeedback() {
     if (this.feedbackLocal) {
-      // createFeedback(this.feedbackLocal)
-      //   .then(res => {
-      //     const response: IFeedback = res.data;
-      //     this.messageSync = "Thêm mới thành công Phản hồi: " + response.id;
-      //     this.feedbacksSync.unshift(response);
-      //     this.totalItemsSync += 1;
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //     this.messageSync = "Đã có lỗi xảy ra";
-      //   })
-      //   .finally(() => (this.snackbarSync = true));
-      this.feedbackLocal.id = 1;
-      this.messageSync =
-        "Thêm mới thành công Phản hồi: " + this.feedbackLocal.id;
-      this.feedbacksSync.push(this.feedbackLocal);
-
-      this.snackbarSync = true;
+      createFeedback(this.feedbackLocal)
+        .then(res => {
+          const response: IFeedback = res.data;
+          this.messageSync = "Thêm mới thành công Phản hồi: " + response.id;
+          this.feedbacksSync.unshift(response);
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(() => (this.snackbarSync = true));
     }
   }
   updateFeedback() {
     if (this.feedbackLocal.id) {
-      // updateFeedback(this.feedbackLocal)
-      //   .then(res => {
-      //     console.log(res.data);
-      //     const response: IFeedback = res.data;
-      //     this.messageSync = "Cập nhập thành công Phản hồi: " + response.id;
-      //     const index = this.feedbacksSync.findIndex(x => x.id == response.id);
-      //     this.feedbacksSync.splice(index, 1, response);
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //     this.messageSync = "Đã có lỗi xảy ra";
-      //   })
-      //   .finally(() => (this.snackbarSync = true));
-      this.messageSync =
-        "Cập nhập thành công Phản hồi: " + this.feedbackLocal.id;
-      const index = this.feedbacksSync.findIndex(
-        x => x.id == this.feedbackLocal.id
-      );
-      this.feedbacksSync.splice(index, 1, this.feedbackLocal);
-
-      this.snackbarSync = true;
+      editFeedback(this.feedbackLocal.id, this.feedbackLocal)
+        .then(res => {
+          console.log(res.data);
+          const response: IFeedback = res.data;
+          this.messageSync = "Cập nhập thành công Phản hồi: " + response.id;
+          const index = this.feedbacksSync.findIndex(x => x.id == response.id);
+          this.feedbacksSync.splice(index, 1, response);
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(() => (this.snackbarSync = true));
     }
   }
 }

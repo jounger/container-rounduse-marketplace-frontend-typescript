@@ -28,8 +28,8 @@
           <v-stepper-content step="1">
             <v-form ref="shippingLineForm" v-model="valid" validation>
               <small>*Dấu sao là trường bắt buộc</small>
-              <v-layout col
-                ><v-layout row
+              <v-layout row
+                ><v-layout col
                   ><v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.username"
@@ -42,7 +42,7 @@
                       type="text"
                       label="Tên đăng nhập*"
                     ></v-text-field> </v-flex></v-layout
-                ><v-layout row
+                ><v-layout col
                   ><v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.password"
@@ -56,8 +56,8 @@
                       label="Mật khẩu*"
                     ></v-text-field> </v-flex></v-layout
               ></v-layout>
-              <v-layout col
-                ><v-layout row
+              <v-layout row
+                ><v-layout col
                   ><v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.email"
@@ -71,20 +71,20 @@
                       type="text"
                       label="Email*"
                     ></v-text-field> </v-flex></v-layout
-                ><v-layout row
+                ><v-layout col
                   ><v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.phone"
                       prepend-icon="phone"
                       :counter="10"
                       :rules="[minLength('phone', 10), maxLength('phone', 10)]"
-                      type="text"
+                      type="number"
                       label="Số điện thoại*"
                     ></v-text-field> </v-flex></v-layout
               ></v-layout>
-              <v-layout col
-                ><v-layout row
-                  ><v-flex xs11>
+              <v-layout row
+                ><v-layout col
+                  ><v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.address"
                       prepend-icon="location_on"
@@ -111,9 +111,9 @@
           <v-stepper-content step="2">
             <v-form ref="bookingForm" v-model="valid2" validation>
               <small>*Dấu sao là trường bắt buộc</small>
-              <v-layout col>
-                <v-layout row>
-                  <v-flex xs8>
+              <v-layout row>
+                <v-layout col>
+                  <v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.companyCode"
                       prepend-icon="verified_user"
@@ -127,8 +127,8 @@
                     ></v-text-field>
                   </v-flex>
                 </v-layout>
-                <v-layout row>
-                  <v-flex xs8>
+                <v-layout col>
+                  <v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.companyName"
                       prepend-icon="directions_boat"
@@ -143,9 +143,9 @@
                   </v-flex>
                 </v-layout>
               </v-layout>
-              <v-layout col>
-                <v-layout row>
-                  <v-flex xs8>
+              <v-layout row>
+                <v-layout col>
+                  <v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.contactPerson"
                       prepend-icon="add_ic_call"
@@ -159,8 +159,8 @@
                     ></v-text-field>
                   </v-flex>
                 </v-layout>
-                <v-layout row>
-                  <v-flex xs8>
+                <v-layout col>
+                  <v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.website"
                       prepend-icon="copyright"
@@ -175,9 +175,9 @@
                   </v-flex>
                 </v-layout>
               </v-layout>
-              <v-layout col>
-                <v-layout row>
-                  <v-flex xs8>
+              <v-layout row>
+                <v-layout col>
+                  <v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.companyDescription"
                       label="Mô tả*"
@@ -191,8 +191,8 @@
                     ></v-text-field>
                   </v-flex>
                 </v-layout>
-                <v-layout row>
-                  <v-flex xs8>
+                <v-layout col>
+                  <v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.companyAddress"
                       prepend-icon="location_city"
@@ -207,28 +207,28 @@
                   </v-flex>
                 </v-layout>
               </v-layout>
-              <v-layout col>
-                <v-layout row>
-                  <v-flex xs8>
+              <v-layout row>
+                <v-layout col>
+                  <v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.tin"
                       prepend-icon="contact_phone"
                       :counter="20"
                       :rules="[minLength('tin', 5), maxLength('tin', 20)]"
                       label="Tin*"
-                      type="text"
+                      type="number"
                     ></v-text-field>
                   </v-flex>
                 </v-layout>
-                <v-layout row>
-                  <v-flex xs8>
+                <v-layout col>
+                  <v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.fax"
                       prepend-icon="perm_phone_msg"
                       :counter="20"
                       :rules="[minLength('fax', 5), maxLength('fax', 20)]"
                       label="Fax*"
-                      type="text"
+                      type="number"
                     ></v-text-field>
                   </v-flex>
                 </v-layout>

@@ -23,6 +23,7 @@
         item-key="id"
         :loading="loading"
         :options.sync="options"
+        @click:row="clicked"
         :server-items-length="options.totalItems"
         :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
         :actions-append="options.page"
@@ -168,6 +169,9 @@ export default class InvitedNotify extends Vue {
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
     }
+  }
+  clicked(value: IBiddingDocument) {
+    this.$router.push({ path: `/bidding-document/${value.id}` });
   }
 }
 </script>

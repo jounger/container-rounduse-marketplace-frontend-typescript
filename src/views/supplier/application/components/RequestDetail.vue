@@ -23,9 +23,9 @@
       </v-toolbar>
       <v-card-text>
         <v-form>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Tên đăng nhập"
                   name="username"
@@ -36,8 +36,8 @@
                 ></v-text-field>
               </v-flex>
             </v-layout>
-            <v-layout row>
-              <v-flex xs8>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Email"
                   name="email"
@@ -49,21 +49,21 @@
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Số điện thoại"
                   name="phone"
                   prepend-icon="phone"
-                  type="text"
+                  type="number"
                   v-model="supplier.phone"
                   readonly
                 ></v-text-field>
               </v-flex>
             </v-layout>
-            <v-layout row>
-              <v-flex xs8>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Quyền đăng ký"
                   name="role"
@@ -75,9 +75,9 @@
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Địa chỉ"
                   name="address"
@@ -88,8 +88,8 @@
                 ></v-text-field>
               </v-flex>
             </v-layout>
-            <v-layout row>
-              <v-flex xs8>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Mã công ty"
                   name="companyCode"
@@ -101,9 +101,9 @@
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Tên công ty"
                   name="companyName"
@@ -115,8 +115,8 @@
                 </v-text-field>
               </v-flex>
             </v-layout>
-            <v-layout row>
-              <v-flex xs8>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Người liên hệ"
                   name="contactPerson"
@@ -128,9 +128,35 @@
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs10>
+                <v-text-field
+                  label="Tin"
+                  name="tin"
+                  prepend-icon="contact_phone"
+                  type="number"
+                  v-model="supplier.tin"
+                  readonly
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+            <v-layout col>
+              <v-flex xs10>
+                <v-text-field
+                  label="Fax"
+                  name="fax"
+                  prepend-icon="perm_phone_msg"
+                  type="number"
+                  v-model="supplier.fax"
+                  readonly
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-layout>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Website"
                   name="website"
@@ -141,34 +167,8 @@
                 ></v-text-field>
               </v-flex>
             </v-layout>
-            <v-layout row>
-              <v-flex xs8>
-                <v-text-field
-                  label="Tin"
-                  name="tin"
-                  prepend-icon="contact_phone"
-                  type="text"
-                  v-model="supplier.tin"
-                  readonly
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
-                <v-text-field
-                  label="Fax"
-                  name="fax"
-                  prepend-icon="perm_phone_msg"
-                  type="text"
-                  v-model="supplier.fax"
-                  readonly
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout row>
-              <v-flex xs8>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Mô tả"
                   name="companyDescription"
@@ -180,9 +180,9 @@
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs4>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs5>
                 <v-text-field
                   label="Địa chỉ công ty"
                   name="companyAddress"

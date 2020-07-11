@@ -12,16 +12,6 @@
         />
       </v-row>
       <v-row justify="center">
-        <MarkFeedback
-          v-if="dialogMark"
-          :dialogMark.sync="dialogMark"
-          :feedback="feedback"
-          :feedbacks.sync="feedbacks"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
-        />
-      </v-row>
-      <v-row justify="center">
         <CreateReport
           v-if="dialogAdd"
           :reports.sync="reports"
@@ -101,11 +91,9 @@ import { IReport } from "@/entity/report";
 // import { getReportsByStatus } from "@/api/report";
 import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
-import { IFeedback } from "@/entity/feedback";
 import CreateReport from "./components/CreateReport.vue";
 import DeleteReport from "./components/DeleteReport.vue";
 import UpdateReport from "./components/UpdateReport.vue";
-import MarkFeedback from "./components/MarkFeedback.vue";
 import ReportDetail from "./components/ReportDetail.vue";
 import { getReportsByUser } from "@/api/report";
 
@@ -114,7 +102,6 @@ import { getReportsByUser } from "@/api/report";
     CreateReport,
     DeleteReport,
     UpdateReport,
-    MarkFeedback,
     ReportDetail,
     Snackbar
   }
@@ -163,9 +150,6 @@ export default class Report extends Vue {
   openUpdateDialog(item: IReport) {
     this.report = item;
     this.dialogEdit = true;
-  }
-  openMarkDialog(item: IFeedback) {
-    this.dialogMark = true;
   }
   openDeleteDialog(item: IReport) {
     this.report = item;

@@ -302,7 +302,7 @@ const routes: Array<RouteConfig> = [
     name: "Report",
     component: () => import("@/views/supplier/report/index.vue"),
     meta: {
-      auth: ["ROLE_FORWARDER", "ROLE_MERCHANT"],
+      auth: ["ROLE_FORWARDER"],
       layout: "NavLayout"
     }
   }

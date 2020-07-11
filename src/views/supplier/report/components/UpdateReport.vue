@@ -25,8 +25,6 @@
                 prepend-icon="person"
                 type="text"
                 readonly
-                :counter="20"
-                :rules="[minLength('sender', 5), maxLength('sender', 20)]"
                 v-model="reportLocal.sender"
               ></v-text-field>
             </v-flex>
@@ -51,8 +49,8 @@
                 name="detail"
                 prepend-icon="description"
                 type="text"
-                :counter="50"
-                :rules="[minLength('detail', 5), maxLength('detail', 50)]"
+                :counter="200"
+                :rules="[minLength('detail', 5), maxLength('detail', 200)]"
                 v-model="reportLocal.detail"
               ></v-text-field>
             </v-flex>

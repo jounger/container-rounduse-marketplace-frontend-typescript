@@ -2,6 +2,16 @@
   <v-dialog v-model="dialogDetailSync" persistent max-width="600px">
     <v-card class="order-1 flex-grow-1 mx-auto my-1">
       <v-row justify="center">
+        <MarkFeedback
+          v-if="dialogMark"
+          :dialogMark.sync="dialogMark"
+          :feedback="feedback"
+          :feedbacks.sync="feedbacks"
+          :message.sync="messageSync"
+          :snackbar.sync="snackbarSync"
+        />
+      </v-row>
+      <v-row justify="center">
         <CreateFeedback
           v-if="dialogFeedback"
           :feedback="feedback"
@@ -42,11 +52,7 @@
             <v-list dense>
               <v-list-item>
                 <v-list-item-icon>
-                  <v-icon>{{
-                    $auth.user().roles[0] == "ROLE_MODERATOR"
-                      ? "verified_user"
-                      : "people_alt"
-                  }}</v-icon>
+                  <v-icon>person</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>Người gửi</v-list-item-title>
@@ -61,12 +67,12 @@
             <v-list dense>
               <v-list-item>
                 <v-list-item-icon>
-                  <v-icon>date_range</v-icon>
+                  <v-icon>business_center</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>HSMT</v-list-item-title>
-                  <v-list-item-subtitle>{{
-                    report.report.id
+                  <v-list-item-subtitle @click="viewDetailBiddingDocument()">{{
+                    report.report
                   }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
@@ -95,7 +101,7 @@
       <v-list dense>
         <v-list-item v-for="item in feedbacks" :key="item.title">
           <v-list-item-icon>
-            <v-icon>verified_user</v-icon>
+            <v-icon>military_tech</v-icon>
           </v-list-item-icon>
           <v-list-item-content>
             <v-list-item-title style="font-weight:bold;">{{
@@ -127,7 +133,7 @@
                 v-if="item.sender != $auth.user().username"
               >
                 <v-list-item-icon>
-                  <v-icon small>edit</v-icon>
+                  <v-icon small>create</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>Phản hồi</v-list-item-title>
@@ -149,7 +155,7 @@
                 v-if="item.sender == $auth.user().username"
               >
                 <v-list-item-icon>
-                  <v-icon small>edit</v-icon>
+                  <v-icon small>delete</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>Xóa</v-list-item-title>
@@ -159,6 +165,12 @@
           </v-menu>
         </v-list-item>
       </v-list>
+      <v-btn
+        v-if="feedbacks.length == 0"
+        @click="openCreateDialog()"
+        style="coler: green"
+        >Phản hồi</v-btn
+      >
       <!-- TODO: table bids -->
     </v-card>
   </v-dialog>
@@ -168,15 +180,18 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import Utils from "@/mixin/utils";
 import { IReport } from "@/entity/report";
 import { IFeedback } from "@/entity/feedback";
-import { FeedbackData } from "../../../operator/supplier-feedback/data";
 import CreateFeedback from "../../../operator/supplier-report/components/CreateFeedback.vue";
 import DeleteFeedback from "../../../operator/supplier-report/components/DeleteFeedback.vue";
+import { getFeedbacksByReport } from "@/api/feedback";
+import { PaginationResponse } from "@/api/payload";
+import MarkFeedback from "./MarkFeedback.vue";
 
 @Component({
   mixins: [Utils],
   components: {
     CreateFeedback,
-    DeleteFeedback
+    DeleteFeedback,
+    MarkFeedback
   }
 })
 export default class ReportDetail extends Vue {
@@ -188,12 +203,25 @@ export default class ReportDetail extends Vue {
   feedbacks: Array<IFeedback> = [];
   dialogFeedback = false;
   dialogDel = false;
+  dialogMark = false;
   feedback = {} as IFeedback;
   update = false;
   openFeedback = false;
   created() {
-    this.feedbacks = FeedbackData;
-    console.log(this.$auth.user().roles);
+    if (this.report.id) {
+      getFeedbacksByReport(this.report.id, {
+        page: 0,
+        limit: 100
+      })
+        .then(res => {
+          const response: PaginationResponse<IFeedback> = res.data;
+          this.feedbacks = response.data;
+        })
+        .catch(err => {
+          console.log(err);
+        })
+        .finally();
+    }
   }
   openCreateDialog() {
     this.update = false;
@@ -210,6 +238,13 @@ export default class ReportDetail extends Vue {
   openDeleteDialog(item: IFeedback) {
     this.feedback = item;
     this.dialogDel = true;
+  }
+  openMarkDialog(item: IFeedback) {
+    this.feedback = item;
+    this.dialogMark = true;
+  }
+  viewDetailBiddingDocument() {
+    this.$router.push({ path: `/bidding-document/${this.report.report}` });
   }
 }
 </script>
