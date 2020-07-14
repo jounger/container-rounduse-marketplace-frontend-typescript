@@ -3,7 +3,6 @@
     <v-card>
       <Snackbar :text="message" :snackbar.sync="snackbar" />
       <CreateInbound
-        v-if="dialogAdd"
         :dialogAdd.sync="dialogAdd"
         :message.sync="message"
         :snackbar.sync="snackbar"
