@@ -604,6 +604,7 @@ export default class CreateInbound extends Vue {
         this.messageSync =
           "Thêm mới thành công hàng nhập: " +
           response.billOfLading.billOfLadingNumber;
+        this.inboundLocal = response;
         this.inboundsSync.unshift(response);
         this.totalItemsSync += 1;
         this.stepper = 4;
