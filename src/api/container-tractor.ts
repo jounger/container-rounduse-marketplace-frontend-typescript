@@ -13,6 +13,13 @@ export function getContainerTractors(paging: PaginationRequest) {
   });
 }
 
+export function getContainerTractorsByForwarder(paging: PaginationRequest) {
+  return Vue.axios.get("/container-tractor/forwarder", {
+    params: paging,
+    headers: config
+  });
+}
+
 export function getContainerTractor(id: number) {
   return Vue.axios.get(`/container-tractor/${id}`, {
     headers: config

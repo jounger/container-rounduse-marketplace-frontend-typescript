@@ -70,7 +70,7 @@ import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 import DeleteTrailer from "./components/DeleteTrailer.vue";
 import CreateTrailer from "./components/CreateTrailer.vue";
-import { getContainerSemiTrailers } from "@/api/container-semi-trailer";
+import { getContainerSemiTrailersByForwarder } from "@/api/container-semi-trailer";
 
 @Component({
   components: {
@@ -129,7 +129,7 @@ export default class Trailer extends Vue {
   @Watch("options", { deep: true })
   onOptionsChange(val: object, oldVal: object) {
     if (val !== oldVal) {
-      getContainerSemiTrailers({
+      getContainerSemiTrailersByForwarder({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })

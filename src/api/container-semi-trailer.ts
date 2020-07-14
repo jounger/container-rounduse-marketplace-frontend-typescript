@@ -13,6 +13,13 @@ export function getContainerSemiTrailers(paging: PaginationRequest) {
   });
 }
 
+export function getContainerSemiTrailersByForwarder(paging: PaginationRequest) {
+  return Vue.axios.get("/container-semi-trailer/forwarder", {
+    params: paging,
+    headers: config
+  });
+}
+
 export function getContainerSemiTrailer(id: number) {
   return Vue.axios.get(`/container-semi-trailer/${id}`, {
     headers: config

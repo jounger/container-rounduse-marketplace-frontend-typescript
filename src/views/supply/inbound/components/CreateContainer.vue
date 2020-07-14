@@ -102,8 +102,8 @@ import { IBillOfLading } from "@/entity/bill-of-lading";
 import FormValidate from "@/mixin/form-validate";
 import { IContainerSemiTrailer } from "@/entity/container-semi-trailer";
 import { IContainerTractor } from "@/entity/container-tractor";
-import { getContainerTractors } from "@/api/container-tractor";
-import { getContainerSemiTrailers } from "@/api/container-semi-trailer";
+import { getContainerTractorsByForwarder } from "@/api/container-tractor";
+import { getContainerSemiTrailersByForwarder } from "@/api/container-semi-trailer";
 import { PaginationResponse } from "@/api/payload";
 import { getDriversByForwarder } from "@/api/driver";
 import { IDriver } from "@/entity/driver";
@@ -141,7 +141,7 @@ export default class CreateContainer extends Vue {
         this.containerLocal.tractor = this.containerLocal.tractor.licensePlate;
       }
     }
-    getContainerTractors({
+    getContainerTractorsByForwarder({
       page: 0,
       limit: 100
     })
@@ -151,7 +151,7 @@ export default class CreateContainer extends Vue {
       })
       .catch(err => console.log(err))
       .finally();
-    getContainerSemiTrailers({
+    getContainerSemiTrailersByForwarder({
       page: 0,
       limit: 100
     })

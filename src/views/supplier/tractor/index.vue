@@ -67,7 +67,7 @@ import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 import DeleteTractor from "./components/DeleteTractor.vue";
 import CreateTractor from "./components/CreateTractor.vue";
-import { getContainerTractors } from "@/api/container-tractor";
+import { getContainerTractorsByForwarder } from "@/api/container-tractor";
 
 @Component({
   components: {
@@ -125,7 +125,7 @@ export default class Tractor extends Vue {
   @Watch("options", { deep: true })
   onOptionsChange(val: object, oldVal: object) {
     if (val !== oldVal) {
-      getContainerTractors({
+      getContainerTractorsByForwarder({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })

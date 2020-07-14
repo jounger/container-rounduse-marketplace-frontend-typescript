@@ -65,22 +65,24 @@ export default class Navigation extends Vue {
   ];
 
   get capitalizeUsername() {
-    if (this.$auth.user()) {
+    if (this.$auth.user().username)
       return toCapitalize(this.$auth.user().username);
-    } else {
-      return "";
-    }
+    this.$auth.logout();
+    return "";
   }
 
   get getUserRole() {
-    if (this.$auth.user() && this.$auth.user().roles) {
+    if (
+      this.$auth.user() &&
+      typeof this.$auth.user().roles !== "undefined" &&
+      this.$auth.user().roles.length > 0
+    ) {
       return this.$auth
         .user()
         .roles[0].toLowerCase()
         .substring(5);
-    } else {
-      return "";
     }
+    return "";
   }
 
   get getNavigation() {

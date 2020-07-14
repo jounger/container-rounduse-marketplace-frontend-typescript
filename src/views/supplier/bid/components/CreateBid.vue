@@ -211,7 +211,7 @@ import { getInboundsByOutboundAndForwarder } from "@/api/inbound";
 import { PaginationResponse } from "@/api/payload";
 import { createBid } from "@/api/bid";
 import { IBiddingDocument } from "@/entity/bidding-document";
-import { isEmptyObject } from "@/utils/tool";
+import { isEmptyObject, addTimeToDate } from "@/utils/tool";
 import { getBiddingNotificationsByUser } from "@/api/notification";
 import { IBiddingNotification } from "@/entity/bidding-notification";
 import { IOutbound } from "@/entity/outbound";
@@ -232,12 +232,12 @@ export default class CreateBid extends Vue {
   biddingDocumentSelected = null as IBiddingDocument | null;
   expanded: Array<IInbound> = [];
   singleExpand = true;
-  dateInit = new Date().toISOString().substr(0, 10);
+  dateInit = addTimeToDate(new Date().toString());
   bidLocal = {
     bidder: this.$auth.user().username,
     containers: [] as Array<number>,
     bidPrice: 0,
-    bidDate: this.dateInit,
+    bidDate: this.dateInit.slice(0, 10) + "T" + this.dateInit.slice(11, 16),
     bidValidityPeriod: this.dateInit,
     status: "CREATED"
   };

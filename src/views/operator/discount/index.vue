@@ -122,8 +122,6 @@ export default class Discount extends Vue {
 
   openUpdateDialog(item: IDiscount) {
     console.log(item);
-    const index = item.expiredDate.indexOf("T");
-    item.expiredDate = item.expiredDate.slice(0, index);
     this.discount = item;
     this.update = true;
     this.dialogAdd = true;
