@@ -74,7 +74,6 @@ import { IReport } from "@/entity/report";
 // import { getReportsByStatus } from "@/api/report";
 import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
-import { ReportData } from "./data";
 import { IFeedback } from "@/entity/feedback";
 import CreateFeedback from "./components/CreateFeedback.vue";
 import ReportDetail from "../../supplier/report/components/ReportDetail.vue";
@@ -129,11 +128,6 @@ export default class Report extends Vue {
     this.update = false;
     this.feedback = {} as IFeedback;
     this.dialogAdd = true;
-  }
-  created() {
-    this.reports = ReportData;
-    this.options.totalItems = this.reports.length;
-    this.loading = false;
   }
   viewDetailReport(item: IReport) {
     this.$router.push({ path: `/bidding-document/${item.report}` });

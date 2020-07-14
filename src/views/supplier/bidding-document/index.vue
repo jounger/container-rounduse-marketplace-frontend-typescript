@@ -1,12 +1,11 @@
 <template>
   <v-content>
-    <v-container class="d-flex align-start">
-      <v-card
-        class="order-0 flex-grow-0 mx-auto mr-5 my-12"
-        max-width="300"
-        style="margin-left: -150px !important"
-      >
-        <v-card-title>Tìm kiếm</v-card-title>
+    <v-container
+      class="d-flex justify-space-around align-start mb-6 mx-1"
+      style="max-width: 1510px!important"
+    >
+      <v-card class="order-0 flex-grow-0 mx-auto mr-5 my-12" width="320">
+        <v-card-title><v-icon large>mdi-magnify</v-icon>Tìm kiếm</v-card-title>
         <v-divider inset></v-divider>
         <v-card-text>
           <v-layout col
@@ -25,111 +24,186 @@
                 <v-select
                   v-model="containerTypeSearch"
                   prepend-icon="strikethrough_s"
-                  :items="containerTypes"
+                  :items="containerTypesToString"
                   label="Loại cont"
                 ></v-select> </v-flex></v-layout
           ></v-layout>
-          <v-row align="center" class="mx-0">
-            <div class="grey--text mr-4"></div>
-            <v-rating
-              :value="4.5"
-              color="amber"
-              dense
-              half-increments
-              readonly
-              size="14"
-            ></v-rating>
-
-            <div class="grey--text ml-4">4.5 (413)</div>
+          <v-layout col
+            ><v-layout row
+              ><v-flex xs10>
+                <v-text-field
+                  v-model="bookingNumberSearch"
+                  prepend-icon="money"
+                  type="text"
+                  label="Mã booking"
+                ></v-text-field> </v-flex></v-layout
+          ></v-layout>
+          <v-layout col
+            ><v-layout row
+              ><v-flex xs10>
+                <v-select
+                  v-model="statusSearch"
+                  prepend-icon="strikethrough_s"
+                  :items="status"
+                  label="Trạng thái"
+                ></v-select> </v-flex></v-layout
+          ></v-layout>
+          <v-row justify="center" v-if="!moreOptions">
+            <a @click="moreOptions = true">Nâng cao</a>
           </v-row>
-
-          <v-list dense>
-            <v-subheader>Thong tin HSMT</v-subheader>
-            <v-list-item-group color="primary">
-              <v-list-item @click="check()">
-                <v-list-item-icon>
-                  <v-icon>monetization_on</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>{{ "Giá gói thầu: " }}</v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ "Giá sàn: " }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
-          </v-list>
-
-          <v-list dense>
-            <v-subheader>Thong tin Hàng Xuất</v-subheader>
-            <v-list-item-group color="primary">
-              <v-list-item>
-                <v-list-item-icon>
-                  <v-icon>child_friendly</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>{{ "Booking No.: " }}</v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ "Cảng bốc hàng: " }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-
-              <v-list-item>
-                <v-list-item-icon>
-                  <v-icon>directions_boat</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>{{ "Hãng tàu: " }}</v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ "Số lượng: " }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-
-              <v-list-item>
-                <v-list-item-icon>
-                  <v-icon>location_on</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>{{ "Đóng tại: " }}</v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ "Thời gian: " }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-
-              <v-list-item>
-                <v-list-item-icon>
-                  <v-icon>description</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>{{ "Mô tả: " }}</v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ "Khối lượng: " }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
-          </v-list>
-        </v-card-text>
-
-        <v-divider class="mx-4"></v-divider>
-
-        <v-card-title>Thời gian dự thầu</v-card-title>
-
-        <v-card-text>
-          <v-chip-group active-class="deep-purple accent-4 white--text" column>
-            <v-chip>Mở thầu: </v-chip>
-
-            <v-chip>Đóng thầu: </v-chip>
-          </v-chip-group>
+          <v-divider inset></v-divider>
+          <div v-if="moreOptions">
+            <v-layout col
+              ><v-layout row>
+                <v-icon>money</v-icon
+                ><span
+                  style="font-size: 17px;
+    margin-left: 10px;
+    font-weight: bold;"
+                  >Giá gói thầu</span
+                >
+              </v-layout></v-layout
+            >
+            <v-layout col
+              ><v-layout row
+                ><v-flex xs8>
+                  <v-text-field
+                    v-model="minBidPackagePrice"
+                    type="number"
+                    label="Từ"
+                  ></v-text-field> </v-flex
+              ></v-layout>
+              <v-layout row
+                ><v-flex xs8>
+                  <v-text-field
+                    v-model="maxBidPackagePrice"
+                    type="number"
+                    label="Đến"
+                  ></v-text-field> </v-flex></v-layout
+            ></v-layout>
+            <v-divider inset></v-divider>
+            <v-layout col
+              ><v-layout row>
+                <v-icon>date_range</v-icon
+                ><span
+                  style="font-size: 17px;
+    margin-left: 10px;
+    font-weight: bold;"
+                  >Thời gian thầu</span
+                >
+              </v-layout></v-layout
+            >
+            <v-layout col
+              ><v-layout row
+                ><v-flex xs8>
+                  <v-menu
+                    ref="bidOpeningPicker"
+                    v-model="bidOpeningPicker"
+                    :close-on-content-click="false"
+                    :return-value.sync="bidOpeningSearch"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="bidOpeningSearch"
+                        label="Từ ngày"
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker
+                      v-model="bidOpeningSearch"
+                      no-title
+                      scrollable
+                    >
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        text
+                        color="primary"
+                        @click="bidOpeningPicker = false"
+                        >Cancel</v-btn
+                      >
+                      <v-btn
+                        text
+                        color="primary"
+                        @click="$refs.bidOpeningPicker.save(bidOpeningSearch)"
+                        >OK</v-btn
+                      >
+                    </v-date-picker>
+                  </v-menu>
+                </v-flex></v-layout
+              >
+              <v-layout row
+                ><v-flex xs8>
+                  <v-menu
+                    ref="bidClosingPicker"
+                    v-model="bidClosingPicker"
+                    :close-on-content-click="false"
+                    :return-value.sync="bidClosingSearch"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="bidClosingSearch"
+                        label="Đến ngày"
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker
+                      v-model="bidClosingSearch"
+                      no-title
+                      scrollable
+                    >
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        text
+                        color="primary"
+                        @click="bidClosingPicker = false"
+                        >Cancel</v-btn
+                      >
+                      <v-btn
+                        text
+                        color="primary"
+                        @click="$refs.bidClosingPicker.save(bidClosingSearch)"
+                        >OK</v-btn
+                      >
+                    </v-date-picker>
+                  </v-menu>
+                </v-flex></v-layout
+              ></v-layout
+            >
+            <v-divider inset></v-divider>
+            <v-layout col
+              ><v-layout row>
+                <v-checkbox v-model="isMultipleAwardSearch">
+                  <template v-slot:label>
+                    <div style="margin-left: 5px;">
+                      Nhiều thầu win
+                    </div>
+                  </template>
+                </v-checkbox>
+              </v-layout></v-layout
+            >
+            <v-row justify="center">
+              <a @click="moreOptions = false">Giảm bớt</a>
+            </v-row>
+            <v-divider inset></v-divider>
+          </div>
+          <v-layout col>
+            <v-row justify="center">
+              <v-btn class="primary" @click="searchBiddingDocument()"
+                >Tìm kiếm</v-btn
+              >
+            </v-row>
+          </v-layout>
         </v-card-text>
       </v-card>
-      <v-card
-        class="order-1 flex-grow-1 mx-auto my-12"
-        style="margin-right: -160px !important"
-      >
+      <v-card class="order-1 flex-grow-1 mx-auto my-12">
         <Snackbar :text="message" :snackbar.sync="snackbar" />
         <v-row justify="center">
           <DeleteBiddingDocument
@@ -286,6 +360,8 @@ import { PaginationResponse } from "@/api/payload";
 import DeleteBiddingDocument from "./components/DeleteBiddingDocument.vue";
 import CancelBiddingDocument from "./components/CancelBiddingDocument.vue";
 import Utils from "@/mixin/utils";
+import { getContainerTypes } from "@/api/container-type";
+import { IContainerType } from "@/entity/container-type";
 
 @Component({
   mixins: [Utils],
@@ -305,7 +381,22 @@ export default class BiddingDocument extends Vue {
   dialogEdit = false;
   dialogCancel = false;
   dialogDel = false;
+  moreOptions = false;
+  bidOpeningPicker = false;
+  bidClosingPicker = false;
+  shippingLineSearch = "";
+  containerTypeSearch = "";
+  bookingNumberSearch = "";
+  statusSearch = "";
+  minBidPackagePrice = "";
+  maxBidPackagePrice = "";
+  isMultipleAwardSearch = false;
+  bidOpeningSearch = "";
+  bidClosingSearch = "";
   message = "";
+  search = "";
+  containerTypes: Array<IContainerType> = [];
+  status: Array<string> = [];
   snackbar = false;
   loading = true;
   dateInit = new Date().toISOString().substr(0, 10);
@@ -330,7 +421,6 @@ export default class BiddingDocument extends Vue {
     { text: "Giá gói thầu", value: "bidPackagePrice" },
     { text: "Mở thầu", value: "bidOpeningText" },
     { text: "Đóng thầu", value: "bidClosingText" },
-    { text: "Nhiều thầu win", value: "isMultipleAward" },
     {
       text: "Hành động",
       value: "actions"
@@ -383,6 +473,26 @@ export default class BiddingDocument extends Vue {
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
     }
+  }
+
+  searchBiddingDocument() {
+    console.log(1);
+  }
+  created() {
+    this.status = ["BIDDING", "COMBINED", "CANCELED"];
+    getContainerTypes({
+      page: this.options.page - 1,
+      limit: this.options.itemsPerPage
+    })
+      .then(res => {
+        const response: PaginationResponse<IContainerType> = res.data;
+        this.containerTypes = response.data;
+      })
+      .catch(err => console.log(err))
+      .finally();
+  }
+  get containerTypesToString() {
+    return this.containerTypes.map(x => x.name);
   }
 }
 </script>

@@ -270,7 +270,12 @@
                 </v-list-item>
               </v-list>
             </v-col>
-            <v-col cols="12" sm="6" md="4">
+            <v-col
+              cols="12"
+              sm="6"
+              md="4"
+              v-if="$auth.user().roles[0] == 'ROLE_MERCHANT'"
+            >
               <v-list dense>
                 <v-list-item>
                   <v-list-item-icon>
@@ -280,6 +285,10 @@
                     <v-list-item-title>{{
                       "Số lượng tham gia: " + options.totalItems
                     }}</v-list-item-title>
+                    <v-list-item-subtitle>
+                      Số thầu thắng:
+                      {{ numberWinner + "/" + options.totalItems }}
+                    </v-list-item-subtitle>
                     <v-list-item-subtitle>
                       {{
                         biddingDocument.isMultipleAward == true
@@ -465,6 +474,7 @@ export default class DetailBiddingDocument extends Vue {
   bid = {} as IBid;
   expanded: Array<IBid> = [];
   singleExpand = true;
+  numberWinner = 0;
   message = "";
   snackbar = false;
   options = {
@@ -547,6 +557,9 @@ export default class DetailBiddingDocument extends Vue {
             const response: PaginationResponse<IBid> = res.data;
             console.log("watch", this.options);
             this.bids = response.data;
+            this.numberWinner = this.bids.filter(
+              (x: IBid) => x.status == "ACCEPTED"
+            ).length;
             this.options.totalItems = response.totalElements;
           })
           .catch(err => console.log(err))
@@ -567,6 +580,56 @@ export default class DetailBiddingDocument extends Vue {
       }
     }
   }
+  get getRouterId() {
+    return this.$route.params.id;
+  }
+  @Watch("getRouterId", { deep: true })
+  onRouterChange() {
+    setTimeout(() => {
+      const biddingDocumentId = parseInt(this.$route.params.id);
+      getBiddingDocument(biddingDocumentId)
+        .then(res => {
+          const response = res.data;
+          this.biddingDocument = response;
+          console.log(this.biddingDocument);
+        })
+        .catch(err => {
+          console.log(err);
+        })
+        .finally();
+      if (this.$auth.user().roles[0] == "ROLE_MERCHANT") {
+        getBidsByBiddingDocument(biddingDocumentId, {
+          page: this.options.page - 1,
+          limit: this.options.itemsPerPage
+        })
+          .then(res => {
+            const response: PaginationResponse<IBid> = res.data;
+            console.log("watch", this.options);
+            this.bids = response.data;
+            this.numberWinner = this.bids.filter(
+              (x: IBid) => x.status == "ACCEPTED"
+            ).length;
+            this.options.totalItems = response.totalElements;
+          })
+          .catch(err => console.log(err))
+          .finally(() => (this.loading = false));
+      } else {
+        this.bids = [] as Array<IBid>;
+        getBidByBiddingDocumentAndForwarder(biddingDocumentId)
+          .then(res => {
+            const response: IBid = res.data;
+            console.log("watch", this.options);
+            this.bids.push(response);
+            this.options.totalItems = 1;
+          })
+          .catch(err => {
+            console.log(err);
+          })
+          .finally(() => (this.loading = false));
+      }
+    }, 200);
+  }
+
   created() {
     // TODO: API get Bidding Document
     console.log(this.$route.params.id);

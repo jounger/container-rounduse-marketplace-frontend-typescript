@@ -53,7 +53,11 @@
                 name="numberOfAxles"
                 prepend-icon="format_size"
                 type="number"
-                :rules="[required('numberOfAxles')]"
+                :rules="[
+                  required('numberOfAxles'),
+                  minNumber('numberOfAxles', 1),
+                  maxNumber('numberOfAxles', 4)
+                ]"
                 v-model="trailerLocal.numberOfAxles"
               ></v-text-field>
             </v-flex>
@@ -109,7 +113,7 @@ export default class CreateTrailer extends Vue {
     type: "",
     unitOfMeasurement: "ft",
     licensePlate: "",
-    numberOfAxles: 0
+    numberOfAxles: 1
   } as IContainerSemiTrailer;
   valid = false;
   types: Array<string> = [];

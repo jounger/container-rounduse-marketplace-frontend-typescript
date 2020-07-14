@@ -42,7 +42,11 @@
                 name="numberOfAxles"
                 prepend-icon="format_size"
                 type="number"
-                :rules="[required('numberOfAxles')]"
+                :rules="[
+                  required('numberOfAxles'),
+                  minNumber('numberOfAxles', 1),
+                  maxNumber('numberOfAxles', 4)
+                ]"
                 v-model="tractorLocal.numberOfAxles"
               ></v-text-field>
             </v-flex>
@@ -72,7 +76,7 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync, Prop, Watch } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContainerTractor } from "@/entity/container-tractor";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
@@ -97,7 +101,7 @@ export default class CreateTractor extends Vue {
 
   tractorLocal = {
     licensePlate: "",
-    numberOfAxles: 0
+    numberOfAxles: 1
   } as IContainerTractor;
   valid = false;
   created() {
