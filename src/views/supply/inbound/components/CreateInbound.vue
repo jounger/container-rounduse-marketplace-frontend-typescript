@@ -291,7 +291,7 @@ import { getPorts } from "@/api/port";
 import { getShippingLines } from "@/api/shipping-line";
 import { getContainerTypes } from "@/api/container-type";
 import { PaginationResponse } from "@/api/payload";
-import { addTimeToDate, addHoursToDate } from "@/utils/tool";
+import { addTimeToDate, addMinutesToDate } from "@/utils/tool";
 import { createInbound } from "@/api/inbound";
 import DeleteContainer from "./DeleteContainer.vue";
 import CreateContainer from "./CreateContainer.vue";
@@ -391,8 +391,8 @@ export default class CreateInbound extends Vue {
     /* TODO: Calculate Empty Time:
      * emptyTime = (duration: portOfDelivery -> returnStation) + pickupTime (+ bias)
      */
-    this.inboundLocal.emptyTime = addHoursToDate(
-      new Date(this.inboundLocal.pickupTime),
+    this.inboundLocal.emptyTime = addMinutesToDate(
+      this.inboundLocal.pickupTime,
       5
     );
     createInbound(this.inboundLocal)

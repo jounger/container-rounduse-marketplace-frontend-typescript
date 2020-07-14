@@ -244,7 +244,7 @@ import { updateOutbound } from "@/api/outbound";
 import { updateBooking } from "@/api/booking";
 import { IBooking } from "@/entity/booking";
 import { addTimeToDate } from "@/utils/tool";
-import { addHoursToDate } from "@/utils/tool";
+import { addMinutesToDate } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate]
@@ -282,8 +282,8 @@ export default class UpdateOutbound extends Vue {
     // TODO
     this.outboundLocal.packingTime = addTimeToDate(this.packingTime);
     this.outboundLocal.booking.cutOffTime = addTimeToDate(this.cutOffTime);
-    this.outboundLocal.deliveryTime = addHoursToDate(
-      new Date(this.outboundLocal.packingTime),
+    this.outboundLocal.deliveryTime = addMinutesToDate(
+      this.outboundLocal.packingTime,
       5
     );
     updateOutbound(this.outboundLocal)
