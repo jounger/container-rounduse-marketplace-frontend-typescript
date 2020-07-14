@@ -61,7 +61,7 @@
                     <v-col cols="12" sm="6">
                       <v-menu
                         ref="packingTimePicker"
-                        v-model="outboundLocal.packingTimePicker"
+                        v-model="packingTimePicker"
                         :close-on-content-click="false"
                         :return-value.sync="outboundLocal.packingTime"
                         transition="scale-transition"
@@ -297,6 +297,9 @@
                 :map="map"
               >
                 <template slot-scope="{ place, address }">
+                  <div class="d-none">
+                    {{ (outboundLocal.packingStation = address) }}
+                  </div>
                   <GoogleMapMarker
                     :visible="false"
                     :marker="getMarkerFromPlace(place, address)"
