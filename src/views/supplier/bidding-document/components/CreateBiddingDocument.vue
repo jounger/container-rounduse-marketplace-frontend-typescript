@@ -93,23 +93,12 @@
                     v-model="bidOpening"
                     label="Thời gian mở thầu"
                     prepend-icon="event_available"
+                    readonly
                     v-bind="attrs"
                     v-on="on"
                     :rules="[required('bid opening')]"
                   ></v-text-field>
                 </template>
-                <v-date-picker v-model="bidOpening" no-title scrollable>
-                  <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="bidOpeningPicker = false"
-                    >Cancel</v-btn
-                  >
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="$refs.bidOpeningPicker.save(bidOpening)"
-                    >OK</v-btn
-                  >
-                </v-date-picker>
               </v-menu>
               <!-- Bid Closing -->
               <v-menu

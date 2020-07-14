@@ -43,6 +43,7 @@
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IFeedback } from "@/entity/feedback";
+import { removeFeedback } from '@/api/feedback';
 
 @Component
 export default class DeleteFeedback extends Vue {
@@ -54,30 +55,22 @@ export default class DeleteFeedback extends Vue {
 
   removeFeedback() {
     if (this.feedback.id) {
-      // removeFeedback(this.feedback.id)
-      //   .then(res => {
-      //     console.log(res.data);
-      //     this.messageSync = "Xóa thành công vai trò: " + this.feedback.name;
-      //     const index = this.feedbacksSync.findIndex(
-      //       x => x.id === this.feedback.id
-      //     );
-      //     this.feedbacksSync.splice(index, 1);
-      //     this.totalItemsSync -= 1;
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //     this.messageSync = "Đã có lỗi xảy ra";
-      //   })
-      //   .finally(
-      //     () => ((this.snackbarSync = true), (this.dialogDelSync = false))
-      //   );
-      this.messageSync = "Xóa thành công phản hồi: " + this.feedback.id;
-      const index = this.feedbacksSync.findIndex(
-        x => x.id === this.feedback.id
-      );
-      this.feedbacksSync.splice(index, 1);
-      this.snackbarSync = true;
-      this.dialogDelSync = false;
+      removeFeedback(this.feedback.id)
+        .then(res => {
+          console.log(res.data);
+          this.messageSync = "Xóa thành công vai trò: " + this.feedback.id;
+          const index = this.feedbacksSync.findIndex(
+            x => x.id === this.feedback.id
+          );
+          this.feedbacksSync.splice(index, 1);
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(
+          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
+        );
     }
   }
 }

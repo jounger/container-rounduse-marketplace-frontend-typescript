@@ -40,9 +40,9 @@
         </v-toolbar>
         <v-card-text>
           <small>*Dấu sao là trường bắt buộc</small>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Tên loại Container*"
                   name="name"
@@ -53,8 +53,8 @@
                 ></v-text-field>
               </v-flex>
             </v-layout>
-            <v-layout row>
-              <v-flex xs8>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Chi tiết"
                   name="description"
@@ -65,9 +65,9 @@
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Khối lượng vỏ"
                   name="tareWeight"
@@ -77,8 +77,8 @@
                 ></v-text-field>
               </v-flex>
             </v-layout>
-            <v-layout row>
-              <v-flex xs8>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Trọng tải"
                   name="payloadCapacity"
@@ -89,9 +89,9 @@
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Công suất khối"
                   name="cubicCapacity"
@@ -101,8 +101,8 @@
                 ></v-text-field>
               </v-flex>
             </v-layout>
-            <v-layout row>
-              <v-flex xs8>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Chiều dài trong"
                   name="internalLength"
@@ -113,9 +113,9 @@
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Chiều rộng trong"
                   name="internalWidth"
@@ -125,8 +125,8 @@
                 ></v-text-field>
               </v-flex>
             </v-layout>
-            <v-layout row>
-              <v-flex xs8>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Chiều cao trong"
                   name="internalHeight"
@@ -137,9 +137,9 @@
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Chiều rộng cửa mở"
                   name="doorOpeningWidth"
@@ -149,8 +149,8 @@
                 ></v-text-field>
               </v-flex>
             </v-layout>
-            <v-layout row>
-              <v-flex xs8>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Chiều cao cửa mở"
                   name="doorOpeningHeight"

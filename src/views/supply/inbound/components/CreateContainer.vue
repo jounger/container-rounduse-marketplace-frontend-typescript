@@ -21,8 +21,8 @@
         <v-form v-model="valid" validation>
           <v-container>
             <small>*Dấu sao là trường bắt buộc</small>
-            <v-layout col>
-              <v-layout row>
+            <v-layout row>
+              <v-layout col>
                 <v-flex xs10>
                   <v-text-field
                     v-model="containerLocal.containerNumber"
@@ -33,7 +33,7 @@
                   ></v-text-field>
                 </v-flex>
               </v-layout>
-              <v-layout row>
+              <v-layout col>
                 <v-flex xs10>
                   <v-select
                     v-model="containerLocal.driver"
@@ -45,8 +45,8 @@
                 </v-flex>
               </v-layout>
             </v-layout>
-            <v-layout col>
-              <v-layout row>
+            <v-layout row>
+              <v-layout col>
                 <v-flex xs10>
                   <v-select
                     v-model="containerLocal.tractor"
@@ -57,7 +57,7 @@
                   ></v-select>
                 </v-flex>
               </v-layout>
-              <v-layout row>
+              <v-layout col>
                 <v-flex xs10>
                   <v-select
                     v-model="containerLocal.trailer"

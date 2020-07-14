@@ -19,9 +19,9 @@
       <v-card-text>
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Mã giảm giá*"
                   name="code"
@@ -32,8 +32,8 @@
                 ></v-text-field>
               </v-flex>
             </v-layout>
-            <v-layout row>
-              <v-flex xs8>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Chi tiết"
                   name="detail"
@@ -44,9 +44,9 @@
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs10>
                 <v-select
                   prepend-icon="monetization_on"
                   :items="currencies"
@@ -56,8 +56,8 @@
                 ></v-select>
               </v-flex>
             </v-layout>
-            <v-layout row>
-              <v-flex xs8>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Phần trăm (%)"
                   name="percent"
@@ -68,9 +68,9 @@
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Giảm giá nhiều nhất (%)"
                   name="maximumDiscount"
@@ -80,8 +80,8 @@
                 ></v-text-field>
               </v-flex>
             </v-layout>
-            <v-layout row>
-              <v-flex xs8>
+            <v-layout col>
+              <v-flex xs10>
                 <v-menu
                   ref="expiredDatePicker"
                   v-model="expiredDatePicker"

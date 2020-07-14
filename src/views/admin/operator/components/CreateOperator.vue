@@ -33,8 +33,8 @@
         <v-card-text>
           <small>*Dấu sao là trường bắt buộc</small>
           <v-container>
-            <v-layout col>
-              <v-layout row>
+            <v-layout row>
+              <v-layout col>
                 <v-flex xs10>
                   <v-text-field
                     label="Tên đăng nhập*"
@@ -50,7 +50,7 @@
                   ></v-text-field>
                 </v-flex>
               </v-layout>
-              <v-layout row>
+              <v-layout col>
                 <v-flex xs10>
                   <v-text-field
                     v-if="!update"
@@ -67,8 +67,8 @@
                 </v-flex>
               </v-layout>
             </v-layout>
-            <v-layout col>
-              <v-layout row>
+            <v-layout row>
+              <v-layout col>
                 <v-flex xs10>
                   <v-text-field
                     label="Email*"
@@ -84,11 +84,11 @@
                   ></v-text-field>
                 </v-flex>
               </v-layout>
-              <v-layout row>
+              <v-layout col>
                 <v-flex xs10>
                   <v-text-field
                     label="Số điện thoại*"
-                    type="phone"
+                    type="number"
                     prepend-icon="phone"
                     v-model="operatorLocal.phone"
                     :counter="10"
@@ -97,8 +97,8 @@
                 </v-flex>
               </v-layout>
             </v-layout>
-            <v-layout col>
-              <v-layout row>
+            <v-layout row>
+              <v-layout col>
                 <v-flex xs10>
                   <v-text-field
                     label="Họ và tên*"
@@ -110,7 +110,7 @@
                   ></v-text-field>
                 </v-flex>
               </v-layout>
-              <v-layout row>
+              <v-layout col>
                 <v-flex xs10>
                   <v-text-field
                     label="Địa chỉ*"
@@ -127,10 +127,11 @@
                 </v-flex>
               </v-layout>
             </v-layout>
-            <v-layout col>
-              <v-layout row>
+            <v-layout row>
+              <v-layout col>
                 <v-flex xs5>
                   <v-select
+                    v-if="!update"
                     v-model="operatorLocal.roles[0]"
                     name="roles"
                     prepend-icon="security"
@@ -138,9 +139,8 @@
                     label="Phân quyền*"
                     :rules="[required('role')]"
                   ></v-select>
-                </v-flex>
-              </v-layout>
-            </v-layout>
+                </v-flex> </v-layout
+            ></v-layout>
           </v-container>
         </v-card-text>
       </v-form>

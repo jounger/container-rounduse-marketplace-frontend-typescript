@@ -24,7 +24,7 @@
           <v-stepper-content step="1">
             <v-data-table
               :headers="bidHeaders"
-              :items="bids"
+              :items="bidsSelection"
               :single-expand="singleExpand"
               :expanded.sync="expanded"
               show-expand
@@ -127,7 +127,7 @@ import { IOutbound } from "@/entity/outbound";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
 import { isEmptyObject, addTimeToDate } from "@/utils/tool";
-// import { createCombined } from "@/api/combined";
+import { createCombined } from "@/api/combined";
 import { getOutboundByMerchant } from "@/api/outbound";
 import { PaginationResponse } from "@/api/payload";
 import { IBid } from "@/entity/bid";
@@ -140,12 +140,14 @@ export default class CreateCombined extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @PropSync("bid", { type: Object }) bidSync!: IBid;
+  @Prop(Object) bid!: IBid;
+  @PropSync("bids", { type: Array })
+  bidsSync!: Array<IBid>;
 
   dateInit = new Date().toISOString().substr(0, 10);
-  bids: Array<IBid> = [];
+  bidsSelection: Array<IBid> = [];
   combinedLocal = {
-    bid: this.bidSync,
+    bid: this.bid,
     status: "INFO_RECEIVED"
   } as ICombined;
   // Form validate
@@ -158,6 +160,8 @@ export default class CreateCombined extends Vue {
   expanded: Array<IBid> = [];
   singleExpand = true;
   stepper = 1;
+  merchant = "";
+  forwarder = "";
   valid = true;
 
   // Outbound form
@@ -176,7 +180,8 @@ export default class CreateCombined extends Vue {
       sortable: false,
       value: "id"
     },
-    { text: "Cont qty", value: "containers.length" },
+    { text: "Người gửi Bid", value: "bidder" },
+    { text: "Số Cont", value: "containers.length" },
     { text: "Giá thầu", value: "bidPrice" },
     { text: "Ngày thầu", value: "bidDate" },
     { text: "", value: "actions", sortable: false }
@@ -248,7 +253,10 @@ export default class CreateCombined extends Vue {
 
   created() {
     // TODO: API get Outbound
-    this.bids.push(this.bidSync);
+    this.bidsSelection.push(this.bid);
+    this.merchant = this.$auth.user().username;
+    this.forwarder = this.bid.bidder;
+    this.options.totalItems = 1;
   }
 }
 </script>

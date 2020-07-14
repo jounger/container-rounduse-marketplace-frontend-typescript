@@ -19,8 +19,8 @@
       <v-card-text>
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
-          <v-layout col>
-            <v-layout row>
+          <v-layout row>
+            <v-layout col>
               <v-flex xs10>
                 <v-text-field
                   label="Người gửi*"
@@ -34,7 +34,7 @@
                 ></v-text-field>
               </v-flex>
             </v-layout>
-            <v-layout row>
+            <v-layout col>
               <v-flex xs10>
                 <v-text-field
                   label="Người nhận*"
@@ -52,8 +52,8 @@
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-layout col>
-            <v-layout row>
+          <v-layout row>
+            <v-layout col>
               <v-flex xs10>
                 <v-text-field
                   label="Nội dung*"
@@ -65,7 +65,7 @@
                 ></v-text-field>
               </v-flex>
             </v-layout>
-            <v-layout row>
+            <v-layout col>
               <v-flex xs10>
                 <v-text-field
                   label="Số tiền*"
@@ -78,8 +78,8 @@
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-layout col>
-            <v-layout row>
+          <v-layout row>
+            <v-layout col>
               <v-flex xs10>
                 <v-select
                   v-model="paymentLocal.type"
@@ -90,7 +90,7 @@
                 ></v-select>
               </v-flex>
             </v-layout>
-            <v-layout row>
+            <v-layout col>
               <v-flex xs10>
                 <v-menu
                   ref="paymentDatePicker"

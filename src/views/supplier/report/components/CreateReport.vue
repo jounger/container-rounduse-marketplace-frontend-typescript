@@ -80,6 +80,7 @@
                 prepend-icon="menu"
                 v-model="reportLocal.title"
                 type="text"
+                :counter="20"
                 :rules="[minLength('title', 5), maxLength('title', 20)]"
               ></v-text-field>
               <v-text-field
@@ -88,7 +89,8 @@
                 prepend-icon="description"
                 v-model="reportLocal.detail"
                 type="text"
-                :rules="[minLength('detail', 5), maxLength('detail', 20)]"
+                :counter="200"
+                :rules="[minLength('detail', 5), maxLength('detail', 200)]"
               ></v-text-field>
               <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
                 >Tiếp tục</v-btn
