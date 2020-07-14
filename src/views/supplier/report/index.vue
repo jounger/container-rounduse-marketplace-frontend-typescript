@@ -9,6 +9,7 @@
           :reports.sync="reports"
           :message.sync="message"
           :snackbar.sync="snackbar"
+          :totalItems.sync="options.totalItems"
         />
       </v-row>
       <v-row justify="center">
@@ -38,6 +39,7 @@
           :report="report"
           :message.sync="message"
           :snackbar.sync="snackbar"
+          :reports.sync="reports"
         />
       </v-row>
       <Snackbar :text="message" :snackbar.sync="snackbar" />

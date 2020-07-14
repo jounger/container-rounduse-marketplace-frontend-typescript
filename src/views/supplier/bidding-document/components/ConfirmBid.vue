@@ -5,6 +5,7 @@
         :dialogAdd.sync="dialogContract"
         :message.sync="messageSync"
         :snackbar.sync="snackbarSync"
+        :dialogConfirm.sync="dialogConfirmSync"
         :bids.sync="bidsSync"
         :bid="bid"
       />

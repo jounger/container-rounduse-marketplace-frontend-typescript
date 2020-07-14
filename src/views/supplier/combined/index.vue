@@ -96,8 +96,8 @@ export default class Combined extends Vue {
     }
   ];
 
-  gotoDetail(item: any) {
-    const id = this.combineds[0].id;
+  gotoDetail(item: ICombined) {
+    const id = item.id;
     this.$router.push({ path: `/combined/${id}` });
   }
 
@@ -136,8 +136,8 @@ export default class Combined extends Vue {
       })
         .then(res => {
           const response: PaginationResponse<ICombined> = res.data;
-          console.log("response", response);
           this.combineds = response.data;
+          console.log("combineds", this.combineds);
           // this.reduceData(this.combineds);
           this.options.totalItems = response.totalElements;
         })

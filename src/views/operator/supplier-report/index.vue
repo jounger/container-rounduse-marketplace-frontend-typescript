@@ -6,6 +6,7 @@
           v-if="dialogDetail"
           :dialogDetail.sync="dialogDetail"
           :report="report"
+          :reports.sync="reports"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
@@ -14,6 +15,7 @@
         <CreateFeedback
           v-if="dialogAdd"
           :feedback="feedback"
+          :report="report"
           :feedbacks.sync="feedbacks"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
@@ -50,13 +52,13 @@
             <v-icon left>mdi-pencil</v-icon> Xem HSMT
           </v-btn>
         </template>
-        <template v-slot:item.action="{}">
+        <template v-slot:item.action="{ item }">
           <v-btn
             class="ma-1"
             tile
             outlined
             color="success"
-            @click.stop="openCreateDialog()"
+            @click.stop="openCreateDialog(item)"
             small
           >
             <v-icon left>mdi-pencil</v-icon> Feedback
@@ -76,6 +78,7 @@ import { ReportData } from "./data";
 import { IFeedback } from "@/entity/feedback";
 import CreateFeedback from "./components/CreateFeedback.vue";
 import ReportDetail from "../../supplier/report/components/ReportDetail.vue";
+import { getReports } from "@/api/report";
 
 @Component({
   components: {
@@ -121,7 +124,8 @@ export default class Report extends Vue {
     }
   ];
 
-  openCreateDialog() {
+  openCreateDialog(item: IReport) {
+    this.report = item;
     this.update = false;
     this.feedback = {} as IFeedback;
     this.dialogAdd = true;
@@ -139,29 +143,23 @@ export default class Report extends Vue {
     this.dialogDetail = true;
   }
 
-  // @Watch("options", { deep: true })
-  // onOptionsChange(val: object, oldVal: object) {
-  //   if (val !== oldVal) {
-  //     getReportsByStatus({
-  //       page: this.options.page - 1,
-  //       limit: this.options.itemsPerPage,
-  //       status: "PENDING"
-  //     })
-  //       .then(res => {
-  //         const response: PaginationResponse<IReport> = res.data;
-  //         console.log("watch", this.options);
-  //         this.reports = response.data.filter(
-  //           x =>
-  //             (x.roles[0] == "ROLE_FORWARDER" ||
-  //               x.roles[0] == "ROLE_MERCHANT") &&
-  //             x.status == "PENDING"
-  //         );
-  //         this.options.totalItems = response.totalElements;
-  //       })
-  //       .catch(err => console.log(err))
-  //       .finally(() => (this.loading = false));
-  //   }
-  // }
+  @Watch("options", { deep: true })
+  onOptionsChange(val: object, oldVal: object) {
+    if (val !== oldVal) {
+      getReports({
+        page: this.options.page - 1,
+        limit: this.options.itemsPerPage
+      })
+        .then(res => {
+          const response: PaginationResponse<IReport> = res.data;
+          console.log("watch", this.options);
+          this.reports = response.data;
+          this.options.totalItems = response.totalElements;
+        })
+        .catch(err => console.log(err))
+        .finally(() => (this.loading = false));
+    }
+  }
 }
 </script>
 <style type="text/css">

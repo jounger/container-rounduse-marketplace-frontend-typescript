@@ -27,7 +27,8 @@
       <v-card class="order-0 flex-grow-0 mx-auto mr-5 my-1" max-width="500">
         <v-tabs background-color="white" color="deep-purple accent-4" left>
           <v-tab>Lịch trình</v-tab>
-          <v-tab>Hàng nhập và HSMT</v-tab>
+          <v-tab>Hàng xuất và HSMT</v-tab>
+          <v-tab>Hợp đồng</v-tab>
 
           <v-tab-item>
             <v-container fluid>
@@ -258,6 +259,107 @@
               </v-card>
             </v-container>
           </v-tab-item>
+          <v-tab-item>
+            <v-container fluid>
+              <v-card class="elevation-0">
+                <v-card-title>Hợp đồng</v-card-title>
+                <v-list dense>
+                  <v-subheader>Thông tin Hợp đồng</v-subheader>
+                  <v-list-item-group color="primary">
+                    <v-list-item>
+                      <v-list-item-icon>
+                        <v-icon>monetization_on</v-icon>
+                      </v-list-item-icon>
+                      <v-list-item-content>
+                        <v-list-item-title>{{
+                          "Bên chủ hàng: " + $auth.user().username
+                        }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-list-item-icon>
+                        <v-icon>monetization_on</v-icon>
+                      </v-list-item-icon>
+                      <v-list-item-content>
+                        <v-list-item-title>{{
+                          "Bên chủ xe: " + bid.bidder
+                        }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-list-item-icon>
+                        <v-icon>monetization_on</v-icon>
+                      </v-list-item-icon>
+                      <v-list-item-content>
+                        <v-list-item-title
+                          >Yêu cầu hợp đồng :
+                          {{
+                            combined.contract.required ? "Có" : "Không"
+                          }}</v-list-item-title
+                        >
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item v-if="combined.contract.required">
+                      <v-list-item-icon>
+                        <v-icon>monetization_on</v-icon>
+                      </v-list-item-icon>
+                      <v-list-item-content>
+                        <v-list-item-title>{{
+                          "% Tiền phạt: " +
+                            combined.contract.finesAgainstContractViolation
+                        }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list-item-group>
+                </v-list>
+                <v-list dense v-if="combined.contract.required">
+                  <v-subheader
+                    >Chứng cứ
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-icon
+                          style="color:gold;"
+                          v-if="!checkValid"
+                          v-bind="attrs"
+                          v-on="on"
+                          >report_problem</v-icon
+                        >
+                      </template>
+                      <span>Chứng cứ chưa được xác nhận.</span>
+                    </v-tooltip>
+                  </v-subheader>
+                  <v-card-title>Danh sách Chứng cứ</v-card-title>
+                  <v-data-table
+                    v-if="evidences.length > 0"
+                    :headers="evidenceHeaders"
+                    :items="evidences"
+                    item-key="id"
+                    :loading="loading"
+                    :options.sync="options"
+                    :server-items-length="options.totalItems"
+                    :footer-props="{
+                      'items-per-page-options': options.itemsPerPageItems
+                    }"
+                    :actions-append="options.page"
+                    class="elevation-0"
+                  >
+                    <template v-slot:item.actions="{ item }">
+                      <v-btn
+                        class="ma-1"
+                        x-small
+                        tile
+                        outlined
+                        color="success"
+                        @click.stop="viewDetailEvidence(item)"
+                      >
+                        <v-icon left>library_add_check </v-icon>Chi tiết
+                      </v-btn>
+                    </template>
+                  </v-data-table>
+                </v-list>
+              </v-card>
+            </v-container>
+          </v-tab-item>
         </v-tabs>
       </v-card>
       <!-- BIDDING -->
@@ -338,6 +440,7 @@ import { IOutbound } from "@/entity/outbound";
 import { ICombined } from "@/entity/combined";
 import { getCombined } from "@/api/combined";
 import { getBidsByBiddingDocument } from "@/api/bid";
+import { IEvidence } from "@/entity/evidence";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -379,10 +482,31 @@ export default class DetailCombined extends Vue {
   bid = {} as IBid;
   dialogDetail = false;
   outbound = {} as IOutbound;
-  combined = {} as ICombined;
+  combined = {
+    bid: this.bid,
+    status: "INFO_RECEIVED",
+    contract: {
+      finesAgainstContractViolation: 0,
+      required: true
+    }
+  } as ICombined;
+  evidence = {
+    sender: this.$auth.user().username,
+    evidence: "",
+    isValid: false
+  } as IEvidence;
+  evidences: Array<IEvidence> = [
+    {
+      id: 1,
+      sender: "forwarder",
+      evidence: "oke",
+      isValid: false
+    }
+  ];
   loading = false;
   selection = 0;
   stepper = 1;
+  checkValid = false;
   expanded: Array<IBid> = [];
   singleExpand = true;
   options = {
@@ -427,6 +551,21 @@ export default class DetailCombined extends Vue {
       value: "actions",
       sortable: false,
       class: "elevation-1 primary"
+    }
+  ];
+  evidenceHeaders = [
+    {
+      text: "Evidence No.",
+      align: "start",
+      sortable: false,
+      value: "id"
+    },
+    { text: "Người gửi", value: "sender" },
+    { text: "Hợp lệ", value: "isValid" },
+    {
+      text: "Actions",
+      value: "actions",
+      sortable: false
     }
   ];
 
@@ -510,7 +649,8 @@ export default class DetailCombined extends Vue {
       .then(res => {
         const response = res.data;
         this.combined = response;
-        this.bid = this.combined.bid;
+        console.log(response);
+        this.bid = this.combined.bid as IBid;
         if (this.biddingDocument.id) {
           console.log(0);
           this.getBids(this.biddingDocument.id);

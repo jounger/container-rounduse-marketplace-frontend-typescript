@@ -43,7 +43,7 @@
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IFeedback } from "@/entity/feedback";
-import { removeFeedback } from '@/api/feedback';
+import { removeFeedback } from "@/api/feedback";
 
 @Component
 export default class DeleteFeedback extends Vue {

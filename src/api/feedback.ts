@@ -19,8 +19,8 @@ export function getFeedbacksByUser(paging: PaginationRequest) {
   });
 }
 
-export function createFeedback(feedback: IFeedback) {
-  return Vue.axios.post("/feedback", feedback, {
+export function createFeedback(id: number, feedback: IFeedback) {
+  return Vue.axios.post(`/feedback/report/${id}`, feedback, {
     headers: config
   });
 }

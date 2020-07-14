@@ -57,8 +57,16 @@
           </v-icon>
         </template>
         <template v-slot:item.geolocation="{ item }">
-          {{ item.location ? item.location.latitude + ";" : "" }}
-          {{ item.location ? item.location.longitude : "" }}
+          {{
+            item.location && item.location.latitude
+              ? item.location.latitude + ";"
+              : ""
+          }}
+          {{
+            item.location && item.location.longtitude
+              ? item.location.longitude
+              : ""
+          }}
         </template>
       </v-data-table>
     </v-card>

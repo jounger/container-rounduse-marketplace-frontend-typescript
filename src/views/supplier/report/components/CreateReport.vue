@@ -192,8 +192,12 @@ export default class CreateReport extends Vue {
       .then(res => {
         const response: IReport = res.data;
         this.messageSync = "Thêm mới thành công Report: " + response.id;
-        if (this.reportsSync && this.totalItemsSync) {
+        if (this.reportsSync) {
+          console.log(1);
           this.reportsSync.unshift(response);
+        }
+        if (typeof this.totalItemsSync != "undefined") {
+          console.log(2);
           this.totalItemsSync += 1;
         }
       })

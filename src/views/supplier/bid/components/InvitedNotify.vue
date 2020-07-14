@@ -5,7 +5,6 @@
       <CreateBid
         v-if="dialogAdd"
         :biddingDocument.sync="biddingDocument"
-        :bids.sync="bids"
         :dialogAdd.sync="dialogAdd"
         :message.sync="message"
         :snackbar.sync="snackbar"
@@ -74,7 +73,6 @@ import Snackbar from "@/components/Snackbar.vue";
 import { PaginationResponse } from "@/api/payload";
 import { IBiddingNotification } from "@/entity/bidding-notification";
 import { getBiddingNotificationsByUser } from "@/api/notification";
-import { IBid } from "@/entity/bid";
 import Utils from "@/mixin/utils";
 
 @Component({
@@ -90,7 +88,6 @@ export default class InvitedNotify extends Vue {
 
   biddingDocuments: Array<IBiddingDocument> = [];
   biddingDocument = {} as IBiddingDocument;
-  bids: Array<IBid> = [];
   dialogAdd = false;
   dialogDel = false;
   message = "";

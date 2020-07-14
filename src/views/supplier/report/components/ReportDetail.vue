@@ -32,6 +32,16 @@
           :snackbar.sync="snackbarSync"
         />
       </v-row>
+      <v-row justify="center">
+        <ChangeStatusReport
+          v-if="dialogStatus"
+          :dialogStatus.sync="dialogStatus"
+          :report="report"
+          :reports.sync="reportsSync"
+          :message.sync="messageSync"
+          :snackbar.sync="snackbarSync"
+        />
+      </v-row>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">Chi tiết Report</span>
@@ -78,6 +88,19 @@
               </v-list-item>
             </v-list>
           </v-col>
+          <v-spacer></v-spacer>
+          <v-btn
+            style="margin-top: 30px!important;"
+            class="ma-1"
+            tile
+            outlined
+            color="success"
+            @click.stop="openStatusDialog()"
+            small
+            v-if="$auth.user().roles[0] == 'ROLE_MODERATOR'"
+          >
+            <v-icon left>mdi-pencil</v-icon> Đặt trạng thái
+          </v-btn>
         </v-row>
       </v-card-text>
 
@@ -113,7 +136,10 @@
               item.message
             }}</v-list-item-title></v-list-item-content
           >
-          <v-menu :close-on-click="true">
+          <v-menu
+            :close-on-click="true"
+            v-if="report.status == 'PENDING' || report.status == 'UPDATED'"
+          >
             <template v-slot:activator="{ on, attrs }">
               <v-btn color="pink" icon outlined v-bind="attrs" v-on="on">
                 <v-icon>mdi-dots-vertical</v-icon>
@@ -166,7 +192,10 @@
         </v-list-item>
       </v-list>
       <v-btn
-        v-if="feedbacks.length == 0"
+        v-if="
+          feedbacks.length == 0 &&
+            (report.status == 'PENDING' || report.status == 'UPDATED')
+        "
         @click="openCreateDialog()"
         style="coler: green"
         >Phản hồi</v-btn
@@ -185,13 +214,15 @@ import DeleteFeedback from "../../../operator/supplier-report/components/DeleteF
 import { getFeedbacksByReport } from "@/api/feedback";
 import { PaginationResponse } from "@/api/payload";
 import MarkFeedback from "./MarkFeedback.vue";
+import ChangeStatusReport from "./ChangeStatusReport.vue";
 
 @Component({
   mixins: [Utils],
   components: {
     CreateFeedback,
     DeleteFeedback,
-    MarkFeedback
+    MarkFeedback,
+    ChangeStatusReport
   }
 })
 export default class ReportDetail extends Vue {
@@ -199,15 +230,18 @@ export default class ReportDetail extends Vue {
   @Prop(Object) report!: IReport;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("reports", { type: Array }) reportsSync!: Array<IReport>;
 
   feedbacks: Array<IFeedback> = [];
   dialogFeedback = false;
   dialogDel = false;
   dialogMark = false;
+  dialogStatus = false;
   feedback = {} as IFeedback;
   update = false;
   openFeedback = false;
   created() {
+    console.log(this.reportsSync);
     if (this.report.id) {
       getFeedbacksByReport(this.report.id, {
         page: 0,
@@ -242,6 +276,9 @@ export default class ReportDetail extends Vue {
   openMarkDialog(item: IFeedback) {
     this.feedback = item;
     this.dialogMark = true;
+  }
+  openStatusDialog() {
+    this.dialogStatus = true;
   }
   viewDetailBiddingDocument() {
     this.$router.push({ path: `/bidding-document/${this.report.report}` });

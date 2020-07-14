@@ -11,7 +11,7 @@
         <v-btn icon dark @click="dialogAddSync = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title>Thêm mới</v-toolbar-title>
+        <v-toolbar-title>Tạo hàng ghép</v-toolbar-title>
       </v-toolbar>
       <!-- START CONTENT -->
       <v-list three-line subheader>
@@ -80,12 +80,12 @@
                 readonly
               ></v-text-field>
               <v-checkbox
-                v-model="contract.required"
+                v-model="combinedLocal.contract.required"
                 label="Yêu cầu hợp đồng"
               />
               <v-text-field
-                v-if="contract.required"
-                v-model="contract.finesAgainstContractViolations"
+                v-if="combinedLocal.contract.required"
+                v-model="combinedLocal.contract.finesAgainstContractViolations"
                 prepend-icon="money"
                 type="number"
                 :rules="[required('finesAgainstContractViolations')]"
@@ -123,13 +123,9 @@
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { ICombined } from "@/entity/combined";
-import { IOutbound } from "@/entity/outbound";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
-import { isEmptyObject, addTimeToDate } from "@/utils/tool";
 import { createCombined } from "@/api/combined";
-import { getOutboundByMerchant } from "@/api/outbound";
-import { PaginationResponse } from "@/api/payload";
 import { IBid } from "@/entity/bid";
 import { IContract } from "@/entity/contract";
 
@@ -138,6 +134,7 @@ import { IContract } from "@/entity/contract";
 })
 export default class CreateCombined extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
+  @PropSync("dialogConfirm", { type: Boolean }) dialogConfirmSync!: boolean;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Object) bid!: IBid;
@@ -148,13 +145,13 @@ export default class CreateCombined extends Vue {
   bidsSelection: Array<IBid> = [];
   combinedLocal = {
     bid: this.bid,
-    status: "INFO_RECEIVED"
+    status: "INFO_RECEIVED",
+    contract: {
+      finesAgainstContractViolation: 0,
+      required: false
+    } as IContract
   } as ICombined;
   // Form validate
-  contract = {
-    finesAgainstContractViolations: 0,
-    required: false
-  } as IContract;
   checkbox = false;
   editable = false;
   expanded: Array<IBid> = [];
@@ -227,28 +224,31 @@ export default class CreateCombined extends Vue {
   }
   // Combined
   createCombined() {
-    // TODO: API create combined
-    // this.combinedLocal.bidOpening = addTimeToDate(this.bidOpening);
-    // this.combinedLocal.bidClosing = addTimeToDate(this.bidClosing);
-    // if (this.selectedBid && this.selectedBid.id) {
-    //   this.combinedLocal.outbound = this.selectedBid.id as number;
-    // }
-    // console.log(this.combinedLocal);
-    // createCombined(this.combinedLocal)
-    //   .then(res => {
-    //     console.log(res.data);
-    //     const response: ICombined = res.data;
-    //     this.messageSync = "Thêm mới thành công HSMT: " + response.id;
-    //     if (typeof this.combinedsSync != "undefined") {
-    //       this.combinedsSync.unshift(response);
-    //       this.totalItemsSync += 1;
-    //     }
-    //   })
-    //   .catch(err => {
-    //     console.log(err);
-    //     this.messageSync = "Đã có lỗi xảy ra";
-    //   })
-    //   .finally(() => (this.snackbarSync = true));
+    //TODO: API create combined
+    if (this.bid.id) {
+      this.combinedLocal.bid = this.bid.id as number;
+      createCombined(this.bid.id, this.combinedLocal)
+        .then(res => {
+          console.log(res.data);
+          const response: ICombined = res.data;
+          this.messageSync = "Thêm mới thành công Hàng ghép: " + response.id;
+          const bidResponse = response.bid as IBid;
+          console.log(response);
+          console.log(bidResponse);
+          if (bidResponse && bidResponse.id) {
+            const index = this.bidsSync.findIndex(x => x.id == bidResponse.id);
+            this.bidsSync.splice(index, 1, bidResponse);
+          }
+          this.dialogAddSync = false;
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(
+          () => ((this.snackbarSync = true), (this.dialogConfirmSync = false))
+        );
+    }
   }
 
   created() {

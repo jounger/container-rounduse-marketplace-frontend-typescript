@@ -311,6 +311,9 @@ export default class CreateBiddingDocument extends Vue {
           this.biddingDocumentsSync.unshift(response);
           this.totalItemsSync += 1;
         }
+        if (this.outboundSync) {
+          this.outboundSync.status = "BIDDING";
+        }
       })
       .catch(err => {
         console.log(err);

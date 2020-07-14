@@ -71,8 +71,8 @@ import DeletePayment from "./components/DeletePayment.vue";
 // import { getPayments } from "@/api/payment";
 import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
-import { PaymentData } from "./data";
 import Utils from "@/mixin/utils";
+import { getPaymentsByUser } from "@/api/payment";
 
 @Component({
   mixins: [Utils],
@@ -137,29 +137,24 @@ export default class Payment extends Vue {
     this.payment = item;
     this.dialogDel = true;
   }
-  created() {
-    this.payments = PaymentData;
-    this.options.totalItems = this.payments.length;
-    this.loading = false;
-  }
 
-  // @Watch("options", { deep: true })
-  // onOptionsChange(val: object, oldVal: object) {
-  //   if (val !== oldVal) {
-  //     getPayments({
-  //       page: this.options.page - 1,
-  //       limit: this.options.itemsPerPage
-  //     })
-  //       .then(res => {
-  //         const response: PaginationResponse<IPayment> = res.data;
-  //         console.log("watch", response);
-  //         this.payments = response.data;
-  //         this.options.totalItems = response.totalElements;
-  //       })
-  //       .catch(err => console.log(err))
-  //       .finally(() => (this.loading = false));
-  //   }
-  // }
+  @Watch("options", { deep: true })
+  onOptionsChange(val: object, oldVal: object) {
+    if (val !== oldVal) {
+      getPaymentsByUser({
+        page: this.options.page - 1,
+        limit: this.options.itemsPerPage
+      })
+        .then(res => {
+          const response: PaginationResponse<IPayment> = res.data;
+          console.log("watch", response);
+          this.payments = response.data;
+          this.options.totalItems = response.totalElements;
+        })
+        .catch(err => console.log(err))
+        .finally(() => (this.loading = false));
+    }
+  }
 }
 </script>
 <style type="text/css">

@@ -11,6 +11,13 @@ export function searchPayments(paging: PaginationRequest, search: string) {
     headers: config
   });
 }
+
+export function getPaymentsByUser(paging: PaginationRequest) {
+  return Vue.axios.get("/payment/user", {
+    params: paging,
+    headers: config
+  });
+}
 export function createPayment(payment: IPayment) {
   return Vue.axios.post("/payment", payment, {
     headers: config

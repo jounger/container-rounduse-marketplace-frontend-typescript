@@ -1,6 +1,6 @@
 import { IEvidence } from "./evidence";
 export interface IContract {
   id?: number;
-  finesAgainstContractViolations: number;
+  finesAgainstContractViolation: number;
   required: boolean;
 }

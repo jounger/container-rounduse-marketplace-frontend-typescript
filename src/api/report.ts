@@ -12,6 +12,12 @@ export function getReportsByUser(paging: PaginationRequest) {
     headers: config
   });
 }
+export function getReports(paging: PaginationRequest) {
+  return Vue.axios.get("/report", {
+    params: paging,
+    headers: config
+  });
+}
 
 export function createReport(report: IReport) {
   return Vue.axios.post("/report", report, {

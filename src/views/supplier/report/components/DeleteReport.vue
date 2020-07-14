@@ -43,6 +43,7 @@
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IReport } from "@/entity/report";
+import { removeReport } from "@/api/report";
 
 @Component
 export default class DeleteReport extends Vue {
@@ -50,32 +51,28 @@ export default class DeleteReport extends Vue {
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("reports", { type: Array }) reportsSync!: Array<IReport>;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) report!: IReport;
 
   removeReport() {
     if (this.report.id) {
-      // removeReport(this.report.id)
-      //   .then(res => {
-      //     console.log(res.data);
-      //     this.messageSync = "Xóa thành công vai trò: " + this.report.name;
-      //     const index = this.reportsSync.findIndex(
-      //       x => x.id === this.report.id
-      //     );
-      //     this.reportsSync.splice(index, 1);
-      //     this.totalItemsSync -= 1;
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //     this.messageSync = "Đã có lỗi xảy ra";
-      //   })
-      //   .finally(
-      //     () => ((this.snackbarSync = true), (this.dialogDelSync = false))
-      //   );
-      this.messageSync = "Xóa thành công Report: " + this.report.id;
-      const index = this.reportsSync.findIndex(x => x.id === this.report.id);
-      this.reportsSync.splice(index, 1);
-      this.snackbarSync = true;
-      this.dialogDelSync = false;
+      removeReport(this.report.id)
+        .then(res => {
+          console.log(res.data);
+          this.messageSync = "Xóa thành công Report: " + this.report.id;
+          const index = this.reportsSync.findIndex(
+            x => x.id === this.report.id
+          );
+          this.reportsSync.splice(index, 1);
+          this.totalItemsSync -= 1;
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(
+          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
+        );
     }
   }
 }

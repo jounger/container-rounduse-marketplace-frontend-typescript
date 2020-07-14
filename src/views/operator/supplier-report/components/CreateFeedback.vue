@@ -73,6 +73,7 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IFeedback } from "@/entity/feedback";
 import FormValidate from "@/mixin/form-validate";
 import { createFeedback, editFeedback } from "@/api/feedback";
+import { IReport } from "@/entity/report";
 // import { createFeedback, updateFeedback } from "@/api/feedback";
 
 @Component({
@@ -84,6 +85,7 @@ export default class CreateFeedback extends Vue {
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Object) feedback!: IFeedback;
+  @Prop(Object) report!: IReport;
   @Prop(Boolean) update!: boolean;
 
   feedbackLocal = {
@@ -98,8 +100,8 @@ export default class CreateFeedback extends Vue {
     }
   }
   createFeedback() {
-    if (this.feedbackLocal) {
-      createFeedback(this.feedbackLocal)
+    if (this.feedbackLocal && this.report.id) {
+      createFeedback(this.report.id, this.feedbackLocal)
         .then(res => {
           const response: IFeedback = res.data;
           this.messageSync = "Thêm mới thành công Phản hồi: " + response.id;

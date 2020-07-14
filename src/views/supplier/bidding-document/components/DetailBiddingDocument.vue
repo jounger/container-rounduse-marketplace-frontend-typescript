@@ -169,16 +169,29 @@
             :biddingDocument.sync="biddingDocument"
           />
         </v-row>
+        <CreateBid
+          v-if="dialogBid"
+          :biddingDocument.sync="biddingDocument"
+          :dialogAdd.sync="dialogBid"
+          :bids.sync="bids"
+          :totalItems.sync="options.totalItems"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
+        />
         <v-card-title
           >Thông tin đấu thầu
           <v-spacer></v-spacer>
-          <v-icon
-            large
-            color="red"
-            @click="openReportDialog()"
+          <v-hover
+            v-slot:default="{ hover }"
             v-if="$auth.user().roles[0] == 'ROLE_FORWARDER'"
-            >report</v-icon
           >
+            <v-btn @click="openReportDialog()" icon style="margin-right: 30px;">
+              <span style="color:red;" v-if="hover" transition-fast-in-fast-out
+                >Report</span
+              >
+              <v-icon large color="red" right>report</v-icon>
+            </v-btn>
+          </v-hover>
         </v-card-title>
 
         <v-card-text>
@@ -283,7 +296,20 @@
 
         <v-divider class="mx-1"></v-divider>
 
-        <v-card-title>Danh sách HSDT</v-card-title>
+        <v-card-title
+          >Danh sách HSDT<v-spacer></v-spacer>
+          <v-btn
+            color="primary"
+            dark
+            class="mb-2"
+            @click="openCreateBidDialog()"
+            v-if="
+              $auth.user().roles[0] == 'ROLE_FORWARDER' && this.bids.length == 0
+            "
+          >
+            Thêm mới
+          </v-btn></v-card-title
+        >
 
         <!-- TODO: table bids -->
         <v-data-table
@@ -386,11 +412,13 @@ import { PaginationResponse } from "@/api/payload";
 import ConfirmBid from "./ConfirmBid.vue";
 import Snackbar from "@/components/Snackbar.vue";
 import CreateReport from "../../report/components/CreateReport.vue";
+import CreateBid from "../../bid/components/CreateBid.vue";
 
 @Component({
   mixins: [FormValidate, Utils],
   components: {
     ConfirmBid,
+    CreateBid,
     CreateReport,
     Snackbar
   }
@@ -433,6 +461,7 @@ export default class DetailBiddingDocument extends Vue {
   isAccept = false;
   dialogConfirm = false;
   dialogReport = false;
+  dialogBid = false;
   bid = {} as IBid;
   expanded: Array<IBid> = [];
   singleExpand = true;
@@ -561,6 +590,9 @@ export default class DetailBiddingDocument extends Vue {
   }
   openReportDialog() {
     this.dialogReport = true;
+  }
+  openCreateBidDialog() {
+    this.dialogBid = true;
   }
 }
 </script>

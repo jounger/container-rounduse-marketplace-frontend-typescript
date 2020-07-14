@@ -100,7 +100,7 @@ export default class CreateContract extends Vue {
   @Prop(Boolean) update!: boolean;
 
   contractLocal = {
-    finesAgainstContractViolations: 50,
+    finesAgainstContractViolation: 50,
     evidence: {
       sender: this.$auth.user().username,
       evidence: "",

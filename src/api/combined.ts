@@ -1,6 +1,6 @@
 import Vue from "vue";
 import { PaginationRequest } from "./payload";
-import { ICombined } from '../entity/combined';
+import { ICombined } from "../entity/combined";
 
 const config = {
   Authorization: "Bearer {auth_token}"
@@ -20,8 +20,8 @@ export function getCombinedsByUser(paging: PaginationRequest) {
   });
 }
 
-export function createCombined(combined: ICombined) {
-  return Vue.axios.post("/combined", combined, {
+export function createCombined(id: number, combined: ICombined) {
+  return Vue.axios.post(`/combined/bid/${id}`, combined, {
     headers: config
   });
 }

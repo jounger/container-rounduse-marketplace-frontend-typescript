@@ -191,7 +191,7 @@ export default class CreateDriver extends Vue {
         .then(res => {
           console.log(res.data);
           const response: IDriver = res.data;
-          this.messageSync = "Thêm mới thành công lái xe: " + response.id;
+          this.messageSync = "Thêm mới thành công lái xe: " + response.username;
           this.driversSync.unshift(response);
           this.totalItemsSync += 1;
         })

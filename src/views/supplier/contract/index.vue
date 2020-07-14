@@ -52,6 +52,9 @@
             mdi-delete
           </v-icon>
         </template>
+        <template v-slot:item.sender="{}">
+          {{ $auth.user().username }}
+        </template>
       </v-data-table>
     </v-card>
   </v-content>
@@ -97,10 +100,10 @@ export default class Contract extends Vue {
       align: "start",
       value: "id"
     },
-    { text: "Người gửi", value: "evidence.sender" },
+    { text: "Người gửi", value: "sender" },
     {
       text: "% Tiền phạt",
-      value: "finesAgainstContractViolations"
+      value: "finesAgainstContractViolation"
     },
     { text: "Chứng cớ", value: "evidence.evidence" },
     { text: "Hợp lệ", value: "evidence.isValid" },

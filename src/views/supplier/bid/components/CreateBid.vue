@@ -222,11 +222,11 @@ import { getContainersByInbound } from "@/api/container";
 export default class CreateBid extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("biddingDocument", { type: Object })
-  biddingDocumentSync!: IBiddingDocument;
+  biddingDocumentSync?: IBiddingDocument;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
-  @PropSync("bids", { type: Array }) bidsSync!: Array<IBid>;
+  @PropSync("totalItems", { type: Number }) totalItemsSync?: number;
+  @PropSync("bids", { type: Array }) bidsSync?: Array<IBid>;
 
   biddingDocuments: Array<IBiddingDocument> = [];
   biddingDocumentSelected = null as IBiddingDocument | null;
@@ -291,7 +291,6 @@ export default class CreateBid extends Vue {
     },
     { text: "Hãng tàu", value: "shippingLine" },
     { text: "Loại cont", value: "containerType" },
-    { text: "Trạng thái", value: "status" },
     { text: "Time lấy cont", value: "pickUpTime" },
     { text: "B/L No.", value: "billOfLading.billOfLadingNumber" },
     { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery" },
@@ -339,8 +338,12 @@ export default class CreateBid extends Vue {
           console.log("response", response);
           this.messageSync =
             "Thêm mới thành công Hồ sơ dự thầu: " + response.id;
-          this.bidsSync.unshift(response);
-          this.totalItemsSync += 1;
+          if (this.bidsSync) {
+            this.bidsSync.unshift(response);
+          }
+          if (this.totalItemsSync) {
+            this.totalItemsSync += 1;
+          }
         })
         .catch(err => {
           console.log(err);
@@ -420,7 +423,9 @@ export default class CreateBid extends Vue {
       })
         .then(res => {
           const response = res.data;
-          this.inbound.billOfLading.containers = response.data;
+          this.inbound.billOfLading.containers = response.data.filter(
+            (x: IContainer) => x.status == "CREATED"
+          );
         })
         .catch(err => {
           console.log(err);

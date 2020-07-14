@@ -65,14 +65,15 @@ export default class Navigation extends Vue {
   ];
 
   get capitalizeUsername() {
-    return toCapitalize(this.$auth.user().username);
+    if (this.$auth.user()) {
+      return toCapitalize(this.$auth.user().username);
+    } else {
+      return "";
+    }
   }
 
   get getUserRole() {
-    if (
-      typeof this.$auth.user().roles !== "undefined" &&
-      this.$auth.user().roles
-    ) {
+    if (this.$auth.user() && this.$auth.user().roles) {
       return this.$auth
         .user()
         .roles[0].toLowerCase()

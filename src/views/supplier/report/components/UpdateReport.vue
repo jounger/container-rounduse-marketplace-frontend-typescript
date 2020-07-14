@@ -72,6 +72,7 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IReport } from "@/entity/report";
 import FormValidate from "@/mixin/form-validate";
+import { editReport } from "@/api/report";
 // import { createReport, updateReport } from "@/api/report";
 
 @Component({
@@ -91,26 +92,19 @@ export default class CreateReport extends Vue {
   }
   updateReport() {
     if (this.reportLocal.id) {
-      // updateReport(this.reportLocal)
-      //   .then(res => {
-      //     console.log(res.data);
-      //     const response: IReport = res.data;
-      //     this.messageSync = "Cập nhập thành công Phản hồi: " + response.id;
-      //     const index = this.reportsSync.findIndex(x => x.id == response.id);
-      //     this.reportsSync.splice(index, 1, response);
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //     this.messageSync = "Đã có lỗi xảy ra";
-      //   })
-      //   .finally(() => (this.snackbarSync = true));
-      this.messageSync = "Cập nhập thành công Report: " + this.reportLocal.id;
-      const index = this.reportsSync.findIndex(
-        x => x.id == this.reportLocal.id
-      );
-      this.reportsSync.splice(index, 1, this.reportLocal);
-
-      this.snackbarSync = true;
+      editReport(this.reportLocal.id, this.reportLocal)
+        .then(res => {
+          console.log(res.data);
+          const response: IReport = res.data;
+          this.messageSync = "Cập nhập thành công Report: " + response.id;
+          const index = this.reportsSync.findIndex(x => x.id == response.id);
+          this.reportsSync.splice(index, 1, response);
+        })
+        .catch(err => {
+          console.log(err);
+          this.messageSync = "Đã có lỗi xảy ra";
+        })
+        .finally(() => (this.snackbarSync = true));
     }
   }
 }
