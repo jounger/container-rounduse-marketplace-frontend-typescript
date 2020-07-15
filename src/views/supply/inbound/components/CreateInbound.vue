@@ -98,8 +98,8 @@
                     </v-col>
                   </v-row>
                   <v-row>
-                    <v-col cols="12" sm="6">
-                      <v-menu
+                    <v-col cols="12">
+                      <!-- <v-menu
                         ref="pickupTimePicker"
                         v-model="pickupTimePicker"
                         :close-on-content-click="false"
@@ -141,7 +141,11 @@
                             >OK</v-btn
                           >
                         </v-date-picker>
-                      </v-menu>
+                      </v-menu> -->
+                      <DatetimePicker
+                        :datetime="inboundLocal.pickupTime"
+                        :return-value.sync="inboundLocal.pickupTime"
+                      />
                     </v-col>
                   </v-row>
                   <v-btn color="primary" @click="stepper = 2" :disabled="!valid"
@@ -180,8 +184,8 @@
                       ></v-select> </v-col
                   ></v-row>
                   <v-row
-                    ><v-col cols="12" sm="6">
-                      <v-menu
+                    ><v-col cols="12">
+                      <!-- <v-menu
                         ref="freeTimePicker"
                         v-model="freeTimePicker"
                         :close-on-content-click="false"
@@ -222,8 +226,14 @@
                             >OK</v-btn
                           >
                         </v-date-picker>
-                      </v-menu>
+                      </v-menu> -->
+                      <DatetimePicker
+                        :datetime="inboundLocal.billOfLading.freeTime"
+                        :return-value.sync="inboundLocal.billOfLading.freeTime"
+                      />
                     </v-col>
+                  </v-row>
+                  <v-row>
                     <v-col cols="12" sm="6">
                       <v-text-field
                         v-model="inboundLocal.billOfLading.unit"
@@ -445,9 +455,11 @@ import GoogleMapDirection from "@/components/googlemaps/GoogleMapDirection.vue";
 import GoogleMapDistanceMatrix from "@/components/googlemaps/GoogleMapDistanceMatrix.vue";
 import { DistanceMatrix } from "@/components/googlemaps/map-interface";
 import Utils from "@/mixin/utils";
+import DatetimePicker from "@/components/DatetimePicker.vue";
 
 @Component({
   components: {
+    DatetimePicker,
     DeleteContainer,
     CreateContainer,
     GoogleMapLoader,
@@ -469,7 +481,7 @@ export default class CreateInbound extends Vue {
   distanceMatrixResult = null as DistanceMatrix | null;
   style = { width: "600px", height: "500px" };
   origin = null as google.maps.places.PlaceResult | null;
-  dateInit = new Date().toISOString().substr(0, 10);
+  dateInit = addTimeToDate(new Date().toString());
   inboundLocal = {
     shippingLine: "",
     containerType: "",
