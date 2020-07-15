@@ -105,12 +105,13 @@
                   </v-row>
                   <v-row>
                     <v-col cols="12">
+                      <label>Nơi đóng hàng</label>
                       <input
                         ref="inputAddress1"
                         class="place-input"
                         type="text"
-                        placeholder="Noi dong hang"
-                        :rules="[required('Noi dong hang')]"
+                        placeholder="Nơi đóng hàng"
+                        :rules="[required('packing station')]"
                         required
                       />
                       <!-- <v-text-field
@@ -143,7 +144,7 @@
                         v-model="outboundLocal.goodsDescription"
                         prepend-icon="description"
                         type="text"
-                        label="Mô tả"
+                        label="Mô tả hàng"
                       ></v-text-field> </v-col
                   ></v-row>
 
@@ -171,7 +172,7 @@
                         prepend-icon="child_friendly"
                         :rules="[required('booking number')]"
                         type="text"
-                        label="bookingNumber*"
+                        label="Số Booking*"
                         required
                       ></v-text-field> </v-col
                     ><v-col cols="12" sm="6">
@@ -198,7 +199,7 @@
                         <template v-slot:activator="{ on, attrs }">
                           <v-text-field
                             v-model="outboundLocal.booking.cutOffTime"
-                            label="Thời gian tàu chạy*"
+                            label="Thời gian tàu cắt máng*"
                             prepend-icon="flight_takeoff"
                             v-bind="attrs"
                             v-on="on"
@@ -486,8 +487,8 @@ export default class CreateOutbound extends Vue {
     this.origin = null;
     this.checkbox = false;
     this.stepper = 1;
-    this.valid = true;
-    this.valid2 = true;
+    this.valid = false;
+    this.valid2 = false;
     this.dateInit = new Date().toISOString().substr(0, 10);
     this.distanceMatrixResult = null;
     this.packingTimePicker = false;
@@ -615,6 +616,7 @@ export default class CreateOutbound extends Vue {
   }
   beforeDestroy() {
     console.log("DESTROY > CreateOutbound");
+    this.stepper = 1;
     this.origin = null;
   }
 }

@@ -10,7 +10,6 @@
         :totalItems.sync="options.totalItems"
       />
       <UpdateInbound
-        v-if="dialogEdit"
         :inbound="inbound"
         :dialogEdit.sync="dialogEdit"
         :message.sync="message"

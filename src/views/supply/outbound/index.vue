@@ -10,7 +10,6 @@
         :totalItems.sync="options.totalItems"
       />
       <UpdateOutbound
-        v-if="dialogEdit"
         :outbound="outbound"
         :dialogEdit.sync="dialogEdit"
         :message.sync="message"

@@ -65,7 +65,7 @@ export default class Navigation extends Vue {
   ];
 
   get capitalizeUsername() {
-    if (this.$auth.user().username)
+    if (this.$auth.user() && this.$auth.user().username)
       return toCapitalize(this.$auth.user().username);
     this.$auth.logout();
     return "";

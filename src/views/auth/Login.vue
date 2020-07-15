@@ -40,7 +40,9 @@ export default class Login extends Vue {
   public password = "123456";
   public mounted() {
     if (this.$auth.check()) {
-      this.$router.push("/dashboard");
+      setTimeout(() => {
+        this.$router.push("/dashboard");
+      }, 500);
     }
   }
   public register() {

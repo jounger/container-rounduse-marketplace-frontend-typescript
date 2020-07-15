@@ -79,12 +79,13 @@
                   ></v-row>
                   <v-row
                     ><v-col cols="12">
+                      <label for="">Nơi trả hàng</label>
                       <input
                         ref="inputAddress1"
                         class="place-input"
                         type="text"
-                        placeholder="Noi dong hang"
-                        :rules="[required('Noi dong hang')]"
+                        placeholder="Nơi trả hàng"
+                        :rules="[required('return station')]"
                         required
                       />
                       <!-- <v-text-field
@@ -110,7 +111,7 @@
                         <template v-slot:activator="{ on, attrs }">
                           <v-text-field
                             v-model="inboundLocal.pickupTime"
-                            label="Thời gian lấy containers đặc từ cảng*"
+                            label="Thời gian lấy cont đặc*"
                             prepend-icon="flight_land"
                             v-bind="attrs"
                             v-on="on"
@@ -166,7 +167,7 @@
                         v-model="inboundLocal.billOfLading.billOfLadingNumber"
                         prepend-icon="play_for_work"
                         type="text"
-                        :rules="[required('B/L No.')]"
+                        :rules="[required('Số B/L')]"
                         label="B/L No.*"
                       ></v-text-field> </v-col
                     ><v-col cols="12" sm="6">
@@ -175,7 +176,7 @@
                         prepend-icon="flag"
                         :items="portsToString"
                         :rules="[required('port of loading')]"
-                        label="Cảng lấy container đặc*"
+                        label="Cảng lấy cont đặc*"
                       ></v-select> </v-col
                   ></v-row>
                   <v-row
@@ -192,7 +193,7 @@
                         <template v-slot:activator="{ on, attrs }">
                           <v-text-field
                             v-model="inboundLocal.billOfLading.freeTime"
-                            label="Thời gian được thuê cont"
+                            label="Thời gian DEM/DET (Freetime)"
                             prepend-icon="event_available"
                             v-bind="attrs"
                             v-on="on"
@@ -229,7 +230,7 @@
                         prepend-icon="local_shipping"
                         type="number"
                         :rules="[required('unit')]"
-                        label="Số lượng Cont*"
+                        label="Số lượng ont*"
                       ></v-text-field
                     ></v-col>
                   </v-row>
@@ -564,8 +565,8 @@ export default class CreateInbound extends Vue {
     this.origin = null;
     this.checkbox = false;
     this.stepper = 1;
-    this.valid = true;
-    this.valid2 = true;
+    this.valid = false;
+    this.valid2 = false;
     this.dateInit = new Date().toISOString().substr(0, 10);
     this.distanceMatrixResult = null;
     this.pickupTimePicker = false;
