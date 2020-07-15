@@ -1,5 +1,5 @@
 import { Vue, Component } from "vue-property-decorator";
-import { addMinutesToDate, formatDatetime, addTimeToDate, isEmptyObject } from '../utils/tool';
+import { addMinutesToDate, formatDatetime, addTimeToDate, isEmptyObject, currencyFormatter } from '../utils/tool';
 
 @Component
 export default class Utils extends Vue {
@@ -22,5 +22,9 @@ export default class Utils extends Vue {
   formatPrice(value: string) {
     const val = (parseInt(value) / 1).toFixed(2).replace(".", ",");
     return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  }
+
+  currencyFormatter(num: number, cur?: string) {
+    return currencyFormatter(num, cur);
   }
 }

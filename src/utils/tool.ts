@@ -60,6 +60,21 @@ export function convertCurrencyToNumber(value: string) {
   return number;
 }
 
+export function isEmptyString(input: string) {
+  return input && input.length > 0 ? false : true;
+}
+
+export function currencyFormatter(num: number, cur?: string) {
+  let currency = "VND"
+  if (cur && !isEmptyString(cur)) {
+    currency = cur;
+  }
+  return new Intl.NumberFormat("vi-VI", {
+    style: "currency",
+    currency: "VND",
+  }).format(num);
+}
+
 export function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }

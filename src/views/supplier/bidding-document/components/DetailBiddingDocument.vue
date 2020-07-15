@@ -43,14 +43,18 @@
                 <v-list-item-content>
                   <v-list-item-title>{{
                     "Giá gói thầu: " +
-                      biddingDocument.bidPackagePrice +
-                      biddingDocument.currencyOfPayment
+                      currencyFormatter(
+                        biddingDocument.bidPackagePrice,
+                        biddingDocument.currencyOfPayment
+                      )
                   }}</v-list-item-title>
                   <v-list-item-subtitle>
                     {{
                       "Giá sàn: " +
-                        biddingDocument.bidFloorPrice +
-                        biddingDocument.currencyOfPayment
+                        currencyFormatter(
+                          biddingDocument.bidFloorPrice,
+                          biddingDocument.currencyOfPayment
+                        )
                     }}
                   </v-list-item-subtitle>
                 </v-list-item-content>
@@ -205,14 +209,18 @@
                   <v-list-item-content>
                     <v-list-item-title>{{
                       "Giá dẫn đầu: " +
-                        biddingDocument.priceLeadership +
-                        biddingDocument.currencyOfPayment
+                        currencyFormatter(
+                          biddingDocument.priceLeadership,
+                          biddingDocument.currencyOfPayment
+                        )
                     }}</v-list-item-title>
                     <v-list-item-subtitle>
                       {{
                         "Giá sàn: " +
-                          biddingDocument.bidFloorPrice +
-                          biddingDocument.currencyOfPayment
+                          currencyFormatter(
+                            biddingDocument.bidFloorPrice,
+                            biddingDocument.currencyOfPayment
+                          )
                       }}
                     </v-list-item-subtitle>
                   </v-list-item-content>
@@ -340,6 +348,9 @@
         >
           <template v-slot:item.bidDate="{ item }">
             {{ formatDatetime(item.bidDate) }}
+          </template>
+          <template v-slot:item.bidPrice="{ item }">
+            {{ currencyFormatter(item.bidPrice) }}
           </template>
           <template v-slot:item.bidValidityPeriod="{ item }">
             {{ formatDatetime(item.bidValidityPeriod) }}
