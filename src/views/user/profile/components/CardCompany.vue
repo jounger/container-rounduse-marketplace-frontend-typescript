@@ -1,0 +1,161 @@
+<template>
+  <v-card class="order-1 flex-grow-1 mx-auto my-12" v-if="$auth.user()">
+    <v-card-title
+      ><v-icon
+        large
+        v-if="
+          $auth.user() &&
+            $auth.user().roles[0] != 'ROLE_ADMIN' &&
+            $auth.user().roles[0] != 'ROLE_MODERATOR'
+        "
+        >business_center</v-icon
+      ><span style="margin-left:10px;">
+        {{
+          $auth.user().roles[0] == "ROLE_ADMIN"
+            ? "Thông tin Admin"
+            : $auth.user().roles[0] == "ROLE_MODERATOR"
+            ? "Thông tin Quản trị viên"
+            : "Thông tin Công ty"
+        }}</span
+      ></v-card-title
+    >
+
+    <v-divider inset></v-divider>
+    <v-layout row>
+      <v-layout col>
+        <v-flex xs10>
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon color="indigo">verified_user</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>{{
+                profile ? profile.companyCode : ""
+              }}</v-list-item-title>
+              <v-list-item-subtitle>Mã Công ty</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-flex>
+      </v-layout>
+      <v-layout col>
+        <v-flex xs10>
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon color="indigo">contacts</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>{{
+                profile ? profile.companyName : ""
+              }}</v-list-item-title>
+              <v-list-item-subtitle>Tên Công ty</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-flex>
+      </v-layout>
+    </v-layout>
+    <v-layout row>
+      <v-layout col>
+        <v-flex xs10>
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon color="indigo">copyright</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>{{
+                profile ? profile.website : ""
+              }}</v-list-item-title>
+              <v-list-item-subtitle>Website</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-flex>
+      </v-layout>
+      <v-layout col>
+        <v-flex xs10>
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon color="indigo">location_city</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>{{
+                profile ? profile.companyAddress : ""
+              }}</v-list-item-title>
+              <v-list-item-subtitle>Địa chỉ công ty</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-flex>
+      </v-layout>
+    </v-layout>
+    <v-layout row>
+      <v-layout col>
+        <v-flex xs10>
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon color="indigo">contact_phone</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>{{
+                profile ? profile.tin : ""
+              }}</v-list-item-title>
+              <v-list-item-subtitle>Tin</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-flex>
+      </v-layout>
+      <v-layout col>
+        <v-flex xs10>
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon color="indigo">perm_phone_msg</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>{{
+                profile ? profile.fax : ""
+              }}</v-list-item-title>
+              <v-list-item-subtitle>Fax</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-flex>
+      </v-layout>
+    </v-layout>
+    <v-layout row>
+      <v-layout col>
+        <v-flex xs10
+          ><v-list-item>
+            <v-list-item-icon>
+              <v-icon color="indigo">description</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>{{
+                profile ? profile.companyDescription : ""
+              }}</v-list-item-title>
+              <v-list-item-subtitle>Mô tả</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-flex>
+      </v-layout>
+    </v-layout>
+  </v-card>
+</template>
+
+<script lang="ts">
+import { Component, Vue } from "vue-property-decorator";
+import { IUser } from "@/entity/user";
+import { getSupplier } from "@/api/supplier";
+@Component
+export default class CardCompany extends Vue {
+  public profile: IUser | null = null;
+  async created() {
+    if (
+      this.$auth.user().roles[0] == "ROLE_MERCHANT" ||
+      this.$auth.user().roles[0] == "ROLE_FORWARDER" ||
+      this.$auth.user().roles == "ROLE_SHIPPINGLINE"
+    ) {
+      getSupplier(this.$auth.user().id).then(res => {
+        const response = res.data;
+        this.profile = response;
+      });
+    }
+  }
+}
+</script>

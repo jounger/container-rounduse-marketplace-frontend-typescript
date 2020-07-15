@@ -3,7 +3,6 @@
     <v-card>
       <Snackbar :text="message" :snackbar.sync="snackbar" />
       <CreateOutbound
-        v-if="dialogAdd"
         :dialogAdd.sync="dialogAdd"
         :message.sync="message"
         :snackbar.sync="snackbar"
@@ -11,7 +10,6 @@
         :totalItems.sync="options.totalItems"
       />
       <UpdateOutbound
-        v-if="dialogEdit"
         :outbound="outbound"
         :dialogEdit.sync="dialogEdit"
         :message.sync="message"
@@ -144,7 +142,6 @@ export default class Outbound extends Vue {
   dialogEdit = false;
   dialogDel = false;
   dialogCreateBiddingDocument = false;
-  search = "";
   message = "";
   snackbar = false;
   loading = true;
@@ -201,7 +198,7 @@ export default class Outbound extends Vue {
   @Watch("options", { deep: true })
   onOptionsChange(val: object, oldVal: object) {
     if (val !== oldVal) {
-      getOutboundByMerchant(this.$auth.user().id, {
+      getOutboundByMerchant({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })

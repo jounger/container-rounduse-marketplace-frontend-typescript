@@ -2,7 +2,7 @@ import { IBiddingNotification } from "@/entity/bidding-notification";
 export const IBiddingNotificationData: IBiddingNotification[] = [
   {
     id: 100,
-    recipient: "forwarder",
+    recipient: "merchant",
     isRead: false,
     relatedResource: {
       id: 0,
@@ -14,6 +14,7 @@ export const IBiddingNotificationData: IBiddingNotification[] = [
         status: "CREATED",
         goodsDescription: "Hàng dệt may",
         packingTime: "2020-12-01T20:20",
+        deliveryTime: "2020-12-01T25:20",
         packingStation: "Hà Nội",
         grossWeight: 2000,
         unitOfMeasurement: "KG",
@@ -26,7 +27,7 @@ export const IBiddingNotificationData: IBiddingNotification[] = [
         }
       },
       bids: [],
-      bidDiscountCode: "DISCOUNT01",
+      discount: "DISCOUNT01",
       isMultipleAward: true,
       bidOpening: "2020-12-01T20:20",
       bidClosing: "2020-12-03T20:20",
@@ -37,12 +38,14 @@ export const IBiddingNotificationData: IBiddingNotification[] = [
       priceLeadership: 150,
       status: "BIDDING"
     },
+    sendDate: "2016-06-20",
+    title: "message",
     message: "Day la message",
     type: "CREATED"
   },
   {
-    id: 101,
-    recipient: "forwarder",
+    id: 100,
+    recipient: "merchant",
     isRead: false,
     relatedResource: {
       id: 0,
@@ -54,6 +57,7 @@ export const IBiddingNotificationData: IBiddingNotification[] = [
         status: "CREATED",
         goodsDescription: "Hàng dệt may",
         packingTime: "2020-12-01T20:20",
+        deliveryTime: "2020-12-01T25:20",
         packingStation: "Hà Nội",
         grossWeight: 2000,
         unitOfMeasurement: "KG",
@@ -66,7 +70,7 @@ export const IBiddingNotificationData: IBiddingNotification[] = [
         }
       },
       bids: [],
-      bidDiscountCode: "DISCOUNT01",
+      discount: "DISCOUNT01",
       isMultipleAward: true,
       bidOpening: "2020-12-01T20:20",
       bidClosing: "2020-12-03T20:20",
@@ -77,6 +81,8 @@ export const IBiddingNotificationData: IBiddingNotification[] = [
       priceLeadership: 150,
       status: "BIDDING"
     },
+    sendDate: "2016-06-20",
+    title: "message",
     message: "Day la message",
     type: "CREATED"
   }

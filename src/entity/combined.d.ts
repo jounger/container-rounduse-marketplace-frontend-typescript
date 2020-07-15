@@ -1,6 +1,8 @@
-import { IBiddingDocument } from './bidding-document';
+import { IBid } from "./bid";
+import { IContract } from "./contract";
 export interface ICombined {
   id?: number;
-  biddingDocument: IBiddingDocument;
+  bid: IBid | number;
   status: string;
+  contract?: IContract;
 }

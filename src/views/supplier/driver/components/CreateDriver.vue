@@ -19,9 +19,9 @@
       <v-card-text>
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Tên đăng nhập"
                   name="username"
@@ -34,8 +34,8 @@
                 ></v-text-field>
               </v-flex>
             </v-layout>
-            <v-layout row>
-              <v-flex xs8>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   v-if="!update"
                   label="Mật khẩu"
@@ -52,9 +52,9 @@
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Tên lái xe"
                   name="fullname"
@@ -66,8 +66,8 @@
                 ></v-text-field>
               </v-flex>
             </v-layout>
-            <v-layout row>
-              <v-flex xs8>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Số bằng lái"
                   name="driverLocalLicense"
@@ -80,9 +80,9 @@
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Email"
                   name="email"
@@ -98,13 +98,13 @@
                 ></v-text-field>
               </v-flex>
             </v-layout>
-            <v-layout row>
-              <v-flex xs8>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Số điện thoại"
                   name="phone"
                   prepend-icon="call"
-                  type="text"
+                  type="number"
                   :counter="10"
                   :rules="[minLength('phone', 10), maxLength('phone', 10)]"
                   v-model="driverLocal.phone"
@@ -112,8 +112,8 @@
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-layout col>
-            <v-layout row>
+          <v-layout row>
+            <v-layout col>
               <v-flex xs10>
                 <v-text-field
                   label="Địa chỉ"
@@ -175,7 +175,10 @@ export default class CreateDriver extends Vue {
     password: "",
     fullname: "",
     driverLicense: "",
-    location: ""
+    location: {
+      latitude: "",
+      longitude: ""
+    }
   } as IDriver;
   valid = false;
   created() {
@@ -188,7 +191,7 @@ export default class CreateDriver extends Vue {
         .then(res => {
           console.log(res.data);
           const response: IDriver = res.data;
-          this.messageSync = "Thêm mới thành công lái xe: " + response.id;
+          this.messageSync = "Thêm mới thành công lái xe: " + response.username;
           this.driversSync.unshift(response);
           this.totalItemsSync += 1;
         })

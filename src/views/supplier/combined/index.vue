@@ -65,7 +65,6 @@ export default class Combined extends Vue {
   outbounds: Array<IOutbound> = [];
   combineds: Array<ICombined> = [];
   combined = {} as ICombined;
-  search = "";
   loading = true;
   options = {
     descending: true,
@@ -97,33 +96,33 @@ export default class Combined extends Vue {
     }
   ];
 
-  gotoDetail(item: any) {
-    const id = this.combineds[0].id;
+  gotoDetail(item: ICombined) {
+    const id = item.id;
     this.$router.push({ path: `/combined/${id}` });
   }
 
-  reduceData(combineds: Array<ICombined>) {
-    this.biddingDocuments = combineds.reduce(function(
-      pV: Array<IBiddingDocument>,
-      cV: ICombined
-    ) {
-      pV.push(cV.biddingDocument);
-      return pV;
-    },
-    []);
-    this.outbounds = this.biddingDocuments.reduce(function(
-      pV: Array<IOutbound>,
-      cV: IBiddingDocument
-    ) {
-      pV.push(cV.outbound as IOutbound);
-      return pV;
-    },
-    []);
-  }
+  // reduceData(combineds: Array<ICombined>) {
+  //   this.biddingDocuments = combineds.reduce(function(
+  //     pV: Array<IBiddingDocument>,
+  //     cV: ICombined
+  //   ) {
+  //     pV.push(cV.biddingDocument);
+  //     return pV;
+  //   },
+  //   []);
+  //   this.outbounds = this.biddingDocuments.reduce(function(
+  //     pV: Array<IOutbound>,
+  //     cV: IBiddingDocument
+  //   ) {
+  //     pV.push(cV.outbound as IOutbound);
+  //     return pV;
+  //   },
+  //   []);
+  // }
 
   created() {
     // TODO: Fake data
-    this.reduceData(this.combineds);
+    // this.reduceData(this.combineds);
     this.options.totalItems = 10;
     this.loading = false;
   }
@@ -137,9 +136,9 @@ export default class Combined extends Vue {
       })
         .then(res => {
           const response: PaginationResponse<ICombined> = res.data;
-          console.log("response", response);
           this.combineds = response.data;
-          this.reduceData(this.combineds);
+          console.log("combineds", this.combineds);
+          // this.reduceData(this.combineds);
           this.options.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))

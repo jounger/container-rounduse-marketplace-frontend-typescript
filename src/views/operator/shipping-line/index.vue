@@ -110,7 +110,6 @@ export default class ShippingLine extends Vue {
   loading = true;
   message = "";
   snackbar = false;
-  search = "";
   options = {
     descending: true,
     page: 1,

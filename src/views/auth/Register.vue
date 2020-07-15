@@ -20,8 +20,8 @@
         <v-stepper-content step="1">
           <v-form ref="registerForm" v-model="valid" validation>
             <small>*Dấu sao là trường bắt buộc</small>
-            <v-layout col>
-              <v-layout row>
+            <v-layout row>
+              <v-layout col>
                 <v-flex xs8>
                   <v-text-field
                     label="Tên đăng nhập*"
@@ -37,7 +37,7 @@
                   ></v-text-field>
                 </v-flex>
               </v-layout>
-              <v-layout row>
+              <v-layout col>
                 <v-flex xs8>
                   <v-text-field
                     label="Mật khẩu*"
@@ -59,11 +59,11 @@
               <v-radio
                 label="Đăng ký làm chủ hàng"
                 value="merchant"
-                style="margin-left:255px;"
+                style="margin-left:275px;"
               ></v-radio>
             </v-radio-group>
-            <v-layout col>
-              <v-layout row>
+            <v-layout row>
+              <v-layout col>
                 <v-flex xs8>
                   <v-text-field
                     label="Email*"
@@ -79,13 +79,13 @@
                   ></v-text-field>
                 </v-flex>
               </v-layout>
-              <v-layout row>
+              <v-layout col>
                 <v-flex xs8>
                   <v-text-field
                     label="Số điện thoại*"
                     name="phone"
                     prepend-icon="phone"
-                    type="text"
+                    type="number"
                     :counter="10"
                     :rules="[minLength('phone', 10), maxLength('phone', 10)]"
                     v-model="phone"
@@ -93,16 +93,23 @@
                 </v-flex>
               </v-layout>
             </v-layout>
-
-            <v-text-field
-              label="Địa chỉ*"
-              name="address"
-              prepend-icon="location_on"
-              :counter="100"
-              :rules="[minLength('address', 5), maxLength('address', 100)]"
-              type="text"
-              v-model="address"
-            ></v-text-field>
+            <v-layout row>
+              <v-layout col>
+                <v-flex xs10>
+                  <v-text-field
+                    label="Địa chỉ*"
+                    name="address"
+                    prepend-icon="location_on"
+                    :counter="100"
+                    :rules="[
+                      minLength('address', 5),
+                      maxLength('address', 100)
+                    ]"
+                    type="text"
+                    v-model="address"
+                  ></v-text-field> </v-flex
+              ></v-layout>
+            </v-layout>
             <v-btn color="primary" @click="stepper = 2" :disabled="!valid"
               >Tiếp tục</v-btn
             >
@@ -117,8 +124,8 @@
         <v-stepper-content step="2">
           <v-form ref="companyForm" v-model="valid2" validation>
             <small>*Dấu sao là trường bắt buộc</small>
-            <v-layout col>
-              <v-layout row>
+            <v-layout row>
+              <v-layout col>
                 <v-flex xs8>
                   <v-text-field
                     label="Mã công ty*"
@@ -134,7 +141,7 @@
                   ></v-text-field>
                 </v-flex>
               </v-layout>
-              <v-layout row>
+              <v-layout col>
                 <v-flex xs8>
                   <v-text-field
                     label="Tên công ty*"
@@ -152,8 +159,8 @@
                 </v-flex>
               </v-layout>
             </v-layout>
-            <v-layout col>
-              <v-layout row>
+            <v-layout row>
+              <v-layout col>
                 <v-flex xs8>
                   <v-text-field
                     label="Người liên hệ*"
@@ -169,7 +176,7 @@
                   ></v-text-field>
                 </v-flex>
               </v-layout>
-              <v-layout row>
+              <v-layout col>
                 <v-flex xs8>
                   <v-text-field
                     label="Website*"
@@ -183,8 +190,8 @@
                 </v-flex>
               </v-layout>
             </v-layout>
-            <v-layout col>
-              <v-layout row>
+            <v-layout row>
+              <v-layout col>
                 <v-flex xs8>
                   <v-text-field
                     label="Tin*"
@@ -192,18 +199,18 @@
                     prepend-icon="contact_phone"
                     :counter="20"
                     :rules="[minLength('tin', 5), maxLength('tin', 20)]"
-                    type="text"
+                    type="number"
                     v-model="tin"
                   ></v-text-field>
                 </v-flex>
               </v-layout>
-              <v-layout row>
+              <v-layout col>
                 <v-flex xs8>
                   <v-text-field
                     label="Fax*"
                     name="fax"
                     prepend-icon="perm_phone_msg"
-                    type="text"
+                    type="number"
                     :counter="20"
                     :rules="[minLength('fax', 5), maxLength('fax', 20)]"
                     v-model="fax"
@@ -211,8 +218,8 @@
                 </v-flex>
               </v-layout>
             </v-layout>
-            <v-layout col>
-              <v-layout row>
+            <v-layout row>
+              <v-layout col>
                 <v-flex xs8>
                   <v-text-field
                     label="Mô tả*"
@@ -228,7 +235,7 @@
                   ></v-text-field>
                 </v-flex>
               </v-layout>
-              <v-layout row>
+              <v-layout col>
                 <v-flex xs8>
                   <v-text-field
                     label="Địa chỉ công ty*"
@@ -266,14 +273,7 @@
             <v-btn color="primary" @click="submit()" :disabled="!checkbox"
               >Hoàn tất</v-btn
             >
-            <v-btn
-              text
-              @click="
-                stepper = 2;
-                valid = true;
-              "
-              >Quay lại</v-btn
-            >
+            <v-btn text @click="stepper = 2">Quay lại</v-btn>
           </v-form>
         </v-stepper-content>
       </v-stepper>
@@ -306,7 +306,7 @@ export default class Register extends Vue {
   companyAddress = "";
   tin = "";
   fax = "";
-  role = [] as Array<string>;
+  role: Array<string> = [];
   message = "";
   snackbar = false;
   editable = false;
@@ -347,7 +347,8 @@ export default class Register extends Vue {
         console.error("ERROR! in register", err);
         this.message = "Đã có lỗi xảy ra";
         this.snackbar = true;
-      });
+      })
+      .finally(() => (this.role = [] as Array<string>));
   }
   public cancel(): void {
     this.$router.push("/login");

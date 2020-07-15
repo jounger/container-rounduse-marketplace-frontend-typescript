@@ -28,8 +28,8 @@
           <v-stepper-content step="1">
             <v-form ref="shippingLineForm" v-model="valid" lazy-validation>
               <small>*Dấu sao là trường bắt buộc</small>
-              <v-layout col
-                ><v-layout row
+              <v-layout row
+                ><v-layout col
                   ><v-flex xs5>
                     <v-text-field
                       v-model="shippingLineLocal.username"
@@ -44,8 +44,8 @@
                       readonly
                     ></v-text-field> </v-flex></v-layout
               ></v-layout>
-              <v-layout col
-                ><v-layout row
+              <v-layout row
+                ><v-layout col
                   ><v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.email"
@@ -59,20 +59,20 @@
                       type="text"
                       label="Email*"
                     ></v-text-field> </v-flex></v-layout
-                ><v-layout row
+                ><v-layout col
                   ><v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.phone"
                       prepend-icon="phone"
                       :counter="10"
                       :rules="[minLength('phone', 10), maxLength('phone', 10)]"
-                      type="text"
+                      type="number"
                       label="Số điện thoại*"
                     ></v-text-field> </v-flex></v-layout
               ></v-layout>
-              <v-layout col
-                ><v-layout row
-                  ><v-flex xs11>
+              <v-layout row
+                ><v-layout col
+                  ><v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.address"
                       prepend-icon="location_on"
@@ -102,9 +102,9 @@
           <v-stepper-content step="2">
             <v-form ref="bookingForm" v-model="valid1" lazy-validation>
               <small>*Dấu sao là trường bắt buộc</small>
-              <v-layout col>
-                <v-layout row>
-                  <v-flex xs8>
+              <v-layout row>
+                <v-layout col>
+                  <v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.companyCode"
                       prepend-icon="verified_user"
@@ -119,8 +119,8 @@
                     ></v-text-field>
                   </v-flex>
                 </v-layout>
-                <v-layout row>
-                  <v-flex xs8>
+                <v-layout col>
+                  <v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.companyName"
                       prepend-icon="directions_boat"
@@ -135,9 +135,9 @@
                   </v-flex>
                 </v-layout>
               </v-layout>
-              <v-layout col>
-                <v-layout row>
-                  <v-flex xs8>
+              <v-layout row>
+                <v-layout col>
+                  <v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.contactPerson"
                       prepend-icon="add_ic_call"
@@ -151,8 +151,8 @@
                     ></v-text-field>
                   </v-flex>
                 </v-layout>
-                <v-layout row>
-                  <v-flex xs8>
+                <v-layout col>
+                  <v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.website"
                       prepend-icon="copyright"
@@ -167,9 +167,9 @@
                   </v-flex>
                 </v-layout>
               </v-layout>
-              <v-layout col>
-                <v-layout row>
-                  <v-flex xs8>
+              <v-layout row>
+                <v-layout col>
+                  <v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.companyDescription"
                       prepend-icon="description"
@@ -183,8 +183,8 @@
                     ></v-text-field>
                   </v-flex>
                 </v-layout>
-                <v-layout row>
-                  <v-flex xs8>
+                <v-layout col>
+                  <v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.companyAddress"
                       prepend-icon="location_city"
@@ -199,42 +199,43 @@
                   </v-flex>
                 </v-layout>
               </v-layout>
-              <v-layout col>
-                <v-layout row>
-                  <v-flex xs8>
+              <v-layout row>
+                <v-layout col>
+                  <v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.tin"
                       prepend-icon="contact_phone"
                       :counter="20"
                       :rules="[minLength('tin', 5), maxLength('tin', 20)]"
                       label="Tin*"
-                      type="text"
+                      type="number"
                     ></v-text-field>
                   </v-flex>
                 </v-layout>
-                <v-layout row>
-                  <v-flex xs8>
+                <v-layout col>
+                  <v-flex xs10>
                     <v-text-field
                       v-model="shippingLineLocal.fax"
                       prepend-icon="perm_phone_msg"
                       :counter="20"
                       :rules="[minLength('fax', 5), maxLength('fax', 20)]"
                       label="Fax*"
-                      type="text"
+                      type="number"
                     ></v-text-field>
                   </v-flex>
                 </v-layout>
               </v-layout>
-              <v-layout col
-                ><v-flex xs4>
-                  <v-select
-                    v-model="shippingLineLocal.status"
-                    prepend-icon="insert_emoticon"
-                    :items="allStatus"
-                    :rules="[required('status')]"
-                    label="Trạng thái"
-                  >
-                  </v-select> </v-flex
+              <v-layout row>
+                <v-layout col>
+                  <v-flex xs5>
+                    <v-select
+                      v-model="shippingLineLocal.status"
+                      prepend-icon="insert_emoticon"
+                      :items="allStatus"
+                      :rules="[required('status')]"
+                      label="Trạng thái"
+                    >
+                    </v-select> </v-flex></v-layout
               ></v-layout>
               <v-btn
                 color="primary"
@@ -275,10 +276,10 @@ export default class UpdateShippingLine extends Vue {
   stepper = 1;
   valid = true;
   valid1 = true;
-  allStatus = ["PENDING", "ACTIVE", "BANNED"];
+  allStatus: Array<string> = [];
   shippingLineLocal = {} as IShippingLine;
   created() {
-    console.log(this.shippingLine);
+    this.allStatus = ["PENDING", "ACTIVE", "BANNED"];
     this.shippingLineLocal = Object.assign({}, this.shippingLine);
   }
   // ShippingLine Update

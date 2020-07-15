@@ -21,20 +21,11 @@
       <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-card-title>
         Danh sách Supplier
-        <v-spacer></v-spacer>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>
       </v-card-title>
       <v-data-table
         :headers="headers"
         :items="suppliers"
         item-key="username"
-        :search="search"
         :loading="loading"
         :options.sync="options"
         :server-items-length="options.totalItems"
@@ -98,7 +89,6 @@ export default class Supplier extends Vue {
   loading = true;
   message = "";
   snackbar = false;
-  search = "";
   options = {
     descending: true,
     page: 1,

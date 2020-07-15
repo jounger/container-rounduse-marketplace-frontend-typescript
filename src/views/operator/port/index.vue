@@ -14,14 +14,19 @@
       </v-row>
       <v-row justify="center">
         <CreatePort
-          v-if="dialogAdd"
           :totalItems.sync="options.totalItems"
           :port="port"
           :ports.sync="ports"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
           :snackbar.sync="snackbar"
-          :update="update"
+        />
+        <UpdatePort
+          :port="port"
+          :ports.sync="ports"
+          :dialogEdit.sync="dialogEdit"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
         />
       </v-row>
       <Snackbar :text="message" :snackbar.sync="snackbar" />
@@ -64,6 +69,7 @@
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { IPort } from "@/entity/port";
 import CreatePort from "./components/CreatePort.vue";
+import UpdatePort from "./components/UpdatePort.vue";
 import DeletePort from "./components/DeletePort.vue";
 import { getPorts } from "@/api/port";
 import { PaginationResponse } from "@/api/payload";
@@ -72,6 +78,7 @@ import Snackbar from "@/components/Snackbar.vue";
 @Component({
   components: {
     CreatePort,
+    UpdatePort,
     DeletePort,
     Snackbar
   }
@@ -80,8 +87,8 @@ export default class Port extends Vue {
   ports: Array<IPort> = [];
   port = {} as IPort;
   dialogAdd = false;
+  dialogEdit = false;
   dialogDel = false;
-  search = "";
   message = "";
   snackbar = false;
   loading = true;
@@ -109,15 +116,12 @@ export default class Port extends Vue {
   ];
 
   openCreateDialog() {
-    this.port = {} as IPort;
-    this.update = false;
     this.dialogAdd = true;
   }
 
   openUpdateDialog(item: IPort) {
     this.port = item;
-    this.update = true;
-    this.dialogAdd = true;
+    this.dialogEdit = true;
   }
 
   openDeleteDialog(item: IPort) {

@@ -81,7 +81,6 @@ export default class ContainerType extends Vue {
   containerType = {} as IContainerType;
   dialogAdd = false;
   dialogDel = false;
-  search = "";
   message = "";
   snackbar = false;
   loading = true;

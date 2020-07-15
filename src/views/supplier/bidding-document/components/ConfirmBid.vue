@@ -1,6 +1,14 @@
 <template>
   <v-dialog v-model="dialogConfirmSync" persistent max-width="600px">
     <v-card>
+      <CreateCombined
+        :dialogAdd.sync="dialogContract"
+        :message.sync="messageSync"
+        :snackbar.sync="snackbarSync"
+        :dialogConfirm.sync="dialogConfirmSync"
+        :bids.sync="bidsSync"
+        :bid="bid"
+      />
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
@@ -54,8 +62,13 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IBid } from "@/entity/bid";
 import { editBid } from "@/api/bid";
+import CreateCombined from "../../combined/components/CreateCombined.vue";
 
-@Component
+@Component({
+  components: {
+    CreateCombined
+  }
+})
 export default class ConfirmBid extends Vue {
   @PropSync("dialogConfirm", { type: Boolean }) dialogConfirmSync!: boolean;
   @PropSync("bids", { type: Array })
@@ -64,28 +77,32 @@ export default class ConfirmBid extends Vue {
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Boolean) isAccept!: boolean;
   @Prop(Object) bid!: IBid;
+  dialogContract = false;
+  update = false;
 
   reviewBid(isAccept: boolean) {
-    if (this.bid.id) {
-      editBid(this.bid.id, {
-        status: isAccept == true ? "ACCEPTED" : "REJECTED"
-      })
-        .then(res => {
-          const respone = res.data;
-          console.log("respone", respone);
-          isAccept == true
-            ? (this.messageSync = "Đồng ý thành công HSDT: " + respone.id)
-            : (this.messageSync = "Từ chối thành công HSDT: " + respone.id);
-          const index = this.bidsSync.findIndex(x => x.id === respone.id);
-          this.bidsSync.splice(index, 1, respone);
+    if (isAccept) {
+      this.dialogContract = true;
+    } else {
+      if (this.bid.id) {
+        editBid(this.bid.id, {
+          status: "REJECTED"
         })
-        .catch(err => {
-          console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
-        })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogConfirmSync = false))
-        );
+          .then(res => {
+            const respone = res.data;
+            console.log("respone", respone);
+            this.messageSync = "Từ chối thành công HSDT: " + respone.id;
+            const index = this.bidsSync.findIndex(x => x.id === respone.id);
+            this.bidsSync.splice(index, 1, respone);
+          })
+          .catch(err => {
+            console.log(err);
+            this.messageSync = "Đã có lỗi xảy ra";
+          })
+          .finally(
+            () => ((this.snackbarSync = true), (this.dialogConfirmSync = false))
+          );
+      }
     }
   }
 }

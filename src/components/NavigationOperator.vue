@@ -44,6 +44,11 @@ export default class NavigationOperator extends Vue {
       link: "/supplier-register"
     },
     {
+      title: "Quản lý Report",
+      icon: "report_problem",
+      link: "/supplier-report"
+    },
+    {
       title: "Quản lý Người dùng",
       icon: "people_alt",
       link: "/supplier"

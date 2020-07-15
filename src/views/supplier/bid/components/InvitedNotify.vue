@@ -5,7 +5,6 @@
       <CreateBid
         v-if="dialogAdd"
         :biddingDocument.sync="biddingDocument"
-        :bids.sync="bids"
         :dialogAdd.sync="dialogAdd"
         :message.sync="message"
         :snackbar.sync="snackbar"
@@ -23,6 +22,7 @@
         item-key="id"
         :loading="loading"
         :options.sync="options"
+        @click:row="clicked"
         :server-items-length="options.totalItems"
         :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
         :actions-append="options.page"
@@ -55,6 +55,12 @@
             <v-icon left>mdi-pencil</v-icon> Từ chối
           </v-btn>
         </template>
+        <template v-slot:item.bidOpening="{ item }">
+          {{ formatDatetime(item.bidOpening) }}
+        </template>
+        <template v-slot:item.bidClosing="{ item }">
+          {{ formatDatetime(item.bidClosing) }}
+        </template>
       </v-data-table>
     </v-card>
   </v-content>
@@ -67,9 +73,10 @@ import Snackbar from "@/components/Snackbar.vue";
 import { PaginationResponse } from "@/api/payload";
 import { IBiddingNotification } from "@/entity/bidding-notification";
 import { getBiddingNotificationsByUser } from "@/api/notification";
-import { IBid } from "@/entity/bid";
+import Utils from "@/mixin/utils";
 
 @Component({
+  mixins: [Utils],
   components: {
     CreateBid,
     Snackbar
@@ -81,10 +88,8 @@ export default class InvitedNotify extends Vue {
 
   biddingDocuments: Array<IBiddingDocument> = [];
   biddingDocument = {} as IBiddingDocument;
-  bids: Array<IBid> = [];
   dialogAdd = false;
   dialogDel = false;
-  search = "";
   message = "";
   snackbar = false;
   loading = true;
@@ -161,6 +166,9 @@ export default class InvitedNotify extends Vue {
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
     }
+  }
+  clicked(value: IBiddingDocument) {
+    this.$router.push({ path: `/bidding-document/${value.id}` });
   }
 }
 </script>

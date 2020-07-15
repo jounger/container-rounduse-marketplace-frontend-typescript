@@ -30,7 +30,9 @@ export default class NavigationSupplier extends Vue {
       icon: "business_center",
       link: "/bidding-document"
     },
-    { title: "Quản lý Hàng ghép", icon: "table_chart", link: "/combined" }
+    { title: "Quản lý Hàng ghép", icon: "table_chart", link: "/combined" },
+    { title: "Quản lý Hợp đồng", icon: "folder", link: "/contract" },
+    { title: "Quản lý Hóa đơn", icon: "store", link: "/payment" }
   ];
   private forwarderNavigation = [
     { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
@@ -41,12 +43,25 @@ export default class NavigationSupplier extends Vue {
       icon: "compass_calibration",
       link: "/invited-bidding"
     },
-    { title: "Quản lý Hàng ghép", icon: "table_chart", link: "/combined" },
     {
       title: "Quản lý Driver",
       icon: "airline_seat_recline_normal",
       link: "/driver"
-    }
+    },
+    {
+      title: "Quản lý Đầu kéo",
+      icon: "tram",
+      link: "/tractor"
+    },
+    {
+      title: "Quản lý Rơ moóc",
+      icon: "format_strikethrough",
+      link: "/trailer"
+    },
+    { title: "Quản lý Hàng ghép", icon: "table_chart", link: "/combined" },
+    { title: "Quản lý Hợp đồng", icon: "folder", link: "/contract" },
+    { title: "Quản lý Hóa đơn", icon: "store", link: "/payment" },
+    { title: "Quản lý Report", icon: "report_problem", link: "/report" }
   ];
 
   private supplierRegisterNavigation = [

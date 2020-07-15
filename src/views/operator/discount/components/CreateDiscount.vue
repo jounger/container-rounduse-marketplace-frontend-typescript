@@ -19,9 +19,9 @@
       <v-card-text>
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Mã giảm giá*"
                   name="code"
@@ -32,8 +32,8 @@
                 ></v-text-field>
               </v-flex>
             </v-layout>
-            <v-layout row>
-              <v-flex xs8>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Chi tiết"
                   name="detail"
@@ -44,9 +44,9 @@
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs10>
                 <v-select
                   prepend-icon="monetization_on"
                   :items="currencies"
@@ -56,8 +56,8 @@
                 ></v-select>
               </v-flex>
             </v-layout>
-            <v-layout row>
-              <v-flex xs8>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Phần trăm (%)"
                   name="percent"
@@ -68,9 +68,9 @@
               </v-flex>
             </v-layout>
           </v-layout>
-          <v-layout col>
-            <v-layout row>
-              <v-flex xs8>
+          <v-layout row>
+            <v-layout col>
+              <v-flex xs10>
                 <v-text-field
                   label="Giảm giá nhiều nhất (%)"
                   name="maximumDiscount"
@@ -80,8 +80,8 @@
                 ></v-text-field>
               </v-flex>
             </v-layout>
-            <v-layout row>
-              <v-flex xs8>
+            <v-layout col>
+              <v-flex xs7>
                 <v-menu
                   ref="expiredDatePicker"
                   v-model="expiredDatePicker"
@@ -108,6 +108,14 @@
                     @input="expiredDatePicker = false"
                   ></v-date-picker>
                 </v-menu>
+              </v-flex>
+              <v-flex xs3>
+                <v-text-field
+                  label="Giờ hết hạn"
+                  name="time"
+                  type="time"
+                  v-model="time"
+                ></v-text-field>
               </v-flex>
             </v-layout>
           </v-layout>
@@ -154,30 +162,34 @@ export default class CreateDiscount extends Vue {
   @Prop(Object) discount!: IDiscount;
   @Prop(Boolean) update!: boolean;
 
-  currencies = ["USD", "VND"];
+  currencies: Array<string> = [];
   valid = false;
-  abc = 0;
   expiredDatePicker = false;
-  initDate = new Date().toISOString().substr(0, 10);
-  expiredDate = this.initDate;
+  dateInit = addTimeToDate(new Date().toString());
+  expiredDate = this.dateInit.slice(0, 10);
+  time = this.dateInit.slice(11, 16);
   discountLocal = {
     code: "",
     detail: "",
     currency: "VND",
     percent: 0,
     maximumDiscount: 0,
-    expiredDate: this.initDate
+    expiredDate: this.dateInit.slice(0, 10)
   } as IDiscount;
   test = 0;
   created() {
+    this.currencies = ["USD", "VND"];
     if (this.update) {
       this.discountLocal = Object.assign({}, this.discount);
-      this.expiredDate = this.discountLocal.expiredDate;
+      this.expiredDate = this.discountLocal.expiredDate.slice(0, 10);
+      this.time = this.discountLocal.expiredDate.slice(11, 16);
+      console.log(this.discountLocal.expiredDate);
+      console.log(this.time);
     }
   }
   createDiscount() {
     if (this.discountLocal) {
-      this.discountLocal.expiredDate = addTimeToDate(this.expiredDate);
+      this.discountLocal.expiredDate = this.expiredDate + "T" + this.time;
       createDiscount(this.discountLocal)
         .then(res => {
           const response: IDiscount = res.data;
@@ -196,7 +208,7 @@ export default class CreateDiscount extends Vue {
   }
   updateDiscount() {
     if (this.discountLocal.id) {
-      this.discountLocal.expiredDate = addTimeToDate(this.expiredDate);
+      this.discountLocal.expiredDate = this.expiredDate + "T" + this.time;
       updateDiscount(this.discountLocal)
         .then(res => {
           console.log(res.data);

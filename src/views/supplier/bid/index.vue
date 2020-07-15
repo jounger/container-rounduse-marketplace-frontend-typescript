@@ -10,6 +10,7 @@
         :dialogAdd.sync="dialogAdd"
         :message.sync="message"
         :snackbar.sync="snackbar"
+        :totalItems.sync="options.totalItems"
       />
       <UpdateBid
         v-if="dialogEdit"
@@ -144,7 +145,6 @@ export default class Bid extends Vue {
   dialogAdd = false;
   dialogEdit = false;
   dialogCancel = false;
-  search = "";
   message = "";
   snackbar = false;
   loading = true;
@@ -259,8 +259,14 @@ export default class Bid extends Vue {
   }
 
   openCancelDialog(item: IBid) {
-    this.bid = item;
-    this.dialogCancel = true;
+    if (new Date().getTime() - new Date(item.bidValidityPeriod).getTime() > 0) {
+      this.bid = item;
+      this.dialogCancel = true;
+    } else {
+      this.message =
+        "Không thể hủy khi chưa vượt quá thời gian Validity Period";
+      this.snackbar = true;
+    }
   }
 
   @Watch("options", { deep: true })

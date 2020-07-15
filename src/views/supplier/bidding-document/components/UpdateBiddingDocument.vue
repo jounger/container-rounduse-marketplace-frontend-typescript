@@ -83,22 +83,11 @@
                     label="Thời gian mở thầu"
                     prepend-icon="event_available"
                     v-bind="attrs"
+                    readonly
                     v-on="on"
                     :rules="[required('bid opening')]"
                   ></v-text-field>
                 </template>
-                <v-date-picker v-model="bidOpening" no-title scrollable>
-                  <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="bidOpeningPicker = false"
-                    >Cancel</v-btn
-                  >
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="$refs.bidOpeningPicker.save(bidOpening)"
-                    >OK</v-btn
-                  >
-                </v-date-picker>
               </v-menu>
               <!-- Bid Closing -->
               <v-menu
@@ -178,7 +167,8 @@
           <v-stepper-content step="3">
             <v-form ref="finishForm">
               <v-text-field
-                v-model="biddingDocumentLocal.bidDiscountCode"
+                v-model="biddingDocumentLocal.discount"
+                type="text"
                 prepend-icon="loyalty"
                 label="Mã giảm giá"
               ></v-text-field>
@@ -231,7 +221,7 @@ export default class UpdateBiddingDocument extends Vue {
   biddingDocumentLocal = {
     offeree: this.$auth.user().username,
     outbound: -1 as number,
-    bidDiscountCode: "",
+    discount: "",
     isMultipleAward: false,
     bidOpening: this.dateInit,
     bidClosing: this.dateInit,
