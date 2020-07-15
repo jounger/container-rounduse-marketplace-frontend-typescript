@@ -33,7 +33,7 @@
               </v-stepper-step>
 
               <v-stepper-content step="1">
-                <v-form ref="inboundForm" v-model="valid" validation>
+                <v-form ref="inboundForm" v-model="valid" lazy-validation>
                   <small>*Dấu sao là trường bắt buộc</small>
                   <v-row
                     ><v-col cols="12" sm="6">
@@ -138,7 +138,7 @@
               >
 
               <v-stepper-content step="2">
-                <v-form ref="billOfLadingForm" v-model="valid2" validation>
+                <v-form ref="billOfLadingForm" v-model="valid2" lazy-validation>
                   <small>*Dấu sao là trường bắt buộc</small>
                   <v-row
                     ><v-col cols="12" sm="6">

@@ -547,37 +547,43 @@ export default class CreateOutbound extends Vue {
     }
     return undefined;
   }
-  created() {
-    getPorts({
+  async created() {
+    // API GET Ports
+    const _ports = await getPorts({
       page: 0,
       limit: 100
     })
       .then(res => {
         const response: PaginationResponse<IPort> = res.data;
-        this.ports = response.data;
+        return response.data;
       })
       .catch(err => console.log(err))
       .finally();
-    getShippingLines({
+    this.ports = _ports || [];
+    // API GET Shipping Line
+    const _shippingLines = await getShippingLines({
       page: 0,
       limit: 100
     })
       .then(res => {
         const response: PaginationResponse<IShippingLine> = res.data;
-        this.shippingLines = response.data;
+        return response.data.filter(x => x.roles[0] == "ROLE_SHIPPINGLINE");
       })
       .catch(err => console.log(err))
       .finally();
-    getContainerTypes({
+    this.shippingLines = _shippingLines || [];
+    // API GET Container Type
+    const _containerTypes = await getContainerTypes({
       page: 0,
       limit: 100
     })
       .then(res => {
         const response: PaginationResponse<IContainerType> = res.data;
-        this.containerTypes = response.data;
+        return response.data;
       })
       .catch(err => console.log(err))
       .finally();
+    this.containerTypes = _containerTypes || [];
   }
   get portsToString() {
     return this.ports.map(x => x.nameCode);

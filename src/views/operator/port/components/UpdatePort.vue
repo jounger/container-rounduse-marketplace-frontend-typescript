@@ -1,22 +1,19 @@
 <template>
-  <v-dialog v-model="dialogAddSync" max-width="900px">
+  <v-dialog v-model="dialogEditSync" max-width="900px">
     <v-card>
       <v-toolbar color="primary" light flat>
-        <v-btn icon dark @click="dialogAddSync = false">
+        <v-btn icon dark @click="dialogEditSync = false">
           <v-icon>mdi-close</v-icon> </v-btn
         ><v-toolbar-title
           ><span class="headline" style="color:white;"
-            >Hộp thoại thêm mới cảng</span
+            >Hộp thoại chỉnh sửa cảng</span
           >
         </v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-toolbar-items>
-          <v-btn dark text @click="clearForm()">Xóa dữ liệu đã nhập</v-btn>
-        </v-toolbar-items>
       </v-toolbar>
       <v-card-text>
         <v-container class="d-flex justify-space-around align-start">
           <div
+            v-if="portLocal"
             class="order-0 flex-grow-0 mx-auto mr-5 my-5"
             :style="{ width: '600px' }"
           >
@@ -78,7 +75,7 @@
               <template slot-scope="{ google, map }">
                 <!-- AUTOCOMPLETE ORIGIN GEOLOCATION -->
                 <GoogleMapAutocomplete
-                  v-if="dialogAddSync"
+                  v-if="dialogEditSync"
                   :place.sync="origin"
                   :input="inputAddress1"
                   :countries="['vn']"
@@ -99,23 +96,38 @@
                 </GoogleMapAutocomplete>
               </template>
             </GoogleMapLoader>
+            <v-card-actions v-if="portLocal.address">
+              <v-bottom-navigation class="elevation-0">
+                <v-btn :value="portLocal.address">
+                  <span>{{ portLocal.address }}</span>
+                  <v-icon>mdi-map-marker</v-icon>
+                </v-btn>
+              </v-bottom-navigation>
+            </v-card-actions>
           </v-card>
         </v-container>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn @click="dialogAddSync = false">Hủy</v-btn>
-        <v-btn @click="createPort()" color="primary" :disabled="!valid"
-          >Thêm mới</v-btn
+        <v-btn @click="dialogEditSync = false">Hủy</v-btn>
+        <v-btn @click="updatePort()" color="primary" :disabled="!valid"
+          >Lưu</v-btn
         >
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync, Ref, Watch } from "vue-property-decorator";
+import {
+  Component,
+  Vue,
+  PropSync,
+  Prop,
+  Ref,
+  Watch
+} from "vue-property-decorator";
 import { IPort } from "@/entity/port";
-import { createPort } from "@/api/port";
+import { editPort } from "@/api/port";
 import FormValidate from "@/mixin/form-validate";
 import GoogleMapLoader from "@/components/googlemaps/GoogleMapLoader.vue";
 import GoogleMapAutocomplete from "@/components/googlemaps/GoogleMapAutocomplete.vue";
@@ -123,6 +135,7 @@ import GoogleMapMarker from "@/components/googlemaps/GoogleMapMarker.vue";
 import GoogleMapMixins from "@/components/googlemaps/map-mixins";
 import { apiKey } from "@/components/googlemaps/map-constant";
 import Utils from "@/mixin/utils";
+import { isEmptyObject } from "@/utils/tool";
 
 @Component({
   components: {
@@ -132,50 +145,40 @@ import Utils from "@/mixin/utils";
   },
   mixins: [FormValidate, Utils, GoogleMapMixins]
 })
-export default class CreatePort extends Vue {
+export default class UpdatePort extends Vue {
   @Ref() inputAddress1!: HTMLInputElement;
-  @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
+  @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
   @PropSync("ports", { type: Array }) portsSync!: Array<IPort>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
+  @Prop(Object) port!: IPort;
 
   style = { width: "400px", height: "300px" };
   origin = null as google.maps.places.PlaceResult | null;
-  portLocal = {
-    fullname: "",
-    nameCode: "",
-    address: ""
-  } as IPort;
+  portLocal = null as IPort | null;
   valid = false;
 
-  @Watch("dialogAddSync")
-  onDialogAddSyncChange(val: boolean) {
-    if (val == false) {
-      this.clearForm();
+  @Watch("dialogEditSync")
+  onDialogEditSyncChange(val: boolean) {
+    if (val == true) {
+      if (!isEmptyObject(this.port)) {
+        this.portLocal = Object.assign({}, this.port);
+        this.$nextTick(() => {
+          this.inputAddress1.value = this.port.address;
+        });
+      }
     }
   }
-
-  clearForm() {
-    this.inputAddress1.value = "";
-    this.origin = null;
-    this.valid = false;
-    this.portLocal = {
-      fullname: "",
-      nameCode: "",
-      address: ""
-    } as IPort;
-  }
-
-  createPort() {
-    if (this.portLocal) {
-      createPort(this.portLocal)
+  updatePort() {
+    if (this.portLocal && this.portLocal.id) {
+      editPort(this.portLocal.id, this.portLocal)
         .then(res => {
           console.log(res.data);
           const response: IPort = res.data;
-          this.messageSync = "Thêm mới thành công cảng: " + response.nameCode;
-          this.portsSync.unshift(response);
-          this.totalItemsSync += 1;
+          this.messageSync =
+            "Cập nhập thành công bến cảng: " + response.fullname;
+          const index = this.portsSync.findIndex(x => x.id == response.id);
+          this.portsSync.splice(index, 1, response);
         })
         .catch(err => {
           console.log(err);
@@ -184,7 +187,6 @@ export default class CreatePort extends Vue {
         .finally(() => (this.snackbarSync = true));
     }
   }
-
   get mapConfig() {
     return {
       loaderOptions: {
@@ -200,12 +202,19 @@ export default class CreatePort extends Vue {
       }
     };
   }
+  created() {
+    console.log("UpdatePort");
+    if (!isEmptyObject(this.port)) {
+      this.portLocal = Object.assign({}, this.port);
+    }
+  }
   get apiKey() {
     return apiKey;
   }
   beforeDestroy() {
-    console.log("DESTROY > CreatePort");
+    console.log("DESTROY > UpdatePort");
     this.origin = null;
+    this.portLocal = null;
   }
 }
 </script>
