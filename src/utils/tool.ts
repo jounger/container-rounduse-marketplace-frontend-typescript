@@ -12,7 +12,7 @@ export function isValidDate(d: Date) {
 }
 
 export function addTimeToDate(input: string) {
-  if (input && input.length <= 10) {
+  if (input && input.length <= 10 && !input.includes("T")) {
     input += "T00:00";
   }
   const d = new Date(input);

@@ -56,8 +56,8 @@
                     </v-col>
                   </v-row>
                   <v-row>
-                    <v-col cols="12" sm="6">
-                      <v-menu
+                    <v-col cols="12">
+                      <!-- <v-menu
                         ref="packingTimePicker"
                         v-model="packingTimePicker"
                         :close-on-content-click="false"
@@ -98,8 +98,12 @@
                             >OK</v-btn
                           >
                         </v-date-picker>
-                      </v-menu></v-col
-                    >
+                      </v-menu> -->
+                      <DatetimePicker
+                        :datetime="outboundLocal.packingTime"
+                        :return-value.sync="outboundLocal.packingTime"
+                      />
+                    </v-col>
                   </v-row>
                   <v-row>
                     <v-col cols="12">
@@ -187,8 +191,8 @@
                       ></v-select> </v-col
                   ></v-row>
                   <v-row
-                    ><v-col cols="12" sm="6">
-                      <v-menu
+                    ><v-col cols="12">
+                      <!-- <v-menu
                         ref="cutOffTimePicker"
                         v-model="cutOffTimePicker"
                         :close-on-content-click="false"
@@ -231,8 +235,15 @@
                             >OK</v-btn
                           >
                         </v-date-picker>
-                      </v-menu> </v-col
-                    ><v-col cols="12" sm="6">
+                      </v-menu> -->
+                      <DatetimePicker
+                        :datetime="outboundLocal.booking.cutOffTime"
+                        :return-value.sync="outboundLocal.booking.cutOffTime"
+                      />
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12" sm="6">
                       <v-text-field
                         v-model="outboundLocal.booking.unit"
                         prepend-icon="commute"
@@ -409,9 +420,11 @@ import GoogleMapDirection from "@/components/googlemaps/GoogleMapDirection.vue";
 import GoogleMapDistanceMatrix from "@/components/googlemaps/GoogleMapDistanceMatrix.vue";
 import { DistanceMatrix } from "@/components/googlemaps/map-interface";
 import Utils from "@/mixin/utils";
+import DatetimePicker from "@/components/DatetimePicker.vue";
 
 @Component({
   components: {
+    DatetimePicker,
     GoogleMapLoader,
     GoogleMapAutocomplete,
     GoogleMapMarker,
@@ -438,7 +451,7 @@ export default class UpdateOutbound extends Vue {
   valid = true;
   valid2 = true;
   // API list
-  dateInit = new Date().toISOString().substr(0, 10);
+  dateInit = addTimeToDate(new Date().toString());
   ports: Array<IPort> = [];
   shippingLines: Array<IShippingLine> = [];
   containerTypes: Array<IContainerType> = [];

@@ -10,6 +10,7 @@
           name="login"
           prepend-icon="mdi-account"
           type="text"
+          autocomplete="username"
           v-model="username"
         ></v-text-field>
 
@@ -19,6 +20,7 @@
           name="password"
           prepend-icon="mdi-key"
           type="password"
+          autocomplete="current-password"
           v-model="password"
         ></v-text-field>
         <v-checkbox class="mx-2" label="Ghi nhớ đăng nhập"></v-checkbox>
