@@ -59,48 +59,6 @@
                   </v-row>
                   <v-row>
                     <v-col cols="12">
-                      <!-- <v-menu
-                        ref="packingTimePicker"
-                        v-model="packingTimePicker"
-                        :close-on-content-click="false"
-                        :return-value.sync="outboundLocal.packingTime"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="290px"
-                      >
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-text-field
-                            v-model="outboundLocal.packingTime"
-                            label="Thời gian đóng hàng"
-                            prepend-icon="event"
-                            v-bind="attrs"
-                            v-on="on"
-                          ></v-text-field>
-                        </template>
-                        <v-date-picker
-                          v-model="outboundLocal.packingTime"
-                          no-title
-                          scrollable
-                        >
-                          <v-spacer></v-spacer>
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="packingTimePicker = false"
-                            >Cancel</v-btn
-                          >
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="
-                              $refs.packingTimePicker.save(
-                                outboundLocal.packingTime
-                              )
-                            "
-                            >OK</v-btn
-                          >
-                        </v-date-picker>
-                      </v-menu> -->
                       <DatetimePicker
                         :datetime="outboundLocal.packingTime"
                         :return-value.sync="outboundLocal.packingTime"
@@ -158,7 +116,6 @@
                   <v-btn color="primary" @click="stepper = 2" :disabled="!valid"
                     >Tiếp tục</v-btn
                   >
-                  <!-- <v-btn text @click="dialogAddSync = false">Hủy</v-btn> -->
                 </v-form>
               </v-stepper-content>
 
@@ -194,50 +151,6 @@
                   ></v-row>
                   <v-row
                     ><v-col cols="12">
-                      <!-- <v-menu
-                        ref="cutOffTimePicker"
-                        v-model="cutOffTimePicker"
-                        :close-on-content-click="false"
-                        :return-value.sync="outboundLocal.booking.cutOffTime"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="290px"
-                      >
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-text-field
-                            v-model="outboundLocal.booking.cutOffTime"
-                            label="Thời gian tàu cắt máng*"
-                            prepend-icon="flight_takeoff"
-                            v-bind="attrs"
-                            v-on="on"
-                            required
-                            :rules="[required('cut off time')]"
-                          ></v-text-field>
-                        </template>
-                        <v-date-picker
-                          v-model="outboundLocal.booking.cutOffTime"
-                          no-title
-                          scrollable
-                        >
-                          <v-spacer></v-spacer>
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="cutOffTimePicker = false"
-                            >Cancel</v-btn
-                          >
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="
-                              $refs.cutOffTimePicker.save(
-                                outboundLocal.booking.cutOffTime
-                              )
-                            "
-                            >OK</v-btn
-                          >
-                        </v-date-picker>
-                      </v-menu>  -->
                       <DatetimePicker
                         :datetime="outboundLocal.booking.cutOffTime"
                         :return-value.sync="outboundLocal.booking.cutOffTime"
@@ -633,10 +546,6 @@ export default class CreateOutbound extends Vue {
   }
   mounted() {
     console.log("CreateOutbound");
-    // TODO: API get Ports
-    // TODO: API get Shipping Line
-    // TODO: API get Container Type
-    //TODO: API get unit of mesurement
     this.unitOfMeasurements = ["KG"];
   }
   beforeDestroy() {

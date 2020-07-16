@@ -75,49 +75,6 @@
                   </v-row>
                   <v-row>
                     <v-col cols="12">
-                      <!-- <v-menu
-                        ref="pickupTimePicker"
-                        v-model="pickupTimePicker"
-                        :close-on-content-click="false"
-                        :return-value.sync="inboundLocal.pickupTime"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="290px"
-                      >
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-text-field
-                            v-model="inboundLocal.pickupTime"
-                            label="Thời gian lấy cont đặc*"
-                            prepend-icon="flight_land"
-                            v-bind="attrs"
-                            v-on="on"
-                            :rules="[required('pickup time')]"
-                          ></v-text-field>
-                        </template>
-                        <v-date-picker
-                          v-model="inboundLocal.pickupTime"
-                          no-title
-                          scrollable
-                        >
-                          <v-spacer></v-spacer>
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="pickupTimePicker = false"
-                            >Cancel</v-btn
-                          >
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="
-                              $refs.pickupTimePicker.save(
-                                inboundLocal.pickupTime
-                              )
-                            "
-                            >OK</v-btn
-                          >
-                        </v-date-picker>
-                      </v-menu> -->
                       <DatetimePicker
                         :datetime="inboundLocal.pickupTime"
                         :return-value.sync="inboundLocal.pickupTime"
@@ -133,7 +90,6 @@
                     :disabled="!valid"
                     >Lưu và tiếp tục</v-btn
                   >
-                  <!-- <v-btn text @click="dialogEditSync = false">Hủy</v-btn> -->
                 </v-form>
               </v-stepper-content>
 
@@ -167,48 +123,6 @@
                   ></v-row>
                   <v-row
                     ><v-col cols="12">
-                      <!-- <v-menu
-                        ref="freeTimePicker"
-                        v-model="freeTimePicker"
-                        :close-on-content-click="false"
-                        :return-value.sync="inboundLocal.billOfLading.freeTime"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="290px"
-                      >
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-text-field
-                            v-model="inboundLocal.billOfLading.freeTime"
-                            label="Thời gian DEM/DET (Freetime)"
-                            prepend-icon="event_available"
-                            v-bind="attrs"
-                            v-on="on"
-                          ></v-text-field>
-                        </template>
-                        <v-date-picker
-                          v-model="inboundLocal.billOfLading.freeTime"
-                          no-title
-                          scrollable
-                        >
-                          <v-spacer></v-spacer>
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="freeTimePicker = false"
-                            >Cancel</v-btn
-                          >
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="
-                              $refs.freeTimePicker.save(
-                                inboundLocal.billOfLading.freeTime
-                              )
-                            "
-                            >OK</v-btn
-                          >
-                        </v-date-picker>
-                      </v-menu> -->
                       <DatetimePicker
                         :datetime="inboundLocal.billOfLading.freeTime"
                         :return-value.sync="inboundLocal.billOfLading.freeTime"
@@ -599,10 +513,6 @@ export default class UpdateInbound extends Vue {
   }
   mounted() {
     console.log("UpdateInbound");
-    // TODO: API get Ports
-    // TODO: API get Shipping Line
-    // TODO: API get Container Type
-    //TODO: API get unit of mesurement
   }
   beforeDestroy() {
     console.log("DESTROY > UpdateInbound");
