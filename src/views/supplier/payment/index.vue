@@ -45,7 +45,7 @@
           </v-toolbar>
         </template>
         <template v-slot:item.amountPayment="{ item }">
-          {{ item.amount }}
+          {{ currencyFormatter(item.amount) }}
           ({{ item.isPaid == true ? "Đã trả" : "Chưa trả" }})
         </template>
         <template v-slot:item.paymentDate="{ item }">

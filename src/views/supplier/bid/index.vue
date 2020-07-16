@@ -67,6 +67,10 @@
         <template v-slot:item.bidClosingText="{ item }">
           {{ formatDatetime(item.bidClosing) }}
         </template>
+
+        <template v-slot:item.bidPackagePrice="{ item }">
+          {{ currencyFormatter(item.bidPackagePrice) }}
+        </template>
         <!-- Show Bids expened -->
         <template v-slot:expanded-item="{ headers }">
           <td :colspan="headers.length" class="px-0">
@@ -105,6 +109,9 @@
                 <span style="color:green;" v-if="item.status == 'ACCEPTED'"
                   >ACCEPTED</span
                 >
+              </template>
+              <template v-slot:item.bidPrice="{ item }">
+                {{ currencyFormatter(item.bidPrice) }}
               </template>
             </v-data-table>
           </td>

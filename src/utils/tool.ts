@@ -65,13 +65,13 @@ export function isEmptyString(input: string) {
 }
 
 export function currencyFormatter(num: number, cur?: string) {
-  let currency = "VND"
+  let currency = "VND";
   if (cur && !isEmptyString(cur)) {
     currency = cur;
   }
   return new Intl.NumberFormat("vi-VI", {
     style: "currency",
-    currency: "VND",
+    currency: "VND"
   }).format(num);
 }
 

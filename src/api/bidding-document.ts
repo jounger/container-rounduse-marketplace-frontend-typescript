@@ -19,6 +19,19 @@ export function getBiddingDocument(id: number) {
   });
 }
 
+export function getBiddingDocumentByBid(id: number) {
+  return Vue.axios.get(`/bidding-document/bid/${id}`, {
+    headers: config
+  });
+}
+
+export function getBiddingDocumentsByExistCombined(paging: PaginationRequest) {
+  return Vue.axios.get("/bidding-document/combined", {
+    params: paging,
+    headers: config
+  });
+}
+
 
 export function createBiddingDocument(biddingDocument: IBiddingDocument) {
   return Vue.axios.post("/bidding-document", biddingDocument, {

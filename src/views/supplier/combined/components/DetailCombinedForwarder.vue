@@ -262,6 +262,14 @@
           <v-tab-item>
             <v-container fluid>
               <v-card class="elevation-0">
+                <CreateEvidence
+                  v-if="dialogAdd"
+                  :dialogAdd.sync="dialogAdd"
+                  :evidences.sync="evidences"
+                  :message.sync="message"
+                  :snackbar.sync="snackbar"
+                  :contract="combined.contract"
+                />
                 <v-card-title>Hợp đồng</v-card-title>
                 <v-list dense>
                   <v-subheader>Thông tin Hợp đồng</v-subheader>
@@ -354,7 +362,7 @@
                       </v-list-item-content>
                     </v-list-item>
                   </v-list-item-group>
-                  <v-card-title
+                  <v-card-title v-if="evidences.length > 0"
                     >Danh sách Chứng cứ<v-spacer></v-spacer>
                     <v-btn
                       color="primary"
@@ -499,11 +507,16 @@ import { getCombined } from "@/api/combined";
 import { getBidsByBiddingDocument } from "@/api/bid";
 import { IContainer } from "@/entity/container";
 import { IEvidence } from "@/entity/evidence";
+import { getEvidencesByContract } from "@/api/evidence";
+import { PaginationResponse } from "@/api/payload";
+import { getBiddingDocumentByBid } from "@/api/bidding-document";
+import CreateEvidence from "./CreateEvidence.vue";
 
 @Component({
   mixins: [Utils],
   components: {
-    Snackbar
+    Snackbar,
+    CreateEvidence
   }
 })
 export default class DetailCombinedForwarder extends Vue {
@@ -550,14 +563,9 @@ export default class DetailCombinedForwarder extends Vue {
     evidence: "",
     isValid: false
   } as IEvidence;
-  evidences: Array<IEvidence> = [
-    {
-      id: 1,
-      sender: "forwarder",
-      evidence: "oke",
-      isValid: false
-    }
-  ];
+  evidences: Array<IEvidence> = [];
+  update = false;
+  dialogAdd = false;
   bids: Array<IBid> = [];
   containers: Array<IContainer> = [];
   dialogDetail = false;
@@ -667,25 +675,49 @@ export default class DetailCombinedForwarder extends Vue {
         .finally(() => (this.loading = false));
     }
   }
-  // created() {
-  //   // TODO: Fake data
-  //   const combinedId = parseInt(this.$route.params.id);
-  //   getCombined(combinedId)
-  //     .then(res => {
-  //       const response = res.data;
-  //       this.combined = { ...response };
-  //       this.bid = this.combined.bid as IBid;
-  //       if (this.biddingDocument.id) {
-  //         console.log(0);
-  //         this.getBids(this.biddingDocument.id);
-  //       }
-  //       this.outbound = this.biddingDocument.outbound as IOutbound;
-  //       this.options.totalItems = 10;
-  //     })
-  //     .catch(err => {
-  //       console.log(err);
-  //     })
-  //     .finally();
-  // }
+  created() {
+    // TODO: Fake data
+    const combinedId = parseInt(this.$route.params.id);
+    getCombined(combinedId)
+      .then(res => {
+        const response = res.data;
+        this.combined = response;
+        console.log(response);
+        this.bid = this.combined.bid as IBid;
+        if (this.bid.id) {
+          getBiddingDocumentByBid(this.bid.id)
+            .then(res => {
+              this.biddingDocument = res.data;
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        }
+        if (this.combined.contract && this.combined.contract.id) {
+          this.evidences = [] as Array<IEvidence>;
+          getEvidencesByContract(this.combined.contract.id, {
+            page: 0,
+            limit: 100
+          })
+            .then(res => {
+              const response: PaginationResponse<IEvidence> = res.data;
+              this.evidences = response.data;
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        }
+        this.outbound = this.biddingDocument.outbound as IOutbound;
+        this.options.totalItems = 10;
+      })
+      .catch(err => {
+        console.log(err);
+      })
+      .finally();
+  }
+  openCreateEvidence() {
+    this.update = false;
+    this.dialogAdd = true;
+  }
 }
 </script>

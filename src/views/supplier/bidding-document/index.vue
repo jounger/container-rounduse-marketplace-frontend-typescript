@@ -343,6 +343,9 @@
           <template v-slot:item.bidClosingText="{ item }">
             {{ formatDatetime(item.bidClosing) }}
           </template>
+          <template v-slot:item.bidPackagePrice="{ item }">
+            {{ currencyFormatter(item.bidPackagePrice) }}
+          </template>
         </v-data-table>
       </v-card>
     </v-container>
@@ -429,14 +432,6 @@ export default class BiddingDocument extends Vue {
 
   openEditDialog(item: IBiddingDocument) {
     this.biddingDocument = item;
-    this.biddingDocument.bidOpening = this.biddingDocument.bidOpening.slice(
-      0,
-      10
-    );
-    this.biddingDocument.bidClosing = this.biddingDocument.bidClosing.slice(
-      0,
-      10
-    );
     this.dialogEdit = true;
   }
 

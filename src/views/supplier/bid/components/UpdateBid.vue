@@ -28,6 +28,7 @@
             <v-form ref="bidForm" v-model="valid" lazy-validation>
               <v-text-field
                 v-model="bidLocal.bidPrice"
+                :hint="currencyFormatter(bidLocal.bidPrice)"
                 prepend-icon="monetization_on"
                 type="number"
                 :rules="[
@@ -180,6 +181,7 @@ import { getInboundsByOutboundAndForwarder } from "@/api/inbound";
 import { PaginationResponse } from "@/api/payload";
 import { IOutbound } from "@/entity/outbound";
 import Utils from "@/mixin/utils";
+import { addTimeToDate } from '@/utils/tool';
 
 @Component({
   mixins: [FormValidate, Utils]
@@ -193,6 +195,7 @@ export default class UpdateBid extends Vue {
   @PropSync("biddingDocument", { type: Object })
   biddingDocumentSync!: IBiddingDocument;
 
+  dateInit = addTimeToDate(new Date().toString());
   // Form validate
   checkbox = false;
   editable = true;
@@ -242,11 +245,7 @@ export default class UpdateBid extends Vue {
   created() {
     this.bidLocal = Object.assign({}, this.bid);
     this.containers = this.bidLocal.containers as IContainer[];
-    this.bidLocal.bidDate = this.bidLocal.bidDate.slice(0, 10);
-    this.bidLocal.bidValidityPeriod = this.bidLocal.bidValidityPeriod.slice(
-      0,
-      10
-    );
+    this.bidLocal.bidDate = this.dateInit;
     console.log(this.biddingDocumentSync);
     if (this.biddingDocumentSync && this.biddingDocumentSync.outbound) {
       const _outbound = this.biddingDocumentSync.outbound as IOutbound;

@@ -81,7 +81,7 @@
             <v-form ref="billOfLadingForm" v-model="valid" validation>
               <v-layout row
                 ><v-layout col
-                  ><v-flex xs9>
+                  ><v-flex xs7>
                     <v-menu
                       ref="bidOpeningPicker"
                       v-model="bidOpeningPicker"
@@ -109,11 +109,9 @@
                       name="timeOpening"
                       type="time"
                       v-model="timeOpening"
-                    ></v-text-field> </v-flex></v-layout
-              ></v-layout>
-              <!-- Bid Closing -->
-              <v-layout row
-                ><v-layout col
+                    ></v-text-field> </v-flex
+                ></v-layout>
+                <!-- Bid Closing --><v-layout col
                   ><v-flex xs9>
                     <v-menu
                       ref="bidClosingPicker"
@@ -158,33 +156,55 @@
                       v-model="timeClosing"
                     ></v-text-field> </v-flex></v-layout
               ></v-layout>
-              <v-select
-                v-model="biddingDocumentLocal.currencyOfPayment"
-                prepend-icon="strikethrough_s"
-                :items="currencyOfPayments"
-                :rules="[required('currency')]"
-                label="Đồng tiền thanh toán"
-              ></v-select>
-              <v-text-field
-                v-model="biddingDocumentLocal.bidPackagePrice"
-                prepend-icon="money"
-                :rules="[required('bid package price')]"
-                type="number"
-                label="Giá gói thầu"
-              ></v-text-field>
-              <v-text-field
-                v-model="biddingDocumentLocal.bidFloorPrice"
-                prepend-icon="local_atm"
-                :rules="[
-                  required('bid floor price'),
-                  maxNumber(
-                    'bid floor price',
-                    parseInt(biddingDocumentLocal.bidPackagePrice)
-                  )
-                ]"
-                type="number"
-                label="Giá sàn"
-              ></v-text-field>
+              <v-layout row
+                ><v-layout col
+                  ><v-flex xs10>
+                    <v-text-field
+                      v-model="biddingDocumentLocal.bidPackagePrice"
+                      :hint="
+                        currencyFormatter(
+                          biddingDocumentLocal.bidPackagePrice,
+                          biddingDocumentLocal.currencyOfPayment
+                        )
+                      "
+                      prepend-icon="money"
+                      :rules="[required('bid package price')]"
+                      type="number"
+                      label="Giá gói thầu"
+                    ></v-text-field> </v-flex></v-layout
+                ><v-layout col
+                  ><v-flex xs10>
+                    <v-text-field
+                      v-model="biddingDocumentLocal.bidFloorPrice"
+                      :hint="
+                        currencyFormatter(
+                          biddingDocumentLocal.bidFloorPrice,
+                          biddingDocumentLocal.currencyOfPayment
+                        )
+                      "
+                      prepend-icon="local_atm"
+                      :rules="[
+                        required('bid floor price'),
+                        maxNumber(
+                          'bid floor price',
+                          parseInt(biddingDocumentLocal.bidPackagePrice)
+                        )
+                      ]"
+                      type="number"
+                      label="Giá sàn"
+                    ></v-text-field
+                  ></v-flex>
+                  <v-flex xs2>
+                    <v-select
+                      v-model="biddingDocumentLocal.currencyOfPayment"
+                      prepend-icon="strikethrough_s"
+                      :items="currencyOfPayments"
+                      :rules="[required('currency')]"
+                      label="Loại tiền tệ"
+                    ></v-select>
+                  </v-flex>
+                </v-layout>
+              </v-layout>
               <v-checkbox
                 v-model="biddingDocumentLocal.isMultipleAward"
                 label="Cho phép nhiều nhà thầu cùng thắng"
@@ -323,8 +343,10 @@ export default class CreateBiddingDocument extends Vue {
   // BiddingDocument
   createBiddingDocument() {
     // TODO: API create biddingDocument
-    this.biddingDocumentLocal.bidOpening = addTimeToDate(this.bidOpening);
-    this.biddingDocumentLocal.bidClosing = addTimeToDate(this.bidClosing);
+    this.biddingDocumentLocal.bidOpening =
+      this.bidOpening + "T" + this.timeOpening;
+    this.biddingDocumentLocal.bidClosing =
+      this.bidClosing + "T" + this.timeClosing;
     if (this.selectedOutbound && this.selectedOutbound.id) {
       this.biddingDocumentLocal.outbound = this.selectedOutbound.id as number;
     }
