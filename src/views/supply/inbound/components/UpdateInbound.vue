@@ -55,7 +55,7 @@
                   ></v-row>
                   <v-row
                     ><v-col cols="12">
-                      <label for="">Nơi trả hàng</label>
+                      <label class="place-label">Nơi trả hàng</label>
                       <input
                         ref="inputAddress1"
                         class="place-input"
@@ -121,6 +121,9 @@
                       <DatetimePicker
                         :datetime="inboundLocal.pickupTime"
                         :return-value.sync="inboundLocal.pickupTime"
+                        dateicon="flight_land"
+                        datelabel="Ngày lấy cont đặc"
+                        timelabel="Giờ lấy cont"
                       />
                     </v-col>
                   </v-row>
@@ -209,6 +212,9 @@
                       <DatetimePicker
                         :datetime="inboundLocal.billOfLading.freeTime"
                         :return-value.sync="inboundLocal.billOfLading.freeTime"
+                        dateicon="event_available"
+                        datelabel="Ngày DEM/DET (Freetime)"
+                        timelabel="Giờ Freetime"
                       />
                     </v-col>
                   </v-row>
@@ -607,10 +613,14 @@ export default class UpdateInbound extends Vue {
 }
 </script>
 <style lang="css">
+.place-label {
+  font-size: 12px;
+  margin-left: 10px;
+}
 .place-input {
   height: 40px;
   width: -webkit-fill-available;
-  margin: 10px;
+  margin: 0 10px;
   border-bottom: 1px solid #000;
   padding: 5px 5px;
 }

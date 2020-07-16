@@ -104,12 +104,15 @@
                       <DatetimePicker
                         :datetime="outboundLocal.packingTime"
                         :return-value.sync="outboundLocal.packingTime"
+                        dateicon="flight_land"
+                        datelabel="Ngày đóng hàng"
+                        timelabel="Giờ đóng hàng"
                       />
                     </v-col>
                   </v-row>
                   <v-row>
                     <v-col cols="12">
-                      <label>Nơi đóng hàng</label>
+                      <label class="place-label">Nơi đóng hàng</label>
                       <input
                         ref="inputAddress1"
                         class="place-input"
@@ -238,6 +241,9 @@
                       <DatetimePicker
                         :datetime="outboundLocal.booking.cutOffTime"
                         :return-value.sync="outboundLocal.booking.cutOffTime"
+                        dateicon="flight_takeoff"
+                        datelabel="Ngày tàu cắt máng"
+                        timelabel="Giờ cắt máng"
                       />
                     </v-col>
                   </v-row>
@@ -641,10 +647,14 @@ export default class CreateOutbound extends Vue {
 }
 </script>
 <style lang="css">
+.place-label {
+  font-size: 12px;
+  margin-left: 10px;
+}
 .place-input {
   height: 40px;
   width: -webkit-fill-available;
-  margin: 10px;
+  margin: 0 10px;
   border-bottom: 1px solid #000;
   padding: 5px 5px;
 }
