@@ -59,13 +59,7 @@
 
 <script lang="ts">
 import { Vue, Component, Watch } from "vue-property-decorator";
-import { IBiddingNotification } from "@/entity/bidding-notification";
-import {
-  getBiddingNotificationsByUser,
-  getBiddingNotification
-} from "../api/notification";
-import { PaginationResponse } from "../api/payload";
-
+import { PaginationResponse } from "@/api/payload";
 import SockJS from "sockjs-client";
 import Stomp, { Client } from "webstomp-client";
 import { DataOptions } from "vuetify";
@@ -73,7 +67,20 @@ import {
   NOTIFICATION_LINK,
   BACKEND_WEBSOCKET_ENDPOINT
 } from "@/utils/constants";
-import { INotification } from "../entity/notification";
+import {
+  getBiddingNotification,
+  getNotificationsByUser,
+  getDriverNotification,
+  getReportNotification,
+  getShippingLineNotification
+} from "@/api/notification";
+import {
+  INotification,
+  IBiddingNotification,
+  IReportNotification,
+  IDriverNotification,
+  IShippingLineNotification
+} from "@/entity/notification";
 
 @Component
 export default class Notification extends Vue {
@@ -98,24 +105,65 @@ export default class Notification extends Vue {
 
   async gotoNotification(item: INotification) {
     let ROUTER = "#";
-    if (item.type == "BIDDING" && item && item.id) {
-      const _biddingNotification = await getBiddingNotification(item.id)
-        .then(res => {
-          const response: IBiddingNotification = res.data;
-          console.log("response", response);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_biddingNotification)
-        ROUTER = `/bidding-document/${_biddingNotification.relatedResource.id}`;
-      else ROUTER = "/bidding-document/1";
-    } else if (item.type == "DRIVER") ROUTER = `/outbound/${1}`;
-    else if (item.type == "REPORT") ROUTER = `/report`;
-    else if (item.type == "SHIPPING_LINE") ROUTER = `/combined/${1}`;
-    else ROUTER = "/bidding-document/1";
+    if (item && item.id) {
+      if (item.type == "BIDDING") {
+        const _biddingNotification = await getBiddingNotification(item.id)
+          .then(res => {
+            const response: IBiddingNotification = res.data;
+            console.log("response", response);
+            return response;
+          })
+          .catch(err => {
+            console.log(err);
+            return null;
+          });
+        if (_biddingNotification)
+          ROUTER = `/bidding-document/${_biddingNotification.relatedResource.id}`;
+      } else if (item.type == "DRIVER") {
+        const _driverNotification = await getDriverNotification(item.id)
+          .then(res => {
+            const response: IDriverNotification = res.data;
+            console.log("response", response);
+            return response;
+          })
+          .catch(err => {
+            console.log(err);
+            return null;
+          });
+        if (_driverNotification)
+          ROUTER = `/outbound/${_driverNotification.relatedResource.id}`;
+      } else if (item.type == "REPORT") {
+        const _reportNotification = await getReportNotification(item.id)
+          .then(res => {
+            const response: IReportNotification = res.data;
+            console.log("response", response);
+            return response;
+          })
+          .catch(err => {
+            console.log(err);
+            return null;
+          });
+        if (_reportNotification)
+          ROUTER = `/report/${_reportNotification.relatedResource.id}`;
+      } else if (item.type == "SHIPPING_LINE") {
+        const _shippingLineNotification = await getShippingLineNotification(
+          item.id
+        )
+          .then(res => {
+            const response: IShippingLineNotification = res.data;
+            console.log("response", response);
+            return response;
+          })
+          .catch(err => {
+            console.log(err);
+            return null;
+          });
+        if (_shippingLineNotification)
+          ROUTER = `/combined/${_shippingLineNotification.relatedResource.id}`;
+      } else {
+        ROUTER = "/bidding-document";
+      }
+    }
     console.log(ROUTER);
     this.$router.push(ROUTER);
   }
@@ -128,8 +176,7 @@ export default class Notification extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined" && this.$auth.check()) {
       this.loading = true;
-      // TODO: Change getBiddingNotificationsByUser to getNotificationsByUser
-      const _notification = await getBiddingNotificationsByUser({
+      const _notification = await getNotificationsByUser({
         page: val.page - 1,
         limit: val.itemsPerPage
       })
@@ -167,7 +214,7 @@ export default class Notification extends Vue {
     this.connected = true;
     console.log("onConnected", frame);
     this.notificationSubscribe.forEach(x => {
-      this.stompClient.subscribe(`/user/${x}`, (tick: any) => {
+      this.stompClient.subscribe(`/user${x}`, (tick: any) => {
         console.log(tick);
         this.notifications.unshift(JSON.parse(tick.body));
         this.messageCount += 1;
