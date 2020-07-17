@@ -7,7 +7,7 @@
           :dialogDel.sync="dialogDel"
           :containerType="containerType"
           :containerTypes.sync="containerTypes"
-          :totalItems.sync="options.totalItems"
+          :totalItems.sync="serverSideOptions.totalItems"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
@@ -15,7 +15,7 @@
       <v-row justify="center">
         <CreateContainerType
           v-if="dialogAdd"
-          :totalItems.sync="options.totalItems"
+          :totalItems.sync="serverSideOptions.totalItems"
           :containerType="containerType"
           :containerTypes.sync="containerTypes"
           :dialogAdd.sync="dialogAdd"
@@ -31,8 +31,10 @@
         item-key="id"
         :loading="loading"
         :options.sync="options"
-        :server-items-length="options.totalItems"
-        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :server-items-length="serverSideOptions.totalItems"
+        :footer-props="{
+          'items-per-page-options': serverSideOptions.itemsPerPageItems
+        }"
         :actions-append="options.page"
         class="elevation-1"
       >
@@ -68,6 +70,7 @@ import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 import CreateContainerType from "./components/CreateContainerType.vue";
 import DeleteContainerType from "./components/DeleteContainerType.vue";
+import { DataOptions } from "vuetify";
 
 @Component({
   components: {
@@ -86,9 +89,10 @@ export default class ContainerType extends Vue {
   loading = true;
   update = false;
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -132,17 +136,17 @@ export default class ContainerType extends Vue {
   }
 
   @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
+  onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
       getContainerTypes({
-        page: this.options.page - 1,
-        limit: this.options.itemsPerPage
+        page: val.page - 1,
+        limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IContainerType> = res.data;
           console.log("watch", this.options);
           this.containerTypes = response.data;
-          this.options.totalItems = response.totalElements;
+          this.serverSideOptions.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));

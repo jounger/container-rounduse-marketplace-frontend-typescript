@@ -35,8 +35,10 @@
         item-key="id"
         :loading="loading"
         :options.sync="options"
-        :server-items-length="options.totalItems"
-        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :server-items-length="serverSideOptions.totalItems"
+        :footer-props="{
+          'items-per-page-options': serverSideOptions.itemsPerPageItems
+        }"
         :actions-append="options.page"
         class="elevation-1"
       >
@@ -78,6 +80,8 @@ import { IFeedback } from "@/entity/feedback";
 import CreateFeedback from "./components/CreateFeedback.vue";
 import ReportDetail from "../../supplier/report/components/ReportDetail.vue";
 import { getReports } from "@/api/report";
+import { DataOptions } from "vuetify";
+import { IBiddingDocument } from "@/entity/bidding-document";
 
 @Component({
   components: {
@@ -99,9 +103,10 @@ export default class Report extends Vue {
   message = "";
   snackbar = false;
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -130,7 +135,10 @@ export default class Report extends Vue {
     this.dialogAdd = true;
   }
   viewDetailReport(item: IReport) {
-    this.$router.push({ path: `/bidding-document/${item.report}` });
+    if (item && item.report && typeof item.report != "number") {
+      const bidDocument = item.report as IBiddingDocument;
+      this.$router.push({ path: `/bidding-document/${bidDocument.id}` });
+    }
   }
   clicked(value: IReport) {
     this.report = value;
@@ -138,17 +146,17 @@ export default class Report extends Vue {
   }
 
   @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
+  onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
       getReports({
-        page: this.options.page - 1,
-        limit: this.options.itemsPerPage
+        page: val.page - 1,
+        limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IReport> = res.data;
-          console.log("watch", this.options);
+          console.log("watch", response);
           this.reports = response.data;
-          this.options.totalItems = response.totalElements;
+          this.serverSideOptions.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));

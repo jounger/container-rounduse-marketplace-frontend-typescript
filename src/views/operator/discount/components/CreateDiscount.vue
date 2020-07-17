@@ -70,41 +70,14 @@
                 v-model="discountLocal.maximumDiscount"
               ></v-text-field>
             </v-col>
-            <v-col cols="12" md="3">
-              <v-menu
-                ref="expiredDatePicker"
-                v-model="expiredDatePicker"
-                :close-on-content-click="false"
-                transition="scale-transition"
-                offset-y
-                max-width="290px"
-                min-width="290px"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
-                    v-model="expiredDate"
-                    label="Ngày hết hạn"
-                    hint="YYYY/MM/DD"
-                    persistent-hint
-                    prepend-icon="remove_shopping_cart"
-                    v-bind="attrs"
-                    v-on="on"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
-                  v-model="expiredDate"
-                  no-title
-                  @input="expiredDatePicker = false"
-                ></v-date-picker>
-              </v-menu>
-            </v-col>
-            <v-col cols="12" md="2">
-              <v-text-field
-                label="Giờ hết hạn"
-                name="time"
-                type="time"
-                v-model="time"
-              ></v-text-field>
+            <v-col cols="12" md="5">
+              <DatetimePicker
+                :datetime="discountLocal.expiredDate"
+                :return-value.sync="discountLocal.expiredDate"
+                dateicon="remove_shopping_cart"
+                datelabel="Ngày hết hạn"
+                timelabel="Giờ hết hạn"
+              />
             </v-col>
           </v-row>
           <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
@@ -137,9 +110,13 @@ import { IDiscount } from "@/entity/discount";
 import { createDiscount, updateDiscount } from "@/api/discount";
 import FormValidate from "@/mixin/form-validate";
 import { addTimeToDate } from "@/utils/tool";
+import DatetimePicker from "@/components/DatetimePicker.vue";
 
 @Component({
-  mixins: [FormValidate]
+  mixins: [FormValidate],
+  components: {
+    DatetimePicker
+  }
 })
 export default class CreateDiscount extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
@@ -152,32 +129,23 @@ export default class CreateDiscount extends Vue {
 
   currencies: Array<string> = [];
   valid = false;
-  expiredDatePicker = false;
   dateInit = addTimeToDate(new Date().toString());
-  expiredDate = this.dateInit.slice(0, 10);
-  time = this.dateInit.slice(11, 16);
   discountLocal = {
     code: "",
     detail: "",
     currency: "VND",
     percent: 0,
     maximumDiscount: 0,
-    expiredDate: this.dateInit.slice(0, 10)
+    expiredDate: this.dateInit
   } as IDiscount;
-  test = 0;
   created() {
     this.currencies = ["USD", "VND"];
     if (this.update) {
       this.discountLocal = Object.assign({}, this.discount);
-      this.expiredDate = this.discountLocal.expiredDate.slice(0, 10);
-      this.time = this.discountLocal.expiredDate.slice(11, 16);
-      console.log(this.discountLocal.expiredDate);
-      console.log(this.time);
     }
   }
   createDiscount() {
     if (this.discountLocal) {
-      this.discountLocal.expiredDate = this.expiredDate + "T" + this.time;
       createDiscount(this.discountLocal)
         .then(res => {
           const response: IDiscount = res.data;
@@ -196,7 +164,6 @@ export default class CreateDiscount extends Vue {
   }
   updateDiscount() {
     if (this.discountLocal.id) {
-      this.discountLocal.expiredDate = this.expiredDate + "T" + this.time;
       updateDiscount(this.discountLocal)
         .then(res => {
           console.log(res.data);
