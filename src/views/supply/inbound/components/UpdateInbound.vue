@@ -55,7 +55,7 @@
                   ></v-row>
                   <v-row
                     ><v-col cols="12">
-                      <label for="">Nơi trả hàng</label>
+                      <label class="place-label">Nơi trả hàng</label>
                       <input
                         ref="inputAddress1"
                         class="place-input"
@@ -75,52 +75,12 @@
                   </v-row>
                   <v-row>
                     <v-col cols="12">
-                      <!-- <v-menu
-                        ref="pickupTimePicker"
-                        v-model="pickupTimePicker"
-                        :close-on-content-click="false"
-                        :return-value.sync="inboundLocal.pickupTime"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="290px"
-                      >
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-text-field
-                            v-model="inboundLocal.pickupTime"
-                            label="Thời gian lấy cont đặc*"
-                            prepend-icon="flight_land"
-                            v-bind="attrs"
-                            v-on="on"
-                            :rules="[required('pickup time')]"
-                          ></v-text-field>
-                        </template>
-                        <v-date-picker
-                          v-model="inboundLocal.pickupTime"
-                          no-title
-                          scrollable
-                        >
-                          <v-spacer></v-spacer>
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="pickupTimePicker = false"
-                            >Cancel</v-btn
-                          >
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="
-                              $refs.pickupTimePicker.save(
-                                inboundLocal.pickupTime
-                              )
-                            "
-                            >OK</v-btn
-                          >
-                        </v-date-picker>
-                      </v-menu> -->
                       <DatetimePicker
                         :datetime="inboundLocal.pickupTime"
                         :return-value.sync="inboundLocal.pickupTime"
+                        dateicon="flight_land"
+                        datelabel="Ngày lấy cont đặc"
+                        timelabel="Giờ lấy cont"
                       />
                     </v-col>
                   </v-row>
@@ -130,7 +90,6 @@
                     :disabled="!valid"
                     >Lưu và tiếp tục</v-btn
                   >
-                  <!-- <v-btn text @click="dialogEditSync = false">Hủy</v-btn> -->
                 </v-form>
               </v-stepper-content>
 
@@ -164,51 +123,12 @@
                   ></v-row>
                   <v-row
                     ><v-col cols="12">
-                      <!-- <v-menu
-                        ref="freeTimePicker"
-                        v-model="freeTimePicker"
-                        :close-on-content-click="false"
-                        :return-value.sync="inboundLocal.billOfLading.freeTime"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="290px"
-                      >
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-text-field
-                            v-model="inboundLocal.billOfLading.freeTime"
-                            label="Thời gian DEM/DET (Freetime)"
-                            prepend-icon="event_available"
-                            v-bind="attrs"
-                            v-on="on"
-                          ></v-text-field>
-                        </template>
-                        <v-date-picker
-                          v-model="inboundLocal.billOfLading.freeTime"
-                          no-title
-                          scrollable
-                        >
-                          <v-spacer></v-spacer>
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="freeTimePicker = false"
-                            >Cancel</v-btn
-                          >
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="
-                              $refs.freeTimePicker.save(
-                                inboundLocal.billOfLading.freeTime
-                              )
-                            "
-                            >OK</v-btn
-                          >
-                        </v-date-picker>
-                      </v-menu> -->
                       <DatetimePicker
                         :datetime="inboundLocal.billOfLading.freeTime"
                         :return-value.sync="inboundLocal.billOfLading.freeTime"
+                        dateicon="event_available"
+                        datelabel="Ngày DEM/DET (Freetime)"
+                        timelabel="Giờ Freetime"
                       />
                     </v-col>
                   </v-row>
@@ -593,10 +513,6 @@ export default class UpdateInbound extends Vue {
   }
   mounted() {
     console.log("UpdateInbound");
-    // TODO: API get Ports
-    // TODO: API get Shipping Line
-    // TODO: API get Container Type
-    //TODO: API get unit of mesurement
   }
   beforeDestroy() {
     console.log("DESTROY > UpdateInbound");
@@ -607,10 +523,14 @@ export default class UpdateInbound extends Vue {
 }
 </script>
 <style lang="css">
+.place-label {
+  font-size: 12px;
+  margin-left: 10px;
+}
 .place-input {
   height: 40px;
   width: -webkit-fill-available;
-  margin: 10px;
+  margin: 0 10px;
   border-bottom: 1px solid #000;
   padding: 5px 5px;
 }

@@ -3,6 +3,8 @@ export interface INotification {
   recipient: string; // username
   title: string;
   message: string;
+  type: string;
   sendDate: string;
   isRead: boolean;
+  isHide?: boolean;
 }

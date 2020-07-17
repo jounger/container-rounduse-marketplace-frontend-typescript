@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col cols="12" sm="9">
+    <v-col cols="12" sm="8">
       <v-menu
         ref="dateTimePicker"
         v-model="dateTimePicker"
@@ -8,13 +8,12 @@
         :return-value.sync="date"
         transition="scale-transition"
         offset-y
-        min-width="290px"
       >
         <template v-slot:activator="{ on, attrs }">
           <v-text-field
             v-model="date"
-            label="Ngày"
-            prepend-icon="flight_land"
+            :label="datelabel"
+            :prepend-icon="dateicon"
             v-bind="attrs"
             v-on="on"
           ></v-text-field>
@@ -30,9 +29,9 @@
         </v-date-picker>
       </v-menu>
     </v-col>
-    <v-col cols="12" sm="3">
+    <v-col cols="12" sm="4">
       <v-text-field
-        label="Giờ"
+        :label="timelabel"
         name="time"
         type="time"
         v-model="time"
@@ -45,8 +44,11 @@
 import { Component, Vue, PropSync, Watch, Prop } from "vue-property-decorator";
 @Component
 export default class DatetimePicker extends Vue {
-  @Prop() datetime!: string;
-  @PropSync("return-value", { type: String }) returnValueSync!: string;
+  @Prop() readonly datetime!: string;
+  @PropSync("return-value", { type: String }) returnValueSync!: string; // Return datime value
+  @Prop({ default: "event" }) readonly dateicon!: string;
+  @Prop({ default: "Ngày" }) readonly datelabel!: string;
+  @Prop({ default: "Giờ" }) readonly timelabel!: string;
 
   dateTimePicker = false;
   time = "";
