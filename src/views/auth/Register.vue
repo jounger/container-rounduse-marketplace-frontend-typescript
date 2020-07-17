@@ -20,40 +20,33 @@
         <v-stepper-content step="1">
           <v-form ref="registerForm" v-model="valid" validation>
             <small>*Dấu sao là trường bắt buộc</small>
-            <v-layout row>
-              <v-layout col>
-                <v-flex xs8>
-                  <v-text-field
-                    label="Tên đăng nhập*"
-                    name="username"
-                    prepend-icon="mdi-account"
-                    type="text"
-                    :counter="20"
-                    :rules="[
-                      minLength('username', 2),
-                      maxLength('username', 20)
-                    ]"
-                    v-model="username"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
-              <v-layout col>
-                <v-flex xs8>
-                  <v-text-field
-                    label="Mật khẩu*"
-                    name="password"
-                    prepend-icon="mdi-lock"
-                    type="password"
-                    :counter="120"
-                    :rules="[
-                      minLength('password', 6),
-                      maxLength('password', 120)
-                    ]"
-                    v-model="password"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
-            </v-layout>
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Tên đăng nhập*"
+                  name="username"
+                  prepend-icon="mdi-account"
+                  type="text"
+                  :counter="20"
+                  :rules="[minLength('username', 2), maxLength('username', 20)]"
+                  v-model="username"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Mật khẩu*"
+                  name="password"
+                  prepend-icon="mdi-lock"
+                  type="password"
+                  :counter="120"
+                  :rules="[
+                    minLength('password', 6),
+                    maxLength('password', 120)
+                  ]"
+                  v-model="password"
+                ></v-text-field>
+              </v-col>
+            </v-row>
             <v-radio-group v-model="roles" :mandatory="true" row>
               <v-radio label="Đăng ký làm chủ xe" value="forwarder"></v-radio>
               <v-radio
@@ -62,54 +55,46 @@
                 style="margin-left:275px;"
               ></v-radio>
             </v-radio-group>
-            <v-layout row>
-              <v-layout col>
-                <v-flex xs8>
-                  <v-text-field
-                    label="Email*"
-                    type="email"
-                    prepend-icon="alternate_email"
-                    v-model="emailRegister"
-                    :counter="50"
-                    :rules="[
-                      email('Register'),
-                      minLength('email', 5),
-                      maxLength('email', 50)
-                    ]"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
-              <v-layout col>
-                <v-flex xs8>
-                  <v-text-field
-                    label="Số điện thoại*"
-                    name="phone"
-                    prepend-icon="phone"
-                    type="number"
-                    :counter="10"
-                    :rules="[minLength('phone', 10), maxLength('phone', 10)]"
-                    v-model="phone"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
-            </v-layout>
-            <v-layout row>
-              <v-layout col>
-                <v-flex xs10>
-                  <v-text-field
-                    label="Địa chỉ*"
-                    name="address"
-                    prepend-icon="location_on"
-                    :counter="100"
-                    :rules="[
-                      minLength('address', 5),
-                      maxLength('address', 100)
-                    ]"
-                    type="text"
-                    v-model="address"
-                  ></v-text-field> </v-flex
-              ></v-layout>
-            </v-layout>
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Email*"
+                  type="email"
+                  prepend-icon="alternate_email"
+                  v-model="emailRegister"
+                  :counter="50"
+                  :rules="[
+                    email('Register'),
+                    minLength('email', 5),
+                    maxLength('email', 50)
+                  ]"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Số điện thoại*"
+                  name="phone"
+                  prepend-icon="phone"
+                  type="number"
+                  :counter="10"
+                  :rules="[minLength('phone', 10), maxLength('phone', 10)]"
+                  v-model="phone"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Địa chỉ*"
+                  name="address"
+                  prepend-icon="location_on"
+                  :counter="100"
+                  :rules="[minLength('address', 5), maxLength('address', 100)]"
+                  type="text"
+                  v-model="address"
+                ></v-text-field>
+              </v-col>
+            </v-row>
             <v-btn color="primary" @click="stepper = 2" :disabled="!valid"
               >Tiếp tục</v-btn
             >
@@ -124,134 +109,118 @@
         <v-stepper-content step="2">
           <v-form ref="companyForm" v-model="valid2" validation>
             <small>*Dấu sao là trường bắt buộc</small>
-            <v-layout row>
-              <v-layout col>
-                <v-flex xs8>
-                  <v-text-field
-                    label="Mã công ty*"
-                    name="companyCode"
-                    prepend-icon="verified_user"
-                    type="text"
-                    :counter="10"
-                    :rules="[
-                      minLength('cpmpany code', 2),
-                      maxLength('company code', 10)
-                    ]"
-                    v-model="companyCode"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
-              <v-layout col>
-                <v-flex xs8>
-                  <v-text-field
-                    label="Tên công ty*"
-                    name="companyName"
-                    prepend-icon="contacts"
-                    type="text"
-                    :counter="100"
-                    :rules="[
-                      minLength('company name', 5),
-                      maxLength('company name', 100)
-                    ]"
-                    v-model="companyName"
-                  >
-                  </v-text-field>
-                </v-flex>
-              </v-layout>
-            </v-layout>
-            <v-layout row>
-              <v-layout col>
-                <v-flex xs8>
-                  <v-text-field
-                    label="Người liên hệ*"
-                    name="contactPerson"
-                    prepend-icon="add_ic_call"
-                    type="text"
-                    :counter="50"
-                    :rules="[
-                      minLength('contact person', 5),
-                      maxLength('contact person', 50)
-                    ]"
-                    v-model="contactPerson"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
-              <v-layout col>
-                <v-flex xs8>
-                  <v-text-field
-                    label="Website*"
-                    name="website"
-                    prepend-icon="copyright"
-                    type="text"
-                    :counter="50"
-                    :rules="[minLength('website', 5), maxLength('website', 50)]"
-                    v-model="website"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
-            </v-layout>
-            <v-layout row>
-              <v-layout col>
-                <v-flex xs8>
-                  <v-text-field
-                    label="Tin*"
-                    name="tin"
-                    prepend-icon="contact_phone"
-                    :counter="20"
-                    :rules="[minLength('tin', 5), maxLength('tin', 20)]"
-                    type="number"
-                    v-model="tin"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
-              <v-layout col>
-                <v-flex xs8>
-                  <v-text-field
-                    label="Fax*"
-                    name="fax"
-                    prepend-icon="perm_phone_msg"
-                    type="number"
-                    :counter="20"
-                    :rules="[minLength('fax', 5), maxLength('fax', 20)]"
-                    v-model="fax"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
-            </v-layout>
-            <v-layout row>
-              <v-layout col>
-                <v-flex xs8>
-                  <v-text-field
-                    label="Mô tả*"
-                    name="companyDescription"
-                    prepend-icon="description"
-                    type="text"
-                    :counter="200"
-                    :rules="[
-                      minLength('company description', 5),
-                      maxLength('company description', 200)
-                    ]"
-                    v-model="companyDescription"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
-              <v-layout col>
-                <v-flex xs8>
-                  <v-text-field
-                    label="Địa chỉ công ty*"
-                    name="companyAddress"
-                    prepend-icon="location_city"
-                    type="text"
-                    :counter="200"
-                    :rules="[
-                      minLength('company address', 5),
-                      maxLength('company address', 200)
-                    ]"
-                    v-model="companyAddress"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
-            </v-layout>
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Mã công ty*"
+                  name="companyCode"
+                  prepend-icon="verified_user"
+                  type="text"
+                  :counter="10"
+                  :rules="[
+                    minLength('cpmpany code', 2),
+                    maxLength('company code', 10)
+                  ]"
+                  v-model="companyCode"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Tên công ty*"
+                  name="companyName"
+                  prepend-icon="contacts"
+                  type="text"
+                  :counter="100"
+                  :rules="[
+                    minLength('company name', 5),
+                    maxLength('company name', 100)
+                  ]"
+                  v-model="companyName"
+                >
+                </v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Người liên hệ*"
+                  name="contactPerson"
+                  prepend-icon="add_ic_call"
+                  type="text"
+                  :counter="50"
+                  :rules="[
+                    minLength('contact person', 5),
+                    maxLength('contact person', 50)
+                  ]"
+                  v-model="contactPerson"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Website*"
+                  name="website"
+                  prepend-icon="copyright"
+                  type="text"
+                  :counter="50"
+                  :rules="[minLength('website', 5), maxLength('website', 50)]"
+                  v-model="website"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Tin*"
+                  name="tin"
+                  prepend-icon="contact_phone"
+                  :counter="20"
+                  :rules="[minLength('tin', 5), maxLength('tin', 20)]"
+                  type="number"
+                  v-model="tin"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Fax*"
+                  name="fax"
+                  prepend-icon="perm_phone_msg"
+                  type="number"
+                  :counter="20"
+                  :rules="[minLength('fax', 5), maxLength('fax', 20)]"
+                  v-model="fax"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Mô tả*"
+                  name="companyDescription"
+                  prepend-icon="description"
+                  type="text"
+                  :counter="200"
+                  :rules="[
+                    minLength('company description', 5),
+                    maxLength('company description', 200)
+                  ]"
+                  v-model="companyDescription"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Địa chỉ công ty*"
+                  name="companyAddress"
+                  prepend-icon="location_city"
+                  type="text"
+                  :counter="200"
+                  :rules="[
+                    minLength('company address', 5),
+                    maxLength('company address', 200)
+                  ]"
+                  v-model="companyAddress"
+                ></v-text-field>
+              </v-col>
+            </v-row>
 
             <v-btn color="primary" @click="stepper = 3" :disabled="!valid2"
               >Tiếp tục</v-btn

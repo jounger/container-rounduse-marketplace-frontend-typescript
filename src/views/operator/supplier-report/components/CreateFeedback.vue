@@ -19,8 +19,8 @@
       <v-card-text>
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
-          <v-layout row>
-            <v-flex xs9>
+          <v-row>
+            <v-col cols="12" md="11">
               <v-text-field
                 label="Người gửi*"
                 name="sender"
@@ -29,10 +29,10 @@
                 readonly
                 v-model="feedbackLocal.sender"
               ></v-text-field>
-            </v-flex>
-          </v-layout>
-          <v-layout row>
-            <v-flex xs9>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="11">
               <v-text-field
                 label="Nội dung*"
                 name="message"
@@ -42,8 +42,8 @@
                 :rules="[minLength('message', 5), maxLength('message', 200)]"
                 v-model="feedbackLocal.message"
               ></v-text-field>
-            </v-flex>
-          </v-layout>
+            </v-col>
+          </v-row>
           <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>

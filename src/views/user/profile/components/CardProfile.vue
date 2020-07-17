@@ -33,10 +33,10 @@
         </v-list-item-icon>
 
         <v-list-item-content>
+          <v-list-item-subtitle>Số điện thoại</v-list-item-subtitle>
           <v-list-item-title>{{
             $auth.user() ? $auth.user().phone : ""
           }}</v-list-item-title>
-          <v-list-item-subtitle>Số điện thoại</v-list-item-subtitle>
         </v-list-item-content>
 
         <v-list-item-icon>
@@ -52,10 +52,10 @@
         </v-list-item-icon>
 
         <v-list-item-content>
+          <v-list-item-subtitle>Email</v-list-item-subtitle>
           <v-list-item-title>{{
             $auth.user() ? $auth.user().email : ""
           }}</v-list-item-title>
-          <v-list-item-subtitle>Email</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
 
@@ -67,10 +67,10 @@
         </v-list-item-icon>
 
         <v-list-item-content>
+          <v-list-item-subtitle>Địa chỉ</v-list-item-subtitle>
           <v-list-item-title>{{
             $auth.user() ? $auth.user().address : ""
           }}</v-list-item-title>
-          <v-list-item-subtitle>Địa chỉ</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
     </v-list>

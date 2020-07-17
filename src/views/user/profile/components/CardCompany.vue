@@ -21,120 +21,106 @@
     >
 
     <v-divider inset></v-divider>
-    <v-layout row>
-      <v-layout col>
-        <v-flex xs10>
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon color="indigo">verified_user</v-icon>
-            </v-list-item-icon>
+    <v-row>
+      <v-col cols="12" md="6">
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon color="indigo">verified_user</v-icon>
+          </v-list-item-icon>
 
-            <v-list-item-content>
-              <v-list-item-title>{{
-                profile ? profile.companyCode : ""
-              }}</v-list-item-title>
-              <v-list-item-subtitle>Mã Công ty</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </v-flex>
-      </v-layout>
-      <v-layout col>
-        <v-flex xs10>
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon color="indigo">contacts</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>{{
-                profile ? profile.companyName : ""
-              }}</v-list-item-title>
-              <v-list-item-subtitle>Tên Công ty</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </v-flex>
-      </v-layout>
-    </v-layout>
-    <v-layout row>
-      <v-layout col>
-        <v-flex xs10>
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon color="indigo">copyright</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>{{
-                profile ? profile.website : ""
-              }}</v-list-item-title>
-              <v-list-item-subtitle>Website</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </v-flex>
-      </v-layout>
-      <v-layout col>
-        <v-flex xs10>
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon color="indigo">location_city</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>{{
-                profile ? profile.companyAddress : ""
-              }}</v-list-item-title>
-              <v-list-item-subtitle>Địa chỉ công ty</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </v-flex>
-      </v-layout>
-    </v-layout>
-    <v-layout row>
-      <v-layout col>
-        <v-flex xs10>
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon color="indigo">contact_phone</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>{{
-                profile ? profile.tin : ""
-              }}</v-list-item-title>
-              <v-list-item-subtitle>Tin</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </v-flex>
-      </v-layout>
-      <v-layout col>
-        <v-flex xs10>
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon color="indigo">perm_phone_msg</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>{{
-                profile ? profile.fax : ""
-              }}</v-list-item-title>
-              <v-list-item-subtitle>Fax</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </v-flex>
-      </v-layout>
-    </v-layout>
-    <v-layout row>
-      <v-layout col>
-        <v-flex xs10
-          ><v-list-item>
-            <v-list-item-icon>
-              <v-icon color="indigo">description</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>{{
-                profile ? profile.companyDescription : ""
-              }}</v-list-item-title>
-              <v-list-item-subtitle>Mô tả</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </v-flex>
-      </v-layout>
-    </v-layout>
+          <v-list-item-content>
+            <v-list-item-subtitle>Mã Công ty</v-list-item-subtitle>
+            <v-list-item-title>{{
+              profile ? profile.companyCode : ""
+            }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-col>
+      <v-col cols="12" md="6">
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon color="indigo">contacts</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-subtitle>Tên Công ty</v-list-item-subtitle>
+            <v-list-item-title>{{
+              profile ? profile.companyName : ""
+            }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12" md="6">
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon color="indigo">copyright</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-subtitle>Website</v-list-item-subtitle>
+            <v-list-item-title>{{
+              profile ? profile.website : ""
+            }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-col>
+      <v-col cols="12" md="6">
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon color="indigo">location_city</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-subtitle>Địa chỉ công ty</v-list-item-subtitle>
+            <v-list-item-title>{{
+              profile ? profile.companyAddress : ""
+            }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12" md="6">
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon color="indigo">contact_phone</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-subtitle>Tin</v-list-item-subtitle>
+            <v-list-item-title>{{
+              profile ? profile.tin : ""
+            }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-col>
+      <v-col cols="12" md="6">
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon color="indigo">perm_phone_msg</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-subtitle>Fax</v-list-item-subtitle>
+            <v-list-item-title>{{
+              profile ? profile.fax : ""
+            }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12" md="6"
+        ><v-list-item>
+          <v-list-item-icon>
+            <v-icon color="indigo">description</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-subtitle>Mô tả</v-list-item-subtitle>
+            <v-list-item-title>{{
+              profile ? profile.companyDescription : ""
+            }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-col>
+    </v-row>
   </v-card>
 </template>
 

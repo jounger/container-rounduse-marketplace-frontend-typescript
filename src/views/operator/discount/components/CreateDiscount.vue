@@ -19,106 +19,94 @@
       <v-card-text>
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
-          <v-layout row>
-            <v-layout col>
-              <v-flex xs10>
-                <v-text-field
-                  label="Mã giảm giá*"
-                  name="code"
-                  prepend-icon="loyalty"
-                  type="text"
-                  v-model="discountLocal.code"
-                  :rules="[required('code')]"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout col>
-              <v-flex xs10>
-                <v-text-field
-                  label="Chi tiết"
-                  name="detail"
-                  prepend-icon="description"
-                  type="text"
-                  v-model="discountLocal.detail"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-layout>
-          <v-layout row>
-            <v-layout col>
-              <v-flex xs10>
-                <v-select
-                  prepend-icon="monetization_on"
-                  :items="currencies"
-                  attach
-                  label="Loại tiền tệ"
-                  v-model="discountLocal.currency"
-                ></v-select>
-              </v-flex>
-            </v-layout>
-            <v-layout col>
-              <v-flex xs10>
-                <v-text-field
-                  label="Phần trăm (%)"
-                  name="percent"
-                  prepend-icon="shopping_cart"
-                  type="number"
-                  v-model="discountLocal.percent"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-layout>
-          <v-layout row>
-            <v-layout col>
-              <v-flex xs10>
-                <v-text-field
-                  label="Giảm giá nhiều nhất (%)"
-                  name="maximumDiscount"
-                  prepend-icon="swap_vert"
-                  type="number"
-                  v-model="discountLocal.maximumDiscount"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout col>
-              <v-flex xs7>
-                <v-menu
-                  ref="expiredDatePicker"
-                  v-model="expiredDatePicker"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  max-width="290px"
-                  min-width="290px"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="expiredDate"
-                      label="Ngày hết hạn"
-                      hint="YYYY/MM/DD"
-                      persistent-hint
-                      prepend-icon="remove_shopping_cart"
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker
+          <v-row>
+            <v-col cols="12" md="6">
+              <v-text-field
+                label="Mã giảm giá*"
+                name="code"
+                prepend-icon="loyalty"
+                type="text"
+                v-model="discountLocal.code"
+                :rules="[required('code')]"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field
+                label="Chi tiết"
+                name="detail"
+                prepend-icon="description"
+                type="text"
+                v-model="discountLocal.detail"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="6">
+              <v-select
+                prepend-icon="monetization_on"
+                :items="currencies"
+                attach
+                label="Loại tiền tệ"
+                v-model="discountLocal.currency"
+              ></v-select>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field
+                label="Phần trăm (%)"
+                name="percent"
+                prepend-icon="shopping_cart"
+                type="number"
+                v-model="discountLocal.percent"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="6">
+              <v-text-field
+                label="Giảm giá nhiều nhất (%)"
+                name="maximumDiscount"
+                prepend-icon="swap_vert"
+                type="number"
+                v-model="discountLocal.maximumDiscount"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="3">
+              <v-menu
+                ref="expiredDatePicker"
+                v-model="expiredDatePicker"
+                :close-on-content-click="false"
+                transition="scale-transition"
+                offset-y
+                max-width="290px"
+                min-width="290px"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
                     v-model="expiredDate"
-                    no-title
-                    @input="expiredDatePicker = false"
-                  ></v-date-picker>
-                </v-menu>
-              </v-flex>
-              <v-flex xs3>
-                <v-text-field
-                  label="Giờ hết hạn"
-                  name="time"
-                  type="time"
-                  v-model="time"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-layout>
+                    label="Ngày hết hạn"
+                    hint="YYYY/MM/DD"
+                    persistent-hint
+                    prepend-icon="remove_shopping_cart"
+                    v-bind="attrs"
+                    v-on="on"
+                  ></v-text-field>
+                </template>
+                <v-date-picker
+                  v-model="expiredDate"
+                  no-title
+                  @input="expiredDatePicker = false"
+                ></v-date-picker>
+              </v-menu>
+            </v-col>
+            <v-col cols="12" md="2">
+              <v-text-field
+                label="Giờ hết hạn"
+                name="time"
+                type="time"
+                v-model="time"
+              ></v-text-field>
+            </v-col>
+          </v-row>
           <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>

@@ -678,6 +678,7 @@ export default class DetailCombinedForwarder extends Vue {
   created() {
     // TODO: Fake data
     const combinedId = parseInt(this.$route.params.id);
+    this.evidences = [] as Array<IEvidence>;
     getCombined(combinedId)
       .then(res => {
         const response = res.data;
@@ -694,13 +695,13 @@ export default class DetailCombinedForwarder extends Vue {
             });
         }
         if (this.combined.contract && this.combined.contract.id) {
-          this.evidences = [] as Array<IEvidence>;
           getEvidencesByContract(this.combined.contract.id, {
             page: 0,
             limit: 100
           })
             .then(res => {
               const response: PaginationResponse<IEvidence> = res.data;
+              console.log(response);
               this.evidences = response.data;
             })
             .catch(err => {

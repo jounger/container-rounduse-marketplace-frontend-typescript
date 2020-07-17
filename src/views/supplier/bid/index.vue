@@ -255,14 +255,14 @@ export default class Bid extends Vue {
   }
 
   openEditDialog(item: IBid) {
-    if (new Date().getTime() - new Date(item.bidValidityPeriod).getTime() > 0) {
+    // if (new Date().getTime() - new Date(item.bidValidityPeriod).getTime() > 0) {
       this.bid = item;
       this.dialogEdit = true;
-    } else {
-      this.message =
-        "Không thể sửa khi chưa vượt quá thời gian Validity Period";
-      this.snackbar = true;
-    }
+    // } else {
+    //   this.message =
+    //     "Không thể sửa khi chưa vượt quá thời gian Validity Period";
+    //   this.snackbar = true;
+    // }
   }
 
   openCancelDialog(item: IBid) {

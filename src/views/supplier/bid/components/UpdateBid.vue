@@ -53,116 +53,6 @@
               >
             </v-form>
           </v-stepper-content>
-          <v-stepper-step :complete="stepper > 2" step="2" :editable="editable"
-            >Chọn containers mong muốn</v-stepper-step
-          >
-          <!-- SELECT CONTAINER -->
-          <v-stepper-content step="2">
-            <v-tabs background-color="white" color="deep-purple accent-4" left>
-              <v-tab>Danh sach Inbound</v-tab>
-              <v-tab>Selected Containers</v-tab>
-
-              <v-tab-item>
-                <v-container fluid>
-                  <v-data-table
-                    :headers="inboundHeaders"
-                    :items="inbounds"
-                    :single-expand="true"
-                    :expanded.sync="expanded"
-                    show-expand
-                    @click:row="clicked"
-                    item-key="id"
-                    :loading="loading"
-                    :options.sync="options"
-                    :server-items-length="options.totalItems"
-                    :footer-props="{
-                      'items-per-page-options': options.itemsPerPageItems
-                    }"
-                    :actions-append="options.page"
-                    class="elevation-1 my-1"
-                  >
-                    <template v-slot:item.pickUpTime="{ item }">
-                      {{ formatDatetime(item.pickupTime) }}
-                    </template>
-                    <template v-slot:item.status="{ item }">
-                      {{
-                        typeof item.billOfLading !== "undefined"
-                          ? item.billOfLading.containers[0].status
-                          : ""
-                      }}
-                    </template>
-                    <!-- Show containers expened -->
-                    <template v-slot:expanded-item="{ headers, item }">
-                      <td :colspan="headers.length" class="px-0">
-                        <v-data-table
-                          :headers="containerHeaders"
-                          :items="item.billOfLading.containers"
-                          :hide-default-footer="true"
-                          dark
-                          dense
-                        >
-                          <template v-slot:item.actions="{ item }">
-                            <v-btn
-                              class="ma-1"
-                              x-small
-                              tile
-                              outlined
-                              color="success"
-                              @click="selectContainer(item)"
-                            >
-                              <v-icon left>mdi-pencil</v-icon>
-                              {{ checkDuplicateSelect(item) ? "Bỏ" : "Chọn" }}
-                            </v-btn>
-                          </template>
-                        </v-data-table>
-                      </td>
-                    </template>
-                  </v-data-table>
-                </v-container>
-              </v-tab-item>
-              <v-tab-item>
-                <v-container fluid>
-                  <v-data-table
-                    :headers="containerHeaders"
-                    :items="containers"
-                    item-key="id"
-                    :footer-props="{
-                      'items-per-page-options': options.itemsPerPageItems
-                    }"
-                    dense
-                  >
-                    <template v-slot:item.actions="{ item }">
-                      <v-btn
-                        class="ma-1"
-                        x-small
-                        tile
-                        outlined
-                        color="success"
-                        @click="selectContainer(item)"
-                      >
-                        <v-icon left>mdi-pencil</v-icon>
-                        {{ checkDuplicateSelect(item) ? "Bỏ" : "Chọn" }}
-                      </v-btn>
-                    </template>
-                  </v-data-table>
-                </v-container>
-              </v-tab-item>
-            </v-tabs>
-            <v-btn
-              color="primary"
-              @click="updateBid()"
-              :disabled="containers.length == 0"
-              >Hoàn thành</v-btn
-            >
-            <v-btn
-              text
-              @click="
-                stepper = 1;
-                valid = true;
-              "
-              >Quay lại</v-btn
-            >
-          </v-stepper-content>
         </v-stepper>
       </v-list>
       <!-- END CONTENT -->
@@ -181,7 +71,7 @@ import { getInboundsByOutboundAndForwarder } from "@/api/inbound";
 import { PaginationResponse } from "@/api/payload";
 import { IOutbound } from "@/entity/outbound";
 import Utils from "@/mixin/utils";
-import { addTimeToDate } from '@/utils/tool';
+import { addTimeToDate } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate, Utils]
@@ -284,7 +174,6 @@ export default class UpdateBid extends Vue {
           this.messageSync = "Cập nhập thành công HSDT: " + response.id;
           const index = this.bidsSync.findIndex(x => x.id == response.id);
           this.bidsSync.splice(index, 1, response);
-          this.stepper = 2;
         })
         .catch(err => {
           console.log(err);

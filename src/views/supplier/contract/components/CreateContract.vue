@@ -19,8 +19,8 @@
       <v-card-text>
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
-          <v-layout row>
-            <v-flex xs9>
+          <v-row>
+            <v-col cols="12" md="11">
               <v-text-field
                 label="Người gửi*"
                 name="sender"
@@ -31,10 +31,10 @@
                 :rules="[minLength('sender', 5), maxLength('sender', 20)]"
                 v-model="contractLocal.evidence.sender"
               ></v-text-field>
-            </v-flex>
-          </v-layout>
-          <v-layout row>
-            <v-flex xs9>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="11">
               <v-text-field
                 label="% Tiền phạt*"
                 name="finesAgainstContractViolations"
@@ -43,10 +43,10 @@
                 :rules="[required('finesAgainstContractViolations')]"
                 v-model="contractLocal.finesAgainstContractViolations"
               ></v-text-field>
-            </v-flex>
-          </v-layout>
-          <v-layout row>
-            <v-flex xs9>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="11">
               <v-text-field
                 label="Chứng cớ*"
                 name="evidence"
@@ -55,8 +55,8 @@
                 :rules="[required('evidence')]"
                 v-model="contractLocal.evidence.evidence"
               ></v-text-field>
-            </v-flex>
-          </v-layout>
+            </v-col>
+          </v-row>
           <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
