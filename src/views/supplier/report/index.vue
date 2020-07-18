@@ -9,7 +9,7 @@
           :reports.sync="reports"
           :message.sync="message"
           :snackbar.sync="snackbar"
-          :totalItems.sync="options.totalItems"
+          :totalItems.sync="serverSideOptions.totalItems"
         />
       </v-row>
       <v-row justify="center">
@@ -19,7 +19,7 @@
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
           :snackbar.sync="snackbar"
-          :totalItems.sync="options.totalItems"
+          :totalItems.sync="serverSideOptions.totalItems"
         />
       </v-row>
       <v-row justify="center">
@@ -58,8 +58,10 @@
         item-key="id"
         :loading="loading"
         :options.sync="options"
-        :server-items-length="options.totalItems"
-        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :server-items-length="serverSideOptions.totalItems"
+        :footer-props="{
+          'items-per-page-options': serverSideOptions.itemsPerPageItems
+        }"
         :actions-append="options.page"
         class="elevation-1"
       >
@@ -98,6 +100,7 @@ import DeleteReport from "./components/DeleteReport.vue";
 import UpdateReport from "./components/UpdateReport.vue";
 import ReportDetail from "./components/ReportDetail.vue";
 import { getReportsByUser } from "@/api/report";
+import { DataOptions } from "vuetify";
 
 @Component({
   components: {
@@ -121,9 +124,10 @@ export default class Report extends Vue {
   message = "";
   snackbar = false;
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -158,26 +162,30 @@ export default class Report extends Vue {
     this.dialogDel = true;
   }
   viewDetailReport(item: IReport) {
-    this.$router.push({ path: `/bidding-document/${item.report}` });
+    console.log(item);
+    if (item && item.report && typeof item.report != "number") {
+      const report = item.report as IReport;
+      this.$router.push({ path: `/bidding-document/${report.id}` });
+    }
   }
   clicked(value: IReport) {
     this.report = value;
     this.dialogDetail = true;
   }
 
-  @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
+  @Watch("options")
+  onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
       getReportsByUser({
         page: this.options.page - 1,
-        limit: this.options.itemsPerPage,
-        status: "PENDING"
+        limit: this.options.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IReport> = res.data;
           console.log("watch", this.options);
           this.reports = response.data;
-          this.options.totalItems = response.totalElements;
+          this.serverSideOptions.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
@@ -185,11 +193,3 @@ export default class Report extends Vue {
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

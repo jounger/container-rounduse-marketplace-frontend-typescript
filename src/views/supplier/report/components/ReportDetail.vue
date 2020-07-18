@@ -190,6 +190,7 @@
           </v-menu>
         </v-list-item>
       </v-list>
+      <v-spacer></v-spacer>
       <v-btn
         v-if="
           feedbacks.length == 0 &&

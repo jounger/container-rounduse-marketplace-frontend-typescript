@@ -54,7 +54,7 @@ import { getSuppliersByStatus } from "@/api/supplier";
 import { PaginationResponse } from "@/api/payload";
 import RegisterDetail from "./components/RegisterDetail.vue";
 import Snackbar from "@/components/Snackbar.vue";
-import { DataOptions } from 'vuetify';
+import { DataOptions } from "vuetify";
 
 @Component({
   components: {
@@ -99,9 +99,10 @@ export default class Supplier extends Vue {
     this.dialogDetail = true;
   }
 
-  @Watch("options", { deep: true })
+  @Watch("options")
   onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
+      this.loading = true;
       getSuppliersByStatus({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage,
@@ -119,11 +120,3 @@ export default class Supplier extends Vue {
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

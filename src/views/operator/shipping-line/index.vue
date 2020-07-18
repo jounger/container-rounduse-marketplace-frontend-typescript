@@ -146,9 +146,10 @@ export default class ShippingLine extends Vue {
     this.dialogDel = true;
   }
 
-  @Watch("options", { deep: true })
+  @Watch("options")
   onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
+      this.loading = true;
       getShippingLines({
         page: val.page - 1,
         limit: val.itemsPerPage
@@ -177,11 +178,3 @@ export default class ShippingLine extends Vue {
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

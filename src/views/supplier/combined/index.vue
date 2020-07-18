@@ -7,8 +7,10 @@
         item-key="id"
         :loading="loading"
         :options.sync="options"
-        :server-items-length="options.totalItems"
-        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :server-items-length="serverSideOptions.totalItems"
+        :footer-props="{
+          'items-per-page-options': serverSideOptions.itemsPerPageItems
+        }"
         :actions-append="options.page"
         class="elevation-1"
       >
@@ -56,6 +58,7 @@ import { IBiddingDocument } from "@/entity/bidding-document";
 import { IOutbound } from "@/entity/outbound";
 import Utils from "@/mixin/utils";
 import { getBiddingDocumentsByExistCombined } from "@/api/bidding-document";
+import { DataOptions } from "vuetify";
 
 @Component({
   mixins: [Utils]
@@ -65,9 +68,10 @@ export default class Combined extends Vue {
   outbounds: Array<IOutbound> = [];
   loading = true;
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -113,13 +117,14 @@ export default class Combined extends Vue {
   created() {
     // TODO: Fake data
     // this.reduceData(this.combineds);
-    this.options.totalItems = 10;
+    this.serverSideOptions.totalItems = 10;
     this.loading = false;
   }
 
-  @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
+  @Watch("options")
+  onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
       getBiddingDocumentsByExistCombined({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
@@ -129,7 +134,7 @@ export default class Combined extends Vue {
           this.biddingDocuments = response.data;
           console.log("biddingDocuments", this.biddingDocuments);
           this.reduceData(this.biddingDocuments);
-          this.options.totalItems = response.totalElements;
+          this.serverSideOptions.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
@@ -137,11 +142,3 @@ export default class Combined extends Vue {
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

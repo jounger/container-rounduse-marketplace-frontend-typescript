@@ -211,7 +211,7 @@
             :dialogDel.sync="dialogDel"
             :biddingDocument="biddingDocument"
             :biddingDocuments.sync="biddingDocuments"
-            :totalItems.sync="options.totalItems"
+            :totalItems.sync="serverSideOptions.totalItems"
             :message.sync="message"
             :snackbar.sync="snackbar"
           />
@@ -231,7 +231,7 @@
           :biddingDocuments.sync="biddingDocuments"
           :outbounds.sync="outbounds"
           :dialogAdd.sync="dialogAdd"
-          :totalItems.sync="options.totalItems"
+          :totalItems.sync="serverSideOptions.totalItems"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
@@ -249,9 +249,9 @@
           item-key="id"
           :loading="loading"
           :options.sync="options"
-          :server-items-length="options.totalItems"
+          :server-items-length="serverSideOptions.totalItems"
           :footer-props="{
-            'items-per-page-options': options.itemsPerPageItems
+            'items-per-page-options': serverSideOptions.itemsPerPageItems
           }"
           :actions-append="options.page"
           @click:row="clicked"
@@ -365,6 +365,7 @@ import CancelBiddingDocument from "./components/CancelBiddingDocument.vue";
 import Utils from "@/mixin/utils";
 import { getContainerTypes } from "@/api/container-type";
 import { IContainerType } from "@/entity/container-type";
+import { DataOptions } from "vuetify";
 
 @Component({
   mixins: [Utils],
@@ -404,9 +405,10 @@ export default class BiddingDocument extends Vue {
   loading = true;
   dateInit = new Date().toISOString().substr(0, 10);
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -452,9 +454,10 @@ export default class BiddingDocument extends Vue {
     this.$router.push({ path: `/bidding-document/${value.id}` });
   }
 
-  @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
+  @Watch("options")
+  onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
       getBiddingDocuments({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
@@ -463,7 +466,7 @@ export default class BiddingDocument extends Vue {
           const response: PaginationResponse<IBiddingDocument> = res.data;
           console.log("watch", response);
           this.biddingDocuments = response.data;
-          this.options.totalItems = response.totalElements;
+          this.serverSideOptions.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
@@ -491,11 +494,3 @@ export default class BiddingDocument extends Vue {
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

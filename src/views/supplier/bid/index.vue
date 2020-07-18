@@ -10,7 +10,7 @@
         :dialogAdd.sync="dialogAdd"
         :message.sync="message"
         :snackbar.sync="snackbar"
-        :totalItems.sync="options.totalItems"
+        :totalItems.sync="serverSideOptions.totalItems"
       />
       <UpdateBid
         v-if="dialogEdit"
@@ -41,8 +41,10 @@
         item-key="id"
         :loading="loading"
         :options.sync="options"
-        :server-items-length="options.totalItems"
-        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :server-items-length="serverSideOptions.totalItems"
+        :footer-props="{
+          'items-per-page-options': serverSideOptions.itemsPerPageItems
+        }"
         :actions-append="options.page"
         class="elevation-1"
       >
@@ -132,6 +134,7 @@ import { getBidByBiddingDocumentAndForwarder } from "@/api/bid";
 import Utils from "@/mixin/utils";
 import UpdateBid from "./components/UpdateBid.vue";
 import CancelBid from "./components/CancelBid.vue";
+import { DataOptions } from "vuetify";
 
 @Component({
   mixins: [Utils],
@@ -157,9 +160,10 @@ export default class Bid extends Vue {
   loading = true;
   dateInit = new Date().toISOString().substr(0, 10);
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -255,14 +259,14 @@ export default class Bid extends Vue {
   }
 
   openEditDialog(item: IBid) {
-    // if (new Date().getTime() - new Date(item.bidValidityPeriod).getTime() > 0) {
+    if (new Date().getTime() - new Date(item.bidValidityPeriod).getTime() > 0) {
       this.bid = item;
       this.dialogEdit = true;
-    // } else {
-    //   this.message =
-    //     "Không thể sửa khi chưa vượt quá thời gian Validity Period";
-    //   this.snackbar = true;
-    // }
+    } else {
+      this.message =
+        "Không thể sửa khi chưa vượt quá thời gian Validity Period";
+      this.snackbar = true;
+    }
   }
 
   openCancelDialog(item: IBid) {
@@ -276,9 +280,10 @@ export default class Bid extends Vue {
     }
   }
 
-  @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
+  @Watch("options")
+  onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
       getBiddingDocuments({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
@@ -287,7 +292,7 @@ export default class Bid extends Vue {
           const response: PaginationResponse<IBiddingDocument> = res.data;
           console.log("watch", response.data);
           this.biddingDocuments = response.data;
-          this.options.totalItems = response.totalElements;
+          this.serverSideOptions.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
@@ -295,11 +300,3 @@ export default class Bid extends Vue {
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

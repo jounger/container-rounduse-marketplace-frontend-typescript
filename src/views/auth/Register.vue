@@ -324,5 +324,3 @@ export default class Register extends Vue {
   }
 }
 </script>
-
-<style></style>
