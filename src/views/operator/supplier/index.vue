@@ -28,8 +28,10 @@
         item-key="username"
         :loading="loading"
         :options.sync="options"
-        :server-items-length="options.totalItems"
-        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :server-items-length="serverSideOptions.totalItems"
+        :footer-props="{
+          'items-per-page-options': serverSideOptions.itemsPerPageItems
+        }"
         :actions-append="options.page"
         class="elevation-1"
       >
@@ -71,6 +73,7 @@ import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 import ReviewSupplier from "./components/ReviewSupplier.vue";
 import SupplierDetail from "./components/SupplierDetail.vue";
+import { DataOptions } from "vuetify";
 
 @Component({
   components: {
@@ -90,9 +93,10 @@ export default class Supplier extends Vue {
   message = "";
   snackbar = false;
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -125,18 +129,19 @@ export default class Supplier extends Vue {
     this.dialogReview = true;
   }
 
-  @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
+  @Watch("options")
+  onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
       getSuppliers({
-        page: this.options.page - 1,
-        limit: this.options.itemsPerPage
+        page: val.page - 1,
+        limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<ISupplier> = res.data;
-          console.log("watch", this.options);
+          console.log("watch", response);
           this.suppliers = response.data.filter(x => x.status != "PENDING");
-          this.options.totalItems = this.suppliers.length;
+          this.serverSideOptions.totalItems = this.suppliers.length;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
@@ -144,11 +149,3 @@ export default class Supplier extends Vue {
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

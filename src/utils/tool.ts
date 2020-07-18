@@ -12,7 +12,7 @@ export function isValidDate(d: Date) {
 }
 
 export function addTimeToDate(input: string) {
-  if (input && input.length <= 10) {
+  if (input && input.length <= 10 && !input.includes("T")) {
     input += "T00:00";
   }
   const d = new Date(input);
@@ -65,13 +65,13 @@ export function isEmptyString(input: string) {
 }
 
 export function currencyFormatter(num: number, cur?: string) {
-  let currency = "VND"
+  let currency = "VND";
   if (cur && !isEmptyString(cur)) {
     currency = cur;
   }
   return new Intl.NumberFormat("vi-VI", {
     style: "currency",
-    currency: "VND",
+    currency: "VND"
   }).format(num);
 }
 

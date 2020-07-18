@@ -7,7 +7,7 @@
         :message.sync="message"
         :snackbar.sync="snackbar"
         :outbounds.sync="outbounds"
-        :totalItems.sync="options.totalItems"
+        :totalItems.sync="serverSideOptions.totalItems"
       />
       <UpdateOutbound
         :outbound="outbound"
@@ -32,6 +32,7 @@
           :outbounds.sync="outbounds"
           :message.sync="message"
           :snackbar.sync="snackbar"
+          :totalItems.sync="serverSideOptions.totalItems"
         />
       </v-row>
       <v-data-table
@@ -40,8 +41,10 @@
         item-key="id"
         :loading="loading"
         :options.sync="options"
-        :server-items-length="options.totalItems"
-        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :server-items-length="serverSideOptions.totalItems"
+        :footer-props="{
+          'items-per-page-options': serverSideOptions.itemsPerPageItems
+        }"
         :actions-append="options.page"
         class="elevation-1"
       >
@@ -123,6 +126,7 @@ import { PaginationResponse } from "@/api/payload";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import Utils from "@/mixin/utils";
 import CreateBiddingDocument from "../../supplier/bidding-document/components/CreateBiddingDocument.vue";
+import { DataOptions } from "vuetify";
 
 @Component({
   mixins: [Utils],
@@ -147,9 +151,10 @@ export default class Outbound extends Vue {
   loading = true;
   dateInit = new Date().toISOString().substr(0, 10);
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -195,17 +200,19 @@ export default class Outbound extends Vue {
     this.dialogCreateBiddingDocument = true;
   }
 
-  @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
+  @Watch("options")
+  onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
       getOutboundByMerchant({
-        page: this.options.page - 1,
-        limit: this.options.itemsPerPage
+        page: val.page - 1,
+        limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IOutbound> = res.data;
+          console.log("watch", response);
           this.outbounds = response.data;
-          this.options.totalItems = response.totalElements;
+          this.serverSideOptions.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));

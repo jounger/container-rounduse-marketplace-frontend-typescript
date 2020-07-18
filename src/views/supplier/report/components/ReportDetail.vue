@@ -82,7 +82,7 @@
                 <v-list-item-content>
                   <v-list-item-title>HSMT</v-list-item-title>
                   <v-list-item-subtitle @click="viewDetailBiddingDocument()">{{
-                    report.report
+                    report.report.id
                   }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
@@ -107,20 +107,16 @@
       <v-divider class="mx-1"></v-divider>
 
       <v-card-title>{{ report.title }}</v-card-title>
-      <v-layout col>
-        <v-layout row>
-          <v-flex xs12>
-            <v-textarea
-              outlined
-              name="detail"
-              label="Chi tiết"
-              :value="report.detail"
-              hint="Nội dung Report"
-              readonly
-            ></v-textarea>
-          </v-flex>
-        </v-layout>
-      </v-layout>
+      <v-col cols="12" md="12">
+        <v-textarea
+          outlined
+          name="detail"
+          label="Chi tiết"
+          :value="report.detail"
+          hint="Nội dung Report"
+          readonly
+        ></v-textarea>
+      </v-col>
       <v-list dense>
         <v-list-item v-for="item in feedbacks" :key="item.title">
           <v-list-item-icon>
@@ -146,7 +142,10 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item v-if="item.sender != $auth.user().username">
+              <v-list-item
+                v-if="item.sender != $auth.user().username"
+                @click="openMarkDialog(item)"
+              >
                 <v-list-item-icon>
                   <v-icon small>add</v-icon>
                 </v-list-item-icon>
@@ -191,6 +190,7 @@
           </v-menu>
         </v-list-item>
       </v-list>
+      <v-spacer></v-spacer>
       <v-btn
         v-if="
           feedbacks.length == 0 &&

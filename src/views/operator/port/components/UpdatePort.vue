@@ -96,7 +96,7 @@
                 </GoogleMapAutocomplete>
               </template>
             </GoogleMapLoader>
-            <v-card-actions v-if="portLocal.address">
+            <v-card-actions v-if="portLocal && portLocal.address">
               <v-bottom-navigation class="elevation-0">
                 <v-btn :value="portLocal.address">
                   <span>{{ portLocal.address }}</span>

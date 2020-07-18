@@ -6,7 +6,7 @@
         v-if="dialogAdd"
         :shippingLines.sync="shippingLines"
         :dialogAdd.sync="dialogAdd"
-        :totalItems.sync="options.totalItems"
+        :totalItems.sync="serverSideOptions.totalItems"
         :message.sync="message"
         :snackbar.sync="snackbar"
       />
@@ -24,7 +24,7 @@
           :dialogDel.sync="dialogDel"
           :shippingLine="shippingLine"
           :shippingLines.sync="shippingLines"
-          :totalItems.sync="options.totalItems"
+          :totalItems.sync="serverSideOptions.totalItems"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
@@ -35,8 +35,10 @@
         item-key="id"
         :loading="loading"
         :options.sync="options"
-        :server-items-length="options.totalItems"
-        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :server-items-length="serverSideOptions.totalItems"
+        :footer-props="{
+          'items-per-page-options': serverSideOptions.itemsPerPageItems
+        }"
         :actions-append="options.page"
         class="elevation-1"
       >
@@ -91,6 +93,7 @@ import CreateShippingLine from "./components/CreateShippingLine.vue";
 import Snackbar from "@/components/Snackbar.vue";
 import DeleteShippingLine from "./components/DeleteShippingLine.vue";
 import UpdateShippingLine from "./components/UpdateShippingLine.vue";
+import { DataOptions } from "vuetify";
 
 @Component({
   components: {
@@ -111,9 +114,10 @@ export default class ShippingLine extends Vue {
   message = "";
   snackbar = false;
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -142,19 +146,21 @@ export default class ShippingLine extends Vue {
     this.dialogDel = true;
   }
 
-  @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
+  @Watch("options")
+  onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
       getShippingLines({
-        page: this.options.page - 1,
-        limit: this.options.itemsPerPage
+        page: val.page - 1,
+        limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IShippingLine> = res.data;
+          console.log("watch", response);
           this.shippingLines = response.data.filter(
             x => x.roles[0] == "ROLE_SHIPPINGLINE"
           );
-          this.options.totalItems = response.totalElements;
+          this.serverSideOptions.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
@@ -172,11 +178,3 @@ export default class ShippingLine extends Vue {
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

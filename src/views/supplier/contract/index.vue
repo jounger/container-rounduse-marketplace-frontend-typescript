@@ -6,7 +6,7 @@
           :dialogDel.sync="dialogDel"
           :contract="contract"
           :contracts.sync="contracts"
-          :totalItems.sync="options.totalItems"
+          :totalItems.sync="serverSideOptions.totalItems"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
@@ -18,7 +18,7 @@
           :contracts.sync="contracts"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
-          :totalItems.sync="options.totalItems"
+          :totalItems.sync="serverSideOptions.totalItems"
           :snackbar.sync="snackbar"
           :update="update"
         />
@@ -30,8 +30,10 @@
         :search="search"
         :loading="loading"
         :options.sync="options"
-        :server-items-length="options.totalItems"
-        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :server-items-length="serverSideOptions.totalItems"
+        :footer-props="{
+          'items-per-page-options': serverSideOptions.itemsPerPageItems
+        }"
         :actions-append="options.page"
         class="elevation-1"
       >
@@ -68,6 +70,7 @@ import DeleteContract from "./components/DeleteContract.vue";
 import { PaginationResponse } from "@/api/payload";
 import Snackbar from "@/components/Snackbar.vue";
 import { getContractsByUser } from "@/api/contract";
+import { DataOptions } from "vuetify";
 
 @Component({
   components: {
@@ -88,9 +91,10 @@ export default class Contract extends Vue {
   loading = true;
   update = false;
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -132,9 +136,10 @@ export default class Contract extends Vue {
     this.dialogDel = true;
   }
 
-  @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
+  @Watch("options")
+  onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
       getContractsByUser({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
@@ -143,7 +148,7 @@ export default class Contract extends Vue {
           const response: PaginationResponse<IContract> = res.data;
           console.log("watch", response);
           this.contracts = response.data;
-          this.options.totalItems = response.totalElements;
+          this.serverSideOptions.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
@@ -151,11 +156,3 @@ export default class Contract extends Vue {
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

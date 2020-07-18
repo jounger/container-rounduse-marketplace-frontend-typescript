@@ -16,8 +16,8 @@
       </v-toolbar>
       <v-card-text>
         <v-form v-model="valid" validation>
-          <v-layout row>
-            <v-flex xs9>
+          <v-row>
+            <v-col cols="12" md="12">
               <v-text-field
                 label="Số điểm bạn chấm là:"
                 name="satisfactionPoints"
@@ -26,8 +26,8 @@
                 :rules="[required('satisfactionPoints')]"
                 v-model="feedbackLocal.satisfactionPoints"
               ></v-text-field>
-            </v-flex>
-          </v-layout>
+            </v-col>
+          </v-row>
           <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>

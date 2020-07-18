@@ -19,117 +19,99 @@
       <v-card-text>
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
-          <v-layout row>
-            <v-layout col>
-              <v-flex xs10>
-                <v-text-field
-                  label="Người gửi*"
-                  name="sender"
-                  prepend-icon="record_voice_over"
-                  type="text"
-                  :readonly="update"
-                  :counter="20"
-                  :rules="[minLength('sender', 5), maxLength('sender', 20)]"
-                  v-model="paymentLocal.sender"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout col>
-              <v-flex xs10>
-                <v-text-field
-                  label="Người nhận*"
-                  name="recipient"
-                  prepend-icon="hearing"
-                  type="text"
-                  :readonly="update"
-                  :counter="20"
-                  :rules="[
-                    minLength('recipient', 5),
-                    maxLength('recipient', 20)
-                  ]"
-                  v-model="paymentLocal.recipient"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-layout>
-          <v-layout row>
-            <v-layout col>
-              <v-flex xs10>
-                <v-text-field
-                  label="Nội dung*"
-                  name="detail"
-                  prepend-icon="description"
-                  type="text"
-                  :rules="[required('detail')]"
-                  v-model="paymentLocal.detail"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout col>
-              <v-flex xs10>
-                <v-text-field
-                  label="Số tiền*"
-                  name="amount"
-                  prepend-icon="monetization_on"
-                  type="number"
-                  :rules="[required('amount')]"
-                  v-model="paymentLocal.amount"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-layout>
-          <v-layout row>
-            <v-layout col>
-              <v-flex xs10>
-                <v-select
-                  v-model="paymentLocal.type"
-                  prepend-icon="money"
-                  :items="types"
-                  :rules="[required('type')]"
-                  label="Loại hình thanh toán*"
-                ></v-select>
-              </v-flex>
-            </v-layout>
-            <v-layout col>
-              <v-flex xs10>
-                <v-menu
-                  ref="paymentDatePicker"
-                  v-model="paymentDatePicker"
-                  :close-on-content-click="false"
-                  :return-value.sync="paymentDate"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="290px"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="paymentDate"
-                      label="Thời gian thanh toán*"
-                      prepend-icon="event"
-                      v-bind="attrs"
-                      v-on="on"
-                      :rules="[required('payment date')]"
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker v-model="paymentDate" no-title scrollable>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                      text
-                      color="primary"
-                      @click="paymentDatePicker = false"
-                      >Cancel</v-btn
-                    >
-                    <v-btn
-                      text
-                      color="primary"
-                      @click="$refs.paymentDatePicker.save(paymentDate)"
-                      >OK</v-btn
-                    >
-                  </v-date-picker>
-                </v-menu>
-              </v-flex>
-            </v-layout>
-          </v-layout>
+          <v-row>
+            <v-col cols="12" md="6">
+              <v-text-field
+                label="Người gửi*"
+                name="sender"
+                prepend-icon="record_voice_over"
+                type="text"
+                :readonly="update"
+                :counter="20"
+                :rules="[minLength('sender', 5), maxLength('sender', 20)]"
+                v-model="paymentLocal.sender"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field
+                label="Người nhận*"
+                name="recipient"
+                prepend-icon="hearing"
+                type="text"
+                :readonly="update"
+                :counter="20"
+                :rules="[minLength('recipient', 5), maxLength('recipient', 20)]"
+                v-model="paymentLocal.recipient"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="6">
+              <v-text-field
+                label="Nội dung*"
+                name="detail"
+                prepend-icon="description"
+                type="text"
+                :rules="[required('detail')]"
+                v-model="paymentLocal.detail"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field
+                label="Số tiền*"
+                name="amount"
+                prepend-icon="monetization_on"
+                type="number"
+                :rules="[required('amount')]"
+                v-model="paymentLocal.amount"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="6">
+              <v-select
+                v-model="paymentLocal.type"
+                prepend-icon="money"
+                :items="types"
+                :rules="[required('type')]"
+                label="Loại hình thanh toán*"
+              ></v-select>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-menu
+                ref="paymentDatePicker"
+                v-model="paymentDatePicker"
+                :close-on-content-click="false"
+                :return-value.sync="paymentDate"
+                transition="scale-transition"
+                offset-y
+                min-width="290px"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="paymentDate"
+                    label="Thời gian thanh toán*"
+                    prepend-icon="event"
+                    v-bind="attrs"
+                    v-on="on"
+                    :rules="[required('payment date')]"
+                  ></v-text-field>
+                </template>
+                <v-date-picker v-model="paymentDate" no-title scrollable>
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="paymentDatePicker = false"
+                    >Cancel</v-btn
+                  >
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="$refs.paymentDatePicker.save(paymentDate)"
+                    >OK</v-btn
+                  >
+                </v-date-picker>
+              </v-menu>
+            </v-col>
+          </v-row>
           <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>

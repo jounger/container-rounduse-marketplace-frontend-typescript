@@ -33,114 +33,94 @@
         <v-card-text>
           <small>*Dấu sao là trường bắt buộc</small>
           <v-container>
-            <v-layout row>
-              <v-layout col>
-                <v-flex xs10>
-                  <v-text-field
-                    label="Tên đăng nhập*"
-                    type="text"
-                    prepend-icon="mdi-account"
-                    v-model="operatorLocal.username"
-                    :readonly="update"
-                    :counter="20"
-                    :rules="[
-                      minLength('username', 2),
-                      maxLength('username', 20)
-                    ]"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
-              <v-layout col>
-                <v-flex xs10>
-                  <v-text-field
-                    v-if="!update"
-                    label="Mật khẩu*"
-                    prepend-icon="mdi-lock"
-                    type="password"
-                    v-model="operatorLocal.password"
-                    :counter="120"
-                    :rules="[
-                      minLength('password', 6),
-                      maxLength('password', 120)
-                    ]"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
-            </v-layout>
-            <v-layout row>
-              <v-layout col>
-                <v-flex xs10>
-                  <v-text-field
-                    label="Email*"
-                    type="email"
-                    prepend-icon="alternate_email"
-                    v-model="operatorLocal.email"
-                    :counter="50"
-                    :rules="[
-                      email('Operator'),
-                      minLength('email', 5),
-                      maxLength('email', 50)
-                    ]"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
-              <v-layout col>
-                <v-flex xs10>
-                  <v-text-field
-                    label="Số điện thoại*"
-                    type="number"
-                    prepend-icon="phone"
-                    v-model="operatorLocal.phone"
-                    :counter="10"
-                    :rules="[minLength('phone', 10), maxLength('phone', 10)]"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
-            </v-layout>
-            <v-layout row>
-              <v-layout col>
-                <v-flex xs10>
-                  <v-text-field
-                    label="Họ và tên*"
-                    name="fullname"
-                    type="text"
-                    prepend-icon="perm_identity"
-                    v-model="operatorLocal.fullname"
-                    :rules="[required('fullname')]"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
-              <v-layout col>
-                <v-flex xs10>
-                  <v-text-field
-                    label="Địa chỉ*"
-                    name="address"
-                    prepend-icon="location_on"
-                    :counter="100"
-                    :rules="[
-                      minLength('address', 5),
-                      maxLength('address', 100)
-                    ]"
-                    type="text"
-                    v-model="operatorLocal.address"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
-            </v-layout>
-            <v-layout row>
-              <v-layout col>
-                <v-flex xs5>
-                  <v-select
-                    v-if="!update"
-                    v-model="operatorLocal.roles[0]"
-                    name="roles"
-                    prepend-icon="security"
-                    :items="roles"
-                    label="Phân quyền*"
-                    :rules="[required('role')]"
-                  ></v-select>
-                </v-flex> </v-layout
-            ></v-layout>
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Tên đăng nhập*"
+                  type="text"
+                  prepend-icon="mdi-account"
+                  v-model="operatorLocal.username"
+                  :readonly="update"
+                  :counter="20"
+                  :rules="[minLength('username', 2), maxLength('username', 20)]"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-if="!update"
+                  label="Mật khẩu*"
+                  prepend-icon="mdi-lock"
+                  type="password"
+                  v-model="operatorLocal.password"
+                  :counter="120"
+                  :rules="[
+                    minLength('password', 6),
+                    maxLength('password', 120)
+                  ]"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Email*"
+                  type="email"
+                  prepend-icon="alternate_email"
+                  v-model="operatorLocal.email"
+                  :counter="50"
+                  :rules="[
+                    email('Operator'),
+                    minLength('email', 5),
+                    maxLength('email', 50)
+                  ]"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Số điện thoại*"
+                  type="number"
+                  prepend-icon="phone"
+                  v-model="operatorLocal.phone"
+                  :counter="10"
+                  :rules="[minLength('phone', 10), maxLength('phone', 10)]"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Họ và tên*"
+                  name="fullname"
+                  type="text"
+                  prepend-icon="perm_identity"
+                  v-model="operatorLocal.fullname"
+                  :rules="[required('fullname')]"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Địa chỉ*"
+                  name="address"
+                  prepend-icon="location_on"
+                  :counter="100"
+                  :rules="[minLength('address', 5), maxLength('address', 100)]"
+                  type="text"
+                  v-model="operatorLocal.address"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-select
+                  v-if="!update"
+                  v-model="operatorLocal.roles[0]"
+                  name="roles"
+                  prepend-icon="security"
+                  :items="roles"
+                  label="Phân quyền*"
+                  :rules="[required('role')]"
+                ></v-select> </v-col
+            ></v-row>
           </v-container>
         </v-card-text>
       </v-form>

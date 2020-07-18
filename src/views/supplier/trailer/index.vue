@@ -6,7 +6,7 @@
           v-if="dialogDel"
           :dialogDel.sync="dialogDel"
           :trailer="trailer"
-          :totalItems.sync="options.totalItems"
+          :totalItems.sync="serverSideOptions.totalItems"
           :trailers.sync="trailers"
           :message.sync="message"
           :snackbar.sync="snackbar"
@@ -19,7 +19,7 @@
           :trailers.sync="trailers"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
-          :totalItems.sync="options.totalItems"
+          :totalItems.sync="serverSideOptions.totalItems"
           :snackbar.sync="snackbar"
           :update="update"
         />
@@ -31,8 +31,10 @@
         item-key="id"
         :loading="loading"
         :options.sync="options"
-        :server-items-length="options.totalItems"
-        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :server-items-length="serverSideOptions.totalItems"
+        :footer-props="{
+          'items-per-page-options': serverSideOptions.itemsPerPageItems
+        }"
         :actions-append="options.page"
         class="elevation-1"
       >
@@ -71,6 +73,7 @@ import Snackbar from "@/components/Snackbar.vue";
 import DeleteTrailer from "./components/DeleteTrailer.vue";
 import CreateTrailer from "./components/CreateTrailer.vue";
 import { getContainerSemiTrailersByForwarder } from "@/api/container-semi-trailer";
+import { DataOptions } from "vuetify";
 
 @Component({
   components: {
@@ -89,9 +92,10 @@ export default class Trailer extends Vue {
   loading = true;
   update = false;
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -126,9 +130,10 @@ export default class Trailer extends Vue {
     this.dialogDel = true;
   }
 
-  @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
+  @Watch("options")
+  onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
       getContainerSemiTrailersByForwarder({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
@@ -136,7 +141,7 @@ export default class Trailer extends Vue {
         .then(res => {
           const response: PaginationResponse<IContainerSemiTrailer> = res.data;
           this.trailers = response.data;
-          this.options.totalItems = response.totalElements;
+          this.serverSideOptions.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
@@ -144,11 +149,3 @@ export default class Trailer extends Vue {
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

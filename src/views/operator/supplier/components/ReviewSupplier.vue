@@ -19,26 +19,30 @@
 
       <v-card-text>
         <v-form>
-          <v-layout row>
-            <v-text-field
-              label="Tên đăng nhập"
-              name="username"
-              prepend-icon="mdi-account"
-              type="text"
-              v-model="supplier.username"
-              readonly
-            ></v-text-field>
-          </v-layout>
-          <v-layout row v-if="supplier.status == 'ACTIVE'">
-            <v-text-field
-              label="Lý do khóa tài khoản"
-              name="reason"
-              prepend-icon="comment"
-              type="text"
-              v-model="reason"
-              required
-            ></v-text-field>
-          </v-layout>
+          <v-row>
+            <v-col cols="12" md="11">
+              <v-text-field
+                label="Tên đăng nhập"
+                name="username"
+                prepend-icon="mdi-account"
+                type="text"
+                v-model="supplier.username"
+                readonly
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row v-if="supplier.status == 'ACTIVE'">
+            <v-col cols="12" md="11">
+              <v-text-field
+                label="Lý do khóa tài khoản"
+                name="reason"
+                prepend-icon="comment"
+                type="text"
+                v-model="reason"
+                required
+              ></v-text-field>
+            </v-col>
+          </v-row>
           <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>

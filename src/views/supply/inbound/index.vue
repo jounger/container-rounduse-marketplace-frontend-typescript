@@ -7,7 +7,7 @@
         :message.sync="message"
         :snackbar.sync="snackbar"
         :inbounds.sync="inbounds"
-        :totalItems.sync="options.totalItems"
+        :totalItems.sync="serverSideOptions.totalItems"
       />
       <UpdateInbound
         :inbound="inbound"
@@ -24,7 +24,29 @@
           :inbounds.sync="inbounds"
           :message.sync="message"
           :snackbar.sync="snackbar"
-          :totalItems.sync="options.totalItems"
+          :totalItems.sync="serverSideOptions.totalItems"
+        />
+      </v-row>
+      <v-row justify="center">
+        <DeleteContainer
+          v-if="dialogDelCont"
+          :dialogDelCont.sync="dialogDelCont"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
+          :container="container"
+          :containers.sync="containers"
+        />
+      </v-row>
+      <v-row justify="center">
+        <CreateContainer
+          v-if="dialogAddCont"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
+          :container="container"
+          :containers.sync="containers"
+          :dialogAddCont.sync="dialogAddCont"
+          :billOfLading="inbound.billOfLading"
+          :update="update"
         />
       </v-row>
       <v-row justify="center">
@@ -59,8 +81,10 @@
         item-key="id"
         :loading="loading"
         :options.sync="options"
-        :server-items-length="options.totalItems"
-        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :server-items-length="serverSideOptions.totalItems"
+        :footer-props="{
+          'items-per-page-options': serverSideOptions.itemsPerPageItems
+        }"
         :actions-append="options.page"
         class="elevation-1"
       >
@@ -169,8 +193,6 @@ import { IInbound } from "@/entity/inbound";
 import CreateInbound from "./components/CreateInbound.vue";
 import UpdateInbound from "./components/UpdateInbound.vue";
 import DeleteInbound from "./components/DeleteInbound.vue";
-// import { getInboundByForwarder } from "@/api/inbound";
-// import { PaginationResponse } from "@/api/payload";
 import Utils from "@/mixin/utils";
 import Snackbar from "@/components/Snackbar.vue";
 import { getInboundsByForwarder } from "@/api/inbound";
@@ -179,6 +201,7 @@ import { IContainer } from "@/entity/container";
 import { getContainersByInbound } from "@/api/container";
 import DeleteContainer from "./components/DeleteContainer.vue";
 import CreateContainer from "./components/CreateContainer.vue";
+import { DataOptions } from "vuetify";
 
 @Component({
   mixins: [Utils],
@@ -211,9 +234,10 @@ export default class Inbound extends Vue {
   update = false;
   dateInit = new Date().toISOString().substr(0, 10);
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -303,18 +327,19 @@ export default class Inbound extends Vue {
         .finally();
     }
   }
-  @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
+  @Watch("options")
+  onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
       getInboundsByForwarder({
-        page: this.options.page - 1,
-        limit: this.options.itemsPerPage
+        page: val.page - 1,
+        limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IInbound> = res.data;
-          console.log("watch", this.options);
+          console.log("watch", response);
           this.inbounds = response.data;
-          this.options.totalItems = response.totalElements;
+          this.serverSideOptions.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));

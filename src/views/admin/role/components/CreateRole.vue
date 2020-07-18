@@ -19,8 +19,8 @@
       <v-card-text>
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
-          <v-layout row>
-            <v-flex xs9>
+          <v-row>
+            <v-col cols="12" md="10">
               <v-text-field
                 label="Tên quyền*"
                 name="name"
@@ -30,10 +30,10 @@
                 :counter="20"
                 :rules="[minLength('name', 5), maxLength('name', 20)]"
               ></v-text-field>
-            </v-flex>
-          </v-layout>
-          <v-layout row>
-            <v-flex xs9>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="10">
               <v-select
                 v-model="roleLocal.permissions"
                 :items="permissionsToString"
@@ -55,8 +55,8 @@
                   </v-chip>
                 </template>
               </v-select>
-            </v-flex>
-          </v-layout>
+            </v-col>
+          </v-row>
           <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>

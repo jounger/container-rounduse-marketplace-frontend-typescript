@@ -7,7 +7,7 @@
           :dialogDel.sync="dialogDel"
           :discount="discount"
           :discounts.sync="discounts"
-          :totalItems.sync="options.totalItems"
+          :totalItems.sync="serverSideOptions.totalItems"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
@@ -18,7 +18,7 @@
           :discount="discount"
           :discounts.sync="discounts"
           :dialogAdd.sync="dialogAdd"
-          :totalItems.sync="options.totalItems"
+          :totalItems.sync="serverSideOptions.totalItems"
           :message.sync="message"
           :snackbar.sync="snackbar"
           :update="update"
@@ -31,8 +31,10 @@
         item-key="id"
         :loading="loading"
         :options.sync="options"
-        :server-items-length="options.totalItems"
-        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :server-items-length="serverSideOptions.totalItems"
+        :footer-props="{
+          'items-per-page-options': serverSideOptions.itemsPerPageItems
+        }"
         :actions-append="options.page"
         class="elevation-1"
       >
@@ -72,6 +74,7 @@ import Snackbar from "@/components/Snackbar.vue";
 import DeleteDiscount from "./components/DeleteDiscount.vue";
 import CreateDiscount from "./components/CreateDiscount.vue";
 import Utils from "@/mixin/utils";
+import { DataOptions } from "vuetify";
 
 @Component({
   mixins: [Utils],
@@ -91,9 +94,10 @@ export default class Discount extends Vue {
   loading = true;
   update = false;
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -132,18 +136,19 @@ export default class Discount extends Vue {
     this.dialogDel = true;
   }
 
-  @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
+  @Watch("options")
+  onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
       getDiscounts({
-        page: this.options.page - 1,
-        limit: this.options.itemsPerPage
+        page: val.page - 1,
+        limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IDiscount> = res.data;
           console.log("watch", response);
           this.discounts = response.data;
-          this.options.totalItems = response.totalElements;
+          this.serverSideOptions.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
@@ -151,11 +156,3 @@ export default class Discount extends Vue {
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

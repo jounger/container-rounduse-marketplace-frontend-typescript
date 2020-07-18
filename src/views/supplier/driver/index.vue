@@ -5,7 +5,7 @@
         <DeleteDriver
           v-if="dialogDel"
           :dialogDel.sync="dialogDel"
-          :totalItems.sync="options.totalItems"
+          :totalItems.sync="serverSideOptions.totalItems"
           :driver="driver"
           :drivers.sync="drivers"
           :message.sync="message"
@@ -17,7 +17,7 @@
           v-if="dialogAdd"
           :driver="driver"
           :drivers.sync="drivers"
-          :totalItems.sync="options.totalItems"
+          :totalItems.sync="serverSideOptions.totalItems"
           :dialogAdd.sync="dialogAdd"
           :message.sync="message"
           :snackbar.sync="snackbar"
@@ -31,8 +31,10 @@
         item-key="id"
         :loading="loading"
         :options.sync="options"
-        :server-items-length="options.totalItems"
-        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :server-items-length="serverSideOptions.totalItems"
+        :footer-props="{
+          'items-per-page-options': serverSideOptions.itemsPerPageItems
+        }"
         :actions-append="options.page"
         class="elevation-1"
       >
@@ -80,6 +82,7 @@ import Snackbar from "@/components/Snackbar.vue";
 import DeleteDriver from "./components/DeleteDriver.vue";
 import CreateDriver from "./components/CreateDriver.vue";
 import { getDriversByForwarder } from "@/api/driver";
+import { DataOptions } from "vuetify";
 
 @Component({
   components: {
@@ -98,9 +101,10 @@ export default class Driver extends Vue {
   loading = true;
   update = false;
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -142,9 +146,10 @@ export default class Driver extends Vue {
     this.dialogDel = true;
   }
 
-  @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
+  @Watch("options")
+  onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
       getDriversByForwarder({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
@@ -153,7 +158,7 @@ export default class Driver extends Vue {
           const response: PaginationResponse<IDriver> = res.data;
           console.log("watch", response);
           this.drivers = response.data;
-          this.options.totalItems = response.totalElements;
+          this.serverSideOptions.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
@@ -161,11 +166,3 @@ export default class Driver extends Vue {
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

@@ -45,7 +45,7 @@
           </v-toolbar>
         </template>
         <template v-slot:item.amountPayment="{ item }">
-          {{ item.amount }}
+          {{ currencyFormatter(item.amount) }}
           ({{ item.isPaid == true ? "Đã trả" : "Chưa trả" }})
         </template>
         <template v-slot:item.paymentDate="{ item }">
@@ -157,11 +157,3 @@ export default class Payment extends Vue {
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

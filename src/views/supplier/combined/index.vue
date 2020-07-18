@@ -7,8 +7,10 @@
         item-key="id"
         :loading="loading"
         :options.sync="options"
-        :server-items-length="options.totalItems"
-        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :server-items-length="serverSideOptions.totalItems"
+        :footer-props="{
+          'items-per-page-options': serverSideOptions.itemsPerPageItems
+        }"
         :actions-append="options.page"
         class="elevation-1"
       >
@@ -52,10 +54,11 @@
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { ICombined } from "@/entity/combined";
 import { PaginationResponse } from "@/api/payload";
-import { getCombinedsByUser } from "@/api/combined";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { IOutbound } from "@/entity/outbound";
 import Utils from "@/mixin/utils";
+import { getBiddingDocumentsByExistCombined } from "@/api/bidding-document";
+import { DataOptions } from "vuetify";
 
 @Component({
   mixins: [Utils]
@@ -63,13 +66,12 @@ import Utils from "@/mixin/utils";
 export default class Combined extends Vue {
   biddingDocuments: Array<IBiddingDocument> = [];
   outbounds: Array<IOutbound> = [];
-  combineds: Array<ICombined> = [];
-  combined = {} as ICombined;
   loading = true;
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -101,45 +103,38 @@ export default class Combined extends Vue {
     this.$router.push({ path: `/combined/${id}` });
   }
 
-  // reduceData(combineds: Array<ICombined>) {
-  //   this.biddingDocuments = combineds.reduce(function(
-  //     pV: Array<IBiddingDocument>,
-  //     cV: ICombined
-  //   ) {
-  //     pV.push(cV.biddingDocument);
-  //     return pV;
-  //   },
-  //   []);
-  //   this.outbounds = this.biddingDocuments.reduce(function(
-  //     pV: Array<IOutbound>,
-  //     cV: IBiddingDocument
-  //   ) {
-  //     pV.push(cV.outbound as IOutbound);
-  //     return pV;
-  //   },
-  //   []);
-  // }
+  reduceData(biddingDocuments: Array<IBiddingDocument>) {
+    this.outbounds = biddingDocuments.reduce(function(
+      pV: Array<IOutbound>,
+      cV: IBiddingDocument
+    ) {
+      pV.push(cV.outbound as IOutbound);
+      return pV;
+    },
+    []);
+  }
 
   created() {
     // TODO: Fake data
     // this.reduceData(this.combineds);
-    this.options.totalItems = 10;
+    this.serverSideOptions.totalItems = 10;
     this.loading = false;
   }
 
-  @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
-      getCombinedsByUser({
+  @Watch("options")
+  onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
+      getBiddingDocumentsByExistCombined({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })
         .then(res => {
-          const response: PaginationResponse<ICombined> = res.data;
-          this.combineds = response.data;
-          console.log("combineds", this.combineds);
-          // this.reduceData(this.combineds);
-          this.options.totalItems = response.totalElements;
+          const response: PaginationResponse<IBiddingDocument> = res.data;
+          this.biddingDocuments = response.data;
+          console.log("biddingDocuments", this.biddingDocuments);
+          this.reduceData(this.biddingDocuments);
+          this.serverSideOptions.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
@@ -147,11 +142,3 @@ export default class Combined extends Vue {
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

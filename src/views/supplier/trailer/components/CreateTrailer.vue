@@ -19,8 +19,8 @@
       <v-card-text>
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
-          <v-layout row>
-            <v-flex xs9>
+          <v-row>
+            <v-col cols="12" md="11">
               <v-text-field
                 label="Biển số*"
                 name="licensePlate"
@@ -33,10 +33,10 @@
                 ]"
                 v-model="trailerLocal.licensePlate"
               ></v-text-field>
-            </v-flex>
-          </v-layout>
-          <v-layout row>
-            <v-flex xs9>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="11">
               <v-select
                 v-model="trailerLocal.type"
                 prepend-icon="timeline"
@@ -44,10 +44,10 @@
                 :rules="[required('type')]"
                 label="Loại rơ moóc*"
               ></v-select>
-            </v-flex>
-          </v-layout>
-          <v-layout row>
-            <v-flex xs9>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="11">
               <v-text-field
                 label="Số lượng trục*"
                 name="numberOfAxles"
@@ -60,8 +60,8 @@
                 ]"
                 v-model="trailerLocal.numberOfAxles"
               ></v-text-field>
-            </v-flex>
-          </v-layout>
+            </v-col>
+          </v-row>
           <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>

@@ -7,7 +7,7 @@
           :dialogDetail.sync="dialogDetail"
           :supplier="supplier"
           :suppliers.sync="suppliers"
-          :totalItems.sync="options.totalItems"
+          :totalItems.sync="serverSideOptions.totalItems"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
@@ -22,8 +22,10 @@
         item-key="id"
         :loading="loading"
         :options.sync="options"
-        :server-items-length="options.totalItems"
-        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :server-items-length="serverSideOptions.totalItems"
+        :footer-props="{
+          'items-per-page-options': serverSideOptions.itemsPerPageItems
+        }"
         :actions-append="options.page"
         class="elevation-1"
       >
@@ -52,6 +54,7 @@ import { getSuppliersByStatus } from "@/api/supplier";
 import { PaginationResponse } from "@/api/payload";
 import RegisterDetail from "./components/RegisterDetail.vue";
 import Snackbar from "@/components/Snackbar.vue";
+import { DataOptions } from "vuetify";
 
 @Component({
   components: {
@@ -68,9 +71,10 @@ export default class Supplier extends Vue {
   message = "";
   snackbar = false;
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -95,9 +99,10 @@ export default class Supplier extends Vue {
     this.dialogDetail = true;
   }
 
-  @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
+  @Watch("options")
+  onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
       getSuppliersByStatus({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage,
@@ -105,10 +110,9 @@ export default class Supplier extends Vue {
       })
         .then(res => {
           const response: PaginationResponse<ISupplier> = res.data;
-          console.log("watch", this.options);
           console.log(response.data);
           this.suppliers = response.data;
-          this.options.totalItems = response.totalElements;
+          this.serverSideOptions.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
         .finally(() => (this.loading = false));
@@ -116,11 +120,3 @@ export default class Supplier extends Vue {
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

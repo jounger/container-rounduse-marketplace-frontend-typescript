@@ -41,15 +41,6 @@ const routes: Array<RouteConfig> = [
     }
   },
   {
-    path: "/notification",
-    name: "Notification",
-    component: () => import("@/views/user/notification/index.vue"),
-    meta: {
-      auth: true,
-      layout: "NavLayout"
-    }
-  },
-  {
     path: "/dashboard",
     name: "Dashboard",
     component: () => import("@/views/user/dashboard/index.vue"),

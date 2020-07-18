@@ -72,6 +72,7 @@
             <v-form ref="bidForm" v-model="valid" validation>
               <v-text-field
                 v-model="bidLocal.bidPrice"
+                :hint="currencyFormatter(bidLocal.bidPrice)"
                 prepend-icon="monetization_on"
                 v-if="biddingDocumentSelected"
                 type="number"
@@ -238,7 +239,7 @@ export default class CreateBid extends Vue {
     containers: [] as Array<number>,
     bidPrice: 0,
     bidDate: this.dateInit.slice(0, 10) + "T" + this.dateInit.slice(11, 16),
-    bidValidityPeriod: this.dateInit,
+    bidValidityPeriod: this.dateInit.slice(0, 10),
     status: "CREATED"
   };
   loading = true;

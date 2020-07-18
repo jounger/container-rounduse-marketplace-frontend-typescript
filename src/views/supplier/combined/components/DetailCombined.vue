@@ -330,7 +330,6 @@
                   </v-subheader>
                   <v-card-title>Danh sách Chứng cứ</v-card-title>
                   <v-data-table
-                    v-if="evidences.length > 0"
                     :headers="evidenceHeaders"
                     :items="evidences"
                     item-key="id"
@@ -441,6 +440,9 @@ import { ICombined } from "@/entity/combined";
 import { getCombined } from "@/api/combined";
 import { getBidsByBiddingDocument } from "@/api/bid";
 import { IEvidence } from "@/entity/evidence";
+import { getBiddingDocumentByBid } from "@/api/bidding-document";
+import { getEvidencesByContract } from "@/api/evidence";
+import { PaginationResponse } from "@/api/payload";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -495,14 +497,7 @@ export default class DetailCombined extends Vue {
     evidence: "",
     isValid: false
   } as IEvidence;
-  evidences: Array<IEvidence> = [
-    {
-      id: 1,
-      sender: "forwarder",
-      evidence: "oke",
-      isValid: false
-    }
-  ];
+  evidences: Array<IEvidence> = [];
   loading = false;
   selection = 0;
   stepper = 1;
@@ -651,9 +646,15 @@ export default class DetailCombined extends Vue {
         this.combined = response;
         console.log(response);
         this.bid = this.combined.bid as IBid;
-        if (this.biddingDocument.id) {
-          console.log(0);
-          this.getBids(this.biddingDocument.id);
+        if (this.bid.id) {
+          getBiddingDocumentByBid(this.bid.id)
+            .then(res => {
+              this.biddingDocument = res.data;
+            })
+            .catch(err => {
+              console.log(err);
+            })
+            .finally();
         }
         this.outbound = this.biddingDocument.outbound as IOutbound;
         this.options.totalItems = 10;
@@ -662,6 +663,20 @@ export default class DetailCombined extends Vue {
         console.log(err);
       })
       .finally();
+    if (this.combined.contract && this.combined.contract.id) {
+      getEvidencesByContract(this.combined.contract.id, {
+        page: 0,
+        limit: 100
+      })
+        .then(res => {
+          const response: PaginationResponse<IEvidence> = res.data;
+          this.evidences = response.data;
+        })
+        .catch(err => {
+          console.log(err);
+        })
+        .finally();
+    }
   }
 }
 </script>

@@ -40,127 +40,107 @@
         </v-toolbar>
         <v-card-text>
           <small>*Dấu sao là trường bắt buộc</small>
-          <v-layout row>
-            <v-layout col>
-              <v-flex xs10>
-                <v-text-field
-                  label="Tên loại Container*"
-                  name="name"
-                  prepend-icon="directions_bus"
-                  type="text"
-                  v-model="containerTypeLocal.name"
-                  :rules="[required('name')]"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout col>
-              <v-flex xs10>
-                <v-text-field
-                  label="Chi tiết"
-                  name="description"
-                  prepend-icon="description"
-                  type="text"
-                  v-model="containerTypeLocal.description"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-layout>
-          <v-layout row>
-            <v-layout col>
-              <v-flex xs10>
-                <v-text-field
-                  label="Khối lượng vỏ"
-                  name="tareWeight"
-                  prepend-icon="airport_shuttle"
-                  type="number"
-                  v-model="containerTypeLocal.tareWeight"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout col>
-              <v-flex xs10>
-                <v-text-field
-                  label="Trọng tải"
-                  name="payloadCapacity"
-                  prepend-icon="fitness_center"
-                  type="number"
-                  v-model="containerTypeLocal.payloadCapacity"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-layout>
-          <v-layout row>
-            <v-layout col>
-              <v-flex xs10>
-                <v-text-field
-                  label="Công suất khối"
-                  name="cubicCapacity"
-                  prepend-icon="network_check"
-                  type="number"
-                  v-model="containerTypeLocal.cubicCapacity"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout col>
-              <v-flex xs10>
-                <v-text-field
-                  label="Chiều dài trong"
-                  name="internalLength"
-                  prepend-icon="border_outer"
-                  type="number"
-                  v-model="containerTypeLocal.internalLength"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-layout>
-          <v-layout row>
-            <v-layout col>
-              <v-flex xs10>
-                <v-text-field
-                  label="Chiều rộng trong"
-                  name="internalWidth"
-                  prepend-icon="border_bottom"
-                  type="number"
-                  v-model="containerTypeLocal.internalWidth"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout col>
-              <v-flex xs10>
-                <v-text-field
-                  label="Chiều cao trong"
-                  name="internalHeight"
-                  prepend-icon="border_vertical"
-                  type="number"
-                  v-model="containerTypeLocal.internalHeight"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-layout>
-          <v-layout row>
-            <v-layout col>
-              <v-flex xs10>
-                <v-text-field
-                  label="Chiều rộng cửa mở"
-                  name="doorOpeningWidth"
-                  prepend-icon="flip_to_back"
-                  type="number"
-                  v-model="containerTypeLocal.doorOpeningWidth"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout col>
-              <v-flex xs10>
-                <v-text-field
-                  label="Chiều cao cửa mở"
-                  name="doorOpeningHeight"
-                  prepend-icon="flip_to_front"
-                  type="number"
-                  v-model="containerTypeLocal.doorOpeningHeight"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-layout>
+          <v-row>
+            <v-col cols="12" md="6">
+              <v-text-field
+                label="Tên loại Container*"
+                name="name"
+                prepend-icon="directions_bus"
+                type="text"
+                v-model="containerTypeLocal.name"
+                :rules="[required('name')]"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field
+                label="Chi tiết"
+                name="description"
+                prepend-icon="description"
+                type="text"
+                v-model="containerTypeLocal.description"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="6">
+              <v-text-field
+                label="Khối lượng vỏ"
+                name="tareWeight"
+                prepend-icon="airport_shuttle"
+                type="number"
+                v-model="containerTypeLocal.tareWeight"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field
+                label="Trọng tải"
+                name="payloadCapacity"
+                prepend-icon="fitness_center"
+                type="number"
+                v-model="containerTypeLocal.payloadCapacity"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="6">
+              <v-text-field
+                label="Công suất khối"
+                name="cubicCapacity"
+                prepend-icon="network_check"
+                type="number"
+                v-model="containerTypeLocal.cubicCapacity"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field
+                label="Chiều dài trong"
+                name="internalLength"
+                prepend-icon="border_outer"
+                type="number"
+                v-model="containerTypeLocal.internalLength"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="6">
+              <v-text-field
+                label="Chiều rộng trong"
+                name="internalWidth"
+                prepend-icon="border_bottom"
+                type="number"
+                v-model="containerTypeLocal.internalWidth"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field
+                label="Chiều cao trong"
+                name="internalHeight"
+                prepend-icon="border_vertical"
+                type="number"
+                v-model="containerTypeLocal.internalHeight"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="6">
+              <v-text-field
+                label="Chiều rộng cửa mở"
+                name="doorOpeningWidth"
+                prepend-icon="flip_to_back"
+                type="number"
+                v-model="containerTypeLocal.doorOpeningWidth"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field
+                label="Chiều cao cửa mở"
+                name="doorOpeningHeight"
+                prepend-icon="flip_to_front"
+                type="number"
+                v-model="containerTypeLocal.doorOpeningHeight"
+              ></v-text-field>
+            </v-col>
+          </v-row>
           <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-card-text>
       </v-form>
