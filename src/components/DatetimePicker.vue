@@ -8,6 +8,7 @@
         :return-value.sync="date"
         transition="scale-transition"
         offset-y
+        min-width="unset"
       >
         <template v-slot:activator="{ on, attrs }">
           <v-text-field
