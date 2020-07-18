@@ -52,6 +52,7 @@ export default class DeleteOutbound extends Vue {
   @PropSync("outbounds", { type: Array }) outboundsSync!: Array<IOutbound>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
 
   bookNo = "";
   created() {
@@ -69,6 +70,7 @@ export default class DeleteOutbound extends Vue {
             x => x.id === this.outbound.id
           );
           this.outboundsSync.splice(index, 1);
+          this.totalItemsSync -= 1;
         })
         .catch(err => {
           console.log(err);

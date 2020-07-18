@@ -7,7 +7,7 @@
         :message.sync="message"
         :snackbar.sync="snackbar"
         :inbounds.sync="inbounds"
-        :totalItems.sync="options.totalItems"
+        :totalItems.sync="serverSideOptions.totalItems"
       />
       <UpdateInbound
         :inbound="inbound"
@@ -24,7 +24,7 @@
           :inbounds.sync="inbounds"
           :message.sync="message"
           :snackbar.sync="snackbar"
-          :totalItems.sync="options.totalItems"
+          :totalItems.sync="serverSideOptions.totalItems"
         />
       </v-row>
       <v-row justify="center">

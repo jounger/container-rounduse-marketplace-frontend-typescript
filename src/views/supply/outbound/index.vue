@@ -7,7 +7,7 @@
         :message.sync="message"
         :snackbar.sync="snackbar"
         :outbounds.sync="outbounds"
-        :totalItems.sync="options.totalItems"
+        :totalItems.sync="serverSideOptions.totalItems"
       />
       <UpdateOutbound
         :outbound="outbound"
@@ -32,6 +32,7 @@
           :outbounds.sync="outbounds"
           :message.sync="message"
           :snackbar.sync="snackbar"
+          :totalItems.sync="serverSideOptions.totalItems"
         />
       </v-row>
       <v-data-table
