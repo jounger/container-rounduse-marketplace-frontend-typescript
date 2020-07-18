@@ -6,7 +6,7 @@
           Thông tin Hồ sơ trúng thầu: #1
         </v-card-title>
         <v-card-text>
-          <v-stepper :value="calcStepper" alt-labels class="elevation-0">
+          <v-stepper :value="stepper" alt-labels class="elevation-0">
             <v-stepper-header>
               <v-stepper-step step="1">Nhận thông tin</v-stepper-step>
               <v-divider></v-divider>
@@ -44,7 +44,7 @@
                 <v-card-text>
                   <v-row align="center" class="mx-0">
                     <div class="grey--text mr-4">
-                      {{ bids[0] ? bids[0].bidder : "" }}
+                      {{ combineds[0] ? combineds[0].bid.bidder : "" }}
                     </div>
                     <v-rating
                       :value="4.5"
@@ -118,7 +118,7 @@
                 <v-card-text>
                   <v-row align="center" class="mx-0">
                     <div class="grey--text mr-4">
-                      {{ biddingDocument.offeree }}
+                      {{ biddingDocument.merchant }}
                     </div>
                     <v-rating
                       :value="4.5"
@@ -262,6 +262,14 @@
           <v-tab-item>
             <v-container fluid>
               <v-card class="elevation-0">
+                <DetailEvidence
+                  v-if="dialogDetail"
+                  :dialogDetail.sync="dialogDetail"
+                  :evidence="evidence"
+                  :evidences.sync="evidences"
+                  :message.sync="message"
+                  :snackbar.sync="snackbar"
+                />
                 <v-card-title>Hợp đồng</v-card-title>
                 <v-list dense>
                   <v-subheader>Thông tin Hợp đồng</v-subheader>
@@ -282,7 +290,7 @@
                       </v-list-item-icon>
                       <v-list-item-content>
                         <v-list-item-title>{{
-                          "Bên chủ xe: " + bid.bidder
+                          "Bên chủ xe: " + combined.bid.bidder
                         }}</v-list-item-title>
                       </v-list-item-content>
                     </v-list-item>
@@ -368,7 +376,7 @@
         <!-- TODO: table bids -->
         <v-data-table
           :headers="bidHeaders"
-          :items="bids"
+          :items="combineds"
           :single-expand="singleExpand"
           :expanded.sync="expanded"
           show-expand
@@ -384,7 +392,10 @@
           class="elevation-0"
         >
           <template v-slot:item.dateOfDecision="{ item }">
-            {{ formatDatetime(item.dateOfDecision) }}
+            {{ formatDatetime(item.bid.dateOfDecision) }}
+          </template>
+          <template v-slot:item.bidPrice="{ item }">
+            {{ currencyFormatter(item.bid.bidPrice) }}
           </template>
           <template v-slot:item.actions="{ item }">
             <v-btn
@@ -403,7 +414,7 @@
             <td :colspan="headers.length" class="px-0">
               <v-data-table
                 :headers="containerHeaders"
-                :items="item.containers"
+                :items="item.bid.containers"
                 :hide-default-footer="true"
                 dark
                 dense
@@ -435,19 +446,19 @@ import Utils from "@/mixin/utils";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { IBid } from "@/entity/bid";
 import Snackbar from "@/components/Snackbar.vue";
-import { IOutbound } from "@/entity/outbound";
 import { ICombined } from "@/entity/combined";
-import { getCombined } from "@/api/combined";
-import { getBidsByBiddingDocument } from "@/api/bid";
+import { getCombinedsByBiddingDocument } from "@/api/combined";
 import { IEvidence } from "@/entity/evidence";
-import { getBiddingDocumentByBid } from "@/api/bidding-document";
+import { getBiddingDocument } from "@/api/bidding-document";
 import { getEvidencesByContract } from "@/api/evidence";
 import { PaginationResponse } from "@/api/payload";
+import DetailEvidence from "./DetailEvidence.vue";
 
 @Component({
   mixins: [FormValidate, Utils],
   components: {
-    Snackbar
+    Snackbar,
+    DetailEvidence
   }
 })
 export default class DetailCombined extends Vue {
@@ -480,18 +491,15 @@ export default class DetailCombined extends Vue {
     priceLeadership: 0,
     status: "COMBINED"
   } as IBiddingDocument;
-  bids = [] as Array<IBid>;
-  bid = {} as IBid;
-  dialogDetail = false;
-  outbound = {} as IOutbound;
   combined = {
-    bid: this.bid,
+    bid: {} as IBid,
     status: "INFO_RECEIVED",
     contract: {
       finesAgainstContractViolation: 0,
       required: true
     }
   } as ICombined;
+  combineds: Array<ICombined> = [];
   evidence = {
     sender: this.$auth.user().username,
     evidence: "",
@@ -500,7 +508,7 @@ export default class DetailCombined extends Vue {
   evidences: Array<IEvidence> = [];
   loading = false;
   selection = 0;
-  stepper = 1;
+  stepper = 4;
   checkValid = false;
   expanded: Array<IBid> = [];
   singleExpand = true;
@@ -517,9 +525,9 @@ export default class DetailCombined extends Vue {
       text: "Mã",
       align: "start",
       sortable: false,
-      value: "id"
+      value: "bid.id"
     },
-    { text: "Cont qty", value: "containers.length" },
+    { text: "Cont qty", value: "bid.containers.length" },
     { text: "Giá thầu", value: "bidPrice" },
     { text: "Ngày trúng thầu", value: "dateOfDecision" },
     { text: "Actions", value: "actions", sortable: false }
@@ -533,14 +541,17 @@ export default class DetailCombined extends Vue {
       value: "containerNumber",
       class: "elevation-1 primary"
     },
+    { text: "Tài xế", value: "driver", class: "elevation-1 primary" },
     {
-      text: "Biển kiểm sát",
-      value: "licensePlate",
+      text: "Rơ mọt",
+      value: "trailer.licensePlate",
       class: "elevation-1 primary"
     },
-    { text: "Tài xế", value: "driver", class: "elevation-1 primary" },
-    { text: "Rơ mọt", value: "trailer", class: "elevation-1 primary" },
-    { text: "Đầu kéo", value: "tractor", class: "elevation-1 primary" },
+    {
+      text: "Đầu kéo",
+      value: "tractor.licensePlate",
+      class: "elevation-1 primary"
+    },
     {
       text: "Actions",
       value: "actions",
@@ -570,7 +581,11 @@ export default class DetailCombined extends Vue {
 
   get totalBidMoney(): number {
     let total = 0;
-    this.bids.forEach((bid: IBid) => {
+    const bids: Array<IBid> = [];
+    this.combineds.forEach((combined: ICombined) => {
+      bids.push(combined.bid as IBid);
+    });
+    bids.forEach((bid: IBid) => {
       total += bid.bidPrice as number;
     });
     return total;
@@ -594,10 +609,9 @@ export default class DetailCombined extends Vue {
     }
   }
 
-  get calcStepper() {
-    this.stepper = 1;
-    switch (this.combined.status) {
-      case "INFO_RECIEVED":
+  viewDetailBid(item: ICombined) {
+    switch (item.status) {
+      case "INFO_RECEIVED":
         this.stepper = 1;
         break;
       case "ON_THE_ROAD":
@@ -613,51 +627,30 @@ export default class DetailCombined extends Vue {
         this.stepper = 5;
         break;
     }
-    return this.stepper;
-  }
-  viewDetailBid(item: IBid) {
-    this.bid = item;
-    this.dialogDetail = true;
-  }
-  getBids(id: number) {
-    if (id) {
-      console.log(2);
-      getBidsByBiddingDocument(id, {
-        page: 0,
-        limit: 100
-      })
-        .then(res => {
-          const response = res.data;
-          this.bids = response.data;
-          console.log(this.bids);
-        })
-        .catch(err => {
-          console.log(err);
-        })
-        .finally(() => (this.loading = false));
-    }
+    this.combined = item;
   }
   created() {
     // TODO: Fake data
-    const combinedId = parseInt(this.$route.params.id);
-    getCombined(combinedId)
+    const biddingDocumentId = parseInt(this.$route.params.id);
+    getBiddingDocument(biddingDocumentId)
       .then(res => {
         const response = res.data;
-        this.combined = response;
-        console.log(response);
-        this.bid = this.combined.bid as IBid;
-        if (this.bid.id) {
-          getBiddingDocumentByBid(this.bid.id)
-            .then(res => {
-              this.biddingDocument = res.data;
-            })
-            .catch(err => {
-              console.log(err);
-            })
-            .finally();
-        }
-        this.outbound = this.biddingDocument.outbound as IOutbound;
+        this.biddingDocument = response;
+        console.log(this.biddingDocument);
         this.options.totalItems = 10;
+      })
+      .catch(err => {
+        console.log(err);
+      })
+      .finally();
+    getCombinedsByBiddingDocument(biddingDocumentId, {
+      page: 0,
+      limit: 100
+    })
+      .then(res => {
+        console.log(res);
+        const response: PaginationResponse<ICombined> = res.data;
+        this.combineds = response.data;
       })
       .catch(err => {
         console.log(err);

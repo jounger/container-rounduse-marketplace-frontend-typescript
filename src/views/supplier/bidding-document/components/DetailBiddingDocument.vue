@@ -12,6 +12,7 @@
             :snackbar.sync="snackbar"
             :isAccept="isAccept"
             :bid="bid"
+            :numberWinner.sync="numberWinner"
           />
         </v-row>
         <v-img height="150" src="@/assets/images/biddingdocument.jpg"></v-img>

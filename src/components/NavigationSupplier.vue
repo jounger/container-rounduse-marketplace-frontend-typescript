@@ -31,7 +31,7 @@ export default class NavigationSupplier extends Vue {
       link: "/bidding-document"
     },
     { title: "Quản lý Hàng ghép", icon: "table_chart", link: "/combined" },
-    { title: "Quản lý Hợp đồng", icon: "folder", link: "/contract" },
+    // { title: "Quản lý Hợp đồng", icon: "folder", link: "/contract" },
     { title: "Quản lý Hóa đơn", icon: "store", link: "/payment" }
   ];
   private forwarderNavigation = [
@@ -59,7 +59,7 @@ export default class NavigationSupplier extends Vue {
       link: "/trailer"
     },
     { title: "Quản lý Hàng ghép", icon: "table_chart", link: "/combined" },
-    { title: "Quản lý Hợp đồng", icon: "folder", link: "/contract" },
+    // { title: "Quản lý Hợp đồng", icon: "folder", link: "/contract" },
     { title: "Quản lý Hóa đơn", icon: "store", link: "/payment" },
     { title: "Quản lý Report", icon: "report_problem", link: "/report" }
   ];

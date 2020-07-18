@@ -138,6 +138,7 @@ export default class CreateCombined extends Vue {
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Object) bid!: IBid;
+  @PropSync("numberWinner", { type: Number }) numberWinnerSync!: number;
   @PropSync("bids", { type: Array })
   bidsSync!: Array<IBid>;
 
@@ -239,6 +240,7 @@ export default class CreateCombined extends Vue {
             const index = this.bidsSync.findIndex(x => x.id == bidResponse.id);
             this.bidsSync.splice(index, 1, bidResponse);
           }
+          this.numberWinnerSync += 1;
           this.dialogAddSync = false;
         })
         .catch(err => {

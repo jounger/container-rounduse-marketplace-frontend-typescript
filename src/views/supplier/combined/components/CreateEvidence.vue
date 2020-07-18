@@ -49,18 +49,7 @@
       <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn
-          @click="updateEvidence()"
-          color="primary"
-          v-if="update"
-          :disabled="!valid"
-          >Cập nhập</v-btn
-        >
-        <v-btn
-          @click="createEvidence()"
-          color="primary"
-          v-else
-          :disabled="!valid"
+        <v-btn @click="createEvidence()" color="primary" :disabled="!valid"
           >Thêm mới</v-btn
         >
       </v-card-actions>
@@ -71,7 +60,7 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IEvidence } from "@/entity/evidence";
 import FormValidate from "@/mixin/form-validate";
-import { createEvidence, editEvidence } from "@/api/evidence";
+import { createEvidence } from "@/api/evidence";
 import { IContract } from "@/entity/contract";
 
 @Component({

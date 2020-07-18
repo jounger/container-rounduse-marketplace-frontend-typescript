@@ -3,7 +3,7 @@
     <v-card>
       <v-data-table
         :headers="headers"
-        :items="outbounds"
+        :items="biddingDocuments"
         item-key="id"
         :loading="loading"
         :options.sync="options"
@@ -20,19 +20,19 @@
           </v-toolbar>
         </template>
         <template v-slot:item.packingTime="{ item }">
-          {{ formatDatetime(item.packingTime) }}
+          {{ formatDatetime(item.outbound.packingTime) }}
         </template>
         <template v-slot:item.cutOffTime="{ item }">
-          {{ formatDatetime(item.booking.cutOffTime) }}
+          {{ formatDatetime(item.outbound.booking.cutOffTime) }}
         </template>
         <template v-slot:item.grossWeight="{ item }">
-          {{ item.grossWeight + "" + item.unitOfMeasurement }}
+          {{ item.outbound.grossWeight + "" + item.outbound.unitOfMeasurement }}
         </template>
         <template v-slot:item.fcl="{ item }">
-          {{ item.booking.isFcl ? "Có" : "Không" }}
+          {{ item.outbound.booking.isFcl ? "Có" : "Không" }}
         </template>
         <template v-slot:item.unit="{ item }">
-          {{ item.booking.unit + " x " + item.containerType }}
+          {{ item.outbound.booking.unit + " x " + item.outbound.containerType }}
         </template>
         <template v-slot:item.actions="{ item }">
           <v-btn
@@ -55,7 +55,6 @@ import { Component, Watch, Vue } from "vue-property-decorator";
 import { ICombined } from "@/entity/combined";
 import { PaginationResponse } from "@/api/payload";
 import { IBiddingDocument } from "@/entity/bidding-document";
-import { IOutbound } from "@/entity/outbound";
 import Utils from "@/mixin/utils";
 import { getBiddingDocumentsByExistCombined } from "@/api/bidding-document";
 import { DataOptions } from "vuetify";
@@ -65,7 +64,6 @@ import { DataOptions } from "vuetify";
 })
 export default class Combined extends Vue {
   biddingDocuments: Array<IBiddingDocument> = [];
-  outbounds: Array<IOutbound> = [];
   loading = true;
   options = {
     page: 1,
@@ -82,13 +80,13 @@ export default class Combined extends Vue {
       sortable: false,
       value: "id"
     },
-    { text: "Booking No.", value: "booking.bookingNumber" },
-    { text: "Hãng tàu", value: "shippingLine" },
-    { text: "Trạng thái", value: "status" },
+    { text: "Booking No.", value: "outbound.booking.bookingNumber" },
+    { text: "Hãng tàu", value: "outbound.shippingLine" },
+    { text: "Trạng thái", value: "outbound.status" },
     { text: "Thời gian đóng hàng", value: "packingTime" },
     { text: "Thời gian tàu chạy", value: "cutOffTime" },
-    { text: "Nơi đóng hàng", value: "packingStation" },
-    { text: "Cảng đóng hàng", value: "booking.portOfLoading" },
+    { text: "Nơi đóng hàng", value: "outbound.packingStation" },
+    { text: "Cảng đóng hàng", value: "outbound.booking.portOfLoading" },
     { text: "Khối lượng hàng", value: "grossWeight" },
     { text: "Số cont", value: "unit" },
     { text: "FCL", value: "fcl" },
@@ -100,18 +98,11 @@ export default class Combined extends Vue {
 
   gotoDetail(item: ICombined) {
     const id = item.id;
-    this.$router.push({ path: `/combined/${id}` });
-  }
-
-  reduceData(biddingDocuments: Array<IBiddingDocument>) {
-    this.outbounds = biddingDocuments.reduce(function(
-      pV: Array<IOutbound>,
-      cV: IBiddingDocument
-    ) {
-      pV.push(cV.outbound as IOutbound);
-      return pV;
-    },
-    []);
+    if (this.$auth.user().roles[0] == "ROLE_MERCHANT") {
+      this.$router.push({ path: `/combined/${id}` });
+    } else if (this.$auth.user().roles[0] == "ROLE_FORWARDER") {
+      this.$router.push({ path: `/combined-forwarder/${id}` });
+    }
   }
 
   created() {
@@ -133,7 +124,6 @@ export default class Combined extends Vue {
           const response: PaginationResponse<IBiddingDocument> = res.data;
           this.biddingDocuments = response.data;
           console.log("biddingDocuments", this.biddingDocuments);
-          this.reduceData(this.biddingDocuments);
           this.serverSideOptions.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))

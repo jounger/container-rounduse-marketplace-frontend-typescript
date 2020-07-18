@@ -6,6 +6,7 @@
         :message.sync="messageSync"
         :snackbar.sync="snackbarSync"
         :dialogConfirm.sync="dialogConfirmSync"
+        :numberWinner.sync="numberWinnerSync"
         :bids.sync="bidsSync"
         :bid="bid"
       />
@@ -75,6 +76,7 @@ export default class ConfirmBid extends Vue {
   bidsSync!: Array<IBid>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("numberWinner", { type: Number }) numberWinnerSync!: number;
   @Prop(Boolean) isAccept!: boolean;
   @Prop(Object) bid!: IBid;
   dialogContract = false;

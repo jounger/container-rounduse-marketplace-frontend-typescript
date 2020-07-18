@@ -44,7 +44,7 @@
                 <v-card-text>
                   <v-row align="center" class="mx-0">
                     <div class="grey--text mr-4">
-                      {{ bids[0] ? bids[0].bidder : "" }}
+                      {{ combineds[0] ? combineds[0].bid.bidder : "" }}
                     </div>
                     <v-rating
                       :value="4.5"
@@ -118,7 +118,7 @@
                 <v-card-text>
                   <v-row align="center" class="mx-0">
                     <div class="grey--text mr-4">
-                      {{ biddingDocument.offeree }}
+                      {{ biddingDocument.merchant }}
                     </div>
                     <v-rating
                       :value="4.5"
@@ -270,6 +270,14 @@
                   :snackbar.sync="snackbar"
                   :contract="combined.contract"
                 />
+                <DetailEvidence
+                  v-if="dialogDetail"
+                  :dialogDetail.sync="dialogDetail"
+                  :evidence="evidence"
+                  :evidences.sync="evidences"
+                  :message.sync="message"
+                  :snackbar.sync="snackbar"
+                />
                 <v-card-title>Hợp đồng</v-card-title>
                 <v-list dense>
                   <v-subheader>Thông tin Hợp đồng</v-subheader>
@@ -280,7 +288,7 @@
                       </v-list-item-icon>
                       <v-list-item-content>
                         <v-list-item-title>{{
-                          "Bên chủ hàng: " + biddingDocument.offeree
+                          "Bên chủ hàng: " + biddingDocument.merchant
                         }}</v-list-item-title>
                       </v-list-item-content>
                     </v-list-item>
@@ -299,11 +307,12 @@
                         <v-icon>monetization_on</v-icon>
                       </v-list-item-icon>
                       <v-list-item-content>
-                        <v-list-item-title>{{
-                          "Yêu cầu hợp đồng: " + combined.contract.required
-                            ? "Có"
-                            : "Không"
-                        }}</v-list-item-title>
+                        <v-list-item-title
+                          >Yêu cầu hợp đồng:
+                          {{
+                            combined.contract.required ? "Có" : "Không"
+                          }}</v-list-item-title
+                        >
                       </v-list-item-content>
                     </v-list-item>
                     <v-list-item v-if="combined.contract.required">
@@ -397,6 +406,16 @@
                       >
                         <v-icon left>library_add_check </v-icon>Chi tiết
                       </v-btn>
+                      <v-btn
+                        class="ma-1"
+                        x-small
+                        tile
+                        outlined
+                        color="success"
+                        @click.stop="viewDetailEvidence(item)"
+                      >
+                        <v-icon left>library_add_check </v-icon>Chi tiết
+                      </v-btn>
                     </template>
                   </v-data-table>
                 </v-list>
@@ -419,11 +438,13 @@
                     <v-icon>attach_money</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
-                    <v-list-item-title>{{
-                      "Giá trúng thầu: " +
-                        biddingDocument.priceLeadership +
+                    <v-list-item-title>Giá trúng thầu</v-list-item-title>
+                    <v-list-item-subtitle>{{
+                      currencyFormatter(
+                        biddingDocument.priceLeadership,
                         biddingDocument.currencyOfPayment
-                    }}</v-list-item-title>
+                      )
+                    }}</v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
@@ -435,9 +456,10 @@
                     <v-icon>date_range</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
-                    <v-list-item-title>{{
-                      "Ngày chốt thầu: " + formatDatetime(bid.dateOfDecision)
-                    }}</v-list-item-title>
+                    <v-list-item-title>Ngày chốt thầu</v-list-item-title
+                    ><v-list-item-subtitle>{{
+                      formatDatetime(bid.dateOfDecision)
+                    }}</v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
@@ -451,7 +473,7 @@
                   <v-list-item-content>
                     <v-list-item-title>Trạng thái</v-list-item-title>
                     <v-list-item-subtitle>
-                      {{ bid.status }}
+                      {{ combined.status }}
                     </v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
@@ -467,7 +489,7 @@
         <!-- TODO: table bids -->
         <v-data-table
           :headers="containerHeaders"
-          :items="containers"
+          :items="bid.containers"
           item-key="id"
           :loading="loading"
           :options.sync="options"
@@ -501,22 +523,23 @@ import Utils from "@/mixin/utils";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { IBid } from "@/entity/bid";
 import Snackbar from "@/components/Snackbar.vue";
-import { IOutbound } from "@/entity/outbound";
 import { ICombined } from "@/entity/combined";
-import { getCombined } from "@/api/combined";
+import { getCombinedsByBiddingDocument } from "@/api/combined";
 import { getBidsByBiddingDocument } from "@/api/bid";
 import { IContainer } from "@/entity/container";
 import { IEvidence } from "@/entity/evidence";
 import { getEvidencesByContract } from "@/api/evidence";
 import { PaginationResponse } from "@/api/payload";
-import { getBiddingDocumentByBid } from "@/api/bidding-document";
+import { getBiddingDocument } from "@/api/bidding-document";
 import CreateEvidence from "./CreateEvidence.vue";
+import DetailEvidence from "./DetailEvidence.vue";
 
 @Component({
   mixins: [Utils],
   components: {
     Snackbar,
-    CreateEvidence
+    CreateEvidence,
+    DetailEvidence
   }
 })
 export default class DetailCombinedForwarder extends Vue {
@@ -570,7 +593,6 @@ export default class DetailCombinedForwarder extends Vue {
   containers: Array<IContainer> = [];
   dialogDetail = false;
   checkValid = false;
-  outbound = {} as IOutbound;
   combined = {
     bid: this.bid,
     status: "INFO_RECEIVED",
@@ -579,6 +601,7 @@ export default class DetailCombinedForwarder extends Vue {
       required: true
     }
   } as ICombined;
+  combineds: Array<ICombined> = [];
   loading = false;
   selection = 0;
   message = "";
@@ -677,48 +700,58 @@ export default class DetailCombinedForwarder extends Vue {
   }
   created() {
     // TODO: Fake data
-    const combinedId = parseInt(this.$route.params.id);
-    this.evidences = [] as Array<IEvidence>;
-    getCombined(combinedId)
+    const biddingDocumentId = parseInt(this.$route.params.id);
+    getBiddingDocument(biddingDocumentId)
       .then(res => {
         const response = res.data;
-        this.combined = response;
-        console.log(response);
-        this.bid = this.combined.bid as IBid;
-        if (this.bid.id) {
-          getBiddingDocumentByBid(this.bid.id)
-            .then(res => {
-              this.biddingDocument = res.data;
-            })
-            .catch(err => {
-              console.log(err);
-            });
-        }
-        if (this.combined.contract && this.combined.contract.id) {
-          getEvidencesByContract(this.combined.contract.id, {
-            page: 0,
-            limit: 100
-          })
-            .then(res => {
-              const response: PaginationResponse<IEvidence> = res.data;
-              console.log(response);
-              this.evidences = response.data;
-            })
-            .catch(err => {
-              console.log(err);
-            });
-        }
-        this.outbound = this.biddingDocument.outbound as IOutbound;
+        this.biddingDocument = response;
+        console.log(this.biddingDocument);
         this.options.totalItems = 10;
       })
       .catch(err => {
         console.log(err);
       })
       .finally();
+    getCombinedsByBiddingDocument(biddingDocumentId, {
+      page: 0,
+      limit: 100
+    })
+      .then(res => {
+        console.log(res);
+        const response: PaginationResponse<ICombined> = res.data;
+        console.log(response.data);
+        this.combineds = response.data;
+        if (this.combineds.length > 0) {
+          this.bid = this.combineds[0].bid as IBid;
+          this.combined = this.combineds[0];
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+      .finally();
+    if (this.combined.contract && this.combined.contract.id) {
+      getEvidencesByContract(this.combined.contract.id, {
+        page: 0,
+        limit: 100
+      })
+        .then(res => {
+          const response: PaginationResponse<IEvidence> = res.data;
+          this.evidences = response.data;
+        })
+        .catch(err => {
+          console.log(err);
+        })
+        .finally();
+    }
   }
   openCreateEvidence() {
     this.update = false;
     this.dialogAdd = true;
+  }
+  viewDetailEvidence(item: IEvidence) {
+    this.evidence = item;
+    this.dialogDetail = true;
   }
 }
 </script>

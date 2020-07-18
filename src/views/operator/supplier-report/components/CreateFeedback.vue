@@ -72,7 +72,11 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IFeedback } from "@/entity/feedback";
 import FormValidate from "@/mixin/form-validate";
-import { createFeedback, editFeedback } from "@/api/feedback";
+import {
+  createFeedback,
+  editFeedback,
+  createFeedbackToModerator
+} from "@/api/feedback";
 import { IReport } from "@/entity/report";
 // import { createFeedback, updateFeedback } from "@/api/feedback";
 
@@ -87,6 +91,7 @@ export default class CreateFeedback extends Vue {
   @Prop(Object) feedback!: IFeedback;
   @Prop(Object) report!: IReport;
   @Prop(Boolean) update!: boolean;
+  @Prop(String) receiver?: string;
 
   feedbackLocal = {
     sender: this.$auth.user().username,
@@ -95,23 +100,45 @@ export default class CreateFeedback extends Vue {
   } as IFeedback;
   valid = false;
   created() {
+    console.log(this.report);
+    console.log(this.receiver);
     if (this.update) {
       this.feedbackLocal = Object.assign({}, this.feedback);
     }
   }
   createFeedback() {
     if (this.feedbackLocal && this.report.id) {
-      createFeedback(this.report.id, this.feedbackLocal)
-        .then(res => {
-          const response: IFeedback = res.data;
-          this.messageSync = "Thêm mới thành công Phản hồi: " + response.id;
-          this.feedbacksSync.unshift(response);
-        })
-        .catch(err => {
-          console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
-        })
-        .finally(() => (this.snackbarSync = true));
+      if (this.$auth.user().roles[0] == "ROLE_MODERATOR") {
+        createFeedback(this.report.id, this.feedbackLocal)
+          .then(res => {
+            const response: IFeedback = res.data;
+            this.messageSync = "Thêm mới thành công Phản hồi: " + response.id;
+            this.feedbacksSync.push(response);
+          })
+          .catch(err => {
+            console.log(err);
+            this.messageSync = "Đã có lỗi xảy ra";
+          })
+          .finally(() => (this.snackbarSync = true));
+      } else {
+        if (this.receiver) {
+          createFeedbackToModerator(
+            this.report.id,
+            this.receiver,
+            this.feedbackLocal
+          )
+            .then(res => {
+              const response: IFeedback = res.data;
+              this.messageSync = "Thêm mới thành công Phản hồi: " + response.id;
+              this.feedbacksSync.unshift(response);
+            })
+            .catch(err => {
+              console.log(err);
+              this.messageSync = "Đã có lỗi xảy ra";
+            })
+            .finally(() => (this.snackbarSync = true));
+        }
+      }
     }
   }
   updateFeedback() {

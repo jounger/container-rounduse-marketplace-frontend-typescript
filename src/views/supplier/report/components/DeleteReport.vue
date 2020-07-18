@@ -65,14 +65,13 @@ export default class DeleteReport extends Vue {
           );
           this.reportsSync.splice(index, 1);
           this.totalItemsSync -= 1;
+          this.dialogDelSync = false;
         })
         .catch(err => {
           console.log(err);
           this.messageSync = "Đã có lỗi xảy ra";
         })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
-        );
+        .finally(() => (this.snackbarSync = true));
     }
   }
 }

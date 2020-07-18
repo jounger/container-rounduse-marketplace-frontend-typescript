@@ -1,81 +1,76 @@
 <template>
-  <v-dialog v-model="dialogStatusSync" persistent max-width="600px">
+  <v-dialog v-model="dialogConfirmSync" persistent max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">Chấm điểm Feedback</span>
+          ><span class="headline" style="color:white;"
+            >Thay đổi trạng thái Report</span
+          >
           <v-btn
             icon
             dark
-            @click="dialogStatusSync = false"
-            style="margin-left:288px;"
+            @click="dialogConfirmSync = false"
+            style="margin-left:243px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
         >
       </v-toolbar>
+
       <v-card-text>
-        <v-form v-model="valid" validation>
-          <v-row>
-            <v-col cols="12" md="12">
-              <v-select
-                v-model="reportStatus"
-                name="status"
-                prepend-icon="security"
-                :items="status"
-                label="Trạng thái*"
-                :rules="[required('role')]"
-              ></v-select>
-            </v-col>
-          </v-row>
+        <v-form>
+          <v-container>
+            <span style="color: black; font-size:22px;"
+              >Bạn có chắc chắn muốn
+              {{
+                status == "RESOLVED" || status == "CLOSED" ? "đóng" : "từ chối"
+              }}
+              Report này?</span
+            >
+            <div class="line"></div>
+            <v-list>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title>{{ report.id }}</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-container>
           <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-top: 65px;">
-        <v-spacer></v-spacer>
-        <v-btn @click="dialogStatusSync = false">Trở về</v-btn>
-        <v-btn @click="changeStatusReport()" color="primary" :disabled="!valid"
-          >Đặt trạng thái</v-btn
-        >
+      <v-card-actions style="margin-left: 205px;">
+        <v-btn @click="dialogConfirmSync = false">Hủy</v-btn>
+        <v-btn @click="changeStatusReport()" class="primary">Đồng ý</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
-import FormValidate from "@/mixin/form-validate";
 import { IReport } from "@/entity/report";
 import { editReport } from "@/api/report";
 
-@Component({
-  mixins: [FormValidate]
-})
-export default class ChangeStatusReport extends Vue {
-  @PropSync("dialogStatus", { type: Boolean }) dialogStatusSync!: boolean;
-  @PropSync("reports", { type: Array }) reportsSync!: Array<IReport>;
+@Component
+export default class DeleteReport extends Vue {
+  @PropSync("dialogConfirm", { type: Boolean }) dialogConfirmSync!: boolean;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("reports", { type: Array }) reportsSync!: Array<IReport>;
   @Prop(Object) report!: IReport;
-  @Prop(Boolean) update!: boolean;
+  @Prop(String) status!: string;
 
-  reportStatus = this.report.status;
-  status: Array<string> = [];
-  valid = false;
-  created() {
-    this.status = ["PENDING", "RESOLVED", "REJECTED", "UPDATED", "CLOSED"];
-  }
-  changeStatusReport() {
+  removeReport() {
     if (this.report.id) {
-      editReport(this.report.id, {
-        status: this.reportStatus
-      })
+      editReport(this.report.id, { status: this.status })
         .then(res => {
           console.log(res.data);
-          const response: IReport = res.data;
+          const response = res.data;
           this.messageSync =
             "Thay đổi trạng thái thành công Report: " + response.id;
-          const index = this.reportsSync.findIndex(x => x.id == response.id);
+          const index = this.reportsSync.findIndex(x => x.id === response.id);
           this.reportsSync.splice(index, 1, response);
+          this.dialogConfirmSync = false;
         })
         .catch(err => {
           console.log(err);

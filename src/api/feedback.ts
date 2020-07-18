@@ -25,6 +25,20 @@ export function createFeedback(id: number, feedback: IFeedback) {
   });
 }
 
+export function createFeedbackToModerator(
+  id: number,
+  name: string,
+  feedback: IFeedback
+) {
+  return Vue.axios.post("/feedback", feedback, {
+    params: {
+      id: id,
+      name: name
+    },
+    headers: config
+  });
+}
+
 export function editFeedback(id: number, updates: object) {
   return Vue.axios.patch(`/feedback/${id}`, updates, {
     headers: config
