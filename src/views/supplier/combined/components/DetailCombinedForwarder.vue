@@ -60,18 +60,20 @@
 
                   <v-stepper value="2" vertical class="elevation-0 pb-0">
                     <v-stepper-step step="1" complete
-                      >Cảng lấy cont: HPH
+                      >Cảng lấy cont: {{ inbound.billOfLading.portOfDelivery }}
                       <small class="mt-1"
                         >Thời gian:
-                        {{ formatDatetime("2020-12-05T20:20") }}</small
+                        {{ formatDatetime(inbound.pickupTime) }}</small
                       >
                     </v-stepper-step>
                     <v-stepper-content step="1"></v-stepper-content>
                     <v-stepper-step step="2"
-                      >Nơi trả hàng: Bac Giang
+                      >Nơi trả hàng: {{ inbound.returnStation }}
                       <small class="mt-1"
                         >Thời gian:
-                        {{ formatDatetime("2020-12-05T20:20") }}</small
+                        {{
+                          formatDatetime(inbound.billOfLading.freeTime)
+                        }}</small
                       ></v-stepper-step
                     >
                     <v-stepper-content step="2"></v-stepper-content>
@@ -515,7 +517,6 @@ import { IBid } from "@/entity/bid";
 import Snackbar from "@/components/Snackbar.vue";
 import { ICombined } from "@/entity/combined";
 import { getCombinedsByBiddingDocument } from "@/api/combined";
-import { getBidsByBiddingDocument } from "@/api/bid";
 import { IContainer } from "@/entity/container";
 import { IEvidence } from "@/entity/evidence";
 import { getEvidencesByContract } from "@/api/evidence";
@@ -523,6 +524,8 @@ import { PaginationResponse } from "@/api/payload";
 import { getBiddingDocument } from "@/api/bidding-document";
 import CreateEvidence from "./CreateEvidence.vue";
 import DetailEvidence from "./DetailEvidence.vue";
+import { IInbound } from "@/entity/inbound";
+import { getInboundsByContainer } from "@/api/inbound";
 
 @Component({
   mixins: [Utils],
@@ -577,6 +580,18 @@ export default class DetailCombinedForwarder extends Vue {
     isValid: false
   } as IEvidence;
   evidences: Array<IEvidence> = [];
+  inbound = {
+    pickupTime: "",
+    emptyTime: "",
+    billOfLading: {
+      billOfLadingNumber: "",
+      unit: 0,
+      containers: [] as Array<IContainer>,
+      portOfDelivery: "",
+      freeTime: ""
+    },
+    returnStation: ""
+  } as IInbound;
   update = false;
   dialogAdd = false;
   bids: Array<IBid> = [];
@@ -643,7 +658,11 @@ export default class DetailCombinedForwarder extends Vue {
 
   get totalBidMoney(): number {
     let total = 0;
-    this.bids.forEach((bid: IBid) => {
+    const bids: Array<IBid> = [];
+    this.combineds.forEach((combined: ICombined) => {
+      bids.push(combined.bid as IBid);
+    });
+    bids.forEach((bid: IBid) => {
       total += bid.bidPrice as number;
     });
     return total;
@@ -652,7 +671,7 @@ export default class DetailCombinedForwarder extends Vue {
   get calcStepper() {
     this.stepper = 1;
     switch (this.combined.status) {
-      case "INFO_RECIEVED":
+      case "INFO_RECEIVED":
         this.stepper = 1;
         break;
       case "ON_THE_ROAD":
@@ -670,24 +689,7 @@ export default class DetailCombinedForwarder extends Vue {
     }
     return this.stepper;
   }
-  getBids(id: number) {
-    if (id) {
-      console.log(2);
-      getBidsByBiddingDocument(id, {
-        page: 0,
-        limit: 100
-      })
-        .then(res => {
-          const response = res.data;
-          this.bids = response.data;
-          console.log(this.bids);
-        })
-        .catch(err => {
-          console.log(err);
-        })
-        .finally(() => (this.loading = false));
-    }
-  }
+
   created() {
     // TODO: Fake data
     const biddingDocumentId = parseInt(this.$route.params.id);
@@ -714,26 +716,31 @@ export default class DetailCombinedForwarder extends Vue {
         if (this.combineds.length > 0) {
           this.bid = this.combineds[0].bid as IBid;
           this.combined = this.combineds[0];
+          if (this.combined.contract && this.combined.contract.id) {
+            getEvidencesByContract(this.combined.contract.id, {
+              page: 0,
+              limit: 100
+            })
+              .then(res => {
+                const response: PaginationResponse<IEvidence> = res.data;
+                this.evidences = response.data;
+                if (this.evidences.length > 0) {
+                  if (this.evidences[0].isValid == true) {
+                    this.checkValid = true;
+                  }
+                }
+              })
+              .catch(err => {
+                console.log(err);
+              })
+              .finally();
+          }
         }
       })
       .catch(err => {
         console.log(err);
       })
       .finally();
-    if (this.combined.contract && this.combined.contract.id) {
-      getEvidencesByContract(this.combined.contract.id, {
-        page: 0,
-        limit: 100
-      })
-        .then(res => {
-          const response: PaginationResponse<IEvidence> = res.data;
-          this.evidences = response.data;
-        })
-        .catch(err => {
-          console.log(err);
-        })
-        .finally();
-    }
   }
   openCreateEvidence() {
     this.update = false;
@@ -742,6 +749,19 @@ export default class DetailCombinedForwarder extends Vue {
   viewDetailEvidence(item: IEvidence) {
     this.evidence = item;
     this.dialogDetail = true;
+  }
+  viewDetailContainer(item: IContainer) {
+    if (item.id) {
+      getInboundsByContainer(item.id)
+        .then(res => {
+          const response = res.data;
+          this.inbound = response;
+        })
+        .catch(err => {
+          console.log(err);
+        })
+        .finally();
+    }
   }
 }
 </script>

@@ -60,18 +60,20 @@
 
                   <v-stepper value="2" vertical class="elevation-0 pb-0">
                     <v-stepper-step step="1" complete
-                      >Cảng lấy cont: HPH
+                      >Cảng lấy cont: {{ inbound.billOfLading.portOfDelivery }}
                       <small class="mt-1"
                         >Thời gian:
-                        {{ formatDatetime("2020-12-05T20:20") }}</small
+                        {{ formatDatetime(inbound.pickupTime) }}</small
                       >
                     </v-stepper-step>
                     <v-stepper-content step="1"></v-stepper-content>
                     <v-stepper-step step="2"
-                      >Nơi trả hàng: Bac Giang
+                      >Nơi trả hàng: {{ inbound.returnStation }}
                       <small class="mt-1"
                         >Thời gian:
-                        {{ formatDatetime("2020-12-05T20:20") }}</small
+                        {{
+                          formatDatetime(inbound.billOfLading.freeTime)
+                        }}</small
                       ></v-stepper-step
                     >
                     <v-stepper-content step="2"></v-stepper-content>
@@ -262,6 +264,7 @@
           <v-tab-item>
             <v-container fluid>
               <v-card class="elevation-0">
+                <Snackbar :text="message" :snackbar.sync="snackbar" />
                 <DetailEvidence
                   v-if="dialogDetail"
                   :dialogDetail.sync="dialogDetail"
@@ -453,6 +456,9 @@ import { getBiddingDocument } from "@/api/bidding-document";
 import { getEvidencesByContract } from "@/api/evidence";
 import { PaginationResponse } from "@/api/payload";
 import DetailEvidence from "./DetailEvidence.vue";
+import { IContainer } from "@/entity/container";
+import { IInbound } from "@/entity/inbound";
+import { getInboundsByContainer } from "@/api/inbound";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -506,9 +512,23 @@ export default class DetailCombined extends Vue {
     isValid: false
   } as IEvidence;
   evidences: Array<IEvidence> = [];
+  inbound = {
+    pickupTime: "",
+    emptyTime: "",
+    billOfLading: {
+      billOfLadingNumber: "",
+      unit: 0,
+      containers: [] as Array<IContainer>,
+      portOfDelivery: "",
+      freeTime: ""
+    },
+    returnStation: ""
+  } as IInbound;
   loading = false;
   selection = 0;
   stepper = 4;
+  message = "";
+  snackbar = false;
   dialogDetail = false;
   checkValid = false;
   expanded: Array<IBid> = [];
@@ -629,6 +649,23 @@ export default class DetailCombined extends Vue {
         break;
     }
     this.combined = item;
+    if (this.combined.contract && this.combined.contract.id) {
+      getEvidencesByContract(this.combined.contract.id, {
+        page: 0,
+        limit: 100
+      })
+        .then(res => {
+          const response: PaginationResponse<IEvidence> = res.data;
+          this.evidences = response.data;
+          if (this.evidences[0].isValid == true) {
+            this.checkValid = true;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
+        .finally();
+    }
   }
   created() {
     // TODO: Fake data
@@ -652,29 +689,50 @@ export default class DetailCombined extends Vue {
         console.log(res);
         const response: PaginationResponse<ICombined> = res.data;
         this.combineds = response.data;
+        if (this.combineds.length > 0) {
+          this.combined = this.combineds[0];
+          if (this.combined.contract && this.combined.contract.id) {
+            getEvidencesByContract(this.combined.contract.id, {
+              page: 0,
+              limit: 100
+            })
+              .then(res => {
+                const response: PaginationResponse<IEvidence> = res.data;
+                this.evidences = response.data;
+                if (this.evidences.length > 0) {
+                  if (this.evidences[0].isValid == true) {
+                    this.checkValid = true;
+                  }
+                }
+              })
+              .catch(err => {
+                console.log(err);
+              })
+              .finally();
+          }
+        }
       })
       .catch(err => {
         console.log(err);
       })
       .finally();
-    if (this.combined.contract && this.combined.contract.id) {
-      getEvidencesByContract(this.combined.contract.id, {
-        page: 0,
-        limit: 100
-      })
+  }
+  viewDetailEvidence(item: IEvidence) {
+    this.evidence = item;
+    this.dialogDetail = true;
+  }
+  viewDetailContainer(item: IContainer) {
+    if (item.id) {
+      getInboundsByContainer(item.id)
         .then(res => {
-          const response: PaginationResponse<IEvidence> = res.data;
-          this.evidences = response.data;
+          const response = res.data;
+          this.inbound = response;
         })
         .catch(err => {
           console.log(err);
         })
         .finally();
     }
-  }
-  viewDetailEvidence(item: IEvidence) {
-    this.evidence = item;
-    this.dialogDetail = true;
   }
 }
 </script>

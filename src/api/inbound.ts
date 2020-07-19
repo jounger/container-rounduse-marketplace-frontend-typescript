@@ -19,6 +19,12 @@ export function getInbound(id: number) {
   });
 }
 
+export function getInboundsByContainer(id: number) {
+  return Vue.axios.get(`/inbound/container/${id}`, {
+    headers: config
+  });
+}
+
 export function getInboundsByForwarder(paging: PaginationRequest) {
   return Vue.axios.get("/inbound/forwarder", {
     params: paging,

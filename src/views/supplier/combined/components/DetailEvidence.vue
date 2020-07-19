@@ -8,14 +8,14 @@
             icon
             dark
             @click="dialogDetailSync = false"
-            style="margin-left:302px;"
+            style="margin-left:335px;"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn></v-toolbar-title
         >
       </v-toolbar>
       <v-card-text>
-        <v-form v-model="valid" validation>
+        <v-form>
           <v-row>
             <v-col cols="12" md="11">
               <v-text-field
@@ -30,13 +30,22 @@
           </v-row>
           <v-row>
             <v-col cols="12" md="11">
-              <v-text-area
+              <v-textarea
                 label="Chứng cứ"
                 name="evidence"
                 prepend-icon="description"
-                type="text"
+                outlined
+                readonly
                 v-model="evidence.evidence"
-              ></v-text-area>
+              ></v-textarea>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="11">
+              <span style="color: green" v-if="evidence.isValid"
+                >Đã xác nhận
+              </span>
+              <span style="color: red" v-else>Chưa xác nhận </span>
             </v-col>
           </v-row>
           <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
@@ -49,12 +58,13 @@
           @click="reviewEvidence(false)"
           color="red"
           v-if="
-            $auth.user().roles[0] == 'ROLE_MERCHANT' && evidence.isValid == true
+            $auth.user().roles[0] == 'ROLE_MERCHANT' &&
+              evidence.isValid == false
           "
           >Từ chối</v-btn
         >
         <v-btn
-          @click="createEvidence(true)"
+          @click="reviewEvidence(true)"
           color="green"
           v-if="
             $auth.user().roles[0] == 'ROLE_MERCHANT' &&
@@ -81,7 +91,7 @@ export default class DetailEvidence extends Vue {
 
   reviewEvidence(isValid: boolean) {
     if (this.evidence.id) {
-      editEvidence(this.evidence.id, { status: isValid })
+      editEvidence(this.evidence.id, { isValid: isValid })
         .then(res => {
           const response = res.data;
           this.messageSync = isValid
