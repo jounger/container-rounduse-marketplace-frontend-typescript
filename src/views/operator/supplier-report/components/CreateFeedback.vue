@@ -18,22 +18,22 @@
       </v-toolbar>
       <v-card-text>
         <v-form v-model="valid" validation>
-          <small>*Dấu sao là trường bắt buộc</small>
           <v-row>
-            <v-col cols="12" md="11">
+            <v-col cols="12">
               <v-text-field
-                label="Người gửi*"
+                label="Gửi tới*"
                 name="sender"
                 prepend-icon="person"
                 type="text"
                 readonly
-                v-model="feedbackLocal.sender"
+                v-model="report.sender"
               ></v-text-field>
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" md="11">
-              <v-text-field
+            <v-col cols="12">
+              <v-textarea
+                outlined
                 label="Nội dung*"
                 name="message"
                 prepend-icon="description"
@@ -41,13 +41,12 @@
                 :counter="200"
                 :rules="[minLength('message', 5), maxLength('message', 200)]"
                 v-model="feedbackLocal.message"
-              ></v-text-field>
+              ></v-textarea>
             </v-col>
           </v-row>
-          <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-top: 65px;">
+      <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
         <v-btn
@@ -72,9 +71,13 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IFeedback } from "@/entity/feedback";
 import FormValidate from "@/mixin/form-validate";
-import { createFeedback, editFeedback } from "@/api/feedback";
+import {
+  createFeedback,
+  editFeedback,
+  createFeedbackToModerator
+} from "@/api/feedback";
 import { IReport } from "@/entity/report";
-// import { createFeedback, updateFeedback } from "@/api/feedback";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate]
@@ -87,6 +90,7 @@ export default class CreateFeedback extends Vue {
   @Prop(Object) feedback!: IFeedback;
   @Prop(Object) report!: IReport;
   @Prop(Boolean) update!: boolean;
+  @Prop(String) receiver?: string;
 
   feedbackLocal = {
     sender: this.$auth.user().username,
@@ -95,23 +99,45 @@ export default class CreateFeedback extends Vue {
   } as IFeedback;
   valid = false;
   created() {
+    console.log(this.report);
+    console.log(this.receiver);
     if (this.update) {
       this.feedbackLocal = Object.assign({}, this.feedback);
     }
   }
   createFeedback() {
     if (this.feedbackLocal && this.report.id) {
-      createFeedback(this.report.id, this.feedbackLocal)
-        .then(res => {
-          const response: IFeedback = res.data;
-          this.messageSync = "Thêm mới thành công Phản hồi: " + response.id;
-          this.feedbacksSync.unshift(response);
-        })
-        .catch(err => {
-          console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
-        })
-        .finally(() => (this.snackbarSync = true));
+      if (this.$auth.user().roles[0] == "ROLE_MODERATOR") {
+        createFeedback(this.report.id, this.feedbackLocal)
+          .then(res => {
+            const response: IFeedback = res.data;
+            this.messageSync = "Thêm mới thành công Phản hồi: " + response.id;
+            this.feedbacksSync.push(response);
+          })
+          .catch(err => {
+            console.log(err);
+            this.messageSync = getErrorMessage(err);
+          })
+          .finally(() => (this.snackbarSync = true));
+      } else {
+        if (this.receiver) {
+          createFeedbackToModerator(
+            this.report.id,
+            this.receiver,
+            this.feedbackLocal
+          )
+            .then(res => {
+              const response: IFeedback = res.data;
+              this.messageSync = "Thêm mới thành công Phản hồi: " + response.id;
+              this.feedbacksSync.unshift(response);
+            })
+            .catch(err => {
+              console.log(err);
+              this.messageSync = getErrorMessage(err);
+            })
+            .finally(() => (this.snackbarSync = true));
+        }
+      }
     }
   }
   updateFeedback() {
@@ -126,7 +152,7 @@ export default class CreateFeedback extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }

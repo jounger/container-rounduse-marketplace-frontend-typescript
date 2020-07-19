@@ -20,6 +20,8 @@
           :message.sync="messageSync"
           :snackbar.sync="snackbarSync"
           :update="update"
+          :report="report"
+          :receiver="receiver"
         />
       </v-row>
       <v-row justify="center">
@@ -34,9 +36,10 @@
       </v-row>
       <v-row justify="center">
         <ChangeStatusReport
-          v-if="dialogStatus"
-          :dialogStatus.sync="dialogStatus"
+          v-if="dialogConfirm"
+          :dialogConfirm.sync="dialogConfirm"
           :report="report"
+          :status="status"
           :reports.sync="reportsSync"
           :message.sync="messageSync"
           :snackbar.sync="snackbarSync"
@@ -88,25 +91,75 @@
               </v-list-item>
             </v-list>
           </v-col>
-          <v-spacer></v-spacer>
-          <v-btn
-            style="margin-top: 30px!important;"
-            class="ma-1"
-            tile
-            outlined
-            color="success"
-            @click.stop="openStatusDialog()"
-            small
-            v-if="$auth.user().roles[0] == 'ROLE_MODERATOR'"
-          >
-            <v-icon left>mdi-pencil</v-icon> Đặt trạng thái
-          </v-btn>
+          <v-col cols="12" sm="6" md="4">
+            <v-list dense>
+              <v-list-item>
+                <v-list-item-icon>
+                  <v-icon>business_center</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Trạng thái</v-list-item-title>
+                  <v-list-item-subtitle>{{
+                    report.status
+                  }}</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-col>
         </v-row>
       </v-card-text>
 
       <v-divider class="mx-1"></v-divider>
 
-      <v-card-title>{{ report.title }}</v-card-title>
+      <v-card-title
+        >{{ report.title }}
+        <v-spacer></v-spacer>
+        <v-btn
+          style="margin-top: 10px!important;"
+          class="ma-1"
+          tile
+          outlined
+          color="success"
+          @click.stop="openConfirmDialog('REJECTED')"
+          small
+          v-if="
+            $auth.user().roles[0] == 'ROLE_MODERATOR' &&
+              (report.status == 'PENDING' || report.status == 'UPDATED')
+          "
+        >
+          <v-icon left>mdi-pencil</v-icon> Từ chối
+        </v-btn>
+        <v-btn
+          style="margin-top: 10px!important;"
+          class="ma-1"
+          tile
+          outlined
+          color="success"
+          @click.stop="openConfirmDialog('CLOSED')"
+          small
+          v-if="
+            $auth.user().roles[0] == 'ROLE_MODERATOR' &&
+              report.status == 'RESOLVED'
+          "
+        >
+          <v-icon left>mdi-pencil</v-icon> Đóng Report
+        </v-btn>
+        <v-btn
+          style="margin-top: 10px!important;"
+          class="ma-1"
+          tile
+          outlined
+          color="success"
+          @click.stop="openConfirmDialog('RESOLVED')"
+          small
+          v-if="
+            $auth.user().roles[0] == 'ROLE_FORWARDER' &&
+              (report.status == 'PENDING' || report.status == 'UPDATED')
+          "
+        >
+          <v-icon left>mdi-pencil</v-icon> Đóng Report
+        </v-btn>
+      </v-card-title>
       <v-col cols="12" md="12">
         <v-textarea
           outlined
@@ -120,7 +173,12 @@
       <v-list dense>
         <v-list-item v-for="item in feedbacks" :key="item.title">
           <v-list-item-icon>
-            <v-icon>military_tech</v-icon>
+            <v-icon>{{
+              item.sender == $auth.user().username &&
+              $auth.user().roles[0] == "ROLE_FORWARDER"
+                ? "person"
+                : "verified_user"
+            }}</v-icon>
           </v-list-item-icon>
           <v-list-item-content>
             <v-list-item-title style="font-weight:bold;">{{
@@ -190,17 +248,18 @@
           </v-menu>
         </v-list-item>
       </v-list>
-      <v-spacer></v-spacer>
       <v-btn
+        style="margin-left: 15px;
+    margin-bottom: 15px;"
         v-if="
           feedbacks.length == 0 &&
+            $auth.user().roles[0] == 'ROLE_MODERATOR' &&
             (report.status == 'PENDING' || report.status == 'UPDATED')
         "
-        @click="openCreateDialog()"
-        style="coler: green"
+        @click="openCreateFeedbackDialog()"
+        class="primary"
         >Phản hồi</v-btn
       >
-      <!-- TODO: table bids -->
     </v-card>
   </v-dialog>
 </template>
@@ -236,7 +295,9 @@ export default class ReportDetail extends Vue {
   dialogFeedback = false;
   dialogDel = false;
   dialogMark = false;
-  dialogStatus = false;
+  receiver = "";
+  dialogConfirm = false;
+  status = "";
   feedback = {} as IFeedback;
   update = false;
   openFeedback = false;
@@ -257,7 +318,14 @@ export default class ReportDetail extends Vue {
         .finally();
     }
   }
-  openCreateDialog() {
+  openCreateDialog(item: IFeedback) {
+    console.log("feedback", item);
+    this.receiver = item.sender;
+    this.update = false;
+    this.feedback = {} as IFeedback;
+    this.dialogFeedback = true;
+  }
+  openCreateFeedbackDialog() {
     this.update = false;
     this.feedback = {} as IFeedback;
     this.dialogFeedback = true;
@@ -277,8 +345,9 @@ export default class ReportDetail extends Vue {
     this.feedback = item;
     this.dialogMark = true;
   }
-  openStatusDialog() {
-    this.dialogStatus = true;
+  openConfirmDialog(status: string) {
+    this.status = status;
+    this.dialogConfirm = true;
   }
   viewDetailBiddingDocument() {
     this.$router.push({ path: `/bidding-document/${this.report.report}` });

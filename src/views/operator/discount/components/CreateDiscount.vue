@@ -111,6 +111,7 @@ import { createDiscount, updateDiscount } from "@/api/discount";
 import FormValidate from "@/mixin/form-validate";
 import { addTimeToDate } from "@/utils/tool";
 import DatetimePicker from "@/components/DatetimePicker.vue";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate],
@@ -157,7 +158,7 @@ export default class CreateDiscount extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }
@@ -176,7 +177,7 @@ export default class CreateDiscount extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }

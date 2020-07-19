@@ -43,7 +43,8 @@
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPayment } from "@/entity/payment";
-import { removePayment } from '@/api/payment';
+import { removePayment } from "@/api/payment";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component
 export default class DeletePayment extends Vue {
@@ -68,7 +69,7 @@ export default class DeletePayment extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(
           () => ((this.snackbarSync = true), (this.dialogDelSync = false))

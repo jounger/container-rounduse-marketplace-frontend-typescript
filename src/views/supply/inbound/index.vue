@@ -135,7 +135,7 @@
           </v-menu>
         </template>
         <template v-slot:expanded-item="{ headers }">
-          <td :colspan="headers.length">
+          <td :colspan="headers.length" class="px-0">
             <v-data-table
               :headers="containerHeaders"
               :items="containers"

@@ -188,7 +188,7 @@ export default class RequestDetail extends Vue {
   supplier = {} as ISupplier;
   role = "";
   created() {
-    getSupplier(this.$auth.user().id)
+    getSupplier(this.$auth.user().username)
       .then(res => {
         const response: ISupplier = res.data;
         this.supplier = response;

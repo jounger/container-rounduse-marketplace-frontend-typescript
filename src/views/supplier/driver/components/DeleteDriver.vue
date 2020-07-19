@@ -44,6 +44,7 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IDriver } from "@/entity/driver";
 import { removeDriver } from "@/api/driver";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component
 export default class DeleteDriver extends Vue {
@@ -60,14 +61,15 @@ export default class DeleteDriver extends Vue {
         .then(res => {
           console.log(res.data);
           const response: IDriver = res.data;
-          this.messageSync = "Xóa thành công mã lái xe: " + this.driver.username;
+          this.messageSync =
+            "Xóa thành công mã lái xe: " + this.driver.username;
           const index = this.driversSync.findIndex(x => x.id === response.id);
           this.driversSync.splice(index, 1);
           this.totalItemsSync -= 1;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(
           () => ((this.snackbarSync = true), (this.dialogDelSync = false))

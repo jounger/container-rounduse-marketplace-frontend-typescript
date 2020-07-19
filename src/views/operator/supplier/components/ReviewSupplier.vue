@@ -70,6 +70,7 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { ISupplier } from "@/entity/supplier";
 import { reviewSupplier } from "@/api/supplier";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component
 export default class ReviewSupplier extends Vue {
@@ -99,7 +100,7 @@ export default class ReviewSupplier extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }

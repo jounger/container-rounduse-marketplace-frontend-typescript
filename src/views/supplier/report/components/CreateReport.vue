@@ -66,14 +66,14 @@
           </v-stepper-step>
           <v-stepper-content step="2">
             <v-form ref="bidForm" v-model="valid" validation>
-              <v-text-field
+              <!-- <v-text-field
                 v-model="reportLocal.sender"
                 prepend-icon="person"
                 name="sender"
                 type="text"
                 readonly
                 label="Người gửi"
-              ></v-text-field>
+              ></v-text-field> -->
               <v-text-field
                 label="Tiêu đề"
                 name="title"
@@ -81,9 +81,10 @@
                 v-model="reportLocal.title"
                 type="text"
                 :counter="20"
-                :rules="[minLength('title', 5), maxLength('title', 20)]"
+                :rules="[minLength('title', 5), maxLength('title', 100)]"
               ></v-text-field>
-              <v-text-field
+              <v-textarea
+                outlined
                 label="Nội dung"
                 name="detail"
                 prepend-icon="description"
@@ -91,7 +92,7 @@
                 type="text"
                 :counter="200"
                 :rules="[minLength('detail', 5), maxLength('detail', 200)]"
-              ></v-text-field>
+              ></v-textarea>
               <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
                 >Tiếp tục</v-btn
               >
@@ -126,7 +127,7 @@ import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
 import { PaginationResponse } from "@/api/payload";
 import { IBiddingDocument } from "@/entity/bidding-document";
-import { isEmptyObject } from "@/utils/tool";
+import { isEmptyObject, getErrorMessage } from "@/utils/tool";
 import { IReport } from "@/entity/report";
 import { IBiddingNotification } from "@/entity/bidding-notification";
 import { getBiddingNotificationsByUser } from "@/api/notification";
@@ -203,7 +204,7 @@ export default class CreateReport extends Vue {
       })
       .catch(err => {
         console.log(err);
-        this.messageSync = "Đã có lỗi xảy ra";
+        this.messageSync = getErrorMessage(err);
       })
       .finally(() => (this.snackbarSync = true));
   }

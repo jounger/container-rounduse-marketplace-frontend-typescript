@@ -362,7 +362,7 @@ import { getPorts } from "@/api/port";
 import { getShippingLines } from "@/api/shipping-line";
 import { getContainerTypes } from "@/api/container-type";
 import { PaginationResponse } from "@/api/payload";
-import { addTimeToDate, addMinutesToDate } from "@/utils/tool";
+import { addTimeToDate, addMinutesToDate, getErrorMessage } from "@/utils/tool";
 import { createInbound } from "@/api/inbound";
 import DeleteContainer from "./DeleteContainer.vue";
 import CreateContainer from "./CreateContainer.vue";
@@ -499,7 +499,7 @@ export default class CreateInbound extends Vue {
     this.stepper = 1;
     this.valid = false;
     this.valid2 = false;
-    this.dateInit = new Date().toISOString().substr(0, 10);
+    this.dateInit = addTimeToDate(new Date().toString());
     this.distanceMatrixResult = null;
     this.pickupTimePicker = false;
     this.freeTimePicker = false;
@@ -544,7 +544,7 @@ export default class CreateInbound extends Vue {
       })
       .catch(err => {
         console.log(err);
-        this.messageSync = "Đã có lỗi xảy ra";
+        this.messageSync = getErrorMessage(err);
       })
       .finally(() => (this.snackbarSync = true));
   }

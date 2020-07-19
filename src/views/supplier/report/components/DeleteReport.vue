@@ -44,6 +44,7 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IReport } from "@/entity/report";
 import { removeReport } from "@/api/report";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component
 export default class DeleteReport extends Vue {
@@ -65,14 +66,13 @@ export default class DeleteReport extends Vue {
           );
           this.reportsSync.splice(index, 1);
           this.totalItemsSync -= 1;
+          this.dialogDelSync = false;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
-        );
+        .finally(() => (this.snackbarSync = true));
     }
   }
 }

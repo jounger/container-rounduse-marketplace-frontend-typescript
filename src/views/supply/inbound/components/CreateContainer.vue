@@ -107,6 +107,7 @@ import { getContainerSemiTrailersByForwarder } from "@/api/container-semi-traile
 import { PaginationResponse } from "@/api/payload";
 import { getDriversByForwarder } from "@/api/driver";
 import { IDriver } from "@/entity/driver";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate]
@@ -186,7 +187,7 @@ export default class CreateContainer extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }
@@ -202,7 +203,7 @@ export default class CreateContainer extends Vue {
       })
       .catch(err => {
         console.log(err);
-        this.messageSync = "Đã có lỗi xảy ra";
+        this.messageSync = getErrorMessage(err);
       })
       .finally(() => (this.snackbarSync = true));
   }

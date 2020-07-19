@@ -195,7 +195,7 @@ import { IBiddingDocument } from "@/entity/bidding-document";
 import { IOutbound } from "@/entity/outbound";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
-import { isEmptyObject, addTimeToDate } from "@/utils/tool";
+import { isEmptyObject, addTimeToDate, getErrorMessage } from "@/utils/tool";
 import { createBiddingDocument } from "@/api/bidding-document";
 import { getOutboundByMerchant } from "@/api/outbound";
 import { PaginationResponse } from "@/api/payload";
@@ -223,9 +223,9 @@ export default class CreateBiddingDocument extends Vue {
     outbound: -1 as number,
     discount: "",
     isMultipleAward: false,
-    bidOpening: this.dateInit.slice(0, 10),
-    bidClosing: this.dateInit.slice(0, 10),
-    dateOfDecision: this.dateInit.slice(0, 10),
+    bidOpening: this.dateInit,
+    bidClosing: this.dateInit,
+    dateOfDecision: this.dateInit,
     currencyOfPayment: "VND",
     bidPackagePrice: 0,
     bidFloorPrice: 0,
@@ -238,8 +238,6 @@ export default class CreateBiddingDocument extends Vue {
   editable = false;
   stepper = 1;
   valid = true;
-  timeOpening = this.dateInit.slice(11, 16);
-  timeClosing = this.dateInit.slice(11, 16);
   // API list
   currencyOfPayments: Array<string> = [];
   unitOfMeasurements: Array<string> = [];
@@ -300,7 +298,7 @@ export default class CreateBiddingDocument extends Vue {
       })
       .catch(err => {
         console.log(err);
-        this.messageSync = "Đã có lỗi xảy ra";
+        this.messageSync = getErrorMessage(err);
       })
       .finally(() => (this.snackbarSync = true));
   }

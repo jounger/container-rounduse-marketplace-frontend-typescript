@@ -321,7 +321,7 @@ import { getShippingLines } from "@/api/shipping-line";
 import { IShippingLine } from "@/entity/shipping-line";
 import { getContainerTypes } from "@/api/container-type";
 import { IContainerType } from "@/entity/container-type";
-import { addTimeToDate } from "@/utils/tool";
+import { addTimeToDate, getErrorMessage } from "@/utils/tool";
 import { addMinutesToDate } from "@/utils/tool";
 import GoogleMapLoader from "@/components/googlemaps/GoogleMapLoader.vue";
 import GoogleMapAutocomplete from "@/components/googlemaps/GoogleMapAutocomplete.vue";
@@ -467,7 +467,7 @@ export default class CreateOutbound extends Vue {
       })
       .catch(err => {
         console.log(err);
-        this.messageSync = "Đã có lỗi xảy ra";
+        this.messageSync = getErrorMessage(err);
       })
       .finally(() => (this.snackbarSync = true));
   }

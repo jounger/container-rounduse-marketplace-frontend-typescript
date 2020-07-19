@@ -128,6 +128,7 @@ import Utils from "@/mixin/utils";
 import { createCombined } from "@/api/combined";
 import { IBid } from "@/entity/bid";
 import { IContract } from "@/entity/contract";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate, Utils]
@@ -138,6 +139,7 @@ export default class CreateCombined extends Vue {
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Object) bid!: IBid;
+  @PropSync("numberWinner", { type: Number }) numberWinnerSync!: number;
   @PropSync("bids", { type: Array })
   bidsSync!: Array<IBid>;
 
@@ -239,11 +241,12 @@ export default class CreateCombined extends Vue {
             const index = this.bidsSync.findIndex(x => x.id == bidResponse.id);
             this.bidsSync.splice(index, 1, bidResponse);
           }
+          this.numberWinnerSync += 1;
           this.dialogAddSync = false;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(
           () => ((this.snackbarSync = true), (this.dialogConfirmSync = false))

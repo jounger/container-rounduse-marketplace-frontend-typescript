@@ -6,6 +6,7 @@
         :message.sync="messageSync"
         :snackbar.sync="snackbarSync"
         :dialogConfirm.sync="dialogConfirmSync"
+        :numberWinner.sync="numberWinnerSync"
         :bids.sync="bidsSync"
         :bid="bid"
       />
@@ -63,6 +64,7 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IBid } from "@/entity/bid";
 import { editBid } from "@/api/bid";
 import CreateCombined from "../../combined/components/CreateCombined.vue";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   components: {
@@ -75,6 +77,7 @@ export default class ConfirmBid extends Vue {
   bidsSync!: Array<IBid>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("numberWinner", { type: Number }) numberWinnerSync!: number;
   @Prop(Boolean) isAccept!: boolean;
   @Prop(Object) bid!: IBid;
   dialogContract = false;
@@ -97,7 +100,7 @@ export default class ConfirmBid extends Vue {
           })
           .catch(err => {
             console.log(err);
-            this.messageSync = "Đã có lỗi xảy ra";
+            this.messageSync = getErrorMessage(err);
           })
           .finally(
             () => ((this.snackbarSync = true), (this.dialogConfirmSync = false))

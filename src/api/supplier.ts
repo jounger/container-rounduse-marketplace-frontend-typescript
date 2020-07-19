@@ -12,8 +12,8 @@ export function getSuppliers(paging: PaginationRequest) {
   });
 }
 
-export function getSupplier(id: number) {
-  return Vue.axios.get(`/supplier/${id}`, {
+export function getSupplier(username: string) {
+  return Vue.axios.get(`/supplier/${username}`, {
     headers: config
   });
 }

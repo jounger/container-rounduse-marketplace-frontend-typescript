@@ -188,7 +188,7 @@ import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
 import { updateBiddingDocument } from "@/api/bidding-document";
 import { IOutbound } from "@/entity/outbound";
-import { addTimeToDate } from "@/utils/tool";
+import { addTimeToDate, getErrorMessage } from "@/utils/tool";
 import DatetimePicker from "@/components/DatetimePicker.vue";
 
 @Component({
@@ -277,7 +277,7 @@ export default class UpdateBiddingDocument extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }

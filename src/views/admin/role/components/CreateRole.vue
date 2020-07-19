@@ -85,6 +85,7 @@ import { PaginationResponse } from "@/api/payload";
 import { getPermissions } from "@/api/permission";
 import { IPermission } from "@/entity/permission";
 import FormValidate from "@/mixin/form-validate";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate]
@@ -138,7 +139,7 @@ export default class CreateRole extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }
@@ -155,7 +156,7 @@ export default class CreateRole extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }

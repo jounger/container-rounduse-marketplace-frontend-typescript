@@ -233,6 +233,7 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IShippingLine } from "@/entity/shipping-line";
 import FormValidate from "@/mixin/form-validate";
 import { editShippingLine } from "@/api/shipping-line";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate]
@@ -275,7 +276,7 @@ export default class UpdateShippingLine extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }

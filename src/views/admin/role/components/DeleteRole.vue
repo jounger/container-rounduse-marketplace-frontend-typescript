@@ -44,6 +44,7 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IRole } from "@/entity/role";
 import { removeRole } from "@/api/role";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component
 export default class DeleteRole extends Vue {
@@ -51,7 +52,7 @@ export default class DeleteRole extends Vue {
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("roles", { type: Array }) rolesSync!: Array<IRole>;
-    @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) role!: IRole;
 
   removeRole() {
@@ -66,7 +67,7 @@ export default class DeleteRole extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(
           () => ((this.snackbarSync = true), (this.dialogDelSync = false))
