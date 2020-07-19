@@ -147,20 +147,21 @@ export default class InvitedNotify extends Vue {
     if (val !== oldVal) {
       getBiddingNotificationsByUser({
         page: this.options.page - 1,
-        limit: this.options.itemsPerPage,
-        status: "ADDED"
+        limit: this.options.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IBiddingNotification> = res.data;
           console.log("watch", response);
-          this.biddingDocuments = response.data.reduce(function(
-            pV: Array<IBiddingDocument>,
-            cV: IBiddingNotification
-          ) {
-            pV.push(cV.relatedResource);
-            return pV;
-          },
-          []);
+          this.biddingDocuments = response.data
+            .filter(x => x.action == "ADDED")
+            .reduce(function(
+              pV: Array<IBiddingDocument>,
+              cV: IBiddingNotification
+            ) {
+              pV.push(cV.relatedResource);
+              return pV;
+            },
+            []);
           this.options.totalItems = response.totalElements;
         })
         .catch(err => console.log(err))
