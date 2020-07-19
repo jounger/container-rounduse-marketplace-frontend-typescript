@@ -137,7 +137,7 @@ export default class CardCompany extends Vue {
       this.$auth.user().roles[0] == "ROLE_FORWARDER" ||
       this.$auth.user().roles == "ROLE_SHIPPINGLINE"
     ) {
-      getSupplier(this.$auth.user().id).then(res => {
+      getSupplier(this.$auth.user().username).then(res => {
         const response = res.data;
         this.profile = response;
       });

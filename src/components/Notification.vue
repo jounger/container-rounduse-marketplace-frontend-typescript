@@ -182,7 +182,7 @@ export default class Notification extends Vue {
       })
         .then(res => {
           const response: PaginationResponse<IBiddingNotification> = res.data;
-          console.log("watch", response);
+          // console.log("watch", response);
           return response;
         })
         .catch(err => {
