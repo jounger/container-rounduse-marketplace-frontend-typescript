@@ -52,7 +52,7 @@ export default class DeleteRole extends Vue {
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("roles", { type: Array }) rolesSync!: Array<IRole>;
-    @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) role!: IRole;
 
   removeRole() {

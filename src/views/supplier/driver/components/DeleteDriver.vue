@@ -61,7 +61,8 @@ export default class DeleteDriver extends Vue {
         .then(res => {
           console.log(res.data);
           const response: IDriver = res.data;
-          this.messageSync = "Xóa thành công mã lái xe: " + this.driver.username;
+          this.messageSync =
+            "Xóa thành công mã lái xe: " + this.driver.username;
           const index = this.driversSync.findIndex(x => x.id === response.id);
           this.driversSync.splice(index, 1);
           this.totalItemsSync -= 1;
