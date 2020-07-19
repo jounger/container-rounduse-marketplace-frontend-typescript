@@ -49,6 +49,28 @@
           :update="update"
         />
       </v-row>
+      <v-row justify="center">
+        <DeleteContainer
+          v-if="dialogDelCont"
+          :dialogDelCont.sync="dialogDelCont"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
+          :container="container"
+          :containers.sync="containers"
+        />
+      </v-row>
+      <v-row justify="center">
+        <CreateContainer
+          v-if="dialogAddCont"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
+          :container="container"
+          :containers.sync="containers"
+          :dialogAddCont.sync="dialogAddCont"
+          :billOfLading="inbound.billOfLading"
+          :update="update"
+        />
+      </v-row>
       <v-data-table
         :headers="headers"
         :items="inbounds"

@@ -434,6 +434,7 @@ export default class UpdateInbound extends Vue {
         })
         .finally(() => (this.snackbarSync = true));
     }
+    return undefined;
   }
   getPortAddress(portCode: string) {
     if (portCode.length > 0) {
