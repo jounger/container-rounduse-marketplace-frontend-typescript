@@ -35,9 +35,14 @@
     >
       <!-- OUTOUNBD -->
       <v-card class="order-0 flex-grow-0 mx-auto mr-5 my-1" max-width="500">
-        <v-tabs background-color="white" color="deep-purple accent-4" left>
+        <v-tabs
+          background-color="white"
+          color="deep-purple accent-4"
+          left
+          fixed-tabs
+        >
           <v-tab>Lịch trình</v-tab>
-          <v-tab>Hàng xuất và HSMT</v-tab>
+          <v-tab>HSMT</v-tab>
           <v-tab>Hợp đồng</v-tab>
 
           <v-tab-item>
@@ -118,7 +123,7 @@
                   <SupplierRating :supplier="biddingDocument.merchant" />
 
                   <v-list dense>
-                    <v-subheader>Thong tin HSMT</v-subheader>
+                    <v-subheader>Thông tin HSMT</v-subheader>
                     <v-list-item-group color="primary">
                       <v-list-item
                         :to="gotoDetailBiddingDocument(biddingDocument)"
@@ -158,7 +163,7 @@
                   </v-list>
 
                   <v-list dense>
-                    <v-subheader>Thong tin Hàng Xuất</v-subheader>
+                    <v-subheader>Thông tin Hàng Xuất</v-subheader>
                     <v-list-item-group color="primary">
                       <v-list-item>
                         <v-list-item-icon>
@@ -356,6 +361,7 @@
             'items-per-page-options': serverSideOptions.itemsPerPageItems
           }"
           :actions-append="options.page"
+          disable-sort
           class="elevation-0"
         >
           <template v-slot:item.dateOfDecision="{ item }">
@@ -371,6 +377,7 @@
                 :headers="containerHeaders"
                 :items="item.bid.containers"
                 :hide-default-footer="true"
+                disable-sort
                 dark
                 dense
               >
