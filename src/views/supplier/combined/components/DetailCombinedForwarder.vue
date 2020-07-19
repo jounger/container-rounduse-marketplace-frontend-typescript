@@ -148,7 +148,7 @@
                               biddingDocument.currencyOfPayment
                           }}</v-list-item-title>
                           <v-list-item-subtitle>
-                            {{ "Tham gia: " + options.totalItems }}
+                            {{ "Tham gia: " + serverSideOptions.totalItems }}
                           </v-list-item-subtitle>
                         </v-list-item-content>
                       </v-list-item>
@@ -390,9 +390,10 @@
                     item-key="id"
                     :loading="loading"
                     :options.sync="options"
-                    :server-items-length="options.totalItems"
+                    :server-items-length="serverSideOptions.totalItems"
                     :footer-props="{
-                      'items-per-page-options': options.itemsPerPageItems
+                      'items-per-page-options':
+                        serverSideOptions.itemsPerPageItems
                     }"
                     :actions-append="options.page"
                     class="elevation-0"
@@ -485,9 +486,9 @@
           item-key="id"
           :loading="loading"
           :options.sync="options"
-          :server-items-length="options.totalItems"
+          :server-items-length="serverSideOptions.totalItems"
           :footer-props="{
-            'items-per-page-options': options.itemsPerPageItems
+            'items-per-page-options': serverSideOptions.itemsPerPageItems
           }"
           :actions-append="options.page"
           class="elevation-0"
@@ -526,6 +527,7 @@ import CreateEvidence from "./CreateEvidence.vue";
 import DetailEvidence from "./DetailEvidence.vue";
 import { IInbound } from "@/entity/inbound";
 import { getInboundsByContainer } from "@/api/inbound";
+import { DataOptions } from "vuetify";
 
 @Component({
   mixins: [Utils],
@@ -613,13 +615,13 @@ export default class DetailCombinedForwarder extends Vue {
   snackbar = false;
   stepper = 1;
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
-    totalItems: 10,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
+    totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
-
   containerHeaders = [
     {
       text: "Container No.",
@@ -698,7 +700,7 @@ export default class DetailCombinedForwarder extends Vue {
         const response = res.data;
         this.biddingDocument = response;
         console.log(this.biddingDocument);
-        this.options.totalItems = 10;
+        this.serverSideOptions.totalItems = 10;
       })
       .catch(err => {
         console.log(err);

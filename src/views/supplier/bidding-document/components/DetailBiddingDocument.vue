@@ -179,7 +179,7 @@
           :biddingDocument.sync="biddingDocument"
           :dialogAdd.sync="dialogBid"
           :bids.sync="bids"
-          :totalItems.sync="options.totalItems"
+          :totalItems.sync="serverSideOptions.totalItems"
           :message.sync="message"
           :snackbar.sync="snackbar"
         />
@@ -292,11 +292,11 @@
                   </v-list-item-icon>
                   <v-list-item-content>
                     <v-list-item-title>{{
-                      "Số lượng tham gia: " + options.totalItems
+                      "Số lượng tham gia: " + serverSideOptions.totalItems
                     }}</v-list-item-title>
                     <v-list-item-subtitle>
                       Số thầu thắng:
-                      {{ numberWinner + "/" + options.totalItems }}
+                      {{ numberWinner + "/" + serverSideOptions.totalItems }}
                     </v-list-item-subtitle>
                     <v-list-item-subtitle>
                       {{
@@ -340,9 +340,9 @@
           item-key="id"
           :loading="loading"
           :options.sync="options"
-          :server-items-length="options.totalItems"
+          :server-items-length="serverSideOptions.totalItems"
           :footer-props="{
-            'items-per-page-options': options.itemsPerPageItems
+            'items-per-page-options': serverSideOptions.itemsPerPageItems
           }"
           :actions-append="options.page"
           class="elevation-0"
@@ -434,6 +434,7 @@ import ConfirmBid from "./ConfirmBid.vue";
 import Snackbar from "@/components/Snackbar.vue";
 import CreateReport from "../../report/components/CreateReport.vue";
 import CreateBid from "../../bid/components/CreateBid.vue";
+import { DataOptions } from "vuetify";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -490,10 +491,11 @@ export default class DetailBiddingDocument extends Vue {
   message = "";
   snackbar = false;
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
-    totalItems: 10,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
+    totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
   bids: Array<IBid> = [];
@@ -556,23 +558,24 @@ export default class DetailBiddingDocument extends Vue {
       }
     }
   }
-  @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
+  @Watch("options")
+  onOptionsChange(val: DataOptions) {
     const biddingDocumentId = parseInt(this.$route.params.id);
-    if (val !== oldVal) {
+    if (typeof val !== "undefined") {
+      this.loading = true;
       if (this.$auth.user().roles[0] == "ROLE_MERCHANT") {
         getBidsByBiddingDocument(biddingDocumentId, {
-          page: this.options.page - 1,
-          limit: this.options.itemsPerPage
+          page: val.page - 1,
+          limit: val.itemsPerPage
         })
           .then(res => {
             const response: PaginationResponse<IBid> = res.data;
-            console.log("watch", this.options);
+            console.log("watch", response);
             this.bids = response.data;
             this.numberWinner = this.bids.filter(
               (x: IBid) => x.status == "ACCEPTED"
             ).length;
-            this.options.totalItems = response.totalElements;
+            this.serverSideOptions.totalItems = response.totalElements;
           })
           .catch(err => console.log(err))
           .finally(() => (this.loading = false));
@@ -581,9 +584,9 @@ export default class DetailBiddingDocument extends Vue {
         getBidByBiddingDocumentAndForwarder(biddingDocumentId)
           .then(res => {
             const response: IBid = res.data;
-            console.log("watch", this.options);
+            console.log("watch", response);
             this.bids.push(response);
-            this.options.totalItems = 1;
+            this.serverSideOptions.totalItems = 1;
           })
           .catch(err => {
             console.log(err);
@@ -595,10 +598,10 @@ export default class DetailBiddingDocument extends Vue {
   get getRouterId() {
     return this.$route.params.id;
   }
-  @Watch("getRouterId", { deep: true })
-  onRouterChange() {
+  @Watch("getRouterId")
+  onRouterChange(val: string) {
     setTimeout(() => {
-      const biddingDocumentId = parseInt(this.$route.params.id);
+      const biddingDocumentId = parseInt(val);
       getBiddingDocument(biddingDocumentId)
         .then(res => {
           const response = res.data;
@@ -616,12 +619,12 @@ export default class DetailBiddingDocument extends Vue {
         })
           .then(res => {
             const response: PaginationResponse<IBid> = res.data;
-            console.log("watch", this.options);
+            console.log("watch", response);
             this.bids = response.data;
             this.numberWinner = this.bids.filter(
               (x: IBid) => x.status == "ACCEPTED"
             ).length;
-            this.options.totalItems = response.totalElements;
+            this.serverSideOptions.totalItems = response.totalElements;
           })
           .catch(err => console.log(err))
           .finally(() => (this.loading = false));
@@ -630,9 +633,9 @@ export default class DetailBiddingDocument extends Vue {
         getBidByBiddingDocumentAndForwarder(biddingDocumentId)
           .then(res => {
             const response: IBid = res.data;
-            console.log("watch", this.options);
+            console.log("watch", response);
             this.bids.push(response);
-            this.options.totalItems = 1;
+            this.serverSideOptions.totalItems = 1;
           })
           .catch(err => {
             console.log(err);
