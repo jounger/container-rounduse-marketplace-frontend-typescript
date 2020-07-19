@@ -16,8 +16,7 @@
       </v-toolbar>
       <v-card-text>
         <v-form v-model="valid" validation>
-          <small>*Dấu sao là trường bắt buộc</small>
-          <v-row>
+          <!-- <v-row>
             <v-col cols="12" md="11">
               <v-text-field
                 label="Người gửi*"
@@ -28,23 +27,24 @@
                 v-model="reportLocal.sender"
               ></v-text-field>
             </v-col>
-          </v-row>
+          </v-row> -->
           <v-row>
-            <v-col cols="12" md="11">
+            <v-col cols="12">
               <v-text-field
                 label="Tiêu đề*"
                 name="title"
                 prepend-icon="menu"
                 type="text"
                 :counter="20"
-                :rules="[minLength('title', 5), maxLength('title', 20)]"
+                :rules="[minLength('title', 5), maxLength('title', 100)]"
                 v-model="reportLocal.title"
               ></v-text-field>
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" md="11">
-              <v-text-field
+            <v-col cols="12">
+              <v-textarea
+                outlined
                 label="Nội dung*"
                 name="detail"
                 prepend-icon="description"
@@ -52,13 +52,12 @@
                 :counter="200"
                 :rules="[minLength('detail', 5), maxLength('detail', 200)]"
                 v-model="reportLocal.detail"
-              ></v-text-field>
+              ></v-textarea>
             </v-col>
           </v-row>
-          <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-top: 65px;">
+      <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn @click="dialogEditSync = false">Trở về</v-btn>
         <v-btn @click="updateReport()" color="primary" :disabled="!valid"
@@ -85,13 +84,13 @@ export default class CreateReport extends Vue {
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Object) report!: IReport;
 
-  reportLocal = {} as IReport;
+  reportLocal = null as IReport | null;
   valid = false;
   created() {
     this.reportLocal = Object.assign({}, this.report);
   }
   updateReport() {
-    if (this.reportLocal.id) {
+    if (this.reportLocal && this.reportLocal.id) {
       editReport(this.reportLocal.id, this.reportLocal)
         .then(res => {
           console.log(res.data);

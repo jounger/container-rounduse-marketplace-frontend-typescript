@@ -66,14 +66,14 @@
           </v-stepper-step>
           <v-stepper-content step="2">
             <v-form ref="bidForm" v-model="valid" validation>
-              <v-text-field
+              <!-- <v-text-field
                 v-model="reportLocal.sender"
                 prepend-icon="person"
                 name="sender"
                 type="text"
                 readonly
                 label="Người gửi"
-              ></v-text-field>
+              ></v-text-field> -->
               <v-text-field
                 label="Tiêu đề"
                 name="title"
@@ -81,9 +81,10 @@
                 v-model="reportLocal.title"
                 type="text"
                 :counter="20"
-                :rules="[minLength('title', 5), maxLength('title', 20)]"
+                :rules="[minLength('title', 5), maxLength('title', 100)]"
               ></v-text-field>
-              <v-text-field
+              <v-textarea
+                outlined
                 label="Nội dung"
                 name="detail"
                 prepend-icon="description"
@@ -91,7 +92,7 @@
                 type="text"
                 :counter="200"
                 :rules="[minLength('detail', 5), maxLength('detail', 200)]"
-              ></v-text-field>
+              ></v-textarea>
               <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
                 >Tiếp tục</v-btn
               >
