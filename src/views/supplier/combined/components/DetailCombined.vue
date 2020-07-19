@@ -509,6 +509,7 @@ export default class DetailCombined extends Vue {
   loading = false;
   selection = 0;
   stepper = 4;
+  dialogDetail = false;
   checkValid = false;
   expanded: Array<IBid> = [];
   singleExpand = true;
@@ -670,6 +671,10 @@ export default class DetailCombined extends Vue {
         })
         .finally();
     }
+  }
+  viewDetailEvidence(item: IEvidence) {
+    this.evidence = item;
+    this.dialogDetail = true;
   }
 }
 </script>

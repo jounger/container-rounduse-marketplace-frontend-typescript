@@ -406,16 +406,6 @@
                       >
                         <v-icon left>library_add_check </v-icon>Chi tiết
                       </v-btn>
-                      <v-btn
-                        class="ma-1"
-                        x-small
-                        tile
-                        outlined
-                        color="success"
-                        @click.stop="viewDetailEvidence(item)"
-                      >
-                        <v-icon left>library_add_check </v-icon>Chi tiết
-                      </v-btn>
                     </template>
                   </v-data-table>
                 </v-list>
