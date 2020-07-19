@@ -78,3 +78,30 @@ export function currencyFormatter(num: number, cur?: string) {
 export function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+export function getErrorMessage(error: any) {
+  // Error 😨
+  console.log("Error", error);
+  if (error.response) {
+    /*
+     * The request was made and the server responded with a
+     * status code that falls out of the range of 2xx
+     */
+    console.log("Data", error.response.data);
+    console.log("Status", error.response.status);
+    console.log("Header", error.response.headers);
+    return error.response.data.message;
+  } else if (error.request) {
+    /*
+     * The request was made but no response was received, `error.request`
+     * is an instance of XMLHttpRequest in the browser and an instance
+     * of http.ClientRequest in Node.js
+     */
+    console.log("Request", error.request);
+    return error.request;
+  } else {
+    // Something happened in setting up the request and triggered an Error
+    console.log("Message", error.message);
+    return error.message;
+  }
+}

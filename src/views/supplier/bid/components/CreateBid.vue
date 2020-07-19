@@ -212,7 +212,7 @@ import { getInboundsByOutboundAndForwarder } from "@/api/inbound";
 import { PaginationResponse } from "@/api/payload";
 import { createBid } from "@/api/bid";
 import { IBiddingDocument } from "@/entity/bidding-document";
-import { isEmptyObject, addTimeToDate } from "@/utils/tool";
+import { isEmptyObject, addTimeToDate, getErrorMessage } from "@/utils/tool";
 import { getBiddingNotificationsByUser } from "@/api/notification";
 import { IBiddingNotification } from "@/entity/bidding-notification";
 import { IOutbound } from "@/entity/outbound";
@@ -348,7 +348,7 @@ export default class CreateBid extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }

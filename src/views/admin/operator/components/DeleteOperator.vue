@@ -44,6 +44,7 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IOperator } from "@/entity/operator";
 import { removeOperator } from "@/api/operator";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component
 export default class DeleteOperator extends Vue {
@@ -69,7 +70,7 @@ export default class DeleteOperator extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(
           () => ((this.snackbarSync = true), (this.dialogDelSync = false))

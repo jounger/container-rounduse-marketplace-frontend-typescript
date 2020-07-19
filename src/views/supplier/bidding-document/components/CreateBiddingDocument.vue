@@ -195,7 +195,7 @@ import { IBiddingDocument } from "@/entity/bidding-document";
 import { IOutbound } from "@/entity/outbound";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
-import { isEmptyObject, addTimeToDate } from "@/utils/tool";
+import { isEmptyObject, addTimeToDate, getErrorMessage } from "@/utils/tool";
 import { createBiddingDocument } from "@/api/bidding-document";
 import { getOutboundByMerchant } from "@/api/outbound";
 import { PaginationResponse } from "@/api/payload";
@@ -300,7 +300,7 @@ export default class CreateBiddingDocument extends Vue {
       })
       .catch(err => {
         console.log(err);
-        this.messageSync = "Đã có lỗi xảy ra";
+        this.messageSync = getErrorMessage(err);
       })
       .finally(() => (this.snackbarSync = true));
   }

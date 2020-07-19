@@ -73,7 +73,7 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IReport } from "@/entity/report";
 import FormValidate from "@/mixin/form-validate";
 import { editReport } from "@/api/report";
-// import { createReport, updateReport } from "@/api/report";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate]
@@ -102,7 +102,7 @@ export default class CreateReport extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }

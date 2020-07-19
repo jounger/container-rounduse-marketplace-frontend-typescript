@@ -62,6 +62,7 @@ import { IEvidence } from "@/entity/evidence";
 import FormValidate from "@/mixin/form-validate";
 import { createEvidence } from "@/api/evidence";
 import { IContract } from "@/entity/contract";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate]
@@ -91,7 +92,7 @@ export default class CreateEvidence extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }

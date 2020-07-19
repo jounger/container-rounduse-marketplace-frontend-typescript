@@ -506,6 +506,7 @@ export default class DetailCombined extends Vue {
     isValid: false
   } as IEvidence;
   evidences: Array<IEvidence> = [];
+  dialogDetail = false;
   loading = false;
   selection = 0;
   stepper = 4;

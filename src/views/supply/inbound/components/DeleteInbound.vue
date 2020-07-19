@@ -48,6 +48,7 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IInbound } from "@/entity/inbound";
 import { removeInbound } from "@/api/inbound";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component
 export default class DeleteInbound extends Vue {
@@ -73,8 +74,7 @@ export default class DeleteInbound extends Vue {
           this.totalItemsSync -= 1;
         })
         .catch(err => {
-          console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(
           () => ((this.snackbarSync = true), (this.dialogDelSync = false))

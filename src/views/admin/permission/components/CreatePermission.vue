@@ -77,6 +77,7 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPermission } from "@/entity/permission";
 import FormValidate from "@/mixin/form-validate";
 import { createPermission, updatePermission } from "@/api/permission";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate]
@@ -113,7 +114,7 @@ export default class CreatePermission extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }
@@ -132,7 +133,7 @@ export default class CreatePermission extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }

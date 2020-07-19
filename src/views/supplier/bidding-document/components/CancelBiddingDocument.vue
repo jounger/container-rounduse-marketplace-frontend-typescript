@@ -50,6 +50,7 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { editBiddingDocument } from "@/api/bidding-document";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component
 export default class CancelBiddingDocument extends Vue {
@@ -78,7 +79,7 @@ export default class CancelBiddingDocument extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(
           () => ((this.snackbarSync = true), (this.dialogCancelSync = false))

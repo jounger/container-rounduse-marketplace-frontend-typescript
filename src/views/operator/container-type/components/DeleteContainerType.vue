@@ -46,6 +46,7 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContainerType } from "@/entity/container-type";
 import { removeContainerType } from "@/api/container-type";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component
 export default class DeleteContainerType extends Vue {
@@ -75,7 +76,7 @@ export default class DeleteContainerType extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(
           () => ((this.snackbarSync = true), (this.dialogDelSync = false))

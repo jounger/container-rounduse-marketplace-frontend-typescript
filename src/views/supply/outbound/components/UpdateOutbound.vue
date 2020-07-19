@@ -328,7 +328,7 @@ import { PaginationResponse } from "@/api/payload";
 import { editOutbound } from "@/api/outbound";
 import { editBooking } from "@/api/booking";
 import { IBooking } from "@/entity/booking";
-import { addTimeToDate, isEmptyObject } from "@/utils/tool";
+import { addTimeToDate, isEmptyObject, getErrorMessage } from "@/utils/tool";
 import { addMinutesToDate } from "@/utils/tool";
 import GoogleMapLoader from "@/components/googlemaps/GoogleMapLoader.vue";
 import GoogleMapAutocomplete from "@/components/googlemaps/GoogleMapAutocomplete.vue";
@@ -435,7 +435,7 @@ export default class UpdateOutbound extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }
@@ -460,7 +460,7 @@ export default class UpdateOutbound extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }

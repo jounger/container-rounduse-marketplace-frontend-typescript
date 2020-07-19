@@ -123,6 +123,7 @@ import GoogleMapMarker from "@/components/googlemaps/GoogleMapMarker.vue";
 import GoogleMapMixins from "@/components/googlemaps/map-mixins";
 import { apiKey } from "@/components/googlemaps/map-constant";
 import Utils from "@/mixin/utils";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   components: {
@@ -179,7 +180,7 @@ export default class CreatePort extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }

@@ -141,6 +141,7 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPayment } from "@/entity/payment";
 import FormValidate from "@/mixin/form-validate";
 import { createPayment, editPayment } from "@/api/payment";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate]
@@ -186,7 +187,7 @@ export default class CreatePayment extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }
@@ -203,7 +204,7 @@ export default class CreatePayment extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }

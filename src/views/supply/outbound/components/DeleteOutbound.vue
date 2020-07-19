@@ -44,6 +44,7 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IOutbound } from "@/entity/outbound";
 import { removeOutbound } from "@/api/outbound";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component
 export default class DeleteOutbound extends Vue {
@@ -74,7 +75,7 @@ export default class DeleteOutbound extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(
           () => ((this.snackbarSync = true), (this.dialogDelSync = false))

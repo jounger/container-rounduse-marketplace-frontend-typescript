@@ -46,6 +46,7 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContainerTractor } from "@/entity/container-tractor";
 import { removeContainerTractor } from "@/api/container-tractor";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component
 export default class DeleteTractor extends Vue {
@@ -73,7 +74,7 @@ export default class DeleteTractor extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(
           () => ((this.snackbarSync = true), (this.dialogDelSync = false))
