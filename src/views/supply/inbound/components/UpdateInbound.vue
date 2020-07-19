@@ -288,7 +288,12 @@ import FormValidate from "@/mixin/form-validate";
 import { IPort } from "@/entity/port";
 import { IShippingLine } from "@/entity/shipping-line";
 import { IContainerType } from "@/entity/container-type";
-import { addTimeToDate, isEmptyObject, addMinutesToDate } from "@/utils/tool";
+import {
+  addTimeToDate,
+  isEmptyObject,
+  addMinutesToDate,
+  getErrorMessage
+} from "@/utils/tool";
 import { editInbound } from "@/api/inbound";
 import { getPorts } from "@/api/port";
 import { getContainerTypes } from "@/api/container-type";
@@ -401,7 +406,7 @@ export default class UpdateInbound extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }
@@ -430,10 +435,11 @@ export default class UpdateInbound extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }
+    return undefined;
   }
   getPortAddress(portCode: string) {
     if (portCode.length > 0) {

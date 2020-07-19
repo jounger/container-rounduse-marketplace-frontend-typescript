@@ -94,6 +94,7 @@ import {
   createContainerSemiTrailer,
   updateContainerSemiTrailer
 } from "@/api/container-semi-trailer";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate]
@@ -135,7 +136,7 @@ export default class CreateTrailer extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }
@@ -153,7 +154,7 @@ export default class CreateTrailer extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }

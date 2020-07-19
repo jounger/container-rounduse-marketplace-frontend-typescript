@@ -84,6 +84,7 @@ import {
   createContainerTractor,
   updateContainerTractor
 } from "@/api/container-tractor";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate, Utils]
@@ -121,7 +122,7 @@ export default class CreateTractor extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }
@@ -139,7 +140,7 @@ export default class CreateTractor extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }

@@ -71,7 +71,7 @@ import { getInboundsByOutboundAndForwarder } from "@/api/inbound";
 import { PaginationResponse } from "@/api/payload";
 import { IOutbound } from "@/entity/outbound";
 import Utils from "@/mixin/utils";
-import { addTimeToDate } from "@/utils/tool";
+import { addTimeToDate, getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate, Utils]
@@ -177,7 +177,7 @@ export default class UpdateBid extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }

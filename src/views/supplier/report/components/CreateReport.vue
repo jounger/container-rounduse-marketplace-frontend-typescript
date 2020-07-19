@@ -126,7 +126,7 @@ import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
 import { PaginationResponse } from "@/api/payload";
 import { IBiddingDocument } from "@/entity/bidding-document";
-import { isEmptyObject } from "@/utils/tool";
+import { isEmptyObject, getErrorMessage } from "@/utils/tool";
 import { IReport } from "@/entity/report";
 import { IBiddingNotification } from "@/entity/bidding-notification";
 import { getBiddingNotificationsByUser } from "@/api/notification";
@@ -203,7 +203,7 @@ export default class CreateReport extends Vue {
       })
       .catch(err => {
         console.log(err);
-        this.messageSync = "Đã có lỗi xảy ra";
+        this.messageSync = getErrorMessage(err);
       })
       .finally(() => (this.snackbarSync = true));
   }

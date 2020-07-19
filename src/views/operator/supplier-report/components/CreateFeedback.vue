@@ -78,7 +78,7 @@ import {
   createFeedbackToModerator
 } from "@/api/feedback";
 import { IReport } from "@/entity/report";
-// import { createFeedback, updateFeedback } from "@/api/feedback";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate]
@@ -117,7 +117,7 @@ export default class CreateFeedback extends Vue {
           })
           .catch(err => {
             console.log(err);
-            this.messageSync = "Đã có lỗi xảy ra";
+            this.messageSync = getErrorMessage(err);
           })
           .finally(() => (this.snackbarSync = true));
       } else {
@@ -134,7 +134,7 @@ export default class CreateFeedback extends Vue {
             })
             .catch(err => {
               console.log(err);
-              this.messageSync = "Đã có lỗi xảy ra";
+              this.messageSync = getErrorMessage(err);
             })
             .finally(() => (this.snackbarSync = true));
         }
@@ -153,7 +153,7 @@ export default class CreateFeedback extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(() => (this.snackbarSync = true));
     }

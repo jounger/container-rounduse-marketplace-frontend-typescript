@@ -362,7 +362,7 @@ import { getPorts } from "@/api/port";
 import { getShippingLines } from "@/api/shipping-line";
 import { getContainerTypes } from "@/api/container-type";
 import { PaginationResponse } from "@/api/payload";
-import { addTimeToDate, addMinutesToDate } from "@/utils/tool";
+import { addTimeToDate, addMinutesToDate, getErrorMessage } from "@/utils/tool";
 import { createInbound } from "@/api/inbound";
 import DeleteContainer from "./DeleteContainer.vue";
 import CreateContainer from "./CreateContainer.vue";
@@ -544,7 +544,7 @@ export default class CreateInbound extends Vue {
       })
       .catch(err => {
         console.log(err);
-        this.messageSync = "Đã có lỗi xảy ra";
+        this.messageSync = getErrorMessage(err);
       })
       .finally(() => (this.snackbarSync = true));
   }

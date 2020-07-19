@@ -80,6 +80,7 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IEvidence } from "@/entity/evidence";
 import { editEvidence } from "@/api/evidence";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component
 export default class DetailEvidence extends Vue {
@@ -102,7 +103,7 @@ export default class DetailEvidence extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(
           () => ((this.snackbarSync = true), (this.dialogDetailSync = false))

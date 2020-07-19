@@ -128,6 +128,7 @@ import Utils from "@/mixin/utils";
 import { createCombined } from "@/api/combined";
 import { IBid } from "@/entity/bid";
 import { IContract } from "@/entity/contract";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate, Utils]
@@ -245,7 +246,7 @@ export default class CreateCombined extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = "Đã có lỗi xảy ra";
+          this.messageSync = getErrorMessage(err);
         })
         .finally(
           () => ((this.snackbarSync = true), (this.dialogConfirmSync = false))

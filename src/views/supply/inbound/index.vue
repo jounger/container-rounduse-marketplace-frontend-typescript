@@ -49,6 +49,28 @@
           :update="update"
         />
       </v-row>
+      <v-row justify="center">
+        <DeleteContainer
+          v-if="dialogDelCont"
+          :dialogDelCont.sync="dialogDelCont"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
+          :container="container"
+          :containers.sync="containers"
+        />
+      </v-row>
+      <v-row justify="center">
+        <CreateContainer
+          v-if="dialogAddCont"
+          :message.sync="message"
+          :snackbar.sync="snackbar"
+          :container="container"
+          :containers.sync="containers"
+          :dialogAddCont.sync="dialogAddCont"
+          :billOfLading="inbound.billOfLading"
+          :update="update"
+        />
+      </v-row>
       <v-data-table
         :headers="headers"
         :items="inbounds"
@@ -113,7 +135,7 @@
           </v-menu>
         </template>
         <template v-slot:expanded-item="{ headers }">
-          <td :colspan="headers.length">
+          <td :colspan="headers.length" class="px-0">
             <v-data-table
               :headers="containerHeaders"
               :items="containers"
