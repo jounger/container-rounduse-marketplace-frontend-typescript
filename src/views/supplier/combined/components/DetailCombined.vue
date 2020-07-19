@@ -659,7 +659,7 @@ export default class DetailCombined extends Vue {
         .then(res => {
           const response: PaginationResponse<IEvidence> = res.data;
           this.evidences = response.data;
-          if (this.evidences[0].isValid == true) {
+          if (this.evidences.length > 0 && this.evidences[0].isValid == true) {
             this.checkValid = true;
           }
         })

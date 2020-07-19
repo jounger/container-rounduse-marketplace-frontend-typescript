@@ -726,10 +726,8 @@ export default class DetailCombinedForwarder extends Vue {
               .then(res => {
                 const response: PaginationResponse<IEvidence> = res.data;
                 this.evidences = response.data;
-                if (this.evidences.length > 0) {
-                  if (this.evidences[0].isValid == true) {
-                    this.checkValid = true;
-                  }
+                if (this.evidences.length > 0 && this.evidences[0].isValid) {
+                  this.checkValid = true;
                 }
               })
               .catch(err => {

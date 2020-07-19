@@ -238,7 +238,7 @@ export default class CreateBid extends Vue {
     bidder: this.$auth.user().username,
     containers: [] as Array<number>,
     bidPrice: 0,
-    bidDate: this.dateInit.slice(0, 10) + "T" + this.dateInit.slice(11, 16),
+    bidDate: this.dateInit,
     bidValidityPeriod: this.dateInit.slice(0, 10),
     status: "CREATED"
   };

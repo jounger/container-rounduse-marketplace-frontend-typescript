@@ -223,9 +223,9 @@ export default class CreateBiddingDocument extends Vue {
     outbound: -1 as number,
     discount: "",
     isMultipleAward: false,
-    bidOpening: this.dateInit.slice(0, 10),
-    bidClosing: this.dateInit.slice(0, 10),
-    dateOfDecision: this.dateInit.slice(0, 10),
+    bidOpening: this.dateInit,
+    bidClosing: this.dateInit,
+    dateOfDecision: this.dateInit,
     currencyOfPayment: "VND",
     bidPackagePrice: 0,
     bidFloorPrice: 0,
@@ -238,8 +238,6 @@ export default class CreateBiddingDocument extends Vue {
   editable = false;
   stepper = 1;
   valid = true;
-  timeOpening = this.dateInit.slice(11, 16);
-  timeClosing = this.dateInit.slice(11, 16);
   // API list
   currencyOfPayments: Array<string> = [];
   unitOfMeasurements: Array<string> = [];
