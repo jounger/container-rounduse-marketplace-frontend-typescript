@@ -499,7 +499,7 @@ export default class CreateInbound extends Vue {
     this.stepper = 1;
     this.valid = false;
     this.valid2 = false;
-    this.dateInit = new Date().toISOString().substr(0, 10);
+    this.dateInit = addTimeToDate(new Date().toString());
     this.distanceMatrixResult = null;
     this.pickupTimePicker = false;
     this.freeTimePicker = false;

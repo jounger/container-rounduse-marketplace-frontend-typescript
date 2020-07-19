@@ -433,11 +433,7 @@ export default class DetailCombined extends Vue {
   biddingDocument = null as IBiddingDocument | null;
   combined = null as ICombined | null;
   combineds: Array<ICombined> = [];
-  evidence = {
-    sender: this.$auth.user().username,
-    evidence: "",
-    isValid: false
-  } as IEvidence;
+  evidence = null as IEvidence | null;
   evidences: Array<IEvidence> = [];
   inbound = null as IInbound | null;
   selectedContainer = null as IContainer | null;
