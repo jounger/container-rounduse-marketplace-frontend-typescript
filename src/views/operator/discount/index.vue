@@ -1,6 +1,6 @@
 <template>
   <v-content>
-    <v-card>
+    <v-card class="ma-5">
       <v-row justify="center">
         <DeleteDiscount
           v-if="dialogDel"
@@ -8,8 +8,6 @@
           :discount="discount"
           :discounts.sync="discounts"
           :totalItems.sync="serverSideOptions.totalItems"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
         />
       </v-row>
       <v-row justify="center">
@@ -19,12 +17,9 @@
           :discounts.sync="discounts"
           :dialogAdd.sync="dialogAdd"
           :totalItems.sync="serverSideOptions.totalItems"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
           :update="update"
         />
       </v-row>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-data-table
         :headers="headers"
         :items="discounts"
@@ -36,6 +31,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <template v-slot:top>
@@ -70,7 +66,6 @@ import { Component, Watch, Vue } from "vue-property-decorator";
 import { IDiscount } from "@/entity/discount";
 import { getDiscounts } from "@/api/discount";
 import { PaginationResponse } from "@/api/payload";
-import Snackbar from "@/components/Snackbar.vue";
 import DeleteDiscount from "./components/DeleteDiscount.vue";
 import CreateDiscount from "./components/CreateDiscount.vue";
 import Utils from "@/mixin/utils";
@@ -80,8 +75,7 @@ import { DataOptions } from "vuetify";
   mixins: [Utils],
   components: {
     CreateDiscount,
-    DeleteDiscount,
-    Snackbar
+    DeleteDiscount
   }
 })
 export default class Discount extends Vue {
@@ -89,8 +83,6 @@ export default class Discount extends Vue {
   discount = {} as IDiscount;
   dialogAdd = false;
   dialogDel = false;
-  message = "";
-  snackbar = false;
   loading = true;
   update = false;
   options = {

@@ -1,6 +1,6 @@
 <template>
   <v-content>
-    <v-card>
+    <v-card class="ma-5">
       <v-row justify="center">
         <RegisterDetail
           v-if="dialogDetail"
@@ -8,11 +8,8 @@
           :supplier="supplier"
           :suppliers.sync="suppliers"
           :totalItems.sync="serverSideOptions.totalItems"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
         />
       </v-row>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-card-title>
         Danh sách đơn đăng ký
       </v-card-title>
@@ -27,6 +24,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <template v-slot:item.action="{ item }">
@@ -53,13 +51,11 @@ import { ISupplier } from "@/entity/supplier";
 import { getSuppliersByStatus } from "@/api/supplier";
 import { PaginationResponse } from "@/api/payload";
 import RegisterDetail from "./components/RegisterDetail.vue";
-import Snackbar from "@/components/Snackbar.vue";
 import { DataOptions } from "vuetify";
 
 @Component({
   components: {
-    RegisterDetail,
-    Snackbar
+    RegisterDetail
   }
 })
 export default class Supplier extends Vue {
@@ -68,8 +64,6 @@ export default class Supplier extends Vue {
 
   dialogDetail = false;
   loading = true;
-  message = "";
-  snackbar = false;
   options = {
     page: 1,
     itemsPerPage: 5

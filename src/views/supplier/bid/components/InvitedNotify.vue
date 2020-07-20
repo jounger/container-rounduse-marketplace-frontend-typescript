@@ -1,13 +1,10 @@
 <template>
   <v-content>
     <v-card class="ma-5">
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <CreateBid
         v-if="dialogAdd"
         :biddingDocument.sync="biddingDocument"
         :dialogAdd.sync="dialogAdd"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
       />
       <!-- <UpdateBid
         v-if="dialogEdit"
@@ -26,6 +23,7 @@
         :server-items-length="options.totalItems"
         :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <template v-slot:top>
@@ -69,7 +67,6 @@
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import CreateBid from "./CreateBid.vue";
-import Snackbar from "@/components/Snackbar.vue";
 import { PaginationResponse } from "@/api/payload";
 import { IBiddingNotification } from "@/entity/bidding-notification";
 import { getBiddingNotificationsByUser } from "@/api/notification";
@@ -78,8 +75,7 @@ import Utils from "@/mixin/utils";
 @Component({
   mixins: [Utils],
   components: {
-    CreateBid,
-    Snackbar
+    CreateBid
   }
 })
 export default class InvitedNotify extends Vue {
@@ -90,10 +86,7 @@ export default class InvitedNotify extends Vue {
   biddingDocument = {} as IBiddingDocument;
   dialogAdd = false;
   dialogDel = false;
-  message = "";
-  snackbar = false;
   loading = true;
-  dateInit = new Date().toISOString().substr(0, 10);
   options = {
     descending: true,
     page: 1,

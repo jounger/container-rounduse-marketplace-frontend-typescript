@@ -1,6 +1,6 @@
 <template>
   <v-content>
-    <v-card>
+    <v-card class="ma-5">
       <v-row justify="center">
         <DeletePort
           v-if="dialogDel"
@@ -8,8 +8,6 @@
           :totalItems.sync="serverSideOptions.totalItems"
           :port="port"
           :ports.sync="ports"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
         />
       </v-row>
       <v-row justify="center">
@@ -18,18 +16,13 @@
           :port="port"
           :ports.sync="ports"
           :dialogAdd.sync="dialogAdd"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
         />
         <UpdatePort
           :port="port"
           :ports.sync="ports"
           :dialogEdit.sync="dialogEdit"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
         />
       </v-row>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-data-table
         :headers="headers"
         :items="ports"
@@ -41,6 +34,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <template v-slot:top>
@@ -75,15 +69,13 @@ import UpdatePort from "./components/UpdatePort.vue";
 import DeletePort from "./components/DeletePort.vue";
 import { getPorts } from "@/api/port";
 import { PaginationResponse } from "@/api/payload";
-import Snackbar from "@/components/Snackbar.vue";
 import { DataOptions } from "vuetify";
 
 @Component({
   components: {
     CreatePort,
     UpdatePort,
-    DeletePort,
-    Snackbar
+    DeletePort
   }
 })
 export default class Port extends Vue {
@@ -92,8 +84,6 @@ export default class Port extends Vue {
   dialogAdd = false;
   dialogEdit = false;
   dialogDel = false;
-  message = "";
-  snackbar = false;
   loading = true;
   update = false;
   options = {

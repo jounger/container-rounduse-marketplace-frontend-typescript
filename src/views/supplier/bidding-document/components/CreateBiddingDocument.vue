@@ -2,6 +2,7 @@
   <v-dialog
     v-model="dialogAddSync"
     fullscreen
+    persistent
     hide-overlay
     transition="dialog-bottom-transition"
   >
@@ -34,6 +35,7 @@
                   outboundOptions.itemsPerPageItems
               }"
               :actions-append="outboundOptions.page"
+              disable-sort
               class="elevation-1 my-1"
             >
               <!--  -->
@@ -211,10 +213,10 @@ import snackbar from "@/store/modules/snackbar";
 export default class CreateBiddingDocument extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("biddingDocuments", { type: Array })
-  biddingDocumentsSync!: Array<IBiddingDocument>;
+  biddingDocumentsSync?: Array<IBiddingDocument>;
   @PropSync("outbound", { type: Object })
   outboundSync?: IOutbound;
-  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
+  @PropSync("totalItems", { type: Number }) totalItemsSync?: number;
 
   dateInit = addTimeToDate(new Date().toString());
   biddingDocumentLocal = {
@@ -303,12 +305,15 @@ export default class CreateBiddingDocument extends Vue {
         return null;
       });
     if (_biddingDocument) {
-      this.biddingDocumentsSync.unshift(_biddingDocument);
-      this.totalItemsSync += 1;
+      if (typeof this.biddingDocumentsSync != "undefined") {
+        this.biddingDocumentsSync.unshift(_biddingDocument);
+      }
+      if (typeof this.totalItemsSync != "undefined") this.totalItemsSync += 1;
 
       if (this.outboundSync) {
         this.outboundSync.status = "BIDDING";
       }
+      this.dialogAddSync = false;
     }
     snackbar.setDisplay(true);
   }

@@ -1,13 +1,10 @@
 <template>
   <v-content>
-    <Snackbar :text="message" :snackbar.sync="snackbar" />
     <v-row justify="center">
       <ConfirmBid
         v-if="dialogConfirm"
         :dialogConfirm.sync="dialogConfirm"
         :bids.sync="bids"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
         :isAccept="isAccept"
         :bid="bid"
         :numberWinner.sync="numberWinner"
@@ -15,8 +12,6 @@
       <CreateReport
         v-if="dialogReport"
         :dialogAdd.sync="dialogReport"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
         :biddingDocument.sync="biddingDocument"
       />
     </v-row>
@@ -26,8 +21,6 @@
       :dialogAdd.sync="dialogBid"
       :bids.sync="bids"
       :totalItems.sync="serverSideOptions.totalItems"
-      :message.sync="message"
-      :snackbar.sync="snackbar"
     />
     <v-container
       class="d-flex justify-space-around align-start"
@@ -428,7 +421,6 @@ import {
 } from "@/api/bid";
 import { PaginationResponse } from "@/api/payload";
 import ConfirmBid from "./ConfirmBid.vue";
-import Snackbar from "@/components/Snackbar.vue";
 import CreateReport from "../../report/components/CreateReport.vue";
 import CreateBid from "../../bid/components/CreateBid.vue";
 import { DataOptions } from "vuetify";
@@ -441,7 +433,6 @@ import SupplierRating from "./SupplierRating.vue";
     ConfirmBid,
     CreateBid,
     CreateReport,
-    Snackbar,
     SupplierRating
   }
 })
@@ -457,8 +448,6 @@ export default class DetailBiddingDocument extends Vue {
   expanded: Array<IBid> = [];
   singleExpand = true;
   numberWinner = 0;
-  message = "";
-  snackbar = false;
   options = {
     page: 1,
     itemsPerPage: 5

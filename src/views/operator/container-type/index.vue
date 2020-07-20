@@ -1,6 +1,6 @@
 <template>
   <v-content>
-    <v-card>
+    <v-card class="ma-5">
       <v-row justify="center">
         <DeleteContainerType
           v-if="dialogDel"
@@ -8,8 +8,6 @@
           :containerType="containerType"
           :containerTypes.sync="containerTypes"
           :totalItems.sync="serverSideOptions.totalItems"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
         />
       </v-row>
       <v-row justify="center">
@@ -19,12 +17,9 @@
           :containerType="containerType"
           :containerTypes.sync="containerTypes"
           :dialogAdd.sync="dialogAdd"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
           :update="update"
         />
       </v-row>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-data-table
         :headers="headers"
         :items="containerTypes"
@@ -36,6 +31,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <template v-slot:top>
@@ -67,7 +63,6 @@ import { Component, Watch, Vue } from "vue-property-decorator";
 import { IContainerType } from "@/entity/container-type";
 import { getContainerTypes } from "@/api/container-type";
 import { PaginationResponse } from "@/api/payload";
-import Snackbar from "@/components/Snackbar.vue";
 import CreateContainerType from "./components/CreateContainerType.vue";
 import DeleteContainerType from "./components/DeleteContainerType.vue";
 import { DataOptions } from "vuetify";
@@ -75,8 +70,7 @@ import { DataOptions } from "vuetify";
 @Component({
   components: {
     CreateContainerType,
-    DeleteContainerType,
-    Snackbar
+    DeleteContainerType
   }
 })
 export default class ContainerType extends Vue {
@@ -84,8 +78,6 @@ export default class ContainerType extends Vue {
   containerType = {} as IContainerType;
   dialogAdd = false;
   dialogDel = false;
-  message = "";
-  snackbar = false;
   loading = true;
   update = false;
   options = {
@@ -105,7 +97,7 @@ export default class ContainerType extends Vue {
     },
     { text: "Mô tả", value: "description" },
     { text: "Khối lượng vỏ", value: "tareWeight" },
-    { text: "Sức chứa", value: "payloadCapacity" },
+    { text: "Sức chứa", value: "grossWeight" },
     { text: "Công suất khối", value: "cubicCapacity" },
     { text: "Chiều dài trong", value: "internalLength" },
     { text: "Chiều rộng trong", value: "internalWidth" },

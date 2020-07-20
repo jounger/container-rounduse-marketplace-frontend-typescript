@@ -53,7 +53,7 @@
                     ref="inputAddress1"
                     class="place-input"
                     type="text"
-                    placeholder="Vị trí cảng"
+                    placeholder="Vị trí cảng*"
                     :rules="[required('address')]"
                     required
                   />
@@ -124,6 +124,7 @@ import GoogleMapMixins from "@/components/googlemaps/map-mixins";
 import { apiKey } from "@/components/googlemaps/map-constant";
 import Utils from "@/mixin/utils";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   components: {
@@ -137,8 +138,6 @@ export default class CreatePort extends Vue {
   @Ref() inputAddress1!: HTMLInputElement;
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("ports", { type: Array }) portsSync!: Array<IPort>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
 
   style = { width: "400px", height: "300px" };
@@ -168,21 +167,32 @@ export default class CreatePort extends Vue {
     } as IPort;
   }
 
-  createPort() {
+  async createPort() {
     if (this.portLocal) {
-      createPort(this.portLocal)
+      const _port = await createPort(this.portLocal)
         .then(res => {
           console.log(res.data);
           const response: IPort = res.data;
-          this.messageSync = "Thêm mới thành công cảng: " + response.nameCode;
-          this.portsSync.unshift(response);
-          this.totalItemsSync += 1;
+          snackbar.setSnackbar({
+            text: "Thêm mới thành công cảng: " + response.nameCode,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_port) {
+        this.portsSync.unshift(_port);
+        this.totalItemsSync += 1;
+        this.dialogAddSync = false;
+      }
+      snackbar.setDisplay(true);
     }
   }
 

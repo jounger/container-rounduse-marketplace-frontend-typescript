@@ -1,9 +1,14 @@
-import { Module, VuexModule, MutationAction, getModule } from 'vuex-module-decorators'
-import { ISnackbar } from '@/components/interface';
-import store from '@/store/index';
+import {
+  Module,
+  VuexModule,
+  MutationAction,
+  getModule
+} from "vuex-module-decorators";
+import { ISnackbar } from "@/components/interface";
+import store from "@/store/index";
 
 @Module({
-  name: 'snackbar',
+  name: "snackbar",
   dynamic: true,
   store: store
 })
@@ -23,18 +28,18 @@ class SnackbarModule extends VuexModule {
     return this.display;
   }
 
-  @MutationAction({ mutate: ['snackbar'] })
+  @MutationAction({ mutate: ["snackbar"] })
   async setSnackbar(_snackbar: ISnackbar) {
     return {
       snackbar: _snackbar
-    }
+    };
   }
 
-  @MutationAction({ mutate: ['display'] })
+  @MutationAction({ mutate: ["display"] })
   async setDisplay(_display: boolean) {
     return {
       display: _display
-    }
+    };
   }
 }
 export default getModule(SnackbarModule);

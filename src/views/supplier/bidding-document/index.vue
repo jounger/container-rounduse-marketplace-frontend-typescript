@@ -1,6 +1,5 @@
 <template>
   <v-content>
-    <Snackbar :text="message" :snackbar.sync="snackbar" />
     <v-row justify="center">
       <DeleteBiddingDocument
         v-if="dialogDel"
@@ -8,8 +7,6 @@
         :biddingDocument="biddingDocument"
         :biddingDocuments.sync="biddingDocuments"
         :totalItems.sync="serverSideOptions.totalItems"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
       />
     </v-row>
     <v-row justify="center">
@@ -18,8 +15,6 @@
         :dialogCancel.sync="dialogCancel"
         :biddingDocument="biddingDocument"
         :biddingDocuments.sync="biddingDocuments"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
       />
     </v-row>
     <CreateBiddingDocument
@@ -28,16 +23,12 @@
       :outbounds.sync="outbounds"
       :dialogAdd.sync="dialogAdd"
       :totalItems.sync="serverSideOptions.totalItems"
-      :message.sync="message"
-      :snackbar.sync="snackbar"
     />
     <UpdateBiddingDocument
       v-if="dialogEdit"
       :biddingDocument="biddingDocument"
       :biddingDocuments.sync="biddingDocuments"
       :dialogEdit.sync="dialogEdit"
-      :message.sync="message"
-      :snackbar.sync="snackbar"
     />
     <v-container
       class="d-flex justify-space-around align-start mb-6 mx-1"
@@ -105,6 +96,7 @@
             'items-per-page-options': serverSideOptions.itemsPerPageItems
           }"
           :actions-append="options.page"
+          disable-sort
           class="elevation-1"
         >
           <!--  -->
@@ -206,7 +198,6 @@ import { Component, Watch, Vue } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import CreateBiddingDocument from "./components/CreateBiddingDocument.vue";
 import UpdateBiddingDocument from "./components/UpdateBiddingDocument.vue";
-import Snackbar from "@/components/Snackbar.vue";
 import { IOutbound } from "@/entity/outbound";
 import { getBiddingDocuments } from "@/api/bidding-document";
 import { PaginationResponse } from "@/api/payload";
@@ -230,8 +221,7 @@ import { addTimeToDate } from "@/utils/tool";
     CreateBiddingDocument,
     UpdateBiddingDocument,
     DeleteBiddingDocument,
-    CancelBiddingDocument,
-    Snackbar
+    CancelBiddingDocument
   }
 })
 export default class BiddingDocument extends Vue {
@@ -252,14 +242,12 @@ export default class BiddingDocument extends Vue {
   isMultipleAwardSearch = false;
   bidOpeningSearch = "";
   bidClosingSearch = "";
-  message = "";
   search = "";
   // API list
   ports: Array<IPort> = [];
   shippingLines: Array<IShippingLine> = [];
   containerTypes: Array<IContainerType> = [];
   status: Array<string> = [];
-  snackbar = false;
   loading = true;
   dateInit = addTimeToDate(new Date().toString());
   options = {

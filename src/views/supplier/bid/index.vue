@@ -1,15 +1,12 @@
 <template>
   <v-content>
     <v-card class="ma-5">
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <CreateBid
         v-if="dialogAdd"
         :bid.sync="bid"
         :biddingDocument.sync="biddingDocument"
         :bids.sync="bids"
         :dialogAdd.sync="dialogAdd"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
         :totalItems.sync="serverSideOptions.totalItems"
       />
       <UpdateBid
@@ -18,8 +15,6 @@
         :bids.sync="bids"
         :biddingDocument.sync="biddingDocument"
         :dialogEdit.sync="dialogEdit"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
       />
       <v-row justify="center">
         <CancelBid
@@ -27,8 +22,6 @@
           :dialogCancel.sync="dialogCancel"
           :bid="bid"
           :bids.sync="bids"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
         />
       </v-row>
       <v-data-table
@@ -46,6 +39,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <template v-slot:top>
@@ -80,6 +74,7 @@
               :headers="bidHeaders"
               :items="bids"
               :hide-default-footer="true"
+              disable-sort
               dense
               dark
             >
@@ -128,21 +123,20 @@ import { IBid } from "@/entity/bid";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import CreateBid from "./components/CreateBid.vue";
 import { getBiddingDocuments } from "@/api/bidding-document";
-import Snackbar from "@/components/Snackbar.vue";
 import { PaginationResponse } from "@/api/payload";
 import { getBidByBiddingDocumentAndForwarder } from "@/api/bid";
 import Utils from "@/mixin/utils";
 import UpdateBid from "./components/UpdateBid.vue";
 import CancelBid from "./components/CancelBid.vue";
 import { DataOptions } from "vuetify";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [Utils],
   components: {
     CreateBid,
     UpdateBid,
-    CancelBid,
-    Snackbar
+    CancelBid
   }
 })
 export default class Bid extends Vue {
@@ -155,10 +149,7 @@ export default class Bid extends Vue {
   dialogAdd = false;
   dialogEdit = false;
   dialogCancel = false;
-  message = "";
-  snackbar = false;
   loading = true;
-  dateInit = new Date().toISOString().substr(0, 10);
   options = {
     page: 1,
     itemsPerPage: 5
@@ -263,9 +254,11 @@ export default class Bid extends Vue {
       this.bid = item;
       this.dialogEdit = true;
     } else {
-      this.message =
-        "Không thể sửa khi chưa vượt quá thời gian Validity Period";
-      this.snackbar = true;
+      snackbar.setSnackbar({
+        text: "Không thể sửa khi chưa vượt quá thời gian Validity Period",
+        color: "error"
+      });
+      snackbar.setDisplay(true);
     }
   }
 
@@ -274,9 +267,11 @@ export default class Bid extends Vue {
       this.bid = item;
       this.dialogCancel = true;
     } else {
-      this.message =
-        "Không thể hủy khi chưa vượt quá thời gian Validity Period";
-      this.snackbar = true;
+      snackbar.setSnackbar({
+        text: "Không thể sửa khi chưa vượt quá thời gian Validity Period",
+        color: "error"
+      });
+      snackbar.setDisplay(true);
     }
   }
 

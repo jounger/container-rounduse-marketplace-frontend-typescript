@@ -4,7 +4,7 @@ export interface IContainerType {
   name: string;
   description: string;
   tareWeight: number;
-  payloadCapacity: number;
+  grossWeight: number;
   cubicCapacity: number;
   internalLength: number;
   internalWidth: number;

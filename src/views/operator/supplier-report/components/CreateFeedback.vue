@@ -1,19 +1,11 @@
 <template>
-  <v-dialog v-model="dialogAddSync" persistent max-width="600px">
+  <v-dialog v-model="dialogAddSync" max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
             update ? "Cập nhập Phản hồi" : "Thêm mới Phản hồi"
-          }}</span>
-          <v-btn
-            icon
-            dark
-            @click="dialogAddSync = false"
-            style="margin-left:312px;"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn></v-toolbar-title
+          }}</span></v-toolbar-title
         >
       </v-toolbar>
       <v-card-text>
@@ -78,6 +70,7 @@ import {
 } from "@/api/feedback";
 import { IReport } from "@/entity/report";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
@@ -85,8 +78,6 @@ import { getErrorMessage } from "@/utils/tool";
 export default class CreateFeedback extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("feedbacks", { type: Array }) feedbacksSync!: Array<IFeedback>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Object) feedback!: IFeedback;
   @Prop(Object) report!: IReport;
   @Prop(Boolean) update!: boolean;
@@ -105,56 +96,94 @@ export default class CreateFeedback extends Vue {
       this.feedbackLocal = Object.assign({}, this.feedback);
     }
   }
-  createFeedback() {
+  async createFeedback() {
     if (this.feedbackLocal && this.report.id) {
       if (this.$auth.user().roles[0] == "ROLE_MODERATOR") {
-        createFeedback(this.report.id, this.feedbackLocal)
+        const _feedback = await createFeedback(
+          this.report.id,
+          this.feedbackLocal
+        )
           .then(res => {
             const response: IFeedback = res.data;
-            this.messageSync = "Thêm mới thành công Phản hồi: " + response.id;
-            this.feedbacksSync.push(response);
+            snackbar.setSnackbar({
+              text: "Thêm mới thành công Phản hồi: " + response.id,
+              color: "success"
+            });
+            return response;
           })
           .catch(err => {
             console.log(err);
-            this.messageSync = getErrorMessage(err);
-          })
-          .finally(() => (this.snackbarSync = true));
+            snackbar.setSnackbar({
+              text: getErrorMessage(err),
+              color: "error"
+            });
+            return null;
+          });
+        if (_feedback) {
+          this.feedbacksSync.push(_feedback);
+          this.dialogAddSync = false;
+        }
+        snackbar.setDisplay(true);
       } else {
         if (this.receiver) {
-          createFeedbackToModerator(
+          const _feedback = await createFeedbackToModerator(
             this.report.id,
             this.receiver,
             this.feedbackLocal
           )
             .then(res => {
               const response: IFeedback = res.data;
-              this.messageSync = "Thêm mới thành công Phản hồi: " + response.id;
-              this.feedbacksSync.unshift(response);
+              snackbar.setSnackbar({
+                text: "Thêm mới thành công Phản hồi: " + response.id,
+                color: "success"
+              });
+              return response;
             })
             .catch(err => {
               console.log(err);
-              this.messageSync = getErrorMessage(err);
-            })
-            .finally(() => (this.snackbarSync = true));
+              snackbar.setSnackbar({
+                text: getErrorMessage(err),
+                color: "error"
+              });
+              return null;
+            });
+          if (_feedback) {
+            this.feedbacksSync.push(_feedback);
+            this.dialogAddSync = false;
+          }
+          snackbar.setDisplay(true);
         }
       }
     }
   }
-  updateFeedback() {
+  async updateFeedback() {
     if (this.feedbackLocal.id) {
-      editFeedback(this.feedbackLocal.id, this.feedbackLocal)
+      const _feedback = await editFeedback(
+        this.feedbackLocal.id,
+        this.feedbackLocal
+      )
         .then(res => {
           console.log(res.data);
           const response: IFeedback = res.data;
-          this.messageSync = "Cập nhập thành công Phản hồi: " + response.id;
-          const index = this.feedbacksSync.findIndex(x => x.id == response.id);
-          this.feedbacksSync.splice(index, 1, response);
+          snackbar.setSnackbar({
+            text: "Cập nhập thành công Phản hồi: " + response.id,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_feedback) {
+        const index = this.feedbacksSync.findIndex(x => x.id == _feedback.id);
+        this.feedbacksSync.splice(index, 1, _feedback);
+      }
+      snackbar.setDisplay(true);
     }
   }
 }

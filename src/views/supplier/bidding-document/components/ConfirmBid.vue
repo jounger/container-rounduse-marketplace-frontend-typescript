@@ -1,10 +1,8 @@
 <template>
-  <v-dialog v-model="dialogConfirmSync" persistent max-width="600px">
+  <v-dialog v-model="dialogConfirmSync" max-width="600px">
     <v-card>
       <CreateCombined
         :dialogAdd.sync="dialogContract"
-        :message.sync="messageSync"
-        :snackbar.sync="snackbarSync"
         :dialogConfirm.sync="dialogConfirmSync"
         :numberWinner.sync="numberWinnerSync"
         :bids.sync="bidsSync"
@@ -15,15 +13,7 @@
           ><span class="headline" style="color:white;">{{
             isAccept == true ? "Xác nhận đồng ý HSDT" : "Xác nhận từ chối HSDT"
           }}</span>
-          <v-btn
-            icon
-            dark
-            @click="dialogConfirmSync = false"
-            style="margin-left:273px;"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn></v-toolbar-title
-        >
+        </v-toolbar-title>
       </v-toolbar>
 
       <v-card-text>
@@ -33,7 +23,7 @@
               >Bạn có chắc chắn muốn
               {{ isAccept == true ? "đồng ý" : "từ chối" }} HSDT này?</span
             >
-            <div class="line"></div>
+            <v-divider class="mt-3"></v-divider>
             <v-list>
               <v-list-item>
                 <v-list-item-content>
@@ -44,7 +34,6 @@
               </v-list-item>
             </v-list>
           </v-container>
-          <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
@@ -65,6 +54,7 @@ import { IBid } from "@/entity/bid";
 import { editBid } from "@/api/bid";
 import CreateCombined from "../../combined/components/CreateCombined.vue";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   components: {
@@ -75,36 +65,43 @@ export default class ConfirmBid extends Vue {
   @PropSync("dialogConfirm", { type: Boolean }) dialogConfirmSync!: boolean;
   @PropSync("bids", { type: Array })
   bidsSync!: Array<IBid>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("numberWinner", { type: Number }) numberWinnerSync!: number;
   @Prop(Boolean) isAccept!: boolean;
   @Prop(Object) bid!: IBid;
   dialogContract = false;
   update = false;
 
-  reviewBid(isAccept: boolean) {
+  async reviewBid(isAccept: boolean) {
     if (isAccept) {
       this.dialogContract = true;
     } else {
       if (this.bid.id) {
-        editBid(this.bid.id, {
+        const _bid = await editBid(this.bid.id, {
           status: "REJECTED"
         })
           .then(res => {
-            const respone = res.data;
-            console.log("respone", respone);
-            this.messageSync = "Từ chối thành công HSDT: " + respone.id;
-            const index = this.bidsSync.findIndex(x => x.id === respone.id);
-            this.bidsSync.splice(index, 1, respone);
+            const response = res.data;
+            console.log("respone", response);
+            snackbar.setSnackbar({
+              text: "Từ chối thành công HSDT: " + response.id,
+              color: "success"
+            });
+            return response;
           })
           .catch(err => {
             console.log(err);
-            this.messageSync = getErrorMessage(err);
-          })
-          .finally(
-            () => ((this.snackbarSync = true), (this.dialogConfirmSync = false))
-          );
+            snackbar.setSnackbar({
+              text: getErrorMessage(err),
+              color: "error"
+            });
+            return null;
+          });
+        if (_bid) {
+          const index = this.bidsSync.findIndex(x => x.id === _bid.id);
+          this.bidsSync.splice(index, 1, _bid);
+          this.dialogConfirmSync = false;
+        }
+        snackbar.setDisplay(true);
       }
     }
   }

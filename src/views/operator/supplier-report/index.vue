@@ -1,14 +1,12 @@
 <template>
   <v-content>
-    <v-card>
+    <v-card class="ma-5">
       <v-row justify="center">
         <ReportDetail
           v-if="dialogDetail"
           :dialogDetail.sync="dialogDetail"
           :report="report"
           :reports.sync="reports"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
         />
       </v-row>
       <v-row justify="center">
@@ -18,12 +16,9 @@
           :report="report"
           :feedbacks.sync="feedbacks"
           :dialogAdd.sync="dialogAdd"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
           :update="update"
         />
       </v-row>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-card-title>
         Danh sách Report
         <v-spacer></v-spacer>
@@ -40,6 +35,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <template v-slot:item.reportId="{ item }">
@@ -75,7 +71,6 @@ import { Component, Watch, Vue } from "vue-property-decorator";
 import { IReport } from "@/entity/report";
 // import { getReportsByStatus } from "@/api/report";
 import { PaginationResponse } from "@/api/payload";
-import Snackbar from "@/components/Snackbar.vue";
 import { IFeedback } from "@/entity/feedback";
 import CreateFeedback from "./components/CreateFeedback.vue";
 import ReportDetail from "../../supplier/report/components/ReportDetail.vue";
@@ -86,8 +81,7 @@ import { IBiddingDocument } from "@/entity/bidding-document";
 @Component({
   components: {
     CreateFeedback,
-    ReportDetail,
-    Snackbar
+    ReportDetail
   }
 })
 export default class Report extends Vue {
@@ -100,8 +94,6 @@ export default class Report extends Vue {
   feedback = {} as IFeedback;
   loading = true;
   update = false;
-  message = "";
-  snackbar = false;
   options = {
     page: 1,
     itemsPerPage: 5

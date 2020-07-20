@@ -1,19 +1,11 @@
 <template>
-  <v-dialog v-model="dialogAddSync" persistent max-width="600px">
+  <v-dialog v-model="dialogAddSync" max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
             update ? "Cập nhập Quyền" : "Thêm mới Quyền"
-          }}</span>
-          <v-btn
-            icon
-            dark
-            @click="dialogAddSync = false"
-            style="margin-left:339px;"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn></v-toolbar-title
+          }}</span></v-toolbar-title
         >
       </v-toolbar>
       <v-card-text>
@@ -27,6 +19,7 @@
                 prepend-icon="security"
                 type="text"
                 v-model="roleLocal.name"
+                :readonly="update"
                 :counter="20"
                 :rules="[minLength('name', 5), maxLength('name', 20)]"
               ></v-text-field>
@@ -57,7 +50,6 @@
               </v-select>
             </v-col>
           </v-row>
-          <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
       <v-card-actions style="margin-top: 65px;">
@@ -86,6 +78,7 @@ import { getPermissions } from "@/api/permission";
 import { IPermission } from "@/entity/permission";
 import FormValidate from "@/mixin/form-validate";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
@@ -93,8 +86,6 @@ import { getErrorMessage } from "@/utils/tool";
 export default class CreateRole extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("roles", { type: Array }) rolesSync!: Array<IRole>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Boolean) update!: boolean;
   @Prop(Object) role!: IRole;
@@ -105,60 +96,81 @@ export default class CreateRole extends Vue {
     name: "",
     permissions: []
   } as IRole;
-  created() {
+  async created() {
     if (this.update) {
       this.roleLocal = Object.assign({}, this.role);
     }
-    getPermissions({
+    const _permissions = await getPermissions({
       page: 0,
       limit: 100
     })
       .then(res => {
         const response: PaginationResponse<IPermission> = res.data;
-        this.permissions = response.data;
+        return response.data;
       })
-      .catch(err => console.log(err))
-      .finally();
+      .catch(err => console.log(err));
+    this.permissions = _permissions || [];
   }
   get permissionsToString() {
     return this.permissions.map(x => x.name);
   }
-  remove(item: string) {
+  async remove(item: string) {
     const permissions = this.roleLocal.permissions.filter(x => x != item);
     this.roleLocal.permissions = permissions;
   }
-  createRole() {
+  async createRole() {
     if (this.roleLocal) {
       console.log(this.roleLocal);
-      createRole(this.roleLocal)
+      const _role = await createRole(this.roleLocal)
         .then(res => {
           const response: IRole = res.data;
-          this.messageSync = "Thêm mới thành công quyền: " + response.name;
-          this.rolesSync.unshift(response);
-          this.totalItemsSync += 1;
+          snackbar.setSnackbar({
+            text: "Thêm mới thành công quyền: " + response.name,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_role) {
+        this.rolesSync.unshift(_role);
+        this.totalItemsSync += 1;
+        this.dialogAddSync = false;
+      }
+      snackbar.setDisplay(true);
     }
   }
-  updateRole() {
+  async updateRole() {
     if (this.roleLocal.id) {
-      updateRole(this.roleLocal)
+      const _role = await updateRole(this.roleLocal)
         .then(res => {
           console.log(res.data);
           const response: IRole = res.data;
-          this.messageSync = "Cập nhập thành công quyền: " + response.name;
-          const index = this.rolesSync.findIndex(x => x.id == response.id);
-          this.rolesSync.splice(index, 1, response);
+          snackbar.setSnackbar({
+            text: "Cập nhập thành công quyền: " + response.name,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_role) {
+        const index = this.rolesSync.findIndex(x => x.id == _role.id);
+        this.rolesSync.splice(index, 1, _role);
+      }
+      snackbar.setDisplay(true);
     }
   }
 }

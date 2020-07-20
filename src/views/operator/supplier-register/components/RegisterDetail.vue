@@ -2,6 +2,7 @@
   <v-dialog
     v-model="dialogDetailSync"
     fullscreen
+    persistent
     hide-overlay
     transition="dialog-bottom-transition"
   >
@@ -11,11 +12,9 @@
           v-if="dialogConfirm"
           :dialogConfirm.sync="dialogConfirm"
           :supplier="supplier"
-          :suppliersSync.sync="suppliersSync"
-          :messageSync.sync="messageSync"
-          :snackbarSync.sync="snackbarSync"
-          :totalItemsSync.sync="totalItemsSync"
-          :finish.sync="finish"
+          :suppliers.sync="suppliersSync"
+          :totalItems.sync="totalItemsSync"
+          :dialogDetail.sync="dialogDetailSync"
           :status="status"
         />
       </v-row>
@@ -31,14 +30,8 @@
         <v-spacer></v-spacer>
         <v-toolbar-items>
           <v-btn dark text @click="dialogDetailSync = false">Trở về</v-btn>
-          <v-btn
-            dark
-            color="error"
-            @click="openRejectConfirm()"
-            :disabled="finish"
-            >Từ chối</v-btn
-          >
-          <v-btn @click="openAcceptConfirm()" color="green" :disabled="finish"
+          <v-btn dark color="error" @click="openRejectConfirm()">Từ chối</v-btn>
+          <v-btn @click="openAcceptConfirm()" color="green"
             ><span style="color:white;">Cho phép</span></v-btn
           >
         </v-toolbar-items>
@@ -208,8 +201,6 @@ import ConfirmReviewSupplier from "./ConfirmReviewSupplier.vue";
 export default class RegisterDetail extends Vue {
   @PropSync("dialogDetail", { type: Boolean }) dialogDetailSync!: boolean;
   @PropSync("suppliers", { type: Array }) suppliersSync!: Array<ISupplier>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) supplier!: ISupplier;
 

@@ -1,6 +1,6 @@
 <template>
   <v-content>
-    <v-card>
+    <v-card class="ma-5">
       <v-row justify="center">
         <DeletePermission
           v-if="dialogDel"
@@ -8,8 +8,6 @@
           :permission="permission"
           :totalItems.sync="serverSideOptions.totalItems"
           :permissions.sync="permissions"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
         />
       </v-row>
       <v-row justify="center">
@@ -18,18 +16,16 @@
           :permission="permission"
           :permissions.sync="permissions"
           :dialogAdd.sync="dialogAdd"
-          :message.sync="message"
           :totalItems.sync="serverSideOptions.totalItems"
-          :snackbar.sync="snackbar"
           :update="update"
         />
       </v-row>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-data-table
         :headers="headers"
         :items="permissions"
         item-key="id"
         :loading="loading"
+        disable-sort
         :options.sync="options"
         :server-items-length="serverSideOptions.totalItems"
         :footer-props="{
@@ -67,7 +63,6 @@ import { Component, Watch, Vue } from "vue-property-decorator";
 import { IPermission } from "@/entity/permission";
 import { getPermissions } from "@/api/permission";
 import { PaginationResponse } from "@/api/payload";
-import Snackbar from "@/components/Snackbar.vue";
 import DeletePermission from "./components/DeletePermission.vue";
 import CreatePermission from "./components/CreatePermission.vue";
 import { DataOptions } from "vuetify";
@@ -75,8 +70,7 @@ import { DataOptions } from "vuetify";
 @Component({
   components: {
     CreatePermission,
-    DeletePermission,
-    Snackbar
+    DeletePermission
   }
 })
 export default class Permission extends Vue {
@@ -84,8 +78,6 @@ export default class Permission extends Vue {
   permission = {} as IPermission;
   dialogAdd = false;
   dialogDel = false;
-  message = "";
-  snackbar = false;
   loading = true;
   update = false;
   options = {

@@ -2,6 +2,7 @@
   <v-dialog
     v-model="dialogEditSync"
     fullscreen
+    persistent
     hide-overlay
     transition="dialog-bottom-transition"
   >
@@ -187,6 +188,7 @@
                     prepend-icon="contact_phone"
                     :counter="20"
                     :rules="[minLength('tin', 5), maxLength('tin', 20)]"
+                    readonly
                     label="Tin*"
                     type="number"
                   ></v-text-field>
@@ -234,14 +236,13 @@ import { IShippingLine } from "@/entity/shipping-line";
 import FormValidate from "@/mixin/form-validate";
 import { editShippingLine } from "@/api/shipping-line";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
 })
 export default class UpdateShippingLine extends Vue {
   @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("shippingLines", { type: Array }) shippingLinesSync!: Array<
     IShippingLine
   >;
@@ -260,25 +261,37 @@ export default class UpdateShippingLine extends Vue {
     this.shippingLineLocal = Object.assign({}, this.shippingLine);
   }
   // ShippingLine Update
-  updateShippingLine() {
+  async updateShippingLine() {
     if (this.shippingLineLocal.id) {
-      editShippingLine(this.shippingLineLocal.id, this.shippingLineLocal)
+      const _shippingLine = await editShippingLine(
+        this.shippingLineLocal.id,
+        this.shippingLineLocal
+      )
         .then(res => {
           console.log(res.data);
           const response: IShippingLine = res.data;
-          this.messageSync =
-            "Cập nhập thành công hãng tàu: " + response.companyCode;
-          const index = this.shippingLinesSync.findIndex(
-            x => x.id == response.id
-          );
-          this.shippingLinesSync.splice(index, 1, response);
-          this.stepper = 2;
+          snackbar.setSnackbar({
+            text: "Cập nhập thành công hãng tàu: " + response.companyCode,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_shippingLine) {
+        const index = this.shippingLinesSync.findIndex(
+          x => x.id == _shippingLine.id
+        );
+        this.shippingLinesSync.splice(index, 1, _shippingLine);
+        this.stepper = 2;
+      }
+      snackbar.setDisplay(true);
     }
   }
 }

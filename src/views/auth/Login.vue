@@ -36,11 +36,13 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import snackbar from "@/store/modules/snackbar";
+import { getErrorMessage } from "@/utils/tool";
 @Component
 export default class Login extends Vue {
   public username = "admin";
   public password = "123456";
-  public mounted() {
+  public created() {
     if (this.$auth.check()) {
       setTimeout(() => {
         this.$router.push("/dashboard");
@@ -50,8 +52,8 @@ export default class Login extends Vue {
   public register() {
     this.$router.push("/register");
   }
-  public login() {
-    this.$auth
+  async login() {
+    await this.$auth
       .login({
         username: this.username,
         password: this.password
@@ -60,7 +62,11 @@ export default class Login extends Vue {
         console.warn("SUCCESS login", res);
       })
       .catch(err => {
-        console.error("ERROR! in login", err);
+        snackbar.setSnackbar({
+          text: getErrorMessage(err),
+          color: "error"
+        });
+        snackbar.setDisplay(true);
       });
   }
 }

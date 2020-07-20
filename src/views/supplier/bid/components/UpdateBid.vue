@@ -2,6 +2,7 @@
   <v-dialog
     v-model="dialogEditSync"
     fullscreen
+    persistent
     hide-overlay
     transition="dialog-bottom-transition"
   >
@@ -49,7 +50,7 @@
                   valid = false;
                 "
                 :disabled="!valid"
-                >Lưu và Tiếp tục</v-btn
+                >Hoàn tất</v-btn
               >
             </v-form>
           </v-stepper-content>
@@ -63,146 +64,56 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IBid } from "@/entity/bid";
 import FormValidate from "@/mixin/form-validate";
-import { updateBid } from "@/api/bid";
 import { IBiddingDocument } from "@/entity/bidding-document";
-import { IInbound } from "@/entity/inbound";
-import { IContainer } from "@/entity/container";
-import { getInboundsByOutboundAndForwarder } from "@/api/inbound";
-import { PaginationResponse } from "@/api/payload";
-import { IOutbound } from "@/entity/outbound";
-import Utils from "@/mixin/utils";
-import { addTimeToDate, getErrorMessage } from "@/utils/tool";
+import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
+import { editBid } from "@/api/bid";
 
 @Component({
-  mixins: [FormValidate, Utils]
+  mixins: [FormValidate]
 })
 export default class UpdateBid extends Vue {
   @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Object) bid!: IBid;
   @PropSync("bids", { type: Array }) bidsSync!: Array<IBid>;
   @PropSync("biddingDocument", { type: Object })
   biddingDocumentSync!: IBiddingDocument;
-
-  dateInit = addTimeToDate(new Date().toString());
   // Form validate
-  checkbox = false;
   editable = true;
-  expanded: Array<IInbound> = [];
-  singleExpand = true;
   loading = true;
-  options = {
-    descending: true,
-    page: 1,
-    itemsPerPage: 5,
-    totalItems: 0,
-    itemsPerPageItems: [5, 10, 20, 50]
-  };
-  inboundHeaders = [
-    {
-      text: "Mã",
-      align: "start",
-      sortable: false,
-      value: "id"
-    },
-    { text: "Hãng tàu", value: "shippingLine" },
-    { text: "Loại cont", value: "containerType" },
-    { text: "Trạng thái", value: "status" },
-    { text: "Time lấy cont", value: "pickUpTime" },
-    { text: "B/L No.", value: "billOfLading.billOfLadingNumber" },
-    { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery" },
-    { text: "Số lượng cont", value: "billOfLading.containers.length" }
-  ];
-  containerHeaders = [
-    {
-      text: "Container No.",
-      align: "start",
-      sortable: false,
-      value: "containerNumber"
-    },
-    { text: "Biển kiểm sát", value: "licensePlate" },
-    { text: "Tài xế", value: "driver" },
-    { text: "Rơ mọt", value: "trailer" },
-    { text: "Đầu kéo", value: "tractor" },
-    { text: "Hành động", value: "actions" }
-  ];
   stepper = 1;
   valid = true;
   bidLocal = {} as IBid;
-  inbounds = [] as Array<IInbound>;
-  containers = [] as Array<IContainer>;
   created() {
     this.bidLocal = Object.assign({}, this.bid);
-    this.containers = this.bidLocal.containers as IContainer[];
-    this.bidLocal.bidDate = this.dateInit;
-    console.log(this.biddingDocumentSync);
-    if (this.biddingDocumentSync && this.biddingDocumentSync.outbound) {
-      const _outbound = this.biddingDocumentSync.outbound as IOutbound;
-      const _outboundId = _outbound.id as number;
-      getInboundsByOutboundAndForwarder(_outboundId, {
-        page: 0,
-        limit: 100
-      })
-        .then(res => {
-          const response: PaginationResponse<IInbound> = res.data;
-          this.inbounds = response.data;
-          this.options.totalItems = response.totalElements;
-          console.log(this.inbounds);
-        })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
-    }
   }
   // Bid Update
-  updateBid() {
+  async updateBid() {
     if (this.bidLocal.id) {
-      this.bidLocal.containers = this.containers.reduce(function(
-        pV: Array<number>,
-        cV: IContainer
-      ) {
-        if (cV.id) {
-          pV.push(cV.id);
-        }
-        return pV;
-      },
-      []);
-      updateBid(this.bidLocal)
+      const _bid = await editBid(this.bidLocal.id, this.bidLocal)
         .then(res => {
           console.log(res.data);
           const response: IBid = res.data;
-          this.messageSync = "Cập nhập thành công HSDT: " + response.id;
-          const index = this.bidsSync.findIndex(x => x.id == response.id);
-          this.bidsSync.splice(index, 1, response);
+          snackbar.setSnackbar({
+            text: "Cập nhập thành công HSDT: " + response.id,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
-    }
-  }
-  clicked(value: IInbound) {
-    if (this.singleExpand) {
-      if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
-        this.expanded.splice(0, this.expanded.length);
-      } else {
-        this.expanded.splice(0, this.expanded.length);
-        this.expanded.push(value);
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_bid) {
+        const index = this.bidsSync.findIndex(x => x.id == _bid.id);
+        this.bidsSync.splice(index, 1, _bid);
       }
-    } else {
-      const index = this.expanded.findIndex(x => x.id === value.id);
-      if (index === -1) {
-        this.expanded.push(value);
-      } else {
-        this.expanded.splice(index, 1);
-      }
+      snackbar.setDisplay(true);
     }
-  }
-  checkDuplicateSelect(item: IContainer) {
-    return this.containers.filter(x => x.id == item.id).length > 0
-      ? true
-      : false;
   }
 }
 </script>
