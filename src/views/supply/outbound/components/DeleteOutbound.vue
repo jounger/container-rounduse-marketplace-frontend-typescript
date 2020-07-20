@@ -45,14 +45,13 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IOutbound } from "@/entity/outbound";
 import { removeOutbound } from "@/api/outbound";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeleteOutbound extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
   @Prop(Object) outbound!: IOutbound;
   @PropSync("outbounds", { type: Array }) outboundsSync!: Array<IOutbound>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
 
   bookNo = "";
@@ -61,12 +60,15 @@ export default class DeleteOutbound extends Vue {
       this.bookNo = this.outbound.booking.bookingNumber;
     }
   }
-  removeOutbound() {
+  async removeOutbound() {
     if (this.outbound.id) {
-      removeOutbound(this.outbound.id)
+      await removeOutbound(this.outbound.id)
         .then(res => {
           console.log(res.data);
-          this.messageSync = "Xóa thành công hàng xuất: " + this.bookNo;
+          snackbar.setSnackbar({
+            text: "Xóa thành công hàng xuất: " + this.bookNo,
+            color: "success"
+          });
           const index = this.outboundsSync.findIndex(
             x => x.id === this.outbound.id
           );
@@ -75,11 +77,13 @@ export default class DeleteOutbound extends Vue {
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
-        );
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+        });
+      snackbar.setDisplay(true);
+      this.dialogDelSync = false;
     }
   }
 }

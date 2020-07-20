@@ -376,6 +376,7 @@ import GoogleMapDistanceMatrix from "@/components/googlemaps/GoogleMapDistanceMa
 import { DistanceMatrix } from "@/components/googlemaps/map-interface";
 import Utils from "@/mixin/utils";
 import DatetimePicker from "@/components/DatetimePicker.vue";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   components: {
@@ -395,8 +396,6 @@ export default class CreateInbound extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("inbounds", { type: Array }) inboundsSync!: Array<IInbound>;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
   distanceMatrixResult = null as DistanceMatrix | null;
   style = { width: "600px", height: "500px" };
@@ -519,7 +518,7 @@ export default class CreateInbound extends Vue {
       }
     } as IInbound;
   }
-  createInbound() {
+  async createInbound() {
     // TODO: API create inbound
     this.inboundLocal.pickupTime = addTimeToDate(this.inboundLocal.pickupTime);
     this.inboundLocal.billOfLading.freeTime = addTimeToDate(
@@ -530,23 +529,34 @@ export default class CreateInbound extends Vue {
     /* TODO: Calculate Empty Time:
      * emptyTime = (duration: portOfDelivery -> returnStation) + pickupTime (+ bias)
      */
-    createInbound(this.inboundLocal)
+    const _inbound = await createInbound(this.inboundLocal)
       .then(res => {
         console.log(res.data);
         const response: IInbound = res.data;
-        this.messageSync =
-          "Thêm mới thành công hàng nhập: " +
-          response.billOfLading.billOfLadingNumber;
-        this.inboundLocal = response;
-        this.inboundsSync.unshift(response);
-        this.totalItemsSync += 1;
-        this.stepper = 4;
+        console.log("response", response);
+        snackbar.setSnackbar({
+          text:
+            "Thêm mới thành công hàng nhập: " +
+            response.billOfLading.billOfLadingNumber,
+          color: "success"
+        });
+        return response;
       })
       .catch(err => {
         console.log(err);
-        this.messageSync = getErrorMessage(err);
-      })
-      .finally(() => (this.snackbarSync = true));
+        snackbar.setSnackbar({
+          text: getErrorMessage(err),
+          color: "error"
+        });
+        return null;
+      });
+    if (_inbound) {
+      this.inboundLocal = _inbound;
+      this.inboundsSync.unshift(_inbound);
+      this.totalItemsSync += 1;
+      this.stepper = 4;
+    }
+    snackbar.setDisplay(true);
   }
   getPortAddress(portCode: string) {
     if (portCode.length > 0) {
@@ -593,8 +603,7 @@ export default class CreateInbound extends Vue {
         const response: PaginationResponse<IPort> = res.data;
         return response.data;
       })
-      .catch(err => console.log(err))
-      .finally();
+      .catch(err => console.log(err));
     this.ports = _ports || [];
     // API GET Shipping Line
     const _shippingLines = await getShippingLines({
@@ -605,8 +614,7 @@ export default class CreateInbound extends Vue {
         const response: PaginationResponse<IShippingLine> = res.data;
         return response.data.filter(x => x.roles[0] == "ROLE_SHIPPINGLINE");
       })
-      .catch(err => console.log(err))
-      .finally();
+      .catch(err => console.log(err));
     this.shippingLines = _shippingLines || [];
     // API GET Container Type
     const _containerTypes = await getContainerTypes({
@@ -617,8 +625,7 @@ export default class CreateInbound extends Vue {
         const response: PaginationResponse<IContainerType> = res.data;
         return response.data;
       })
-      .catch(err => console.log(err))
-      .finally();
+      .catch(err => console.log(err));
     this.containerTypes = _containerTypes || [];
   }
 

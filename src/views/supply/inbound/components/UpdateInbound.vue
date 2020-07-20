@@ -311,6 +311,7 @@ import GoogleMapDistanceMatrix from "@/components/googlemaps/GoogleMapDistanceMa
 import { DistanceMatrix } from "@/components/googlemaps/map-interface";
 import Utils from "@/mixin/utils";
 import DatetimePicker from "@/components/DatetimePicker.vue";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   components: {
@@ -328,8 +329,6 @@ export default class UpdateInbound extends Vue {
   @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
   @Prop(Object) inbound!: IInbound;
   @PropSync("inbounds", { type: Array }) inboundsSync!: Array<IInbound>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   // Form validate
   distanceMatrixResult = null as DistanceMatrix | null;
   style = { width: "600px", height: "500px" };
@@ -383,7 +382,7 @@ export default class UpdateInbound extends Vue {
       this.stepper = 1;
     }
   }
-  updateInbound() {
+  async updateInbound() {
     // TODO: API update inbound
     if (this.inboundLocal && this.inboundLocal.id) {
       this.inboundLocal.pickupTime = addTimeToDate(
@@ -393,51 +392,73 @@ export default class UpdateInbound extends Vue {
         this.inboundLocal.billOfLading.freeTime
       );
       console.log(this.inboundLocal);
-      editInbound(this.inboundLocal.id, this.inboundLocal)
+      const _inbound = await editInbound(
+        this.inboundLocal.id,
+        this.inboundLocal
+      )
         .then(res => {
           console.log(res.data);
           const response: IInbound = res.data;
-          this.messageSync =
-            "Cập nhập thành công hàng nhập: " +
-            response.billOfLading.billOfLadingNumber;
-          const index = this.inboundsSync.findIndex(x => x.id == response.id);
-          this.inboundsSync.splice(index, 1, response);
-          this.stepper = 2;
+          console.log("response", response);
+          snackbar.setSnackbar({
+            text:
+              "Cập nhập thành công hàng nhập: " +
+              response.billOfLading.billOfLadingNumber,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_inbound) {
+        const index = this.inboundsSync.findIndex(x => x.id == _inbound.id);
+        this.inboundsSync.splice(index, 1, _inbound);
+        this.stepper = 2;
+      }
+      snackbar.setDisplay(true);
     }
   }
 
-  updateBillOfLading() {
+  async updateBillOfLading() {
     if (this.inboundLocal && this.inboundLocal.billOfLading.id) {
       this.inboundLocal.billOfLading.freeTime = addTimeToDate(
         this.inboundLocal.billOfLading.freeTime
       );
-      editBillOfLading(
+      const _billOfLading = await editBillOfLading(
         this.inboundLocal.billOfLading.id,
         this.inboundLocal.billOfLading
       )
         .then(res => {
           const response: IBillOfLading = res.data;
-          if (this.inboundLocal) {
-            this.messageSync =
-              "Cập nhập thành công B/L: " + response.billOfLadingNumber;
-            const index = this.inboundsSync.findIndex(
-              x => x.id === this.inbound.id
-            );
-            this.inboundLocal.billOfLading = response;
-            this.inboundsSync.splice(index, 1, this.inboundLocal);
-          }
+          console.log("response", response);
+          snackbar.setSnackbar({
+            text: "Cập nhập thành công B/L: " + response.billOfLadingNumber,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_billOfLading) {
+        const index = this.inboundsSync.findIndex(
+          x => x.id === this.inbound.id
+        );
+        this.inboundLocal.billOfLading = _billOfLading;
+        this.inboundsSync.splice(index, 1, this.inboundLocal);
+      }
+      snackbar.setDisplay(true);
     }
     return undefined;
   }
@@ -462,8 +483,7 @@ export default class UpdateInbound extends Vue {
         const response: PaginationResponse<IPort> = res.data;
         return response.data;
       })
-      .catch(err => console.log(err))
-      .finally();
+      .catch(err => console.log(err));
     this.ports = _ports || [];
     // API GET Shipping Line
     const _shippingLines = await getShippingLines({
@@ -474,8 +494,7 @@ export default class UpdateInbound extends Vue {
         const response: PaginationResponse<IShippingLine> = res.data;
         return response.data.filter(x => x.roles[0] == "ROLE_SHIPPINGLINE");
       })
-      .catch(err => console.log(err))
-      .finally();
+      .catch(err => console.log(err));
     this.shippingLines = _shippingLines || [];
     // API GET Container Type
     const _containerTypes = await getContainerTypes({
@@ -486,8 +505,7 @@ export default class UpdateInbound extends Vue {
         const response: PaginationResponse<IContainerType> = res.data;
         return response.data;
       })
-      .catch(err => console.log(err))
-      .finally();
+      .catch(err => console.log(err));
     this.containerTypes = _containerTypes || [];
   }
   get portsToString() {

@@ -4,16 +4,12 @@
       <Snackbar :text="message" :snackbar.sync="snackbar" />
       <CreateOutbound
         :dialogAdd.sync="dialogAdd"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
         :outbounds.sync="outbounds"
         :totalItems.sync="serverSideOptions.totalItems"
       />
       <UpdateOutbound
         :outbound="outbound"
         :dialogEdit.sync="dialogEdit"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
         :outbounds.sync="outbounds"
       />
       <CreateBiddingDocument
@@ -30,8 +26,6 @@
           :dialogDel.sync="dialogDel"
           :outbound="outbound"
           :outbounds.sync="outbounds"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
           :totalItems.sync="serverSideOptions.totalItems"
         />
       </v-row>

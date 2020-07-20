@@ -49,36 +49,38 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IInbound } from "@/entity/inbound";
 import { removeInbound } from "@/api/inbound";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeleteInbound extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
   @PropSync("inbounds", { type: Array }) inboundsSync!: Array<IInbound>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) inbound!: IInbound;
 
-  removeInbound() {
+  async removeInbound() {
     if (this.inbound.id) {
-      removeInbound(this.inbound.id)
+      await removeInbound(this.inbound.id)
         .then(res => {
-          console.log(res.data);
-          this.messageSync =
-            "Xóa thành công hàng nhập: " +
-            this.inbound.billOfLading.billOfLadingNumber;
-          const index = this.inboundsSync.findIndex(
-            x => x.id === this.inbound.id
-          );
-          this.inboundsSync.splice(index, 1);
-          this.totalItemsSync -= 1;
+          console.log("response", res);
+          snackbar.setSnackbar({
+            text:
+              "Xóa thành công hàng nhập: " +
+              this.inbound.billOfLading.billOfLadingNumber,
+            color: "success"
+          });
         })
         .catch(err => {
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
-        );
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+        });
+      snackbar.setDisplay(true);
+      const index = this.inboundsSync.findIndex(x => x.id === this.inbound.id);
+      this.inboundsSync.splice(index, 1);
+      this.totalItemsSync -= 1;
+      this.dialogDelSync = false;
     }
   }
 }

@@ -1,33 +1,26 @@
-import { Module, VuexModule, MutationAction } from 'vuex-module-decorators'
-import store from '@/store/index';
+import { Module, VuexModule, MutationAction, getModule } from 'vuex-module-decorators'
 import { Loader, google, LoaderOptions } from 'google-maps';
+import store from '@/store/index';
 
 @Module({
-  name: 'GmapModule',
-  namespaced: true,
-  stateFactory: true,
+  name: 'gmap',
   dynamic: true,
   store: store
 })
-export default class GmapModule extends VuexModule {
-  loader = null as Loader | null;
+class GmapModule extends VuexModule {
   google = null as google | null;
 
-  get loaderApi() {
-    return this.loader;
-  }
-
-  get gmapApi() {
+  get googleApi() {
     return this.google;
   }
 
-  @MutationAction({ mutate: ['loader', 'google'] })
-  async setUpGmapLoaderGmap(apiKey: string, options: LoaderOptions) {
-    const loader: Loader = new Loader(apiKey, options);
-    const google = await loader.load();
+  @MutationAction({ mutate: ['google'] })
+  async setUpGmapLoaderGmap(key: string, options: LoaderOptions) {
+    const google = await new Loader(key, options).load();
     return {
-      loader: loader,
       google: google
     }
   }
 }
+
+export default getModule(GmapModule);

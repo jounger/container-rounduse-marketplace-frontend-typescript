@@ -4,16 +4,12 @@
       <Snackbar :text="message" :snackbar.sync="snackbar" />
       <CreateInbound
         :dialogAdd.sync="dialogAdd"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
         :inbounds.sync="inbounds"
         :totalItems.sync="serverSideOptions.totalItems"
       />
       <UpdateInbound
         :inbound="inbound"
         :dialogEdit.sync="dialogEdit"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
         :inbounds.sync="inbounds"
       />
       <v-row justify="center">
@@ -22,8 +18,6 @@
           :dialogDel.sync="dialogDel"
           :inbound="inbound"
           :inbounds.sync="inbounds"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
           :totalItems.sync="serverSideOptions.totalItems"
         />
       </v-row>

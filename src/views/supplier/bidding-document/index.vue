@@ -53,6 +53,9 @@
           <v-row
             ><v-col cols="12">
               <v-select
+                outlined
+                dense
+                hide-details
                 v-model="shippingLineSearch"
                 prepend-icon="directions_boat"
                 :items="shippingLinesToString"
@@ -62,6 +65,9 @@
           <v-row
             ><v-col cols="12">
               <v-select
+                outlined
+                dense
+                hide-details
                 v-model="containerTypeSearch"
                 prepend-icon="directions_bus"
                 :items="containerTypesToString"
@@ -70,16 +76,10 @@
           ></v-row>
           <v-row
             ><v-col cols="12">
-              <v-text-field
-                v-model="bookingNumberSearch"
-                prepend-icon="money"
-                type="text"
-                label="Mã booking"
-              ></v-text-field> </v-col
-          ></v-row>
-          <v-row
-            ><v-col cols="12">
               <v-select
+                outlined
+                dense
+                hide-details
                 v-model="statusSearch"
                 prepend-icon="strikethrough_s"
                 :items="status"
@@ -105,7 +105,6 @@
             'items-per-page-options': serverSideOptions.itemsPerPageItems
           }"
           :actions-append="options.page"
-          @click:row="clicked"
           class="elevation-1"
         >
           <!--  -->
@@ -160,7 +159,7 @@
                     <v-icon small>details</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
-                    <v-list-item-title>Xem trạng thái HSMT</v-list-item-title>
+                    <v-list-item-title>Chi tiết</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item
@@ -306,10 +305,6 @@ export default class BiddingDocument extends Vue {
   }
   openDetailDialog(item: IBiddingDocument) {
     this.$router.push({ path: `/bidding-document/${item.id}` });
-  }
-
-  clicked(value: IBiddingDocument) {
-    this.$router.push({ path: `/bidding-document/${value.id}` });
   }
 
   @Watch("options")

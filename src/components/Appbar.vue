@@ -38,27 +38,8 @@ import Notification from "./Notification.vue";
 })
 export default class Appbar extends Vue {
   @PropSync("drawer", { type: Boolean }) drawerSync!: boolean | null;
-  messages = 3;
-  notify = false;
-  changeDrawer(): boolean {
+  changeDrawer() {
     return (this.drawerSync = !this.drawerSync);
-  }
-  create() {
-    this.messages = 3;
-  }
-
-  get isSupplier() {
-    if (
-      this.$auth.check(["ROLE_FORWARDER", "ROLE_MERCHANT"]) &&
-      this.$auth.user().status
-    )
-      return true;
-    else return false;
-  }
-
-  public seeNotify() {
-    this.messages = 0;
-    this.notify = !this.notify;
   }
 }
 </script>

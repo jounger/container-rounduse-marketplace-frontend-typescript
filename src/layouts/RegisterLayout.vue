@@ -11,8 +11,13 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import Snackbars from "../components/Snackbars.vue";
+
 @Component({
-  name: "RegisterLayout"
+  name: "RegisterLayout",
+  components: {
+    Snackbars
+  }
 })
 export default class RegisterLayout extends Vue {}
 </script>

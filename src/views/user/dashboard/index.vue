@@ -82,6 +82,7 @@
             outlined
             tile
             style="margin-left: 30px; width: 400px;"
+            @click="showSnackbar()"
           >
             <v-card-title>Hoạt động mới nhất</v-card-title>
             <v-list-item v-for="n in actions" :key="n.user">
@@ -107,9 +108,14 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class Dashboard extends Vue {
+  showSnackbar() {
+    console.log("shit");
+    snackbar.setDisplay(true);
+  }
   private users = [];
   items = [
     {

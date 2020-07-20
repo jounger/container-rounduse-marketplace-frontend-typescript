@@ -340,6 +340,7 @@ import GoogleMapDistanceMatrix from "@/components/googlemaps/GoogleMapDistanceMa
 import { DistanceMatrix } from "@/components/googlemaps/map-interface";
 import Utils from "@/mixin/utils";
 import DatetimePicker from "@/components/DatetimePicker.vue";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   components: {
@@ -357,8 +358,6 @@ export default class UpdateOutbound extends Vue {
   @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
   @Prop(Object) outbound!: IOutbound;
   @PropSync("outbounds", { type: Array }) outboundsSync!: Array<IOutbound>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
 
   distanceMatrixResult = null as DistanceMatrix | null;
   style = { width: "600px", height: "500px" };
@@ -413,7 +412,7 @@ export default class UpdateOutbound extends Vue {
       this.stepper = 1;
     }
   }
-  updateOutbound() {
+  async updateOutbound() {
     // TODO: API edit outbound
     if (this.outboundLocal && this.outboundLocal.id) {
       this.outboundLocal.packingTime = addTimeToDate(
@@ -423,46 +422,72 @@ export default class UpdateOutbound extends Vue {
         this.outboundLocal.booking.cutOffTime
       );
       console.log(this.outboundLocal);
-      editOutbound(this.outboundLocal.id, this.outboundLocal)
+      const _outbound = await editOutbound(
+        this.outboundLocal.id,
+        this.outboundLocal
+      )
         .then(res => {
           console.log(res.data);
           const response: IOutbound = res.data;
-          this.messageSync =
-            "Cập nhập thành công hàng xuất: " + response.booking.bookingNumber;
-          const index = this.outboundsSync.findIndex(x => x.id == response.id);
-          this.outboundsSync.splice(index, 1, response);
-          this.stepper = 2;
+          snackbar.setSnackbar({
+            text:
+              "Cập nhập thành công hàng xuất: " +
+              response.booking.bookingNumber,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_outbound) {
+        const index = this.outboundsSync.findIndex(x => x.id == _outbound.id);
+        this.outboundsSync.splice(index, 1, _outbound);
+        this.stepper = 2;
+      }
+      snackbar.setDisplay(true);
     }
   }
-  updateBooking() {
+  async updateBooking() {
     if (this.outboundLocal && this.outboundLocal.booking.id) {
       this.outboundLocal.booking.cutOffTime = addTimeToDate(
         this.outboundLocal.booking.cutOffTime
       );
-      editBooking(this.outboundLocal.booking.id, this.outboundLocal.booking)
+      const _booking = await editBooking(
+        this.outboundLocal.booking.id,
+        this.outboundLocal.booking
+      )
         .then(res => {
           const response: IBooking = res.data;
           if (this.outboundLocal) {
-            this.messageSync =
-              "Cập nhập thành công Booking: " + response.bookingNumber;
-            const index = this.outboundsSync.findIndex(
-              x => x.id === this.outbound.id
-            );
-            this.outboundLocal.booking = response;
-            this.outboundsSync.splice(index, 1, this.outboundLocal);
+            snackbar.setSnackbar({
+              text: "Cập nhập thành công Booking: " + response.bookingNumber,
+              color: "success"
+            });
+            return response;
           }
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_booking) {
+        const index = this.outboundsSync.findIndex(
+          x => x.id === this.outbound.id
+        );
+        this.outboundLocal.booking = _booking;
+        this.outboundsSync.splice(index, 1, this.outboundLocal);
+      }
+      snackbar.setDisplay(true);
     }
   }
   getPortAddress(portCode: string) {
@@ -486,8 +511,7 @@ export default class UpdateOutbound extends Vue {
         const response: PaginationResponse<IPort> = res.data;
         return response.data;
       })
-      .catch(err => console.log(err))
-      .finally();
+      .catch(err => console.log(err));
     this.ports = _ports || [];
     // API GET Shipping Line
     const _shippingLines = await getShippingLines({
@@ -498,8 +522,7 @@ export default class UpdateOutbound extends Vue {
         const response: PaginationResponse<IShippingLine> = res.data;
         return response.data.filter(x => x.roles[0] == "ROLE_SHIPPINGLINE");
       })
-      .catch(err => console.log(err))
-      .finally();
+      .catch(err => console.log(err));
     this.shippingLines = _shippingLines || [];
     // API GET Container Type
     const _containerTypes = await getContainerTypes({
@@ -510,8 +533,7 @@ export default class UpdateOutbound extends Vue {
         const response: PaginationResponse<IContainerType> = res.data;
         return response.data;
       })
-      .catch(err => console.log(err))
-      .finally();
+      .catch(err => console.log(err));
     this.containerTypes = _containerTypes || [];
   }
   get portsToString() {
