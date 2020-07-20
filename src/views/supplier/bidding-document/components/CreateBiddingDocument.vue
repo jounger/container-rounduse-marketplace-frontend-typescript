@@ -200,6 +200,7 @@ import { createBiddingDocument } from "@/api/bidding-document";
 import { getOutboundByMerchant } from "@/api/outbound";
 import { PaginationResponse } from "@/api/payload";
 import DatetimePicker from "@/components/DatetimePicker.vue";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -213,8 +214,6 @@ export default class CreateBiddingDocument extends Vue {
   biddingDocumentsSync!: Array<IBiddingDocument>;
   @PropSync("outbound", { type: Object })
   outboundSync?: IOutbound;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
 
   dateInit = addTimeToDate(new Date().toString());
@@ -277,33 +276,44 @@ export default class CreateBiddingDocument extends Vue {
   ];
 
   // BiddingDocument
-  createBiddingDocument() {
+  async createBiddingDocument() {
     // TODO: API create biddingDocument
     if (this.selectedOutbound && this.selectedOutbound.id) {
       this.biddingDocumentLocal.outbound = this.selectedOutbound.id as number;
     }
     console.log(this.biddingDocumentLocal);
-    createBiddingDocument(this.biddingDocumentLocal)
+    const _biddingDocument = await createBiddingDocument(
+      this.biddingDocumentLocal
+    )
       .then(res => {
         console.log(res.data);
         const response: IBiddingDocument = res.data;
-        this.messageSync = "Thêm mới thành công HSMT: " + response.id;
-        if (typeof this.biddingDocumentsSync != "undefined") {
-          this.biddingDocumentsSync.unshift(response);
-          this.totalItemsSync += 1;
-        }
-        if (this.outboundSync) {
-          this.outboundSync.status = "BIDDING";
-        }
+        snackbar.setSnackbar({
+          text: "Thêm mới thành công HSMT: " + response.id,
+          color: "success"
+        });
+        return response;
       })
       .catch(err => {
         console.log(err);
-        this.messageSync = getErrorMessage(err);
-      })
-      .finally(() => (this.snackbarSync = true));
+        snackbar.setSnackbar({
+          text: getErrorMessage(err),
+          color: "error"
+        });
+        return null;
+      });
+    if (_biddingDocument) {
+      this.biddingDocumentsSync.unshift(_biddingDocument);
+      this.totalItemsSync += 1;
+
+      if (this.outboundSync) {
+        this.outboundSync.status = "BIDDING";
+      }
+    }
+    snackbar.setDisplay(true);
   }
 
-  created() {
+  async created() {
     // TODO: API get Outbound
     if (this.outboundSync && !isEmptyObject(this.outboundSync)) {
       this.outbounds.push(this.outboundSync);
@@ -311,7 +321,7 @@ export default class CreateBiddingDocument extends Vue {
       this.outboundOptions.totalItems = 1;
       this.loading = false;
     } else {
-      getOutboundByMerchant({
+      const _outbound = await getOutboundByMerchant({
         page: this.outboundOptions.page - 1,
         limit: this.outboundOptions.itemsPerPage,
         status: "CREATED"
@@ -319,13 +329,16 @@ export default class CreateBiddingDocument extends Vue {
         .then(res => {
           const response: PaginationResponse<IOutbound> = res.data;
           console.log("response", response);
-          this.outbounds = response.data;
-          this.outboundOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => console.log(err));
+      this.loading = false;
+      if (_outbound) {
+        this.outbounds = _outbound.data;
+        this.outboundOptions.totalItems = _outbound.totalElements;
+      }
     }
-    //
+    // TODO: API get other info
     this.currencyOfPayments = ["VND", "USD"];
     this.unitOfMeasurements = ["KG", "Ton"];
   }

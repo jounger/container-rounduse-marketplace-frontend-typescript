@@ -1,7 +1,6 @@
 <template>
   <v-content>
     <v-card>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <CreateInbound
         :dialogAdd.sync="dialogAdd"
         :inbounds.sync="inbounds"
@@ -22,47 +21,19 @@
         />
       </v-row>
       <v-row justify="center">
-        <DeleteContainer
-          v-if="dialogDelCont"
-          :dialogDelCont.sync="dialogDelCont"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
-          :container="container"
-          :containers.sync="containers"
-        />
-      </v-row>
-      <v-row justify="center">
         <CreateContainer
           v-if="dialogAddCont"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
           :container="container"
           :containers.sync="containers"
           :dialogAddCont.sync="dialogAddCont"
           :billOfLading="inbound.billOfLading"
           :update="update"
         />
-      </v-row>
-      <v-row justify="center">
         <DeleteContainer
           v-if="dialogDelCont"
           :dialogDelCont.sync="dialogDelCont"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
           :container="container"
           :containers.sync="containers"
-        />
-      </v-row>
-      <v-row justify="center">
-        <CreateContainer
-          v-if="dialogAddCont"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
-          :container="container"
-          :containers.sync="containers"
-          :dialogAddCont.sync="dialogAddCont"
-          :billOfLading="inbound.billOfLading"
-          :update="update"
         />
       </v-row>
       <v-data-table
@@ -188,7 +159,6 @@ import CreateInbound from "./components/CreateInbound.vue";
 import UpdateInbound from "./components/UpdateInbound.vue";
 import DeleteInbound from "./components/DeleteInbound.vue";
 import Utils from "@/mixin/utils";
-import Snackbar from "@/components/Snackbar.vue";
 import { getInboundsByForwarder } from "@/api/inbound";
 import { PaginationResponse } from "@/api/payload";
 import { IContainer } from "@/entity/container";
@@ -204,8 +174,7 @@ import { DataOptions } from "vuetify";
     UpdateInbound,
     DeleteInbound,
     DeleteContainer,
-    CreateContainer,
-    Snackbar
+    CreateContainer
   }
 })
 export default class Inbound extends Vue {
@@ -221,9 +190,7 @@ export default class Inbound extends Vue {
   expanded: Array<IInbound> = [];
   singleExpand = true;
   search = "";
-  message = "";
   freeTime = "";
-  snackbar = false;
   loading = true;
   update = false;
   dateInit = new Date().toISOString().substr(0, 10);

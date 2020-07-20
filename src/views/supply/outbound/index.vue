@@ -1,7 +1,6 @@
 <template>
   <v-content>
     <v-card>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <CreateOutbound
         :dialogAdd.sync="dialogAdd"
         :outbounds.sync="outbounds"
@@ -17,8 +16,6 @@
         :biddingDocument.sync="biddingDocument"
         :outbound.sync="outbound"
         :dialogAdd.sync="dialogCreateBiddingDocument"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
       />
       <v-row justify="center">
         <DeleteOutbound
@@ -113,7 +110,6 @@ import { Component, Watch, Vue } from "vue-property-decorator";
 import { IOutbound } from "@/entity/outbound";
 import CreateOutbound from "./components/CreateOutbound.vue";
 import UpdateOutbound from "./components/UpdateOutbound.vue";
-import Snackbar from "@/components/Snackbar.vue";
 import DeleteOutbound from "./components/DeleteOutbound.vue";
 import { getOutboundByMerchant } from "@/api/outbound";
 import { PaginationResponse } from "@/api/payload";
@@ -128,8 +124,7 @@ import { DataOptions } from "vuetify";
     CreateOutbound,
     UpdateOutbound,
     DeleteOutbound,
-    CreateBiddingDocument,
-    Snackbar
+    CreateBiddingDocument
   }
 })
 export default class Outbound extends Vue {
@@ -140,8 +135,6 @@ export default class Outbound extends Vue {
   dialogEdit = false;
   dialogDel = false;
   dialogCreateBiddingDocument = false;
-  message = "";
-  snackbar = false;
   loading = true;
   dateInit = new Date().toISOString().substr(0, 10);
   options = {

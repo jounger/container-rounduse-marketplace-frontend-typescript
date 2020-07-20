@@ -8,8 +8,6 @@
     <v-row justify="center">
       <DeleteContainer
         v-if="dialogDelCont"
-        :message.sync="messageSync"
-        :snackbar.sync="snackbarSync"
         :container="container"
         :containers.sync="containers"
         :dialogDelCont.sync="dialogDelCont"
@@ -18,8 +16,6 @@
     <v-row justify="center">
       <CreateContainer
         v-if="dialogAddCont"
-        :message.sync="messageSync"
-        :snackbar.sync="snackbarSync"
         :container="container"
         :containers.sync="containers"
         :dialogAddCont.sync="dialogAddCont"

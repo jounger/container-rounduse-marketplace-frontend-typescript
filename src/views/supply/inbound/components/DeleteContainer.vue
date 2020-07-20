@@ -49,35 +49,38 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContainer } from "@/entity/container";
 import { removeContainer } from "@/api/container";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeleteContainer extends Vue {
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("dialogDelCont", { type: Boolean }) dialogDelContSync!: boolean;
   @PropSync("containers", { type: Array }) containersSync!: Array<IContainer>;
   @Prop(Object) container!: IContainer;
 
-  removeContainer() {
+  async removeContainer() {
     // TODO
     if (this.container.id) {
-      removeContainer(this.container.id)
+      await removeContainer(this.container.id)
         .then(res => {
           console.log(res.data);
-          this.messageSync =
-            "Xóa thành công Container: " + this.container.containerNumber;
-          const index = this.containersSync.findIndex(
-            x => x.id === this.container.id
-          );
-          this.containersSync.splice(index, 1);
+          snackbar.setSnackbar({
+            text: "Xóa thành công Container: " + this.container.containerNumber,
+            color: "success"
+          });
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogDelContSync = false))
-        );
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+        });
+      snackbar.setDisplay(true);
+      const index = this.containersSync.findIndex(
+        x => x.id === this.container.id
+      );
+      this.containersSync.splice(index, 1);
+      this.dialogDelContSync = false;
     }
   }
 }

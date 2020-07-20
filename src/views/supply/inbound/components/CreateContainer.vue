@@ -108,13 +108,12 @@ import { PaginationResponse } from "@/api/payload";
 import { getDriversByForwarder } from "@/api/driver";
 import { IDriver } from "@/entity/driver";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
 })
 export default class CreateContainer extends Vue {
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("dialogAddCont", { type: Boolean }) dialogAddContSync!: boolean;
   @PropSync("containers", { type: Array }) containersSync!: Array<IContainer>;
   @Prop(Object) container!: IContainer;
@@ -132,7 +131,7 @@ export default class CreateContainer extends Vue {
   trailers: Array<IContainerSemiTrailer> = [];
   tractors: Array<IContainerTractor> = [];
   drivers: Array<IDriver> = [];
-  created() {
+  async created() {
     if (this.update) {
       this.containerLocal = Object.assign({}, this.container);
       if (typeof this.containerLocal.trailer != "string") {
@@ -142,70 +141,91 @@ export default class CreateContainer extends Vue {
         this.containerLocal.tractor = this.containerLocal.tractor.licensePlate;
       }
     }
-    getContainerTractorsByForwarder({
+    const _tractor = await getContainerTractorsByForwarder({
       page: 0,
       limit: 100
     })
       .then(res => {
         const response: PaginationResponse<IContainerTractor> = res.data;
-        this.tractors = response.data;
+        return response.data;
       })
-      .catch(err => console.log(err))
-      .finally();
-    getContainerSemiTrailersByForwarder({
+      .catch(err => console.log(err));
+    this.tractors = _tractor || [];
+    const _trailer = await getContainerSemiTrailersByForwarder({
       page: 0,
       limit: 100
     })
       .then(res => {
         const response: PaginationResponse<IContainerSemiTrailer> = res.data;
-        this.trailers = response.data;
+        return response.data;
       })
-      .catch(err => console.log(err))
-      .finally();
-    getDriversByForwarder({
+      .catch(err => console.log(err));
+    this.trailers = _trailer || [];
+    const _driver = await getDriversByForwarder({
       page: 0,
       limit: 100
     })
       .then(res => {
         const response: PaginationResponse<IDriver> = res.data;
         console.log("watch", response);
-        this.drivers = response.data;
+        return response.data;
       })
-      .catch(err => console.log(err))
-      .finally();
+      .catch(err => console.log(err));
+    this.drivers = _driver || [];
   }
-  createContainer() {
+  async createContainer() {
     // TODO: API create Container
     if (this.billOfLading.id) {
-      createContainer(this.billOfLading.id, this.containerLocal)
+      const _container = await createContainer(
+        this.billOfLading.id,
+        this.containerLocal
+      )
         .then(res => {
           console.log(res.data);
           const response: IContainer = res.data;
-          this.messageSync =
-            "Thêm mới thành công Container: " + response.containerNumber;
-          this.containersSync.unshift(response);
+          snackbar.setSnackbar({
+            text: "Thêm mới thành công Container: " + response.containerNumber,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_container) {
+        this.containersSync.unshift(_container);
+      }
+      snackbar.setDisplay(true);
     }
   }
-  updateContainer() {
-    updateContainer(this.containerLocal)
+  async updateContainer() {
+    const _container = await updateContainer(this.containerLocal)
       .then(res => {
         const response: IContainer = res.data;
-        this.messageSync =
-          "Cập nhập thành công Container: " + response.containerNumber;
-        const index = this.containersSync.findIndex(x => x.id === response.id);
-        this.containersSync.splice(index, 1, response);
+        snackbar.setSnackbar({
+          text: "Cập nhập thành công Container: " + response.containerNumber,
+          color: "success"
+        });
+        return response;
       })
       .catch(err => {
         console.log(err);
-        this.messageSync = getErrorMessage(err);
-      })
-      .finally(() => (this.snackbarSync = true));
+        snackbar.setSnackbar({
+          text: getErrorMessage(err),
+          color: "error"
+        });
+        return null;
+      });
+    if (_container) {
+      const index = this.containersSync.findIndex(x => x.id === _container.id);
+      this.containersSync.splice(index, 1, _container);
+    }
+    snackbar.setDisplay(true);
   }
 
   get trailersToString() {
