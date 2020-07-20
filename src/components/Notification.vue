@@ -265,7 +265,7 @@ export default class Notification extends Vue {
             this.notificationSubscribe.push(NOTIFICATION_LINK.DRIVER);
             break;
           default:
-            console.log("You're not our member");
+            console.log("You're not in subscribe list!");
             break;
         }
         console.log(this.notificationSubscribe);
@@ -275,11 +275,3 @@ export default class Notification extends Vue {
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 475px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>
