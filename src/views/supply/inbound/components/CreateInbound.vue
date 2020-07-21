@@ -2,6 +2,7 @@
   <v-dialog
     v-model="dialogAddSync"
     fullscreen
+    persistent
     hide-overlay
     transition="dialog-bottom-transition"
   >
@@ -156,7 +157,7 @@
                         prepend-icon="local_shipping"
                         type="number"
                         :rules="[required('unit')]"
-                        label="Số lượng ont*"
+                        label="Số lượng cont*"
                       ></v-text-field
                     ></v-col>
                   </v-row>
@@ -202,6 +203,7 @@
                 <v-data-table
                   :headers="containerHeaders"
                   :items="containers"
+                  disable-sort
                   class="elevation-1 my-1"
                 >
                   <template v-slot:top>
@@ -214,6 +216,9 @@
                         dark
                         class="mb-2"
                         @click="openCreateContainer()"
+                        v-if="
+                          containers.length < inboundLocal.billOfLading.unit
+                        "
                         >Thêm mới</v-btn
                       >
                     </v-toolbar>

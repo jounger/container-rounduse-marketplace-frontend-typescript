@@ -1,18 +1,10 @@
 <template>
-  <v-dialog v-model="dialogEditSync" persistent max-width="600px">
+  <v-dialog v-model="dialogEditSync" max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">Cập nhập Report</span>
-          <v-btn
-            icon
-            dark
-            @click="dialogEditSync = false"
-            style="margin-left:337px;"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn></v-toolbar-title
-        >
+        </v-toolbar-title>
       </v-toolbar>
       <v-card-text>
         <v-form v-model="valid" validation>
@@ -73,6 +65,7 @@ import { IReport } from "@/entity/report";
 import FormValidate from "@/mixin/form-validate";
 import { editReport } from "@/api/report";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
@@ -80,8 +73,6 @@ import { getErrorMessage } from "@/utils/tool";
 export default class CreateReport extends Vue {
   @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
   @PropSync("reports", { type: Array }) reportsSync!: Array<IReport>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Object) report!: IReport;
 
   reportLocal = null as IReport | null;
@@ -89,21 +80,31 @@ export default class CreateReport extends Vue {
   created() {
     this.reportLocal = Object.assign({}, this.report);
   }
-  updateReport() {
+  async updateReport() {
     if (this.reportLocal && this.reportLocal.id) {
-      editReport(this.reportLocal.id, this.reportLocal)
+      const _report = await editReport(this.reportLocal.id, this.reportLocal)
         .then(res => {
           console.log(res.data);
           const response: IReport = res.data;
-          this.messageSync = "Cập nhập thành công Report: " + response.id;
-          const index = this.reportsSync.findIndex(x => x.id == response.id);
-          this.reportsSync.splice(index, 1, response);
+          snackbar.setSnackbar({
+            text: "Cập nhập thành công Report: " + response.id,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_report) {
+        const index = this.reportsSync.findIndex(x => x.id == _report.id);
+        this.reportsSync.splice(index, 1, _report);
+      }
+      snackbar.setDisplay(true);
     }
   }
 }

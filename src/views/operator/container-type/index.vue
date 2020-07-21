@@ -128,21 +128,27 @@ export default class ContainerType extends Vue {
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getContainerTypes({
+      const _containerTypes = await getContainerTypes({
         page: val.page - 1,
         limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IContainerType> = res.data;
           console.log("watch", this.options);
-          this.containerTypes = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_containerTypes) {
+        this.containerTypes = _containerTypes.data;
+        this.serverSideOptions.totalItems = _containerTypes.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

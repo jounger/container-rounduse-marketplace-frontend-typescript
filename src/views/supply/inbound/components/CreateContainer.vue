@@ -5,15 +5,7 @@
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
             update ? "Cập nhập Container" : "Thêm mới Container"
-          }}</span>
-          <v-btn
-            icon
-            dark
-            @click="dialogAddContSync = false"
-            style="margin-left:202px;"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn></v-toolbar-title
+          }}</span></v-toolbar-title
         >
       </v-toolbar>
 
@@ -199,6 +191,7 @@ export default class CreateContainer extends Vue {
         });
       if (_container) {
         this.containersSync.unshift(_container);
+        this.dialogAddContSync = false;
       }
       snackbar.setDisplay(true);
     }

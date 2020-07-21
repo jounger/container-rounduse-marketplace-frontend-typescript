@@ -2,6 +2,7 @@
   <v-dialog
     v-model="dialogEditSync"
     fullscreen
+    persistent
     hide-overlay
     transition="dialog-bottom-transition"
   >

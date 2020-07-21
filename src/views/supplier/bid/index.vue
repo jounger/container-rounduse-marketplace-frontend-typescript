@@ -130,6 +130,7 @@ import UpdateBid from "./components/UpdateBid.vue";
 import CancelBid from "./components/CancelBid.vue";
 import { DataOptions } from "vuetify";
 import snackbar from "@/store/modules/snackbar";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [Utils],
@@ -201,23 +202,33 @@ export default class Bid extends Vue {
       class: "elevation-1 primary"
     }
   ];
-  getBids(item: IBiddingDocument) {
+  async getBids(item: IBiddingDocument) {
+    this.loading = true;
     if (item.id) {
-      getBidByBiddingDocumentAndForwarder(item.id)
+      const _bid = await getBidByBiddingDocumentAndForwarder(item.id)
         .then(res => {
           const response = res.data;
           console.log(response);
-          if (this.bids.length == 0) {
-            this.bids.push(response);
-          } else {
-            this.bids.splice(0, 1, response);
-          }
+          return response;
         })
         .catch(err => {
           console.log(err);
-        })
-        .finally();
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          snackbar.setDisplay(true);
+          return null;
+        });
+      if (_bid) {
+        if (this.bids.length == 0) {
+          this.bids.push(_bid);
+        } else {
+          this.bids.splice(0, 1, _bid);
+        }
+      }
     }
+    this.loading = false;
     return this.bids;
   }
   clicked(value: IBiddingDocument) {
@@ -276,21 +287,32 @@ export default class Bid extends Vue {
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getBiddingDocuments({
+      const _biddingDocuments = await getBiddingDocuments({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IBiddingDocument> = res.data;
           console.log("watch", response.data);
-          this.biddingDocuments = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          snackbar.setDisplay(true);
+          return null;
+        });
+      if (_biddingDocuments) {
+        this.biddingDocuments = _biddingDocuments.data;
+        this.serverSideOptions.totalItems = _biddingDocuments.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

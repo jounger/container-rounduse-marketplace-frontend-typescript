@@ -137,23 +137,27 @@ export default class ShippingLine extends Vue {
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getShippingLines({
+      const _shippingLines = await getShippingLines({
         page: val.page - 1,
         limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IShippingLine> = res.data;
           console.log("watch", response);
-          this.shippingLines = response.data.filter(
-            x => x.roles[0] == "ROLE_SHIPPINGLINE"
-          );
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_shippingLines) {
+        this.shippingLines = _shippingLines.data;
+        this.serverSideOptions.totalItems = _shippingLines.totalElements;
+      }
+      this.loading = false;
     }
   }
 

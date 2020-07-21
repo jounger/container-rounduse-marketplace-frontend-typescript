@@ -1,14 +1,12 @@
 <template>
   <v-content>
-    <v-card>
+    <v-card class="ma-5">
       <v-row justify="center">
         <DeleteReport
           v-if="dialogDel"
           :dialogDel.sync="dialogDel"
           :report="report"
           :reports.sync="reports"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
           :totalItems.sync="serverSideOptions.totalItems"
         />
       </v-row>
@@ -17,8 +15,6 @@
           v-if="dialogAdd"
           :reports.sync="reports"
           :dialogAdd.sync="dialogAdd"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
           :totalItems.sync="serverSideOptions.totalItems"
         />
       </v-row>
@@ -28,8 +24,6 @@
           :report="report"
           :reports.sync="reports"
           :dialogEdit.sync="dialogEdit"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
         />
       </v-row>
       <v-row justify="center">
@@ -37,12 +31,9 @@
           v-if="dialogDetail"
           :dialogDetail.sync="dialogDetail"
           :report="report"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
           :reports.sync="reports"
         />
       </v-row>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-card-title>
         Danh sách Report
         <v-divider class="mx-4" inset vertical></v-divider>
@@ -63,6 +54,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <template v-slot:item.reportId="{ item }">
@@ -94,7 +86,6 @@ import { Component, Watch, Vue } from "vue-property-decorator";
 import { IReport } from "@/entity/report";
 // import { getReportsByStatus } from "@/api/report";
 import { PaginationResponse } from "@/api/payload";
-import Snackbar from "@/components/Snackbar.vue";
 import CreateReport from "./components/CreateReport.vue";
 import DeleteReport from "./components/DeleteReport.vue";
 import UpdateReport from "./components/UpdateReport.vue";
@@ -107,8 +98,7 @@ import { DataOptions } from "vuetify";
     CreateReport,
     DeleteReport,
     UpdateReport,
-    ReportDetail,
-    Snackbar
+    ReportDetail
   }
 })
 export default class Report extends Vue {
@@ -121,8 +111,6 @@ export default class Report extends Vue {
   dialogDetail = false;
   dialogMark = false;
   loading = true;
-  message = "";
-  snackbar = false;
   options = {
     page: 1,
     itemsPerPage: 5
@@ -174,21 +162,27 @@ export default class Report extends Vue {
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getReportsByUser({
+      const _reports = await getReportsByUser({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IReport> = res.data;
           console.log("watch", this.options);
-          this.reports = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_reports) {
+        this.reports = _reports.data;
+        this.serverSideOptions.totalItems = _reports.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

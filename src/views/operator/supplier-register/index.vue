@@ -94,10 +94,10 @@ export default class Supplier extends Vue {
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getSuppliersByStatus({
+      const _suppliers = await getSuppliersByStatus({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage,
         status: "PENDING"
@@ -105,11 +105,17 @@ export default class Supplier extends Vue {
         .then(res => {
           const response: PaginationResponse<ISupplier> = res.data;
           console.log(response.data);
-          this.suppliers = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_suppliers) {
+        this.suppliers = _suppliers.data;
+        this.serverSideOptions.totalItems = _suppliers.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

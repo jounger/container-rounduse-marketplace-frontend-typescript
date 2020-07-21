@@ -120,21 +120,27 @@ export default class Role extends Vue {
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getRoles({
+      const _roles = await getRoles({
         page: val.page - 1,
         limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IRole> = res.data;
           console.log("watch", response);
-          this.roles = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_roles) {
+        this.roles = _roles.data;
+        this.serverSideOptions.totalItems = _roles.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

@@ -1,6 +1,6 @@
 <template>
   <v-content>
-    <v-card>
+    <v-card class="ma-5">
       <v-data-table
         :headers="headers"
         :items="biddingDocuments"
@@ -12,6 +12,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <template v-slot:top>
@@ -58,6 +59,8 @@ import { IBiddingDocument } from "@/entity/bidding-document";
 import Utils from "@/mixin/utils";
 import { getBiddingDocumentsByExistCombined } from "@/api/bidding-document";
 import { DataOptions } from "vuetify";
+import snackbar from "@/store/modules/snackbar";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [Utils]
@@ -113,21 +116,31 @@ export default class Combined extends Vue {
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getBiddingDocumentsByExistCombined({
+      const _biddingDocuments = await getBiddingDocumentsByExistCombined({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IBiddingDocument> = res.data;
-          this.biddingDocuments = response.data;
-          console.log("biddingDocuments", this.biddingDocuments);
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          snackbar.setDisplay(true);
+          return null;
+        });
+      if (_biddingDocuments) {
+        this.biddingDocuments = _biddingDocuments.data;
+        this.serverSideOptions.totalItems = _biddingDocuments.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

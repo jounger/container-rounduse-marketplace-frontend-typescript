@@ -1,18 +1,10 @@
 <template>
-  <v-dialog v-model="dialogDetailSync" persistent max-width="600px">
+  <v-dialog v-model="dialogDetailSync" max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">Chi tiết Chứng cứ</span>
-          <v-btn
-            icon
-            dark
-            @click="dialogDetailSync = false"
-            style="margin-left:335px;"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn></v-toolbar-title
-        >
+        </v-toolbar-title>
       </v-toolbar>
       <v-card-text>
         <v-form>
@@ -48,7 +40,6 @@
               <span style="color: red" v-else>Chưa xác nhận </span>
             </v-col>
           </v-row>
-          <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
       <v-card-actions style="margin-top: 65px;">
@@ -56,7 +47,7 @@
         <v-btn @click="dialogDetailSync = false">Trở về</v-btn>
         <v-btn
           @click="reviewEvidence(false)"
-          color="red"
+          color="error"
           v-if="
             $auth.user().roles[0] == 'ROLE_MERCHANT' &&
               evidence.isValid == false
@@ -65,7 +56,7 @@
         >
         <v-btn
           @click="reviewEvidence(true)"
-          color="green"
+          color="success"
           v-if="
             $auth.user().roles[0] == 'ROLE_MERCHANT' &&
               evidence.isValid == false
@@ -81,33 +72,43 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IEvidence } from "@/entity/evidence";
 import { editEvidence } from "@/api/evidence";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DetailEvidence extends Vue {
   @PropSync("dialogDetail", { type: Boolean }) dialogDetailSync!: boolean;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("evidences", { type: Array }) evidencesSync!: Array<IEvidence>;
   @Prop(Object) evidence!: IEvidence;
 
-  reviewEvidence(isValid: boolean) {
+  async reviewEvidence(isValid: boolean) {
     if (this.evidence.id) {
-      editEvidence(this.evidence.id, { isValid: isValid })
+      const _evidence = await editEvidence(this.evidence.id, {
+        isValid: isValid
+      })
         .then(res => {
           const response = res.data;
-          this.messageSync = isValid
-            ? "Đồng ý thành công chứng cứ: " + response.id
-            : "Từ chối thành công chứng cứ: " + response.id;
-          const index = this.evidencesSync.findIndex(x => x.id == response.id);
-          this.evidencesSync.splice(index, 1, response);
+          snackbar.setSnackbar({
+            text: isValid
+              ? "Đồng ý thành công chứng cứ: " + response.id
+              : "Từ chối thành công chứng cứ: " + response.id,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogDetailSync = false))
-        );
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_evidence) {
+        const index = this.evidencesSync.findIndex(x => x.id == _evidence.id);
+        this.evidencesSync.splice(index, 1, _evidence);
+        this.dialogDetailSync = false;
+      }
+      snackbar.setDisplay(true);
     }
   }
 }

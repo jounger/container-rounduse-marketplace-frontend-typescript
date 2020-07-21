@@ -124,21 +124,27 @@ export default class Supplier extends Vue {
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getSuppliers({
+      const _suppliers = await getSuppliers({
         page: val.page - 1,
         limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<ISupplier> = res.data;
           console.log("watch", response);
-          this.suppliers = response.data.filter(x => x.status != "PENDING");
-          this.serverSideOptions.totalItems = this.suppliers.length;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_suppliers) {
+        this.suppliers = _suppliers.data.filter(x => x.status != "PENDING");
+        this.serverSideOptions.totalItems = _suppliers.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

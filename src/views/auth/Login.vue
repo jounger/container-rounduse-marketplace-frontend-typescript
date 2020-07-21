@@ -60,14 +60,18 @@ export default class Login extends Vue {
       })
       .then(res => {
         console.warn("SUCCESS login", res);
+        snackbar.setSnackbar({
+          text: "Xin chào, " + this.username,
+          color: "success"
+        });
       })
       .catch(err => {
         snackbar.setSnackbar({
           text: getErrorMessage(err),
           color: "error"
         });
-        snackbar.setDisplay(true);
       });
+    snackbar.setDisplay(true);
   }
 }
 </script>

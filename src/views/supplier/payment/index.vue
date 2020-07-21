@@ -1,6 +1,6 @@
 <template>
   <v-content>
-    <v-card>
+    <v-card class="ma-5">
       <v-row justify="center">
         <DeletePayment
           :dialogDel.sync="dialogDel"
@@ -33,6 +33,7 @@
         :server-items-length="options.totalItems"
         :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <template v-slot:top>
@@ -139,20 +140,26 @@ export default class Payment extends Vue {
   }
 
   @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
+  async onOptionsChange(val: object, oldVal: object) {
     if (val !== oldVal) {
-      getPaymentsByUser({
+      const _payments = await getPaymentsByUser({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IPayment> = res.data;
           console.log("watch", response);
-          this.payments = response.data;
-          this.options.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_payments) {
+        this.payments = _payments.data;
+        this.options.totalItems = _payments.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

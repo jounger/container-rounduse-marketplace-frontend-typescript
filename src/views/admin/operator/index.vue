@@ -22,7 +22,6 @@
       <v-data-table
         :headers="headers"
         :items="operators"
-        :search="search"
         :loading="loading"
         :options.sync="options"
         disable-sort
@@ -77,8 +76,6 @@ export default class Operator extends Vue {
   operator = {} as IOperator;
   dialogAdd = false;
   dialogDel = false;
-  search = "";
-  roleSearch = "";
   loading = true;
   update = false;
   options = {
@@ -127,21 +124,27 @@ export default class Operator extends Vue {
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getOperators({
+      const _operators = await getOperators({
         page: val.page - 1,
         limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IOperator> = res.data;
           console.log("watch", response);
-          this.operators = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_operators) {
+        this.operators = _operators.data;
+        this.serverSideOptions.totalItems = _operators.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

@@ -5,8 +5,6 @@
       v-if="dialogAdd"
       :dialogAdd.sync="dialogAdd"
       :evidences.sync="evidences"
-      :message.sync="message"
-      :snackbar.sync="snackbar"
       :contract="combined.contract"
     />
     <DetailEvidence
@@ -14,8 +12,6 @@
       :dialogDetail.sync="dialogDetail"
       :evidence="evidence"
       :evidences.sync="evidences"
-      :message.sync="message"
-      :snackbar.sync="snackbar"
     />
     <v-container class="mx-auto mt-5">
       <v-card v-if="combined">
@@ -469,7 +465,6 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 import Utils from "@/mixin/utils";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { IBid } from "@/entity/bid";
-import Snackbar from "@/components/Snackbar.vue";
 import { ICombined } from "@/entity/combined";
 import { getCombinedsByBiddingDocument, getCombined } from "@/api/combined";
 import { IContainer } from "@/entity/container";
@@ -487,7 +482,6 @@ import SupplierRating from "../../bidding-document/components/SupplierRating.vue
 @Component({
   mixins: [Utils],
   components: {
-    Snackbar,
     CreateEvidence,
     DetailEvidence,
     SupplierRating
@@ -507,8 +501,6 @@ export default class DetailCombinedForwarder extends Vue {
   combineds: Array<ICombined> = [];
   selectedContainer = null as IContainer | null;
   loading = false;
-  message = "";
-  snackbar = false;
   stepper = 1;
   options = {
     page: 1,

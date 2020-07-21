@@ -28,10 +28,10 @@
               item-key="id"
               :loading="loading"
               :options.sync="biddingDocumentOptions"
-              :server-items-length="biddingDocumentOptions.totalItems"
+              :server-items-length="biddingDocumentServerSideOptions.totalItems"
               :footer-props="{
                 'items-per-page-options':
-                  biddingDocumentOptions.itemsPerPageItems
+                  biddingDocumentServerSideOptions.itemsPerPageItems
               }"
               :actions-append="biddingDocumentOptions.page"
               disable-sort
@@ -118,12 +118,13 @@
                     @click:row="clicked"
                     item-key="id"
                     :loading="loading"
-                    :options.sync="options"
-                    :server-items-length="options.totalItems"
+                    :options.sync="inboundOptions"
+                    :server-items-length="inboundServerSideOptions.totalItems"
                     :footer-props="{
-                      'items-per-page-options': options.itemsPerPageItems
+                      'items-per-page-options':
+                        inboundServerSideOptions.itemsPerPageItems
                     }"
-                    :actions-append="options.page"
+                    :actions-append="inboundOptions.page"
                     disable-sort
                     class="elevation-1 my-1"
                   >
@@ -136,7 +137,14 @@
                         <v-data-table
                           :headers="containerHeaders"
                           :items="item.billOfLading.containers"
-                          :hide-default-footer="true"
+                          :loading="loading"
+                          :options.sync="options"
+                          :server-items-length="serverSideOptions.totalItems"
+                          :footer-props="{
+                            'items-per-page-options':
+                              serverSideOptions.itemsPerPageItems
+                          }"
+                          :actions-append="options.page"
                           disable-sort
                           dark
                           dense
@@ -145,6 +153,7 @@
                             <v-checkbox
                               v-model="containers"
                               :value="item"
+                              @click="containerServerSideOptions += 1"
                               :disabled="
                                 containers.length >= unit &&
                                   containers.indexOf(item) === -1
@@ -163,15 +172,21 @@
                     :headers="containerHeaders"
                     :items="containers"
                     item-key="id"
+                    :loading="loading"
+                    :options.sync="containerOptions"
+                    :server-items-length="containerServerSideOptions.totalItems"
                     :footer-props="{
-                      'items-per-page-options': options.itemsPerPageItems
+                      'items-per-page-options':
+                        containerServerSideOptions.itemsPerPageItems
                     }"
+                    :actions-append="containerOptions.page"
                     dense
                   >
                     <template v-slot:item.actions="{ item }">
                       <v-checkbox
                         v-model="containers"
                         :value="item"
+                        @click="containerServerSideOptions.totalItems -= 1"
                       ></v-checkbox>
                     </template>
                   </v-data-table>
@@ -222,6 +237,7 @@ import { IBiddingNotification } from "@/entity/bidding-notification";
 import { IOutbound } from "@/entity/outbound";
 import { getContainersByInbound } from "@/api/container";
 import snackbar from "@/store/modules/snackbar";
+import { DataOptions } from "vuetify";
 @Component({
   mixins: [FormValidate, Utils]
 })
@@ -247,16 +263,34 @@ export default class CreateBid extends Vue {
   };
   loading = true;
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
   biddingDocumentOptions = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  biddingDocumentServerSideOptions = {
+    totalItems: 0,
+    itemsPerPageItems: [5, 10, 20, 50]
+  };
+  inboundOptions = {
+    page: 1,
+    itemsPerPage: 5
+  } as DataOptions;
+  inboundServerSideOptions = {
+    totalItems: 0,
+    itemsPerPageItems: [5, 10, 20, 50]
+  };
+  containerOptions = {
+    page: 1,
+    itemsPerPage: 5
+  } as DataOptions;
+  containerServerSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -402,7 +436,7 @@ export default class CreateBid extends Vue {
       this.loading = false;
       if (_inbounds) {
         this.inbounds = _inbounds.data;
-        this.options.totalItems = _inbounds.totalElements;
+        this.inboundServerSideOptions.totalItems = _inbounds.totalElements;
       }
     }
   }
@@ -410,7 +444,7 @@ export default class CreateBid extends Vue {
     if (this.biddingDocumentSync && !isEmptyObject(this.biddingDocumentSync)) {
       this.biddingDocuments.push(this.biddingDocumentSync);
       this.biddingDocumentSelected = this.biddingDocumentSync;
-      this.biddingDocumentOptions.totalItems = 1;
+      this.biddingDocumentServerSideOptions.totalItems = 1;
       this.loading = false;
     } else {
       const _biddingNotificationsByUsers = await getBiddingNotificationsByUser({
@@ -433,7 +467,7 @@ export default class CreateBid extends Vue {
           },
           []
         );
-        this.biddingDocumentOptions.totalItems =
+        this.biddingDocumentServerSideOptions.totalItems =
           _biddingNotificationsByUsers.totalElements;
       }
     }
@@ -457,6 +491,7 @@ export default class CreateBid extends Vue {
         this.inbound.billOfLading.containers = _containers.data.filter(
           (x: IContainer) => x.status == "CREATED"
         );
+        this.serverSideOptions.totalItems = _containers.totalElements;
       }
     }
   }

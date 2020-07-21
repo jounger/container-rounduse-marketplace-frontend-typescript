@@ -2,6 +2,7 @@
   <v-dialog
     v-model="dialogAddSync"
     fullscreen
+    persistent
     hide-overlay
     transition="dialog-bottom-transition"
   >
@@ -37,6 +38,7 @@
                 'items-per-page-options': options.itemsPerPageItems
               }"
               :actions-append="options.page"
+              disable-sort
               class="elevation-0"
             >
               <template v-slot:item.bidDate="{ item }">
@@ -49,6 +51,7 @@
                     :headers="containerHeaders"
                     :items="item.containers"
                     :hide-default-footer="true"
+                    disable-sort
                     dark
                     dense
                   >
@@ -129,6 +132,7 @@ import { createCombined } from "@/api/combined";
 import { IBid } from "@/entity/bid";
 import { IContract } from "@/entity/contract";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate, Utils]
@@ -136,8 +140,6 @@ import { getErrorMessage } from "@/utils/tool";
 export default class CreateCombined extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("dialogConfirm", { type: Boolean }) dialogConfirmSync!: boolean;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Object) bid!: IBid;
   @PropSync("numberWinner", { type: Number }) numberWinnerSync!: number;
   @PropSync("bids", { type: Array })
@@ -225,32 +227,38 @@ export default class CreateCombined extends Vue {
     }
   }
   // Combined
-  createCombined() {
+  async createCombined() {
     //TODO: API create combined
     if (this.bid.id) {
       this.combinedLocal.bid = this.bid.id as number;
-      createCombined(this.bid.id, this.combinedLocal)
+      const _combined = await createCombined(this.bid.id, this.combinedLocal)
         .then(res => {
           console.log(res.data);
           const response: ICombined = res.data;
-          this.messageSync = "Thêm mới thành công Hàng ghép: " + response.id;
-          const bidResponse = response.bid as IBid;
-          console.log(response);
-          console.log(bidResponse);
-          if (bidResponse && bidResponse.id) {
-            const index = this.bidsSync.findIndex(x => x.id == bidResponse.id);
-            this.bidsSync.splice(index, 1, bidResponse);
-          }
-          this.numberWinnerSync += 1;
-          this.dialogAddSync = false;
+          snackbar.setSnackbar({
+            text: "Thêm mới thành công Hàng ghép: " + response.id,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogConfirmSync = false))
-        );
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_combined) {
+        const bidResponse = _combined.bid as IBid;
+        if (bidResponse && bidResponse.id) {
+          const index = this.bidsSync.findIndex(x => x.id == bidResponse.id);
+          this.bidsSync.splice(index, 1, bidResponse);
+        }
+        this.numberWinnerSync += 1;
+        this.dialogAddSync = false;
+      }
+      snackbar.setDisplay(true);
     }
   }
 

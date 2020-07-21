@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Snackbars />
     <Appbar />
     <slot />
   </div>

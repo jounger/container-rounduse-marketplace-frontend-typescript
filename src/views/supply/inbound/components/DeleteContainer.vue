@@ -1,19 +1,11 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="dialogDelContSync" persistent max-width="600px">
+    <v-dialog v-model="dialogDelContSync" max-width="600px">
       <v-card>
         <v-toolbar color="primary" light flat>
           <v-toolbar-title
             ><span class="headline" style="color:white;">Xóa Container</span>
-            <v-btn
-              icon
-              dark
-              @click="dialogDelContSync = false"
-              style="margin-left:369px;"
-            >
-              <v-icon>mdi-close</v-icon>
-            </v-btn></v-toolbar-title
-          >
+          </v-toolbar-title>
         </v-toolbar>
 
         <v-card-text>
@@ -22,7 +14,7 @@
               <span style="color: black; font-size:22px;"
                 >Bạn có chắc chắn muốn xóa Container này?</span
               >
-              <div class="line"></div>
+              <v-divider class="mt-3"></v-divider>
               <v-list>
                 <v-list-item>
                   <v-list-item-content>
@@ -33,12 +25,11 @@
                 </v-list-item>
               </v-list>
             </v-container>
-            <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
           </v-form>
         </v-card-text>
         <v-card-actions style="margin-left: 205px;">
           <v-btn @click="dialogDelContSync = false">Hủy</v-btn>
-          <v-btn @click="removeContainer()" color="red">Xóa</v-btn>
+          <v-btn @click="removeContainer()" color="error">Xóa</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -67,6 +58,11 @@ export default class DeleteContainer extends Vue {
             text: "Xóa thành công Container: " + this.container.containerNumber,
             color: "success"
           });
+          const index = this.containersSync.findIndex(
+            x => x.id === this.container.id
+          );
+          this.containersSync.splice(index, 1);
+          this.dialogDelContSync = false;
         })
         .catch(err => {
           console.log(err);
@@ -76,11 +72,6 @@ export default class DeleteContainer extends Vue {
           });
         });
       snackbar.setDisplay(true);
-      const index = this.containersSync.findIndex(
-        x => x.id === this.container.id
-      );
-      this.containersSync.splice(index, 1);
-      this.dialogDelContSync = false;
     }
   }
 }

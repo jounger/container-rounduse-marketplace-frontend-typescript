@@ -1,6 +1,6 @@
 <template>
   <v-content>
-    <v-card>
+    <v-card class="ma-5">
       <CreateOutbound
         :dialogAdd.sync="dialogAdd"
         :outbounds.sync="outbounds"
@@ -37,6 +37,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <!--  -->
@@ -188,30 +189,28 @@ export default class Outbound extends Vue {
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getOutboundByMerchant({
+      const _outbounds = await getOutboundByMerchant({
         page: val.page - 1,
         limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IOutbound> = res.data;
           console.log("watch", response);
-          this.outbounds = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_outbounds) {
+        this.outbounds = _outbounds.data;
+        this.serverSideOptions.totalItems = _outbounds.totalElements;
+      }
+      this.loading = false;
     }
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

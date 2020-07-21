@@ -1,18 +1,10 @@
 <template>
-  <v-dialog v-model="dialogMarkSync" persistent max-width="600px">
+  <v-dialog v-model="dialogMarkSync" max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">Chấm điểm Feedback</span>
-          <v-btn
-            icon
-            dark
-            @click="dialogMarkSync = false"
-            style="margin-left:288px;"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn></v-toolbar-title
-        >
+        </v-toolbar-title>
       </v-toolbar>
       <v-card-text>
         <v-form v-model="valid" validation>
@@ -28,7 +20,6 @@
               ></v-text-field>
             </v-col>
           </v-row>
-          <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
       <v-card-actions style="margin-top: 65px;">
@@ -47,6 +38,7 @@ import { IFeedback } from "@/entity/feedback";
 import FormValidate from "@/mixin/form-validate";
 import { editFeedback } from "@/api/feedback";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
@@ -54,8 +46,6 @@ import { getErrorMessage } from "@/utils/tool";
 export default class MarkFeedback extends Vue {
   @PropSync("dialogMark", { type: Boolean }) dialogMarkSync!: boolean;
   @PropSync("feedbacks", { type: Array }) feedbacksSync!: Array<IFeedback>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Object) feedback!: IFeedback;
   @Prop(Boolean) update!: boolean;
 
@@ -64,23 +54,34 @@ export default class MarkFeedback extends Vue {
   created() {
     this.feedbackLocal = Object.assign({}, this.feedback);
   }
-  markFeedback() {
+  async markFeedback() {
     if (this.feedbackLocal.id) {
-      editFeedback(this.feedbackLocal.id, {
+      const _feedback = await editFeedback(this.feedbackLocal.id, {
         satisfactionPoints: this.feedbackLocal.satisfactionPoints
       })
         .then(res => {
           console.log(res.data);
           const response: IFeedback = res.data;
-          this.messageSync = "Chấm điểm thành công Phản hồi: " + response.id;
-          const index = this.feedbacksSync.findIndex(x => x.id == response.id);
-          this.feedbacksSync.splice(index, 1, response);
+          snackbar.setSnackbar({
+            text: "Chấm điểm thành công Phản hồi: " + response.id,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_feedback) {
+        const index = this.feedbacksSync.findIndex(x => x.id == _feedback.id);
+        this.feedbacksSync.splice(index, 1, _feedback);
+        this.dialogMarkSync = false;
+      }
+      snackbar.setDisplay(true);
     }
   }
 }

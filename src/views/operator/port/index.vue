@@ -124,21 +124,27 @@ export default class Port extends Vue {
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getPorts({
+      const _ports = await getPorts({
         page: val.page - 1,
         limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IPort> = res.data;
           console.log("watch", response);
-          this.ports = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_ports) {
+        this.ports = _ports.data;
+        this.serverSideOptions.totalItems = _ports.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

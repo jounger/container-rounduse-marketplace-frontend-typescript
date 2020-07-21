@@ -119,21 +119,27 @@ export default class Permission extends Vue {
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getPermissions({
+      const _permissions = await getPermissions({
         page: val.page - 1,
         limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IPermission> = res.data;
           console.log("watch", response);
-          this.permissions = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_permissions) {
+        this.permissions = _permissions.data;
+        this.serverSideOptions.totalItems = _permissions.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

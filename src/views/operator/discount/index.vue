@@ -129,21 +129,27 @@ export default class Discount extends Vue {
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getDiscounts({
+      const _discounts = await getDiscounts({
         page: val.page - 1,
         limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IDiscount> = res.data;
           console.log("watch", response);
-          this.discounts = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_discounts) {
+        this.discounts = _discounts.data;
+        this.serverSideOptions.totalItems = _discounts.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

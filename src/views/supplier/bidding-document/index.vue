@@ -296,21 +296,27 @@ export default class BiddingDocument extends Vue {
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getBiddingDocuments({
+      const _biddingDocuments = await getBiddingDocuments({
         page: val.page - 1,
         limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IBiddingDocument> = res.data;
           console.log("watch", response);
-          this.biddingDocuments = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_biddingDocuments) {
+        this.biddingDocuments = _biddingDocuments.data;
+        this.serverSideOptions.totalItems = _biddingDocuments.totalElements;
+      }
+      this.loading = false;
     }
   }
 

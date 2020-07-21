@@ -30,7 +30,6 @@
               </v-list-item>
             </v-list>
           </v-container>
-          <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">

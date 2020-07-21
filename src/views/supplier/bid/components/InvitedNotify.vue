@@ -20,8 +20,10 @@
         :loading="loading"
         :options.sync="options"
         @click:row="clicked"
-        :server-items-length="options.totalItems"
-        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :server-items-length="serverSideOptions.totalItems"
+        :footer-props="{
+          'items-per-page-options': serverSideOptions.itemsPerPageItems
+        }"
         :actions-append="options.page"
         disable-sort
         class="elevation-1"
@@ -71,6 +73,7 @@ import { PaginationResponse } from "@/api/payload";
 import { IBiddingNotification } from "@/entity/bidding-notification";
 import { getBiddingNotificationsByUser } from "@/api/notification";
 import Utils from "@/mixin/utils";
+import { DataOptions } from "vuetify";
 
 @Component({
   mixins: [Utils],
@@ -88,9 +91,10 @@ export default class InvitedNotify extends Vue {
   dialogDel = false;
   loading = true;
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -136,29 +140,36 @@ export default class InvitedNotify extends Vue {
   }
 
   @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
-      getBiddingNotificationsByUser({
+  async onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
+      const _biddingNotifications = await getBiddingNotificationsByUser({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IBiddingNotification> = res.data;
           console.log("watch", response);
-          this.biddingDocuments = response.data
-            .filter(x => x.action == "ADDED")
-            .reduce(function(
-              pV: Array<IBiddingDocument>,
-              cV: IBiddingNotification
-            ) {
-              pV.push(cV.relatedResource);
-              return pV;
-            },
-            []);
-          this.options.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_biddingNotifications) {
+        this.biddingDocuments = _biddingNotifications.data
+          .filter(x => x.action == "ADDED")
+          .reduce(function(
+            pV: Array<IBiddingDocument>,
+            cV: IBiddingNotification
+          ) {
+            pV.push(cV.relatedResource);
+            return pV;
+          },
+          []);
+        this.serverSideOptions.totalItems = _biddingNotifications.totalElements;
+      }
+      this.loading = false;
     }
   }
   clicked(value: IBiddingDocument) {
@@ -166,11 +177,3 @@ export default class InvitedNotify extends Vue {
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

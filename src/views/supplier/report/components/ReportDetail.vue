@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogDetailSync" persistent max-width="600px">
+  <v-dialog v-model="dialogDetailSync" max-width="600px">
     <v-card class="order-1 flex-grow-1 mx-auto my-1">
       <v-row justify="center">
         <MarkFeedback
@@ -7,8 +7,6 @@
           :dialogMark.sync="dialogMark"
           :feedback="feedback"
           :feedbacks.sync="feedbacks"
-          :message.sync="messageSync"
-          :snackbar.sync="snackbarSync"
         />
       </v-row>
       <v-row justify="center">
@@ -17,8 +15,6 @@
           :feedback="feedback"
           :feedbacks.sync="feedbacks"
           :dialogAdd.sync="dialogFeedback"
-          :message.sync="messageSync"
-          :snackbar.sync="snackbarSync"
           :update="update"
           :report="report"
           :receiver="receiver"
@@ -30,8 +26,6 @@
           :dialogDel.sync="dialogDel"
           :feedback="feedback"
           :feedbacks.sync="feedbacks"
-          :message.sync="messageSync"
-          :snackbar.sync="snackbarSync"
         />
       </v-row>
       <v-row justify="center">
@@ -41,22 +35,12 @@
           :report="report"
           :status="status"
           :reports.sync="reportsSync"
-          :message.sync="messageSync"
-          :snackbar.sync="snackbarSync"
         />
       </v-row>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">Chi tiết Report</span>
-          <v-btn
-            icon
-            dark
-            @click="dialogDetailSync = false"
-            style="margin-left:368px;"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn></v-toolbar-title
-        >
+        </v-toolbar-title>
       </v-toolbar>
 
       <v-card-text>
@@ -287,8 +271,6 @@ import ChangeStatusReport from "./ChangeStatusReport.vue";
 export default class ReportDetail extends Vue {
   @PropSync("dialogDetail", { type: Boolean }) dialogDetailSync!: boolean;
   @Prop(Object) report!: IReport;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("reports", { type: Array }) reportsSync!: Array<IReport>;
 
   feedbacks: Array<IFeedback> = [];
@@ -301,21 +283,24 @@ export default class ReportDetail extends Vue {
   feedback = {} as IFeedback;
   update = false;
   openFeedback = false;
-  created() {
+  async created() {
     console.log(this.reportsSync);
     if (this.report.id) {
-      getFeedbacksByReport(this.report.id, {
+      const _feedbacks = await getFeedbacksByReport(this.report.id, {
         page: 0,
         limit: 100
       })
         .then(res => {
           const response: PaginationResponse<IFeedback> = res.data;
-          this.feedbacks = response.data;
+          return response;
         })
         .catch(err => {
           console.log(err);
-        })
-        .finally();
+          return null;
+        });
+      if (_feedbacks) {
+        this.feedbacks = _feedbacks.data;
+      }
     }
   }
   openCreateDialog(item: IFeedback) {

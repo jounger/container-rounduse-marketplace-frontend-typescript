@@ -3,6 +3,7 @@
     v-model="dialogAddSync"
     fullscreen
     hide-overlay
+    persistent
     transition="dialog-bottom-transition"
   >
     <v-card tile>
@@ -478,6 +479,7 @@ export default class CreateOutbound extends Vue {
     if (_outbound) {
       this.outboundsSync.unshift(_outbound);
       this.totalItemsSync += 1;
+      this.dialogAddSync = false;
     }
     snackbar.setDisplay(true);
   }

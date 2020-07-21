@@ -1,6 +1,6 @@
 <template>
   <v-content>
-    <v-card>
+    <v-card class="ma-5">
       <CreateInbound
         :dialogAdd.sync="dialogAdd"
         :inbounds.sync="inbounds"
@@ -51,6 +51,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <!--  -->
@@ -272,38 +273,49 @@ export default class Inbound extends Vue {
     this.container = item;
     this.dialogDelCont = true;
   }
-  getContainers(item: IInbound) {
+  async getContainers(item: IInbound) {
     if (item.id) {
-      getContainersByInbound(item.id, {
+      this.loading = true;
+      const _containers = await getContainersByInbound(item.id, {
         page: 0,
         limit: 100
       })
         .then(res => {
           const response = res.data;
-          this.containers = response.data;
+          return response;
         })
         .catch(err => {
           console.log(err);
-        })
-        .finally();
+          return null;
+        });
+      if (_containers) {
+        this.containers = _containers.data;
+      }
+      this.loading = false;
     }
   }
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getInboundsByForwarder({
+      const _inbounds = await getInboundsByForwarder({
         page: val.page - 1,
         limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IInbound> = res.data;
           console.log("watch", response);
-          this.inbounds = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_inbounds) {
+        this.inbounds = _inbounds.data;
+        this.serverSideOptions.totalItems = _inbounds.totalElements;
+      }
+      this.loading = false;
     }
   }
   clicked(value: IInbound) {
@@ -331,11 +343,3 @@ export default class Inbound extends Vue {
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

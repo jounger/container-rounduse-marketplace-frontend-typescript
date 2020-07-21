@@ -1,13 +1,10 @@
 <template>
   <v-content>
-    <Snackbar :text="message" :snackbar.sync="snackbar" />
     <DetailEvidence
       v-if="dialogDetail"
       :dialogDetail.sync="dialogDetail"
       :evidence="evidence"
       :evidences.sync="evidences"
-      :message.sync="message"
-      :snackbar.sync="snackbar"
     />
     <v-container class="mx-auto mt-5">
       <v-card v-if="combined">
@@ -322,6 +319,7 @@
                         evidenceServerSideOptions.itemsPerPageItems
                     }"
                     :actions-append="evidenceOptions.page"
+                    disable-sort
                     class="elevation-0"
                   >
                     <template v-slot:item.actions="{ item }">
@@ -407,7 +405,6 @@ import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { IBid } from "@/entity/bid";
-import Snackbar from "@/components/Snackbar.vue";
 import { ICombined } from "@/entity/combined";
 import { getCombinedsByBiddingDocument } from "@/api/combined";
 import { IEvidence } from "@/entity/evidence";
@@ -424,7 +421,6 @@ import SupplierRating from "../../bidding-document/components/SupplierRating.vue
 @Component({
   mixins: [FormValidate, Utils],
   components: {
-    Snackbar,
     DetailEvidence,
     SupplierRating
   }
@@ -439,8 +435,6 @@ export default class DetailCombined extends Vue {
   selectedContainer = null as IContainer | null;
   loading = false;
   stepper = 1;
-  message = "";
-  snackbar = false;
   dialogDetail = false;
   checkValid = false;
   expanded: Array<ICombined> = [];
