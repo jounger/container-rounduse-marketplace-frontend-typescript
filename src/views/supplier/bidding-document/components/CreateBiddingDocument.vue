@@ -66,10 +66,7 @@
             </v-data-table>
             <v-btn
               color="primary"
-              @click="
-                stepper = 2;
-                valid = false;
-              "
+              @click="stepper = 2"
               :disabled="!selectedOutbound"
               >Tiếp tục</v-btn
             >

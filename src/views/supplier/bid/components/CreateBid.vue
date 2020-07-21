@@ -135,6 +135,11 @@
                     <template v-slot:expanded-item="{ headers, item }">
                       <td :colspan="headers.length" class="px-0">
                         <v-data-table
+                          v-model="containers"
+                          show-select
+                          @item-selected="
+                            changeContainerServerSideOptions(item)
+                          "
                           :headers="containerHeaders"
                           :items="item.billOfLading.containers"
                           :loading="loading"
@@ -149,17 +154,17 @@
                           dark
                           dense
                         >
-                          <template v-slot:item.actions="{ item }">
+                          <!-- <template v-slot:item.actions="{ item }">
                             <v-checkbox
                               v-model="containers"
                               :value="item"
-                              @click="containerServerSideOptions += 1"
+                              @change="changeContainerServerSideOptions(item)"
                               :disabled="
                                 containers.length >= unit &&
                                   containers.indexOf(item) === -1
                               "
                             ></v-checkbox>
-                          </template>
+                          </template> -->
                         </v-data-table>
                       </td>
                     </template>
@@ -186,7 +191,7 @@
                       <v-checkbox
                         v-model="containers"
                         :value="item"
-                        @click="containerServerSideOptions.totalItems -= 1"
+                        @change="containerServerSideOptions.totalItems -= 1"
                       ></v-checkbox>
                     </template>
                   </v-data-table>
@@ -302,7 +307,6 @@ export default class CreateBid extends Vue {
   valid = true;
   // Inbound
   inbounds: Array<IInbound> = [];
-  inbound = {} as IInbound;
   containers: Array<IContainer> = [];
   headers = [
     {
@@ -357,6 +361,9 @@ export default class CreateBid extends Vue {
     { text: "Chọn Cont", value: "actions", class: "elevation-1 primary" }
   ];
   // Bid
+  log() {
+    console.log(1);
+  }
   async createBid() {
     // TODO: API create bid
     if (this.biddingDocumentSelected && this.biddingDocumentSelected.id) {
@@ -401,6 +408,26 @@ export default class CreateBid extends Vue {
         this.dialogAddSync = false;
       }
       snackbar.setDisplay(true);
+    }
+  }
+  changeContainerServerSideOptions(item: IContainer) {
+    if (this.containers.length > 0) {
+      let check = false;
+      this.containers.forEach((x: IContainer) => {
+        console.log(x);
+        console.log(item);
+        if (x === item) {
+          console.log(1);
+          check = true;
+        }
+      });
+      if (check === false) {
+        this.containerServerSideOptions.totalItems -= 1;
+      } else {
+        this.containerServerSideOptions.totalItems += 1;
+      }
+    } else {
+      this.containerServerSideOptions.totalItems -= 1;
     }
   }
   checkNumberContainer() {
@@ -488,7 +515,7 @@ export default class CreateBid extends Vue {
         });
       this.loading = false;
       if (_containers) {
-        this.inbound.billOfLading.containers = _containers.data.filter(
+        item.billOfLading.containers = _containers.data.filter(
           (x: IContainer) => x.status == "CREATED"
         );
         this.serverSideOptions.totalItems = _containers.totalElements;
@@ -496,28 +523,26 @@ export default class CreateBid extends Vue {
     }
   }
   clicked(value: IInbound) {
-    console.log(this.containers);
+    console.log("value", value);
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
-        this.inbound = {} as IInbound;
       } else {
         this.expanded.splice(0, this.expanded.length);
         this.getContainers(value);
         this.expanded.push(value);
-        this.inbound = value;
       }
     } else {
       const index = this.expanded.findIndex(x => x.id === value.id);
       if (index === -1) {
         this.getContainers(value);
         this.expanded.push(value);
-        this.inbound = value;
       } else {
         this.expanded.splice(index, 1);
-        this.inbound = {} as IInbound;
       }
     }
+    console.log("expanded", this.expanded);
+    console.log("containers", this.containers);
   }
 }
 </script>
