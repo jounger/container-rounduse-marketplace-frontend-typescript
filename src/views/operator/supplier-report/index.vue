@@ -2,14 +2,6 @@
   <v-content>
     <v-card class="ma-5">
       <v-row justify="center">
-        <ReportDetail
-          v-if="dialogDetail"
-          :dialogDetail.sync="dialogDetail"
-          :report="report"
-          :reports.sync="reports"
-        />
-      </v-row>
-      <v-row justify="center">
         <CreateFeedback
           v-if="dialogAdd"
           :feedback="feedback"
@@ -73,15 +65,13 @@ import { IReport } from "@/entity/report";
 import { PaginationResponse } from "@/api/payload";
 import { IFeedback } from "@/entity/feedback";
 import CreateFeedback from "./components/CreateFeedback.vue";
-import ReportDetail from "../../supplier/report/components/ReportDetail.vue";
 import { getReports } from "@/api/report";
 import { DataOptions } from "vuetify";
 import { IBiddingDocument } from "@/entity/bidding-document";
 
 @Component({
   components: {
-    CreateFeedback,
-    ReportDetail
+    CreateFeedback
   }
 })
 export default class Report extends Vue {
@@ -89,7 +79,6 @@ export default class Report extends Vue {
   report = {} as IReport;
 
   dialogAdd = false;
-  dialogDetail = false;
   feedbacks: Array<IFeedback> = [];
   feedback = {} as IFeedback;
   loading = true;
@@ -133,8 +122,8 @@ export default class Report extends Vue {
     }
   }
   clicked(value: IReport) {
-    this.report = value;
-    this.dialogDetail = true;
+    const id = value.id;
+    this.$router.push({ path: `/report/${id}` });
   }
 
   @Watch("options")

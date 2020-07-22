@@ -36,3 +36,8 @@ export function removeReport(id: number) {
     headers: config
   });
 }
+export function getReport(id: number) {
+  return Vue.axios.get(`/report/${id}`, {
+    headers: config
+  });
+}

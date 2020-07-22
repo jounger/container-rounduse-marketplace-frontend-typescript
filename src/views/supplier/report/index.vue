@@ -26,14 +26,6 @@
           :dialogEdit.sync="dialogEdit"
         />
       </v-row>
-      <v-row justify="center">
-        <ReportDetail
-          v-if="dialogDetail"
-          :dialogDetail.sync="dialogDetail"
-          :report="report"
-          :reports.sync="reports"
-        />
-      </v-row>
       <v-card-title>
         Danh sách Report
         <v-divider class="mx-4" inset vertical></v-divider>
@@ -115,7 +107,6 @@ import { PaginationResponse } from "@/api/payload";
 import CreateReport from "./components/CreateReport.vue";
 import DeleteReport from "./components/DeleteReport.vue";
 import UpdateReport from "./components/UpdateReport.vue";
-import ReportDetail from "./components/ReportDetail.vue";
 import { getReportsByUser } from "@/api/report";
 import { DataOptions } from "vuetify";
 import { IBiddingDocument } from "@/entity/bidding-document";
@@ -124,8 +115,7 @@ import { IBiddingDocument } from "@/entity/bidding-document";
   components: {
     CreateReport,
     DeleteReport,
-    UpdateReport,
-    ReportDetail
+    UpdateReport
   }
 })
 export default class Report extends Vue {
@@ -135,7 +125,6 @@ export default class Report extends Vue {
   dialogAdd = false;
   dialogDel = false;
   dialogEdit = false;
-  dialogDetail = false;
   dialogMark = false;
   loading = true;
   options = {
@@ -184,8 +173,8 @@ export default class Report extends Vue {
     }
   }
   openDetailDialog(item: IReport) {
-    this.report = item;
-    this.dialogDetail = true;
+    const id = item.id;
+    this.$router.push({ path: `/report/${id}` });
   }
 
   @Watch("options")
