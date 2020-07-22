@@ -318,21 +318,21 @@ export default class Inbound extends Vue {
       this.loading = false;
     }
   }
-  clicked(value: IInbound) {
+  async clicked(value: IInbound) {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
         this.inbound = {} as IInbound;
       } else {
         this.expanded.splice(0, this.expanded.length);
-        this.getContainers(value);
+        await this.getContainers(value);
         this.expanded.push(value);
         this.inbound = value;
       }
     } else {
       const index = this.expanded.findIndex(x => x.id === value.id);
       if (index === -1) {
-        this.getContainers(value);
+        await this.getContainers(value);
         this.expanded.push(value);
         this.inbound = value;
       } else {

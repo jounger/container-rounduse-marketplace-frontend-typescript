@@ -386,11 +386,6 @@ export default class CreateOutbound extends Vue {
   shippingLines: Array<IShippingLine> = [];
   containerTypes: Array<IContainerType> = [];
   unitOfMeasurements: Array<string> = [];
-  // outboundLocal form
-  packingTimePicker = false;
-
-  // B/L form
-  cutOffTimePicker = false;
 
   // Outbound
   estimateTimeTravel() {
@@ -423,8 +418,6 @@ export default class CreateOutbound extends Vue {
     this.valid2 = false;
     this.dateInit = addTimeToDate(new Date().toString());
     this.distanceMatrixResult = null;
-    this.packingTimePicker = false;
-    this.cutOffTimePicker = false;
     this.outboundLocal = {
       shippingLine: "",
       containerType: "",
@@ -446,13 +439,6 @@ export default class CreateOutbound extends Vue {
   }
 
   async createOutbound() {
-    // TODO: API create outbound
-    this.outboundLocal.packingTime = addTimeToDate(
-      this.outboundLocal.packingTime
-    );
-    this.outboundLocal.booking.cutOffTime = addTimeToDate(
-      this.outboundLocal.booking.cutOffTime
-    );
     /* TODO: Calculate Delivery Time:
      * deliveryTime = (duration: packingStation -> portOfLoading) + packingTime (+ bias)
      */

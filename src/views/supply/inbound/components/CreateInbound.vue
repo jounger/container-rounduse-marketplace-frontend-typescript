@@ -428,11 +428,6 @@ export default class CreateInbound extends Vue {
   ports: Array<IPort> = [];
   shippingLines: Array<IShippingLine> = [];
   containerTypes: Array<IContainerType> = [];
-  // inboundLocal form
-  pickupTimePicker = false;
-
-  // B/L form
-  freeTimePicker = false;
 
   // Container form
   containerHeaders = [
@@ -501,8 +496,6 @@ export default class CreateInbound extends Vue {
     this.valid2 = false;
     this.dateInit = addTimeToDate(new Date().toString());
     this.distanceMatrixResult = null;
-    this.pickupTimePicker = false;
-    this.freeTimePicker = false;
     this.inboundLocal = {
       shippingLine: "",
       containerType: "",
@@ -520,13 +513,7 @@ export default class CreateInbound extends Vue {
     } as IInbound;
   }
   async createInbound() {
-    // TODO: API create inbound
-    this.inboundLocal.pickupTime = addTimeToDate(this.inboundLocal.pickupTime);
-    this.inboundLocal.billOfLading.freeTime = addTimeToDate(
-      this.inboundLocal.billOfLading.freeTime
-    );
     this.inboundLocal.billOfLading.containers = this.containers;
-
     /* TODO: Calculate Empty Time:
      * emptyTime = (duration: portOfDelivery -> returnStation) + pickupTime (+ bias)
      */

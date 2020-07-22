@@ -346,12 +346,6 @@ export default class UpdateInbound extends Vue {
   shippingLines: Array<IShippingLine> = [];
   containerTypes: Array<IContainerType> = [];
 
-  // inbound form
-  pickupTimePicker = false;
-
-  // B/L form
-  freeTimePicker = false;
-
   // Inbound Update
   estimateTimeTravel() {
     /* TODO: Calculate Empty Time:
@@ -384,14 +378,7 @@ export default class UpdateInbound extends Vue {
     }
   }
   async updateInbound() {
-    // TODO: API update inbound
     if (this.inboundLocal && this.inboundLocal.id) {
-      this.inboundLocal.pickupTime = addTimeToDate(
-        this.inboundLocal.pickupTime
-      );
-      this.inboundLocal.billOfLading.freeTime = addTimeToDate(
-        this.inboundLocal.billOfLading.freeTime
-      );
       console.log(this.inboundLocal);
       const _inbound = await editInbound(
         this.inboundLocal.id,
@@ -428,9 +415,6 @@ export default class UpdateInbound extends Vue {
 
   async updateBillOfLading() {
     if (this.inboundLocal && this.inboundLocal.billOfLading.id) {
-      this.inboundLocal.billOfLading.freeTime = addTimeToDate(
-        this.inboundLocal.billOfLading.freeTime
-      );
       const _billOfLading = await editBillOfLading(
         this.inboundLocal.billOfLading.id,
         this.inboundLocal.billOfLading
