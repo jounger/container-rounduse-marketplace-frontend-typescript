@@ -45,7 +45,6 @@
       <v-data-table
         :headers="headers"
         :items="reports"
-        @click:row="clicked"
         item-key="id"
         :loading="loading"
         :options.sync="options"
@@ -70,12 +69,39 @@
           </v-btn>
         </template>
         <template v-slot:item.action="{ item }">
-          <v-icon small class="mr-2" @click.stop="openUpdateDialog(item)">
-            mdi-pencil
-          </v-icon>
-          <v-icon small @click.stop="openDeleteDialog(item)">
-            delete
-          </v-icon>
+          <v-menu :close-on-click="true">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="pink" icon outlined v-bind="attrs" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item @click.stop="openDetailDialog(item)">
+                <v-list-item-icon>
+                  <v-icon small>details</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Chi tiết Report</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item @click.stop="openUpdateDialog(item)">
+                <v-list-item-icon>
+                  <v-icon small>edit</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Chỉnh sửa</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item @click.stop="openDeleteDialog(item)">
+                <v-list-item-icon>
+                  <v-icon small>delete</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Xóa</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </template>
       </v-data-table>
     </v-card>
@@ -92,6 +118,7 @@ import UpdateReport from "./components/UpdateReport.vue";
 import ReportDetail from "./components/ReportDetail.vue";
 import { getReportsByUser } from "@/api/report";
 import { DataOptions } from "vuetify";
+import { IBiddingDocument } from "@/entity/bidding-document";
 
 @Component({
   components: {
@@ -152,12 +179,12 @@ export default class Report extends Vue {
   viewDetailReport(item: IReport) {
     console.log(item);
     if (item && item.report && typeof item.report != "number") {
-      const report = item.report as IReport;
+      const report = item.report as IBiddingDocument;
       this.$router.push({ path: `/bidding-document/${report.id}` });
     }
   }
-  clicked(value: IReport) {
-    this.report = value;
+  openDetailDialog(item: IReport) {
+    this.report = item;
     this.dialogDetail = true;
   }
 

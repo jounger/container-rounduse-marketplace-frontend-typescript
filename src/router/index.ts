@@ -165,6 +165,16 @@ const routes: Array<RouteConfig> = [
     }
   },
   {
+    path: "/report/:id",
+    name: "Report Detail",
+    component: () =>
+      import("@/views/supplier/report/components/ReportDetail.vue"),
+    meta: {
+      auth: ["ROLE_MODERATOR", "ROLE_FORWARDER"],
+      layout: "NavLayout"
+    }
+  },
+  {
     path: "/combined-forwarder/:id",
     name: "Combined Forwarder Detail",
     component: () =>

@@ -136,12 +136,9 @@
                       <td :colspan="headers.length" class="px-0">
                         <v-data-table
                           v-model="containers"
-                          show-select
-                          @item-selected="
-                            changeContainerServerSideOptions(item)
-                          "
                           :headers="containerHeaders"
                           :items="item.billOfLading.containers"
+                          item-key="id"
                           :loading="loading"
                           :options.sync="options"
                           :server-items-length="serverSideOptions.totalItems"
@@ -154,17 +151,19 @@
                           dark
                           dense
                         >
-                          <!-- <template v-slot:item.actions="{ item }">
+                          <template v-slot:item.actions="{ item }">
                             <v-checkbox
                               v-model="containers"
                               :value="item"
                               @change="changeContainerServerSideOptions(item)"
                               :disabled="
-                                containers.length >= unit &&
-                                  containers.indexOf(item) === -1
+                                containers.length == unit &&
+                                  containers.indexOf(item) == -1
                               "
+                              style="margin:0px;padding:0px"
+                              hide-details
                             ></v-checkbox>
-                          </template> -->
+                          </template>
                         </v-data-table>
                       </td>
                     </template>
@@ -174,7 +173,7 @@
               <v-tab-item>
                 <v-container fluid>
                   <v-data-table
-                    :headers="containerHeaders"
+                    :headers="containerSelectedHeaders"
                     :items="containers"
                     item-key="id"
                     :loading="loading"
@@ -185,7 +184,6 @@
                         containerServerSideOptions.itemsPerPageItems
                     }"
                     :actions-append="containerOptions.page"
-                    dense
                   >
                     <template v-slot:item.actions="{ item }">
                       <v-checkbox
@@ -360,6 +358,24 @@ export default class CreateBid extends Vue {
     },
     { text: "Chọn Cont", value: "actions", class: "elevation-1 primary" }
   ];
+  containerSelectedHeaders = [
+    {
+      text: "Container No.",
+      align: "start",
+      sortable: false,
+      value: "containerNumber"
+    },
+    { text: "Tài xế", value: "driver" },
+    {
+      text: "Rơ mọt",
+      value: "trailer.licensePlate"
+    },
+    {
+      text: "Đầu kéo",
+      value: "tractor.licensePlate"
+    },
+    { text: "Chọn Cont", value: "actions" }
+  ];
   // Bid
   log() {
     console.log(1);
@@ -410,10 +426,10 @@ export default class CreateBid extends Vue {
       snackbar.setDisplay(true);
     }
   }
-  changeContainerServerSideOptions(item: IContainer) {
+  async changeContainerServerSideOptions(item: IContainer) {
     if (this.containers.length > 0) {
       let check = false;
-      this.containers.forEach((x: IContainer) => {
+      await this.containers.forEach((x: IContainer) => {
         console.log(x);
         console.log(item);
         if (x === item) {
@@ -430,19 +446,13 @@ export default class CreateBid extends Vue {
       this.containerServerSideOptions.totalItems -= 1;
     }
   }
-  checkNumberContainer() {
-    if (
-      this.biddingDocumentSelected &&
-      typeof this.biddingDocumentSelected.outbound != "number"
-    ) {
-      if (
-        this.containers.length >=
-        this.biddingDocumentSelected.outbound.booking.unit
-      ) {
-        return true;
-      } else {
-        return false;
-      }
+  async checkExistCont(item: IContainer) {
+    if (this.containers.length > 0) {
+      await this.containers.forEach((x: IContainer) => {
+        if (x === item) {
+          return true;
+        }
+      });
     }
     return false;
   }
@@ -522,20 +532,20 @@ export default class CreateBid extends Vue {
       }
     }
   }
-  clicked(value: IInbound) {
+  async clicked(value: IInbound) {
     console.log("value", value);
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
       } else {
         this.expanded.splice(0, this.expanded.length);
-        this.getContainers(value);
+        await this.getContainers(value);
         this.expanded.push(value);
       }
     } else {
       const index = this.expanded.findIndex(x => x.id === value.id);
       if (index === -1) {
-        this.getContainers(value);
+        await this.getContainers(value);
         this.expanded.push(value);
       } else {
         this.expanded.splice(index, 1);

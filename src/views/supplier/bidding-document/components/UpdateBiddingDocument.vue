@@ -209,7 +209,7 @@ export default class UpdateBiddingDocument extends Vue {
 
   dateInit = addTimeToDate(new Date().toString());
   biddingDocumentLocal = {
-    offeree: this.$auth.user().username,
+    merchant: this.$auth.user().username,
     outbound: -1 as number,
     discount: "",
     isMultipleAward: false,

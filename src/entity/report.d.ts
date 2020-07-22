@@ -1,8 +1,8 @@
-import { IBiddingDocument } from './bidding-document';
+import { IBiddingDocument } from "./bidding-document";
 export interface IReport {
   id?: number;
   sender: string;
-  report: number;
+  report: number | IBiddingDocument;
   title: string;
   detail: string;
   status: string;
