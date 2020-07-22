@@ -376,11 +376,6 @@ export default class UpdateOutbound extends Vue {
   containerTypes: Array<IContainerType> = [];
   unitOfMeasurements: Array<string> = [];
   outboundLocal = null as IOutbound | null;
-  // outboundLocal form
-  packingTimePicker = false;
-
-  // B/L form
-  cutOffTimePicker = false;
 
   // Outbound Update
   estimateTimeTravel() {
@@ -416,12 +411,6 @@ export default class UpdateOutbound extends Vue {
   async updateOutbound() {
     // TODO: API edit outbound
     if (this.outboundLocal && this.outboundLocal.id) {
-      this.outboundLocal.packingTime = addTimeToDate(
-        this.outboundLocal.packingTime
-      );
-      this.outboundLocal.booking.cutOffTime = addTimeToDate(
-        this.outboundLocal.booking.cutOffTime
-      );
       console.log(this.outboundLocal);
       const _outbound = await editOutbound(
         this.outboundLocal.id,
@@ -456,9 +445,6 @@ export default class UpdateOutbound extends Vue {
   }
   async updateBooking() {
     if (this.outboundLocal && this.outboundLocal.booking.id) {
-      this.outboundLocal.booking.cutOffTime = addTimeToDate(
-        this.outboundLocal.booking.cutOffTime
-      );
       const _booking = await editBooking(
         this.outboundLocal.booking.id,
         this.outboundLocal.booking
