@@ -1,13 +1,9 @@
 <template>
-  <div>
+  <div class="mt-12">
     <Snackbars />
-    <v-container class="fill-height" fluid>
-      <v-row align="center" justify="center">
-        <v-col cols="12" sm="8" md="4">
-          <slot />
-        </v-col>
-      </v-row>
-    </v-container>
+    <v-row justify="center" class="mt-12">
+      <slot />
+    </v-row>
   </div>
 </template>
 <script lang="ts">

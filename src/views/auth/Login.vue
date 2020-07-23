@@ -1,7 +1,9 @@
 <template>
-  <v-card class="elevation-12">
+  <v-card width="600" height="370" class="mt-12">
     <v-toolbar color="primary" light flat>
-      <v-toolbar-title>Đăng nhập</v-toolbar-title>
+      <v-toolbar-title
+        ><span style="color: white">Đăng nhập</span></v-toolbar-title
+      >
     </v-toolbar>
     <v-card-text>
       <v-form>

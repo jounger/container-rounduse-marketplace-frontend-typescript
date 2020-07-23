@@ -60,7 +60,7 @@
               color="primary"
               @click="
                 stepper = 2;
-                getInbounds();
+                getInbound();
               "
               :disabled="!biddingDocumentSelected"
               >Tiếp tục</v-btn
@@ -132,12 +132,12 @@
                       {{ formatDatetime(item.pickupTime) }}
                     </template>
                     <!-- Show containers expened -->
-                    <template v-slot:expanded-item="{ headers, item }">
+                    <template v-slot:expanded-item="{ headers }">
                       <td :colspan="headers.length" class="px-0">
                         <v-data-table
                           v-model="containers"
                           :headers="containerHeaders"
-                          :items="item.billOfLading.containers"
+                          :items="inbound.billOfLading.containers"
                           item-key="id"
                           :loading="loading"
                           :options.sync="options"
@@ -158,7 +158,10 @@
                               @change="changeContainerServerSideOptions(item)"
                               :disabled="
                                 containers.length == unit &&
-                                  containers.indexOf(item) == -1
+                                  containers.findIndex(
+                                    x =>
+                                      x.containerNumber == item.containerNumber
+                                  ) == -1
                               "
                               style="margin:0px;padding:0px"
                               hide-details
@@ -174,7 +177,7 @@
                 <v-container fluid>
                   <v-data-table
                     :headers="containerSelectedHeaders"
-                    :items="containers"
+                    :items="containersSelected"
                     item-key="id"
                     :loading="loading"
                     :options.sync="containerOptions"
@@ -189,7 +192,12 @@
                       <v-checkbox
                         v-model="containers"
                         :value="item"
-                        @change="containerServerSideOptions.totalItems -= 1"
+                        @change="
+                          containerServerSideOptions.totalItems -= 1;
+                          onContainerOptionsChange(containerOptions);
+                        "
+                        style="margin:0px;padding:0px"
+                        hide-details
                       ></v-checkbox>
                     </template>
                   </v-data-table>
@@ -224,7 +232,7 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Watch } from "vue-property-decorator";
 import { IBid } from "@/entity/bid";
 import { IContainer } from "@/entity/container";
 import FormValidate from "@/mixin/form-validate";
@@ -241,6 +249,7 @@ import { IOutbound } from "@/entity/outbound";
 import { getContainersByInbound } from "@/api/container";
 import snackbar from "@/store/modules/snackbar";
 import { DataOptions } from "vuetify";
+import { IBillOfLading } from "@/entity/bill-of-lading";
 @Component({
   mixins: [FormValidate, Utils]
 })
@@ -264,6 +273,18 @@ export default class CreateBid extends Vue {
     bidValidityPeriod: this.dateInit.slice(0, 10),
     status: "CREATED"
   };
+  inbound = {
+    emptyTime: "",
+    pickupTime: "",
+    billOfLading: {
+      billOfLadingNumber: "",
+      unit: 0,
+      containers: [] as Array<IContainer>,
+      portOfDelivery: "",
+      freeTime: ""
+    } as IBillOfLading,
+    returnStation: ""
+  } as IInbound;
   loading = true;
   options = {
     page: 1,
@@ -306,6 +327,7 @@ export default class CreateBid extends Vue {
   // Inbound
   inbounds: Array<IInbound> = [];
   containers: Array<IContainer> = [];
+  containersSelected: Array<IContainer> = [];
   headers = [
     {
       text: "Mã",
@@ -334,7 +356,7 @@ export default class CreateBid extends Vue {
     { text: "Time lấy cont", value: "pickUpTime" },
     { text: "B/L No.", value: "billOfLading.billOfLadingNumber" },
     { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery" },
-    { text: "Số lượng cont", value: "billOfLading.containers.length" }
+    { text: "Số lượng cont đăng ký", value: "billOfLading.unit" }
   ];
   // Container form
   containerHeaders = [
@@ -377,8 +399,11 @@ export default class CreateBid extends Vue {
     { text: "Chọn Cont", value: "actions" }
   ];
   // Bid
-  log() {
-    console.log(1);
+  getInbound() {
+    this.inboundOptions = {
+      page: 1,
+      itemsPerPage: 5
+    } as DataOptions;
   }
   async createBid() {
     // TODO: API create bid
@@ -426,10 +451,10 @@ export default class CreateBid extends Vue {
       snackbar.setDisplay(true);
     }
   }
-  async changeContainerServerSideOptions(item: IContainer) {
+  changeContainerServerSideOptions(item: IContainer) {
     if (this.containers.length > 0) {
       let check = false;
-      await this.containers.forEach((x: IContainer) => {
+      this.containers.forEach((x: IContainer) => {
         console.log(x);
         console.log(item);
         if (x === item) {
@@ -445,114 +470,150 @@ export default class CreateBid extends Vue {
     } else {
       this.containerServerSideOptions.totalItems -= 1;
     }
-  }
-  async checkExistCont(item: IContainer) {
-    if (this.containers.length > 0) {
-      await this.containers.forEach((x: IContainer) => {
-        if (x === item) {
-          return true;
-        }
-      });
-    }
-    return false;
-  }
-  async getInbounds() {
-    if (this.biddingDocumentSelected && this.biddingDocumentSelected.outbound) {
-      const _outbound = this.biddingDocumentSelected.outbound as IOutbound;
-      this.unit = _outbound.booking.unit;
-      const _outboundId = _outbound.id as number;
-      const _inbounds = await getInboundsByOutboundAndForwarder(_outboundId, {
-        page: 0,
-        limit: 100
-      })
-        .then(res => {
-          const response: PaginationResponse<IInbound> = res.data;
-          return response;
-        })
-        .catch(err => console.log(err));
-      this.loading = false;
-      if (_inbounds) {
-        this.inbounds = _inbounds.data;
-        this.inboundServerSideOptions.totalItems = _inbounds.totalElements;
-      }
-    }
-  }
-  async created() {
-    if (this.biddingDocumentSync && !isEmptyObject(this.biddingDocumentSync)) {
-      this.biddingDocuments.push(this.biddingDocumentSync);
-      this.biddingDocumentSelected = this.biddingDocumentSync;
-      this.biddingDocumentServerSideOptions.totalItems = 1;
-      this.loading = false;
-    } else {
-      const _biddingNotificationsByUsers = await getBiddingNotificationsByUser({
-        page: 0,
-        limit: 100,
-        status: "ADDED"
-      })
-        .then(res => {
-          const response: PaginationResponse<IBiddingNotification> = res.data;
-          console.log("watch", response);
-          return response;
-        })
-        .catch(err => console.log(err));
-      this.loading = false;
-      if (_biddingNotificationsByUsers) {
-        this.biddingDocuments = _biddingNotificationsByUsers.data.reduce(
-          function(pV: Array<IBiddingDocument>, cV: IBiddingNotification) {
-            pV.push(cV.relatedResource);
-            return pV;
-          },
-          []
-        );
-        this.biddingDocumentServerSideOptions.totalItems =
-          _biddingNotificationsByUsers.totalElements;
-      }
-    }
-  }
-  async getContainers(item: IInbound) {
-    if (item.id) {
-      this.loading = true;
-      const _containers = await getContainersByInbound(item.id, {
-        page: 0,
-        limit: 100
-      })
-        .then(res => {
-          const response = res.data;
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-        });
-      this.loading = false;
-      if (_containers) {
-        item.billOfLading.containers = _containers.data.filter(
-          (x: IContainer) => x.status == "CREATED"
-        );
-        this.serverSideOptions.totalItems = _containers.totalElements;
-      }
-    }
+    this.onContainerOptionsChange(this.containerOptions);
   }
   async clicked(value: IInbound) {
     console.log("value", value);
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
+        this.inbound.billOfLading.containers = [] as Array<IContainer>;
       } else {
-        this.expanded.splice(0, this.expanded.length);
-        await this.getContainers(value);
-        this.expanded.push(value);
-      }
-    } else {
-      const index = this.expanded.findIndex(x => x.id === value.id);
-      if (index === -1) {
-        await this.getContainers(value);
-        this.expanded.push(value);
-      } else {
-        this.expanded.splice(index, 1);
+        console.log(0);
+        if (this.expanded.length > 0) {
+          this.expanded.splice(0, this.expanded.length);
+          this.expanded.push(value);
+          this.inbound = value;
+          this.onOptionsChange(this.options);
+        } else {
+          this.expanded.push(value);
+          this.inbound = value;
+        }
       }
     }
-    console.log("expanded", this.expanded);
-    console.log("containers", this.containers);
+  }
+  @Watch("biddingDocumentOptions")
+  async onBiddingDocumentOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
+      this.biddingDocuments = [] as Array<IBiddingDocument>;
+      if (
+        this.biddingDocumentSync &&
+        !isEmptyObject(this.biddingDocumentSync)
+      ) {
+        this.biddingDocuments.push(this.biddingDocumentSync);
+        this.biddingDocumentSelected = this.biddingDocumentSync;
+        this.biddingDocumentServerSideOptions.totalItems = 1;
+        this.loading = false;
+      } else {
+        const _biddingNotificationsByUsers = await getBiddingNotificationsByUser(
+          {
+            page: val.page - 1,
+            limit: val.itemsPerPage
+          }
+        )
+          .then(res => {
+            const response: PaginationResponse<IBiddingNotification> = res.data;
+            console.log("watch", response);
+            return response;
+          })
+          .catch(err => console.log(err));
+        this.loading = false;
+        if (_biddingNotificationsByUsers) {
+          this.biddingDocuments = _biddingNotificationsByUsers.data
+            .filter(x => x.action == "ADDED")
+            .reduce(function(
+              pV: Array<IBiddingDocument>,
+              cV: IBiddingNotification
+            ) {
+              pV.push(cV.relatedResource);
+              return pV;
+            },
+            []);
+          this.biddingDocumentServerSideOptions.totalItems =
+            _biddingNotificationsByUsers.totalElements;
+        }
+      }
+      this.loading = false;
+    }
+  }
+  @Watch("inboundOptions")
+  async onInboundOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      console.log(1);
+      this.loading = true;
+      if (
+        this.biddingDocumentSelected &&
+        this.biddingDocumentSelected.outbound
+      ) {
+        const _outbound = this.biddingDocumentSelected.outbound as IOutbound;
+        this.unit = _outbound.booking.unit;
+        const _outboundId = _outbound.id as number;
+        const _inbounds = await getInboundsByOutboundAndForwarder(_outboundId, {
+          page: val.page - 1,
+          limit: val.itemsPerPage
+        })
+          .then(res => {
+            const response: PaginationResponse<IInbound> = res.data;
+            return response;
+          })
+          .catch(err => console.log(err));
+        this.loading = false;
+        if (_inbounds) {
+          this.inbounds = _inbounds.data;
+          this.inboundServerSideOptions.totalItems = _inbounds.totalElements;
+        }
+      }
+    }
+  }
+  @Watch("containerOptions")
+  async onContainerOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      console.log("ab");
+      console.log(val);
+      this.containersSelected = [] as Array<IContainer>;
+      this.loading = true;
+      const start = (val.page - 1) * val.itemsPerPage;
+      let end = start + val.itemsPerPage - 1;
+      if (end > this.containers.length - 1) {
+        end = this.containers.length - 1;
+      }
+      console.log(start);
+      console.log(end);
+      console.log(this.containers);
+      for (let i = start; i <= end; i++) {
+        this.containersSelected.push(this.containers[i]);
+      }
+
+      this.loading = false;
+    }
+  }
+  @Watch("options")
+  async onOptionsChange(val: DataOptions) {
+    console.log(2);
+    if (typeof val != "undefined") {
+      this.loading = true;
+      if (this.inbound && this.inbound.id) {
+        const _containers = await getContainersByInbound(this.inbound.id, {
+          page: val.page - 1,
+          limit: val.itemsPerPage
+        })
+          .then(res => {
+            const response = res.data;
+            return response;
+          })
+          .catch(err => {
+            console.log(err);
+          });
+        if (_containers) {
+          this.serverSideOptions.totalItems = _containers.totalElements;
+          this.inbound.billOfLading.containers = _containers.data.filter(
+            (x: IContainer) => x.status == "CREATED"
+          );
+        }
+      }
+      this.loading = false;
+    }
   }
 }
 </script>
