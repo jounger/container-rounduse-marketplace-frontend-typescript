@@ -30,23 +30,26 @@
               <v-select
                 v-model="roleLocal.permissions"
                 :items="permissionsToString"
+                :loading="loading"
+                no-data-text="Danh sách vai trò rỗng."
+                open-on-clear
+                deletable-chips
                 chips
                 clearable
                 label="Phân vai trò"
                 multiple
                 prepend-icon="enhanced_encryption"
               >
-                <template v-slot:selection="{ attrs, item, select, selected }">
-                  <v-chip
-                    v-bind="attrs"
-                    :input-value="selected"
-                    close
-                    @click="select"
-                    @click:close="remove(item)"
-                  >
-                    {{ item }}
-                  </v-chip>
-                </template>
+                <v-btn
+                  text
+                  small
+                  color="primary"
+                  v-if="seeMore"
+                  slot="append-item"
+                  style="margin-left:165px;"
+                  @click="loadMorePermissions()"
+                  >Xem thêm</v-btn
+                >
               </v-select>
             </v-col>
           </v-row>
@@ -91,25 +94,80 @@ export default class CreateRole extends Vue {
   @Prop(Object) role!: IRole;
 
   permissions: Array<IPermission> = [];
+  limit = 5;
+  loading = false;
   valid = false;
+  seeMore = true;
   roleLocal = {
     name: "",
     permissions: []
   } as IRole;
-  async created() {
-    if (this.update) {
-      this.roleLocal = Object.assign({}, this.role);
-    }
+  async getPermissions(limit: number) {
+    this.loading = true;
+    this.permissions = [] as Array<IPermission>;
     const _permissions = await getPermissions({
       page: 0,
-      limit: 100
+      limit: limit + 1
     })
       .then(res => {
         const response: PaginationResponse<IPermission> = res.data;
         return response.data;
       })
-      .catch(err => console.log(err));
-    this.permissions = _permissions || [];
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    if (_permissions) {
+      if (!this.update) {
+        _permissions.forEach((x: IPermission, index: number) => {
+          if (index != limit) {
+            this.permissions.push(x);
+          }
+        });
+      } else {
+        _permissions.forEach((x: IPermission) => {
+          for (let i = 0; i < this.roleLocal.permissions.length; i++) {
+            if (x.name == this.roleLocal.permissions[i]) {
+              this.permissions.push(x);
+            }
+          }
+        });
+        if (this.permissions.length > this.limit) {
+          this.limit = this.permissions.length;
+        } else {
+          if (this.permissions.length < this.limit) {
+            _permissions.forEach((x: IPermission) => {
+              let check = false;
+              for (let i = 0; i < this.permissions.length; i++) {
+                if (x.name == this.permissions[i].name) {
+                  check = true;
+                }
+              }
+              if (check == false && this.permissions.length < this.limit) {
+                console.log(this.limit);
+                this.permissions.push(x);
+              }
+            });
+          }
+        }
+      }
+    }
+    if (!_permissions || _permissions.length <= this.limit) {
+      this.seeMore = false;
+    }
+    this.loading = false;
+  }
+  async loadMorePermissions() {
+    this.limit += 5;
+    await this.getPermissions(this.limit);
+  }
+  async created() {
+    if (this.update) {
+      this.roleLocal = Object.assign({}, this.role);
+      await this.getPermissions(100);
+    } else {
+      await this.getPermissions(5);
+    }
   }
   get permissionsToString() {
     return this.permissions.map(x => x.name);

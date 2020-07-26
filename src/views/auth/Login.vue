@@ -1,5 +1,5 @@
 <template>
-  <v-card width="600" height="370" class="mt-12">
+  <v-card width="550" height="370" class="mt-12">
     <v-toolbar color="primary" light flat>
       <v-toolbar-title
         ><span style="color: white">Đăng nhập</span></v-toolbar-title

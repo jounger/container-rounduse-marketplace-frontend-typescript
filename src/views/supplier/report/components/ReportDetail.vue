@@ -11,17 +11,6 @@
           />
         </v-row>
         <v-row justify="center">
-          <CreateFeedback
-            v-if="dialogFeedback"
-            :feedback="feedback"
-            :feedbacks.sync="feedbacks"
-            :dialogAdd.sync="dialogFeedback"
-            :update="update"
-            :report="report"
-            :receiver="receiver"
-          />
-        </v-row>
-        <v-row justify="center">
           <DeleteFeedback
             v-if="dialogDel"
             :dialogDel.sync="dialogDel"
@@ -33,9 +22,8 @@
           <ChangeStatusReport
             v-if="dialogConfirm"
             :dialogConfirm.sync="dialogConfirm"
-            :report="report"
+            :report.sync="report"
             :status="status"
-            :reports.sync="reportsSync"
           />
         </v-row>
 
@@ -46,7 +34,14 @@
                 <v-img src="@/assets/images/ava.jpg" />
               </v-list-item-avatar>
               <v-list-item-content>
-                <v-list-item-title>{{ report.sender }}</v-list-item-title>
+                <v-list-item-title
+                  ><span style="font-weight:bold;">{{
+                    report.sender
+                  }}</span></v-list-item-title
+                >
+                <v-list-item-subtitle>{{
+                  convertTime(report.sendDate)
+                }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
           </v-col>
@@ -79,7 +74,7 @@
                       </v-list-item-content>
                     </v-list-item>
                     <v-list-item
-                      @click="openCreateDialog(item)"
+                      @click="openConfirmDialog('REJECTED')"
                       v-if="
                         $auth.user().roles[0] == 'ROLE_MODERATOR' &&
                           (report.status == 'PENDING' ||
@@ -142,8 +137,8 @@
           <v-list-item
             three-line
             class="px-0"
-            v-for="item in feedbacks"
-            :key="item.title"
+            v-for="(item, index) in feedbacks"
+            :key="index"
           >
             <v-list-item-avatar>
               <v-img src="@/assets/images/ava.jpg" />
@@ -193,43 +188,68 @@
               >
               <v-list-item-subtitle>
                 <a
-                  v-if="item.sender != $auth.user().username"
+                  v-if="
+                    item.sender != $auth.user().username &&
+                      $auth.user().roles[0] == 'ROLE_FORWARDER'
+                  "
                   @click="openMarkDialog(item)"
                   >Đánh giá .</a
                 >
                 <a
                   style="margin-left:10px;"
-                  v-if="item.sender != $auth.user().username"
-                  >Phản hồi</a
-                ><a v-if="item.sender == $auth.user().username"
-                  >Phản hồi</a
-                ></v-list-item-subtitle
-              >
+                  v-if="
+                    report.status != 'REJECTED' &&
+                      report.status != 'CLOSED' &&
+                      item.sender != $auth.user().username &&
+                      $auth.user().roles[0] == 'ROLE_FORWARDER'
+                  "
+                  @click="focus = true"
+                  >Phản hồi .</a
+                ><a
+                  v-if="
+                    report.status != 'REJECTED' &&
+                      report.status != 'CLOSED' &&
+                      (item.sender == $auth.user().username ||
+                        $auth.user().roles[0] == 'ROLE_MODERATOR')
+                  "
+                  @click="focus = true"
+                  >Phản hồi .</a
+                >
+                {{ convertTime(item.sendDate) }}
+              </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
-        <v-col cols="12" md="12">
-          <v-textarea
-            v-model="feedbackLocal.message"
-            outlined
-            rounded
-            auto-grow
-            clearable
-            row-height="24"
-            rows="1"
-            placeholder="Viết feedback ..."
-            @keydown.enter.exact.prevent
-            @keyup.enter.exact="createFeedback"
-            @keydown.enter.shift.exact="newline"
-          ></v-textarea></v-col></v-card></v-row
+        <v-row
+          style="margin-left:-2px;margin-right:2px;"
+          v-if="report.status != 'REJECTED' && report.status != 'CLOSED'"
+        >
+          <v-col cols="12" md="1"
+            ><v-avatar size="43">
+              <v-img src="@/assets/images/ava.jpg" /> </v-avatar
+          ></v-col>
+          <v-col cols="12" md="11">
+            <v-textarea
+              v-model="feedbackLocal.message"
+              :autofocus="focus"
+              outlined
+              rounded
+              auto-grow
+              clearable
+              row-height="24"
+              rows="1"
+              placeholder="Viết feedback ..."
+              @keydown.enter.exact.prevent
+              @keyup.enter.exact="createFeedback"
+              @keydown.enter.shift.exact="newline"
+            ></v-textarea></v-col></v-row></v-card></v-row
   ></v-content>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import Utils from "@/mixin/utils";
 import { IReport } from "@/entity/report";
 import { IFeedback } from "@/entity/feedback";
-import CreateFeedback from "../../../operator/supplier-report/components/CreateFeedback.vue";
 import DeleteFeedback from "../../../operator/supplier-report/components/DeleteFeedback.vue";
 import {
   getFeedbacksByReport,
@@ -250,16 +270,15 @@ import { getErrorMessage } from "@/utils/tool";
 @Component({
   mixins: [Utils],
   components: {
-    CreateFeedback,
     DeleteFeedback,
     MarkFeedback,
     ChangeStatusReport
   }
 })
 export default class ReportDetail extends Vue {
-  @PropSync("reports", { type: Array }) reportsSync!: Array<IReport>;
-
+  focus = false;
   feedbacks: Array<IFeedback> = [];
+  mapFeedbacks = new Map();
   report = {
     sender: "",
     report: {
@@ -293,7 +312,8 @@ export default class ReportDetail extends Vue {
     } as IBiddingDocument,
     title: "",
     detail: "",
-    status: ""
+    status: "",
+    sendDate: ""
   } as IReport;
   dialogFeedback = false;
   dialogDel = false;
@@ -309,12 +329,17 @@ export default class ReportDetail extends Vue {
     message: "",
     satisfactionPoints: 0
   } as IFeedback;
+
   newline() {
     console.log(0);
     this.feedbackLocal.message = `${this.feedbackLocal.message}`;
   }
   async createFeedback() {
-    if (this.feedbackLocal && this.report.id) {
+    if (
+      this.feedbackLocal &&
+      this.report.id &&
+      this.feedbackLocal.message != ""
+    ) {
       if (this.$auth.user().roles[0] == "ROLE_MODERATOR") {
         const _feedback = await createFeedback(
           this.report.id,

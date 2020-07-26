@@ -33,9 +33,9 @@
               item-key="id"
               :loading="loading"
               :options.sync="options"
-              :server-items-length="options.totalItems"
+              :server-items-length="serverSideOptions.totalItems"
               :footer-props="{
-                'items-per-page-options': options.itemsPerPageItems
+                'items-per-page-options': serverSideOptions.itemsPerPageItems
               }"
               :actions-append="options.page"
               disable-sort
@@ -50,7 +50,14 @@
                   <v-data-table
                     :headers="containerHeaders"
                     :items="item.containers"
-                    :hide-default-footer="true"
+                    :loading="loading"
+                    :options.sync="containerOptions"
+                    :server-items-length="containerServerSideOptions.totalItems"
+                    :footer-props="{
+                      'items-per-page-options':
+                        containerServerSideOptions.itemsPerPageItems
+                    }"
+                    :actions-append="containerOptions.page"
                     disable-sort
                     dark
                     dense
@@ -124,7 +131,7 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop, Watch } from "vue-property-decorator";
 import { ICombined } from "@/entity/combined";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
@@ -133,6 +140,8 @@ import { IBid } from "@/entity/bid";
 import { IContract } from "@/entity/contract";
 import { getErrorMessage } from "@/utils/tool";
 import snackbar from "@/store/modules/snackbar";
+import { DataOptions } from "vuetify";
+import { IContainer } from "@/entity/container";
 
 @Component({
   mixins: [FormValidate, Utils]
@@ -147,6 +156,8 @@ export default class CreateCombined extends Vue {
 
   dateInit = new Date().toISOString().substr(0, 10);
   bidsSelection: Array<IBid> = [];
+  bidSelect = {} as IBid;
+  containersSelected: Array<IContainer> = [];
   combinedLocal = {
     bid: this.bid,
     status: "INFO_RECEIVED",
@@ -168,9 +179,18 @@ export default class CreateCombined extends Vue {
   // Outbound form
   loading = false;
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
+    totalItems: 0,
+    itemsPerPageItems: [5, 10, 20, 50]
+  };
+  containerOptions = {
+    page: 1,
+    itemsPerPage: 5
+  } as DataOptions;
+  containerServerSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -213,9 +233,17 @@ export default class CreateCombined extends Vue {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
+        this.bidSelect = {} as IBid;
       } else {
-        this.expanded.splice(0, this.expanded.length);
-        this.expanded.push(value);
+        if (this.expanded.length > 0) {
+          this.expanded.splice(0, this.expanded.length);
+          this.expanded.push(value);
+          this.bidSelect = value;
+          this.onContainerOptionsChange(this.containerOptions);
+        } else {
+          this.expanded.push(value);
+          this.bidSelect = value;
+        }
       }
     } else {
       const index = this.expanded.findIndex(x => x.id === value.id);
@@ -257,17 +285,37 @@ export default class CreateCombined extends Vue {
         }
         this.numberWinnerSync += 1;
         this.dialogAddSync = false;
+        this.dialogConfirmSync = false;
       }
       snackbar.setDisplay(true);
     }
   }
+  @Watch("containerOptions")
+  async onContainerOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.containersSelected = [] as Array<IContainer>;
+      this.loading = true;
+      const start = (val.page - 1) * val.itemsPerPage;
+      let end = start + val.itemsPerPage - 1;
+      if (end > this.bidSelect.containers.length - 1) {
+        end = this.bidSelect.containers.length - 1;
+      }
+      for (let i = start; i <= end; i++) {
+        this.containersSelected.push(
+          this.bidSelect.containers[i] as IContainer
+        );
+      }
 
+      this.loading = false;
+    }
+  }
   created() {
     // TODO: API get Outbound
+    this.containerServerSideOptions.totalItems = this.bid.containers.length;
     this.bidsSelection.push(this.bid);
     this.merchant = this.$auth.user().username;
     this.forwarder = this.bid.bidder;
-    this.options.totalItems = 1;
+    this.serverSideOptions.totalItems = 1;
   }
 }
 </script>

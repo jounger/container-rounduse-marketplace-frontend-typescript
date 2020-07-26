@@ -43,8 +43,20 @@
                         prepend-icon="directions_boat"
                         :items="shippingLinesToString"
                         :rules="[required('shipping line')]"
+                        :loading="loadingShippingLines"
+                        no-data-text="Danh sách hãng tàu rỗng."
                         label="Hãng tàu*"
-                      ></v-select>
+                        ><v-btn
+                          text
+                          small
+                          color="primary"
+                          v-if="seeMoreShippingLines"
+                          slot="append-item"
+                          style="margin-left:60px;"
+                          @click="loadMoreShippingLines()"
+                          >Xem thêm</v-btn
+                        ></v-select
+                      >
                     </v-col>
                     <v-col cols="12" sm="6">
                       <v-select
@@ -52,8 +64,20 @@
                         prepend-icon="directions_bus"
                         :items="containerTypesToString"
                         :rules="[required('container type')]"
+                        :loading="loadingContainerTypes"
+                        no-data-text="Danh sách loại Cont rỗng."
                         label="Loại container*"
-                      ></v-select>
+                        ><v-btn
+                          text
+                          small
+                          color="primary"
+                          v-if="seeMoreContainerTypes"
+                          slot="append-item"
+                          style="margin-left:60px;"
+                          @click="loadMoreContainerTypes()"
+                          >Xem thêm</v-btn
+                        ></v-select
+                      >
                     </v-col>
                   </v-row>
                   <v-row>
@@ -139,7 +163,7 @@
                         :rules="[required('booking number')]"
                         type="text"
                         label="Số Booking*"
-                        required
+                        readonly
                       ></v-text-field> </v-col
                     ><v-col cols="12" sm="6">
                       <v-select
@@ -147,10 +171,22 @@
                         prepend-icon="flag"
                         :items="portsToString"
                         :rules="[required('port of loading')]"
+                        :loading="loadingPorts"
+                        no-data-text="Danh sách bến cảng rỗng."
                         label="Cảng xuất hàng*"
-                        required
-                      ></v-select> </v-col
-                  ></v-row>
+                        ><v-btn
+                          text
+                          small
+                          color="primary"
+                          v-if="seeMorePorts"
+                          slot="append-item"
+                          style="margin-left:60px;"
+                          @click="loadMorePorts()"
+                          >Xem thêm</v-btn
+                        ></v-select
+                      >
+                    </v-col></v-row
+                  >
                   <v-row
                     ><v-col cols="12">
                       <DatetimePicker
@@ -376,6 +412,18 @@ export default class UpdateOutbound extends Vue {
   containerTypes: Array<IContainerType> = [];
   unitOfMeasurements: Array<string> = [];
   outboundLocal = null as IOutbound | null;
+  loadingShippingLines = false;
+  seeMoreShippingLines = true;
+  limitShippingLines = 5;
+  loadingContainerTypes = false;
+  seeMoreContainerTypes = true;
+  limitContainerTypes = 5;
+  loadingPorts = false;
+  seeMorePorts = true;
+  limitPorts = 5;
+  shippingLine = "";
+  containerType = "";
+  port = "";
 
   // Outbound Update
   estimateTimeTravel() {
@@ -396,14 +444,21 @@ export default class UpdateOutbound extends Vue {
     }
   }
   @Watch("dialogEditSync")
-  onDialogEditSyncChange(val: boolean) {
+  async onDialogEditSyncChange(val: boolean) {
     if (val == true) {
       if (!isEmptyObject(this.outbound)) {
         this.outboundLocal = Object.assign({}, this.outbound);
         this.$nextTick(() => {
           this.inputAddress1.value = this.outbound.packingStation;
         });
+        this.shippingLine = this.outboundLocal.shippingLine;
+        this.containerType = this.outboundLocal.containerType;
+        this.port = this.outboundLocal.booking.portOfLoading;
       }
+      // API GET Ports
+      await this.getShippingLines(100);
+      await this.getContainerTypes(100);
+      await this.getPorts(100);
     } else {
       this.stepper = 1;
     }
@@ -485,43 +540,134 @@ export default class UpdateOutbound extends Vue {
     }
     return undefined;
   }
-  async created() {
-    if (!isEmptyObject(this.outbound)) {
-      this.outboundLocal = Object.assign({}, this.outbound);
-    }
-    // API GET Ports
-    const _ports = await getPorts({
-      page: 0,
-      limit: 100
-    })
-      .then(res => {
-        const response: PaginationResponse<IPort> = res.data;
-        return response.data;
-      })
-      .catch(err => console.log(err));
-    this.ports = _ports || [];
-    // API GET Shipping Line
+  async getShippingLines(limit: number) {
+    this.loadingShippingLines = true;
+    this.shippingLines = [] as Array<IShippingLine>;
     const _shippingLines = await getShippingLines({
       page: 0,
-      limit: 100
+      limit: limit + 1
     })
       .then(res => {
         const response: PaginationResponse<IShippingLine> = res.data;
         return response.data.filter(x => x.roles[0] == "ROLE_SHIPPINGLINE");
       })
-      .catch(err => console.log(err));
-    this.shippingLines = _shippingLines || [];
-    // API GET Container Type
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    if (_shippingLines) {
+      _shippingLines.forEach((x: IShippingLine) => {
+        if (x.companyCode == this.shippingLine) {
+          this.shippingLines.push(x);
+        }
+      });
+      _shippingLines.forEach((x: IShippingLine) => {
+        let check = false;
+        if (x.companyCode == this.shippingLine) {
+          check = true;
+        }
+        if (
+          check == false &&
+          this.shippingLines.length < this.limitShippingLines
+        ) {
+          this.shippingLines.push(x);
+        }
+      });
+    }
+    if (!_shippingLines || _shippingLines.length <= this.limitShippingLines) {
+      this.seeMoreShippingLines = false;
+    }
+    this.loadingShippingLines = false;
+  }
+  async loadMoreShippingLines() {
+    this.limitShippingLines += 5;
+    await this.getShippingLines(this.limitShippingLines);
+  }
+  async getContainerTypes(limit: number) {
+    this.loadingContainerTypes = true;
+    this.containerTypes = [] as Array<IContainerType>;
     const _containerTypes = await getContainerTypes({
       page: 0,
-      limit: 100
+      limit: limit + 1
     })
       .then(res => {
         const response: PaginationResponse<IContainerType> = res.data;
         return response.data;
       })
-      .catch(err => console.log(err));
-    this.containerTypes = _containerTypes || [];
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    if (_containerTypes) {
+      _containerTypes.forEach((x: IContainerType) => {
+        if (x.name == this.containerType) {
+          this.containerTypes.push(x);
+        }
+      });
+      _containerTypes.forEach((x: IContainerType) => {
+        let check = false;
+        if (x.name == this.containerType) {
+          check = true;
+        }
+        if (
+          check == false &&
+          this.containerTypes.length < this.limitContainerTypes
+        ) {
+          this.containerTypes.push(x);
+        }
+      });
+    }
+    if (
+      !_containerTypes ||
+      _containerTypes.length <= this.limitContainerTypes
+    ) {
+      this.seeMoreContainerTypes = false;
+    }
+    this.loadingContainerTypes = false;
+  }
+  async loadMoreContainerTypes() {
+    this.limitContainerTypes += 5;
+    await this.getContainerTypes(this.limitContainerTypes);
+  }
+  async getPorts(limit: number) {
+    this.loadingPorts = true;
+    this.ports = [] as Array<IPort>;
+    const _ports = await getPorts({
+      page: 0,
+      limit: limit + 1
+    })
+      .then(res => {
+        const response: PaginationResponse<IPort> = res.data;
+        return response.data;
+      })
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    if (_ports) {
+      _ports.forEach((x: IPort) => {
+        if (x.nameCode == this.port) {
+          this.ports.push(x);
+        }
+      });
+      _ports.forEach((x: IPort) => {
+        let check = false;
+        if (x.nameCode == this.port) {
+          check = true;
+        }
+        if (check == false && this.ports.length < this.limitPorts) {
+          this.ports.push(x);
+        }
+      });
+    }
+    if (!_ports || _ports.length <= this.limitPorts) {
+      this.seeMorePorts = false;
+    }
+    this.loadingPorts = false;
+  }
+  async loadMorePorts() {
+    this.limitPorts += 5;
+    await this.getPorts(this.limitPorts);
   }
   get portsToString() {
     return this.ports.map(x => x.nameCode);

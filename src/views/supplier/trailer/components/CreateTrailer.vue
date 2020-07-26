@@ -32,10 +32,22 @@
               <v-select
                 v-model="trailerLocal.type"
                 prepend-icon="timeline"
-                :items="types"
+                :items="typesLoad"
                 :rules="[required('type')]"
+                :loading="loading"
+                no-data-text="Danh sách loại rơ moóc rỗng."
                 label="Loại rơ moóc*"
-              ></v-select>
+                ><v-btn
+                  text
+                  small
+                  color="primary"
+                  v-if="seeMore"
+                  slot="append-item"
+                  style="margin-left:185px;"
+                  @click="loadMore()"
+                  >Xem thêm</v-btn
+                ></v-select
+              >
             </v-col>
           </v-row>
           <v-row>
@@ -107,11 +119,55 @@ export default class CreateTrailer extends Vue {
     numberOfAxles: 1
   } as IContainerSemiTrailer;
   valid = false;
+  loading = false;
+  seeMore = true;
+  limit = 5;
   types: Array<string> = [];
+  typesLoad: Array<string> = [];
+
+  getTypes(limit: number) {
+    this.typesLoad = [] as Array<string>;
+    if (!this.update) {
+      this.types.forEach((x: string, index: number) => {
+        if (index < limit) {
+          this.typesLoad.push(x);
+        }
+      });
+    } else {
+      console.log(this.trailerLocal);
+      this.types.forEach((x: string) => {
+        if (x == this.trailerLocal.type) {
+          console.log(1);
+          this.typesLoad.push(x);
+        }
+      });
+      this.types.forEach((x: string) => {
+        let check = false;
+        if (x == this.trailerLocal.type) {
+          check = true;
+        }
+        if (check == false && this.typesLoad.length < this.limit) {
+          console.log(this.limit);
+          this.typesLoad.push(x);
+        }
+      });
+    }
+    if (this.types.length <= this.limit) {
+      this.seeMore = false;
+    }
+    this.loading = false;
+  }
+  loadMore() {
+    this.limit += 5;
+    this.getTypes(this.limit);
+  }
   created() {
     this.types = ["T28", "T32", "T34", "T36", "T40", "T45", "T48", "T53"];
     if (this.update) {
       this.trailerLocal = Object.assign({}, this.trailer);
+      this.getTypes(10);
+    } else {
+      this.getTypes(5);
     }
   }
   async createTrailer() {

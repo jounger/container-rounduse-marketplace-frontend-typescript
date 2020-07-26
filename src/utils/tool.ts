@@ -78,6 +78,30 @@ export function currencyFormatter(num: number, cur?: string) {
 export function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+export function convertTime(input: string) {
+  const minute = Math.floor(
+    (new Date().getTime() - new Date(input).getTime()) / 60000
+  );
+  if (minute < 1) {
+    return "Vừa xong";
+  } else {
+    if (minute < 60) {
+      return minute + " phút";
+    } else {
+      const hour = Math.floor(minute / 60);
+      if (hour < 24) {
+        return hour + " giờ";
+      } else {
+        const date = Math.floor(hour / 24);
+        if (date < 365) {
+          return date + " ngày";
+        } else {
+          return Math.floor(date / 365) + " năm";
+        }
+      }
+    }
+  }
+}
 
 export function getErrorMessage(error: any) {
   // Error 😨

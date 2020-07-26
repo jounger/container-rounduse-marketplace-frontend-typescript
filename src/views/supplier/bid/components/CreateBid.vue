@@ -440,7 +440,7 @@ export default class CreateBid extends Vue {
           return null;
         });
       if (_bid) {
-        if (typeof this.bidsSync != "undefined") {
+        if (this.bidsSync) {
           this.bidsSync.unshift(_bid);
         }
         if (typeof this.totalItemsSync != "undefined") {
@@ -517,7 +517,10 @@ export default class CreateBid extends Vue {
             console.log("watch", response);
             return response;
           })
-          .catch(err => console.log(err));
+          .catch(err => {
+            console.log(err);
+            return null;
+          });
         this.loading = false;
         if (_biddingNotificationsByUsers) {
           this.biddingDocuments = _biddingNotificationsByUsers.data
@@ -557,7 +560,10 @@ export default class CreateBid extends Vue {
             const response: PaginationResponse<IInbound> = res.data;
             return response;
           })
-          .catch(err => console.log(err));
+          .catch(err => {
+            console.log(err);
+            return null;
+          });
         this.loading = false;
         if (_inbounds) {
           this.inbounds = _inbounds.data;
@@ -569,8 +575,6 @@ export default class CreateBid extends Vue {
   @Watch("containerOptions")
   async onContainerOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
-      console.log("ab");
-      console.log(val);
       this.containersSelected = [] as Array<IContainer>;
       this.loading = true;
       const start = (val.page - 1) * val.itemsPerPage;
@@ -590,7 +594,6 @@ export default class CreateBid extends Vue {
   }
   @Watch("options")
   async onOptionsChange(val: DataOptions) {
-    console.log(2);
     if (typeof val != "undefined") {
       this.loading = true;
       if (this.inbound && this.inbound.id) {
@@ -599,11 +602,12 @@ export default class CreateBid extends Vue {
           limit: val.itemsPerPage
         })
           .then(res => {
-            const response = res.data;
+            const response: PaginationResponse<IContainer> = res.data;
             return response;
           })
           .catch(err => {
             console.log(err);
+            return null;
           });
         if (_containers) {
           this.serverSideOptions.totalItems = _containers.totalElements;

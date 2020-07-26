@@ -377,13 +377,20 @@
             >
           </template>
 
-          <template v-slot:expanded-item="{ headers, item }">
+          <template v-slot:expanded-item="{ headers }">
             <td :colspan="headers.length" class="px-0">
               <v-data-table
                 v-if="biddingDocument.isMultipleAward"
                 :headers="containerHeaders"
-                :items="item.containers"
-                :hide-default-footer="true"
+                :items="bid.containers"
+                :loading="loading"
+                :options.sync="containerOptions"
+                :server-items-length="containerServerSideOptions.totalItems"
+                :footer-props="{
+                  'items-per-page-options':
+                    containerServerSideOptions.itemsPerPageItems
+                }"
+                :actions-append="containerOptions.page"
                 v-model="containerSelected"
                 show-select
                 disable-sort
@@ -394,8 +401,15 @@
               <v-data-table
                 v-if="!biddingDocument.isMultipleAward"
                 :headers="containerHeaders"
-                :items="item.containers"
-                :hide-default-footer="true"
+                :items="bid.containers"
+                :loading="loading"
+                :options.sync="containerOptions"
+                :server-items-length="containerServerSideOptions.totalItems"
+                :footer-props="{
+                  'items-per-page-options':
+                    containerServerSideOptions.itemsPerPageItems
+                }"
+                :actions-append="containerOptions.page"
                 disable-sort
                 dark
                 dense
@@ -426,6 +440,7 @@ import CreateBid from "../../bid/components/CreateBid.vue";
 import { DataOptions } from "vuetify";
 import { IContainer } from "@/entity/container";
 import SupplierRating from "./SupplierRating.vue";
+import { getContainersByBid } from "@/api/container";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -444,7 +459,7 @@ export default class DetailBiddingDocument extends Vue {
   dialogConfirm = false;
   dialogReport = false;
   dialogBid = false;
-  bid = null as IBid | null;
+  bid = {} as IBid;
   expanded: Array<IBid> = [];
   singleExpand = true;
   numberWinner = 0;
@@ -453,6 +468,14 @@ export default class DetailBiddingDocument extends Vue {
     itemsPerPage: 5
   } as DataOptions;
   serverSideOptions = {
+    totalItems: 0,
+    itemsPerPageItems: [5, 10, 20, 50]
+  };
+  containerOptions = {
+    page: 1,
+    itemsPerPage: 5
+  } as DataOptions;
+  containerServerSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -503,10 +526,19 @@ export default class DetailBiddingDocument extends Vue {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
         this.containerSelected = [];
+        this.bid = {} as IBid;
       } else {
-        this.expanded.splice(0, this.expanded.length);
-        this.expanded.push(value);
-        this.containerSelected = value.containers as Array<IContainer>;
+        if (this.expanded.length > 0) {
+          this.expanded.splice(0, this.expanded.length);
+          this.expanded.push(value);
+          this.containerSelected = value.containers as Array<IContainer>;
+          this.bid = value;
+          this.onContainerOptionsChange(this.containerOptions);
+        } else {
+          this.expanded.push(value);
+          this.containerSelected = value.containers as Array<IContainer>;
+          this.bid = value;
+        }
       }
     } else {
       const index = this.expanded.findIndex(x => x.id === value.id);
@@ -518,6 +550,33 @@ export default class DetailBiddingDocument extends Vue {
       }
     }
   }
+  @Watch("containerOptions")
+  async onContainerOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
+      if (this.bid && this.bid.id) {
+        const _containers = await getContainersByBid(this.bid.id, {
+          page: val.page - 1,
+          limit: val.itemsPerPage
+        })
+          .then(res => {
+            const response: PaginationResponse<IContainer> = res.data;
+            return response;
+          })
+          .catch(err => {
+            console.log(err);
+            return null;
+          });
+        if (_containers) {
+          this.containerServerSideOptions.totalItems =
+            _containers.totalElements;
+          this.bid.containers = _containers.data;
+        }
+      }
+      this.loading = false;
+    }
+  }
+
   @Watch("options")
   async onOptionsChange(val: DataOptions) {
     if (typeof val !== "undefined") {

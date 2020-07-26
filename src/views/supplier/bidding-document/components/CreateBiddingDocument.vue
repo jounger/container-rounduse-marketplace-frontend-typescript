@@ -28,13 +28,13 @@
               :items="outbounds"
               item-key="id"
               :loading="loading"
-              :options.sync="outboundOptions"
-              :server-items-length="outboundOptions.totalItems"
+              :options.sync="options"
+              :server-items-length="serverSideOptions.totalItems"
               :footer-props="{
                 'items-per-page-outboundOptions':
-                  outboundOptions.itemsPerPageItems
+                  serverSideOptions.itemsPerPageItems
               }"
-              :actions-append="outboundOptions.page"
+              :actions-append="options.page"
               disable-sort
               class="elevation-1 my-1"
             >
@@ -189,7 +189,7 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
+import { Component, Vue, PropSync, Watch } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { IOutbound } from "@/entity/outbound";
 import FormValidate from "@/mixin/form-validate";
@@ -200,6 +200,7 @@ import { getOutboundByMerchant } from "@/api/outbound";
 import { PaginationResponse } from "@/api/payload";
 import DatetimePicker from "@/components/DatetimePicker.vue";
 import snackbar from "@/store/modules/snackbar";
+import { DataOptions } from "vuetify";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -238,16 +239,16 @@ export default class CreateBiddingDocument extends Vue {
   valid = true;
   // API list
   currencyOfPayments: Array<string> = [];
-  unitOfMeasurements: Array<string> = [];
 
   // Outbound form
   outbounds: Array<IOutbound> = [];
   selectedOutbound = null as IOutbound | null;
   loading = false;
-  outboundOptions = {
-    descending: true,
+  options = {
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -314,35 +315,40 @@ export default class CreateBiddingDocument extends Vue {
     }
     snackbar.setDisplay(true);
   }
-
-  async created() {
-    // TODO: API get Outbound
-    if (this.outboundSync && !isEmptyObject(this.outboundSync)) {
-      this.outbounds.push(this.outboundSync);
-      this.selectedOutbound = this.outboundSync;
-      this.outboundOptions.totalItems = 1;
-      this.loading = false;
-    } else {
-      const _outbound = await getOutboundByMerchant({
-        page: this.outboundOptions.page - 1,
-        limit: this.outboundOptions.itemsPerPage,
-        status: "CREATED"
-      })
-        .then(res => {
-          const response: PaginationResponse<IOutbound> = res.data;
-          console.log("response", response);
-          return response;
+  @Watch("options")
+  async onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
+      if (this.outboundSync && !isEmptyObject(this.outboundSync)) {
+        this.outbounds.push(this.outboundSync);
+        this.selectedOutbound = this.outboundSync;
+        this.serverSideOptions.totalItems = 1;
+        this.loading = false;
+      } else {
+        const _outbound = await getOutboundByMerchant({
+          page: val.page - 1,
+          limit: val.itemsPerPage,
+          status: "CREATED"
         })
-        .catch(err => console.log(err));
-      this.loading = false;
-      if (_outbound) {
-        this.outbounds = _outbound.data;
-        this.outboundOptions.totalItems = _outbound.totalElements;
+          .then(res => {
+            const response: PaginationResponse<IOutbound> = res.data;
+            console.log("response", response);
+            return response;
+          })
+          .catch(err => console.log(err));
+        this.loading = false;
+        if (_outbound) {
+          this.outbounds = _outbound.data;
+          this.serverSideOptions.totalItems = _outbound.totalElements;
+        }
       }
+      this.loading = false;
     }
+  }
+  created() {
+    // TODO: API get Outbound\
     // TODO: API get other info
     this.currencyOfPayments = ["VND", "USD"];
-    this.unitOfMeasurements = ["KG", "Ton"];
   }
 }
 </script>

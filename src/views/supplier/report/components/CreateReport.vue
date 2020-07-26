@@ -28,9 +28,9 @@
               item-key="id"
               :loading="loading"
               :options.sync="options"
-              :server-items-length="options.totalItems"
+              :server-items-length="serverSideOptions.totalItems"
               :footer-props="{
-                'items-per-page-options': options.itemsPerPageItems
+                'items-per-page-options': serverSideOptions.itemsPerPageItems
               }"
               :actions-append="options.page"
               disable-sort
@@ -135,6 +135,7 @@ import { IBiddingNotification } from "@/entity/bidding-notification";
 import { getBiddingNotificationsByUser } from "@/api/notification";
 import { createReport } from "@/api/report";
 import snackbar from "@/store/modules/snackbar";
+import { DataOptions } from "vuetify";
 @Component({
   mixins: [FormValidate, Utils]
 })
@@ -157,9 +158,10 @@ export default class CreateReport extends Vue {
   } as IReport;
   loading = true;
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -222,13 +224,12 @@ export default class CreateReport extends Vue {
     if (this.biddingDocumentSync && !isEmptyObject(this.biddingDocumentSync)) {
       this.biddingDocuments.push(this.biddingDocumentSync);
       this.biddingDocumentSelected = this.biddingDocumentSync;
-      this.options.totalItems = 1;
+      this.serverSideOptions.totalItems = 1;
       this.loading = false;
     } else {
       const _biddingNotifications = await getBiddingNotificationsByUser({
         page: 0,
-        limit: 100,
-        status: "ADDED"
+        limit: 100
       })
         .then(res => {
           const response: PaginationResponse<IBiddingNotification> = res.data;
@@ -240,15 +241,17 @@ export default class CreateReport extends Vue {
           return null;
         });
       if (_biddingNotifications) {
-        this.biddingDocuments = _biddingNotifications.data.reduce(function(
-          pV: Array<IBiddingDocument>,
-          cV: IBiddingNotification
-        ) {
-          pV.push(cV.relatedResource);
-          return pV;
-        },
-        []);
-        this.options.totalItems = _biddingNotifications.totalElements;
+        this.biddingDocuments = _biddingNotifications.data
+          .filter(x => x.action == "ADDED")
+          .reduce(function(
+            pV: Array<IBiddingDocument>,
+            cV: IBiddingNotification
+          ) {
+            pV.push(cV.relatedResource);
+            return pV;
+          },
+          []);
+        this.serverSideOptions.totalItems = _biddingNotifications.totalElements;
       }
       this.loading = false;
     }

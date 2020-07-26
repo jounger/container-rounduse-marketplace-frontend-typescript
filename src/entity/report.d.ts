@@ -6,4 +6,5 @@ export interface IReport {
   title: string;
   detail: string;
   status: string;
+  sendDate: string;
 }

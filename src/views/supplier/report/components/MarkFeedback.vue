@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogMarkSync" max-width="600px">
+  <v-dialog v-model="dialogMarkSync" width="400">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
@@ -8,25 +8,24 @@
       </v-toolbar>
       <v-card-text>
         <v-form v-model="valid" validation>
-          <v-row>
-            <v-col cols="12" md="12">
-              <v-text-field
-                label="Số điểm bạn chấm là:"
-                name="satisfactionPoints"
-                prepend-icon="filter_vintage"
-                type="number"
-                :rules="[required('satisfactionPoints')]"
-                v-model="feedbackLocal.satisfactionPoints"
-              ></v-text-field>
-            </v-col>
+          <v-row justify="center" style="margin-top:20px;">
+            <v-rating
+              v-model="feedbackLocal.satisfactionPoints"
+              color="yellow darken-3"
+              background-color="grey darken-1"
+              empty-icon="$ratingFull"
+              half-increments
+              hover
+              :rules="[required('rating')]"
+            ></v-rating>
           </v-row>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-top: 65px;">
+      <v-card-actions style="margin-top: 20px;">
         <v-spacer></v-spacer>
         <v-btn @click="dialogMarkSync = false">Trở về</v-btn>
         <v-btn @click="markFeedback()" color="primary" :disabled="!valid"
-          >Chấm điểm</v-btn
+          >Đánh giá</v-btn
         >
       </v-card-actions>
     </v-card>

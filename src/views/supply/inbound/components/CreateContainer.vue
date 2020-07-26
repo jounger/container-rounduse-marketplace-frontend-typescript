@@ -32,8 +32,20 @@
                     prepend-icon="airline_seat_recline_normal"
                     :items="driversToString"
                     :rules="[required('driver')]"
+                    :loading="loadingDrivers"
+                    no-data-text="Danh sách lái xe rỗng."
                     label="Tài xế*"
-                  ></v-select>
+                    ><v-btn
+                      text
+                      small
+                      color="primary"
+                      v-if="seeMoreDrivers"
+                      slot="append-item"
+                      style="margin-left:20px;"
+                      @click="loadMoreDrivers()"
+                      >Xem thêm</v-btn
+                    ></v-select
+                  >
                 </v-flex>
               </v-layout>
             </v-layout>
@@ -45,8 +57,20 @@
                     prepend-icon="tram"
                     :items="tractorsToString"
                     :rules="[required('tractor')]"
+                    :loading="loadingTractors"
+                    no-data-text="Danh sách đầu kéo rỗng."
                     label="Chọn đầu kéo*"
-                  ></v-select>
+                    ><v-btn
+                      text
+                      small
+                      color="primary"
+                      v-if="seeMoreTractors"
+                      slot="append-item"
+                      style="margin-left:20px;"
+                      @click="loadMoreTractors()"
+                      >Xem thêm</v-btn
+                    ></v-select
+                  >
                 </v-flex>
               </v-layout>
               <v-layout col>
@@ -56,8 +80,20 @@
                     prepend-icon="format_strikethrough"
                     :items="trailersToString"
                     :rules="[required('trailer')]"
+                    :loading="loadingTrailers"
+                    no-data-text="Danh sách rơ moóc rỗng."
                     label="Chọn rơ moóc*"
-                  ></v-select>
+                    ><v-btn
+                      text
+                      small
+                      color="primary"
+                      v-if="seeMoreTrailers"
+                      slot="append-item"
+                      style="margin-left:20px;"
+                      @click="loadMoreTrailers()"
+                      >Xem thêm</v-btn
+                    ></v-select
+                  >
                 </v-flex>
               </v-layout>
             </v-layout>
@@ -108,6 +144,7 @@ import snackbar from "@/store/modules/snackbar";
 export default class CreateContainer extends Vue {
   @PropSync("dialogAddCont", { type: Boolean }) dialogAddContSync!: boolean;
   @PropSync("containers", { type: Array }) containersSync!: Array<IContainer>;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) container!: IContainer;
   @Prop(Object) billOfLading!: IBillOfLading;
   @Prop(Boolean) update!: boolean;
@@ -123,6 +160,168 @@ export default class CreateContainer extends Vue {
   trailers: Array<IContainerSemiTrailer> = [];
   tractors: Array<IContainerTractor> = [];
   drivers: Array<IDriver> = [];
+  loadingDrivers = false;
+  seeMoreDrivers = true;
+  limitDrivers = 5;
+  loadingTractors = false;
+  seeMoreTractors = true;
+  limitTractors = 5;
+  loadingTrailers = false;
+  seeMoreTrailers = true;
+  limitTrailers = 5;
+
+  async getDrivers(limit: number) {
+    this.loadingDrivers = true;
+    this.drivers = [] as Array<IDriver>;
+    const _drivers = await getDriversByForwarder({
+      page: 0,
+      limit: 100
+    })
+      .then(res => {
+        const response: PaginationResponse<IDriver> = res.data;
+        console.log("watch", response);
+        return response.data;
+      })
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    if (_drivers) {
+      if (!this.update) {
+        _drivers.forEach((x: IDriver, index: number) => {
+          if (index != limit) {
+            this.drivers.push(x);
+          }
+        });
+      } else {
+        _drivers.forEach((x: IDriver) => {
+          if (x.username == this.containerLocal.driver) {
+            this.drivers.push(x);
+          }
+        });
+        _drivers.forEach((x: IDriver) => {
+          let check = false;
+          if (x.username == this.containerLocal.driver) {
+            check = true;
+          }
+          if (check == false && this.drivers.length < this.limitDrivers) {
+            console.log(this.limitDrivers);
+            this.drivers.push(x);
+          }
+        });
+      }
+    }
+    if (!_drivers || _drivers.length <= this.limitDrivers) {
+      this.seeMoreDrivers = false;
+    }
+    this.loadingDrivers = false;
+  }
+  async loadMoreDrivers() {
+    this.limitDrivers += 5;
+    await this.getDrivers(this.limitDrivers);
+  }
+  async getTractors(limit: number) {
+    this.loadingTractors = true;
+    this.tractors = [] as Array<IContainerTractor>;
+    const _tractors = await getContainerTractorsByForwarder({
+      page: 0,
+      limit: limit + 1
+    })
+      .then(res => {
+        const response: PaginationResponse<IContainerTractor> = res.data;
+        return response.data;
+      })
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    if (_tractors) {
+      if (!this.update) {
+        _tractors.forEach((x: IContainerTractor, index: number) => {
+          if (index != limit) {
+            this.tractors.push(x);
+          }
+        });
+      } else {
+        _tractors.forEach((x: IContainerTractor) => {
+          if (x.licensePlate == this.containerLocal.tractor) {
+            this.tractors.push(x);
+          }
+        });
+        if (this.tractors.length < this.limitTractors) {
+          _tractors.forEach((x: IContainerTractor) => {
+            let check = false;
+            if (x.licensePlate == this.containerLocal.tractor) {
+              check = true;
+            }
+            if (check == false && this.tractors.length < this.limitTractors) {
+              console.log(this.limitTractors);
+              this.tractors.push(x);
+            }
+          });
+        }
+      }
+    }
+    if (!_tractors || _tractors.length <= this.limitTractors) {
+      this.seeMoreTractors = false;
+    }
+    this.loadingTractors = false;
+  }
+  async loadMoreTractors() {
+    this.limitTractors += 5;
+    await this.getTractors(this.limitTractors);
+  }
+  async getTrailers(limit: number) {
+    this.loadingTrailers = true;
+    this.trailers = [] as Array<IContainerSemiTrailer>;
+    const _trailers = await getContainerSemiTrailersByForwarder({
+      page: 0,
+      limit: 100
+    })
+      .then(res => {
+        const response: PaginationResponse<IContainerSemiTrailer> = res.data;
+        return response.data;
+      })
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    if (_trailers) {
+      if (!this.update) {
+        _trailers.forEach((x: IContainerSemiTrailer, index: number) => {
+          if (index != limit) {
+            this.trailers.push(x);
+          }
+        });
+      } else {
+        _trailers.forEach((x: IContainerSemiTrailer) => {
+          if (x.licensePlate == this.containerLocal.trailer) {
+            this.trailers.push(x);
+          }
+        });
+        if (this.trailers.length < this.limitTrailers) {
+          _trailers.forEach((x: IContainerSemiTrailer) => {
+            let check = false;
+            if (x.licensePlate == this.containerLocal.trailer) {
+              check = true;
+            }
+            if (check == false && this.trailers.length < this.limitTrailers) {
+              console.log(this.limitTrailers);
+              this.trailers.push(x);
+            }
+          });
+        }
+      }
+    }
+    if (!_trailers || _trailers.length <= this.limitTrailers) {
+      this.seeMoreTrailers = false;
+    }
+    this.loadingTrailers = false;
+  }
+  async loadMoreTrailers() {
+    this.limitTrailers += 5;
+    await this.getTrailers(this.limitTrailers);
+  }
   async created() {
     if (this.update) {
       this.containerLocal = Object.assign({}, this.container);
@@ -132,38 +331,14 @@ export default class CreateContainer extends Vue {
       if (typeof this.containerLocal.tractor != "string") {
         this.containerLocal.tractor = this.containerLocal.tractor.licensePlate;
       }
+      await this.getDrivers(100);
+      await this.getTractors(100);
+      await this.getTrailers(100);
+    } else {
+      await this.getDrivers(5);
+      await this.getTractors(5);
+      await this.getTrailers(5);
     }
-    const _tractor = await getContainerTractorsByForwarder({
-      page: 0,
-      limit: 100
-    })
-      .then(res => {
-        const response: PaginationResponse<IContainerTractor> = res.data;
-        return response.data;
-      })
-      .catch(err => console.log(err));
-    this.tractors = _tractor || [];
-    const _trailer = await getContainerSemiTrailersByForwarder({
-      page: 0,
-      limit: 100
-    })
-      .then(res => {
-        const response: PaginationResponse<IContainerSemiTrailer> = res.data;
-        return response.data;
-      })
-      .catch(err => console.log(err));
-    this.trailers = _trailer || [];
-    const _driver = await getDriversByForwarder({
-      page: 0,
-      limit: 100
-    })
-      .then(res => {
-        const response: PaginationResponse<IDriver> = res.data;
-        console.log("watch", response);
-        return response.data;
-      })
-      .catch(err => console.log(err));
-    this.drivers = _driver || [];
   }
   async createContainer() {
     // TODO: API create Container
@@ -191,6 +366,7 @@ export default class CreateContainer extends Vue {
         });
       if (_container) {
         this.containersSync.unshift(_container);
+        this.totalItemsSync += 1;
         this.dialogAddContSync = false;
       }
       snackbar.setDisplay(true);

@@ -23,7 +23,7 @@
             <v-list>
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title>{{ report.id }}</v-list-item-title>
+                  <v-list-item-title>{{ reportSync.id }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -47,13 +47,17 @@ import snackbar from "@/store/modules/snackbar";
 @Component
 export default class DeleteReport extends Vue {
   @PropSync("dialogConfirm", { type: Boolean }) dialogConfirmSync!: boolean;
-  @PropSync("reports", { type: Array }) reportsSync!: Array<IReport>;
-  @Prop(Object) report!: IReport;
+  @PropSync("report", { type: Object }) reportSync!: IReport;
   @Prop(String) status!: string;
 
+  created() {
+    console.log(this.reportSync);
+  }
   async changeStatusReport() {
-    if (this.report.id) {
-      const _report = await editReport(this.report.id, { status: this.status })
+    if (this.reportSync.id) {
+      const _report = await editReport(this.reportSync.id, {
+        status: this.status
+      })
         .then(res => {
           console.log(res.data);
           const response = res.data;
@@ -72,8 +76,7 @@ export default class DeleteReport extends Vue {
           return null;
         });
       if (_report) {
-        const index = this.reportsSync.findIndex(x => x.id === _report.id);
-        this.reportsSync.splice(index, 1, _report);
+        this.reportSync = _report;
         this.dialogConfirmSync = false;
       }
       snackbar.setDisplay(true);

@@ -369,12 +369,19 @@
             {{ currencyFormatter(item.bid.bidPrice) }}
           </template>
 
-          <template v-slot:expanded-item="{ headers, item }">
+          <template v-slot:expanded-item="{ headers }">
             <td :colspan="headers.length" class="px-0">
               <v-data-table
                 :headers="containerHeaders"
-                :items="item.bid.containers"
-                :hide-default-footer="true"
+                :items="containerCombined"
+                :loading="loading"
+                :options.sync="containerOptions"
+                :server-items-length="containerServerSideOptions.totalItems"
+                :footer-props="{
+                  'items-per-page-options':
+                    containerServerSideOptions.itemsPerPageItems
+                }"
+                :actions-append="containerOptions.page"
                 disable-sort
                 dark
                 dense
@@ -417,6 +424,7 @@ import { IInbound } from "@/entity/inbound";
 import { getInboundsByContainer } from "@/api/inbound";
 import { DataOptions } from "vuetify";
 import SupplierRating from "../../bidding-document/components/SupplierRating.vue";
+import { IContract } from "@/entity/contract";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -433,6 +441,9 @@ export default class DetailCombined extends Vue {
   evidences: Array<IEvidence> = [];
   inbound = null as IInbound | null;
   selectedContainer = null as IContainer | null;
+  contract = {} as IContract;
+  containerCombined: Array<IContainer> = [];
+  containers: Array<IContainer> = [];
   loading = false;
   stepper = 1;
   dialogDetail = false;
@@ -444,6 +455,14 @@ export default class DetailCombined extends Vue {
     itemsPerPage: 5
   } as DataOptions;
   serverSideOptions = {
+    totalItems: 0,
+    itemsPerPageItems: [5, 10, 20, 50]
+  };
+  containerOptions = {
+    page: 1,
+    itemsPerPage: 5
+  } as DataOptions;
+  containerServerSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -532,9 +551,29 @@ export default class DetailCombined extends Vue {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
+        this.contract = {} as IContract;
       } else {
-        this.expanded.splice(0, this.expanded.length);
-        this.expanded.push(value);
+        if (this.expanded.length > 0) {
+          this.expanded.splice(0, this.expanded.length);
+          this.expanded.push(value);
+          if (value.contract) {
+            this.contract = value.contract;
+          }
+          if (value.bid && typeof value.bid != "number") {
+            this.containers = value.bid.containers as Array<IContainer>;
+            this.containerServerSideOptions.totalItems = this.containers.length;
+          }
+          this.onContainerOptionsChange(this.containerOptions);
+        } else {
+          this.expanded.push(value);
+          if (value.contract) {
+            this.contract = value.contract;
+          }
+          if (value.bid && typeof value.bid != "number") {
+            this.containers = value.bid.containers as Array<IContainer>;
+            this.containerServerSideOptions.totalItems = this.containers.length;
+          }
+        }
       }
     } else {
       const index = this.expanded.findIndex(x => x.id === value.id);
@@ -562,7 +601,7 @@ export default class DetailCombined extends Vue {
         break;
     }
     this.combined = item;
-    this.viewDetailEvidence(this.combined);
+    this.onEvidenceOptionsChange(this.evidenceOptions);
   }
 
   @Watch("options")
@@ -572,8 +611,8 @@ export default class DetailCombined extends Vue {
       const _combineds = await getCombinedsByBiddingDocument(
         parseInt(this.getRouterId),
         {
-          page: this.options.page - 1,
-          limit: this.options.itemsPerPage
+          page: val.page - 1,
+          limit: val.itemsPerPage
         }
       )
         .then(res => {
@@ -592,6 +631,7 @@ export default class DetailCombined extends Vue {
         if (this.combineds.length > 0) {
           this.combined = this.combineds[0];
           const _bid = this.combined.bid as IBid;
+          this.containerServerSideOptions.totalItems = _bid.containers.length;
           this.viewDetailCombined(this.combined);
           if (_bid.containers.length > 0) {
             this.viewDetailContainer(_bid.containers[0] as IContainer);
@@ -624,30 +664,50 @@ export default class DetailCombined extends Vue {
     this.dialogDetail = true;
   }
 
-  async viewDetailEvidence(item: ICombined) {
-    if (item && item.contract) {
-      const _evidence = await getEvidencesByContract(
-        item.contract.id as number,
-        {
-          page: this.evidenceOptions.page - 1,
-          limit: this.evidenceOptions.itemsPerPage
-        }
-      )
-        .then(res => {
-          const response: PaginationResponse<IEvidence> = res.data;
-          return response;
+  @Watch("evidenceOptions")
+  async onEvidenceOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      if (this.contract && this.contract.id) {
+        const _evidence = await getEvidencesByContract(this.contract.id, {
+          page: val.page - 1,
+          limit: val.itemsPerPage
         })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_evidence) {
-        this.evidences = _evidence.data;
-        this.evidenceServerSideOptions.totalItems = _evidence.totalElements;
-        if (this.evidences.length > 0 && this.evidences[0].isValid == true) {
-          this.checkValid = true;
+          .then(res => {
+            const response: PaginationResponse<IEvidence> = res.data;
+            return response;
+          })
+          .catch(err => {
+            console.log(err);
+            return null;
+          });
+        if (_evidence) {
+          this.evidences = _evidence.data;
+          this.evidenceServerSideOptions.totalItems = _evidence.totalElements;
+          if (this.evidences.length > 0 && this.evidences[0].isValid == true) {
+            this.checkValid = true;
+          }
         }
       }
+    }
+  }
+  @Watch("containerOptions")
+  async onContainerOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.containerCombined = [] as Array<IContainer>;
+      this.loading = true;
+      const start = (val.page - 1) * val.itemsPerPage;
+      let end = start + val.itemsPerPage - 1;
+      if (end > this.containers.length - 1) {
+        end = this.containers.length - 1;
+      }
+      console.log(start);
+      console.log(end);
+      console.log(this.containers);
+      for (let i = start; i <= end; i++) {
+        this.containerCombined.push(this.containers[i]);
+      }
+
+      this.loading = false;
     }
   }
   async viewDetailContainer(item: IContainer) {

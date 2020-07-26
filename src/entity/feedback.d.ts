@@ -3,4 +3,5 @@ export interface IFeedback {
   sender: string;
   message: string;
   satisfactionPoints: number;
+  sendDate: string;
 }

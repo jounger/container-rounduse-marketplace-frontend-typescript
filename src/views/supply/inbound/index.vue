@@ -105,7 +105,15 @@
             <v-data-table
               :headers="containerHeaders"
               :items="containers"
-              :hide-default-footer="true"
+              :loading="loading"
+              :options.sync="containerOptions"
+              :server-items-length="containerServerSideOptions.totalItems"
+              :footer-props="{
+                'items-per-page-options':
+                  containerServerSideOptions.itemsPerPageItems
+              }"
+              :actions-append="containerOptions.page"
+              disable-sort
               dense
               dark
             >
@@ -140,7 +148,7 @@
                     color="success"
                     @click.stop="openCreateContainer()"
                     small
-                    v-if="containers.length < inbound.billOfLading.unit"
+                    v-if="checkUnit"
                   >
                     <span style="color:white;">Thêm Container</span>
                   </v-btn>
@@ -194,12 +202,21 @@ export default class Inbound extends Vue {
   freeTime = "";
   loading = true;
   update = false;
+  checkUnit = true;
   dateInit = new Date().toISOString().substr(0, 10);
   options = {
     page: 1,
     itemsPerPage: 5
   } as DataOptions;
   serverSideOptions = {
+    totalItems: 0,
+    itemsPerPageItems: [5, 10, 20, 50]
+  };
+  containerOptions = {
+    page: 1,
+    itemsPerPage: 5
+  } as DataOptions;
+  containerServerSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -273,23 +290,36 @@ export default class Inbound extends Vue {
     this.container = item;
     this.dialogDelCont = true;
   }
-  async getContainers(item: IInbound) {
-    if (item.id) {
+  @Watch("containerOptions")
+  async onContainerOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
       this.loading = true;
-      const _containers = await getContainersByInbound(item.id, {
-        page: 0,
-        limit: 100
-      })
-        .then(res => {
-          const response = res.data;
-          return response;
+      if (this.inbound && this.inbound.id) {
+        const _containers = await getContainersByInbound(this.inbound.id, {
+          page: val.page - 1,
+          limit: val.itemsPerPage
         })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_containers) {
-        this.containers = _containers.data;
+          .then(res => {
+            const response = res.data;
+            return response;
+          })
+          .catch(err => {
+            console.log(err);
+            return null;
+          });
+        if (_containers) {
+          this.containers = _containers.data;
+          this.containerServerSideOptions.totalItems =
+            _containers.totalElements;
+          if (
+            this.containerServerSideOptions.totalItems ==
+            this.inbound.billOfLading.unit
+          ) {
+            this.checkUnit = false;
+          } else {
+            this.checkUnit = true;
+          }
+        }
       }
       this.loading = false;
     }
@@ -324,20 +354,15 @@ export default class Inbound extends Vue {
         this.expanded.splice(0, this.expanded.length);
         this.inbound = {} as IInbound;
       } else {
-        this.expanded.splice(0, this.expanded.length);
-        await this.getContainers(value);
-        this.expanded.push(value);
-        this.inbound = value;
-      }
-    } else {
-      const index = this.expanded.findIndex(x => x.id === value.id);
-      if (index === -1) {
-        await this.getContainers(value);
-        this.expanded.push(value);
-        this.inbound = value;
-      } else {
-        this.expanded.splice(index, 1);
-        this.inbound = {} as IInbound;
+        if (this.expanded.length > 0) {
+          this.expanded.splice(0, this.expanded.length);
+          this.expanded.push(value);
+          this.inbound = value;
+          this.onContainerOptionsChange(this.containerOptions);
+        } else {
+          this.expanded.push(value);
+          this.inbound = value;
+        }
       }
     }
   }

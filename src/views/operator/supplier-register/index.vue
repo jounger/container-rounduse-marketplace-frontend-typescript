@@ -98,8 +98,8 @@ export default class Supplier extends Vue {
     if (typeof val != "undefined") {
       this.loading = true;
       const _suppliers = await getSuppliersByStatus({
-        page: this.options.page - 1,
-        limit: this.options.itemsPerPage,
+        page: val.page - 1,
+        limit: val.itemsPerPage,
         status: "PENDING"
       })
         .then(res => {

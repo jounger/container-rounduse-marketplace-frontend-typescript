@@ -1,6 +1,5 @@
 <template>
   <v-content>
-    <Snackbar :text="message" :snackbar.sync="snackbar" />
     <CreateEvidence
       v-if="dialogAdd"
       :dialogAdd.sync="dialogAdd"
@@ -466,12 +465,12 @@ import Utils from "@/mixin/utils";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { IBid } from "@/entity/bid";
 import { ICombined } from "@/entity/combined";
-import { getCombinedsByBiddingDocument, getCombined } from "@/api/combined";
+import { getCombinedsByBiddingDocument } from "@/api/combined";
 import { IContainer } from "@/entity/container";
 import { IEvidence } from "@/entity/evidence";
 import { getEvidencesByContract } from "@/api/evidence";
 import { PaginationResponse } from "@/api/payload";
-import { getBiddingDocumentByBid } from "@/api/bidding-document";
+import { getBiddingDocument } from "@/api/bidding-document";
 import CreateEvidence from "./CreateEvidence.vue";
 import DetailEvidence from "./DetailEvidence.vue";
 import { IInbound } from "@/entity/inbound";
@@ -627,29 +626,18 @@ export default class DetailCombinedForwarder extends Vue {
 
   async created() {
     // TODO: Fake data
-    const _combined = await getCombined(parseInt(this.getRouterId))
+    const _biddingDocument = await getBiddingDocument(
+      parseInt(this.getRouterId)
+    )
       .then(res => {
-        const response: ICombined = res.data;
+        const response = res.data;
         return response;
       })
       .catch(err => {
         console.log(err);
         return null;
       });
-    if (_combined) {
-      this.combined = _combined;
-      const _bid = _combined.bid as IBid;
-      const _biddingDocument = await getBiddingDocumentByBid(_bid.id as number)
-        .then(res => {
-          const response: IBiddingDocument = res.data;
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      this.biddingDocument = _biddingDocument;
-    }
+    this.biddingDocument = _biddingDocument;
   }
   openCreateEvidence() {
     this.update = false;
