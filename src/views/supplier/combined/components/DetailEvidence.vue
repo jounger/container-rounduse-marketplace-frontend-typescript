@@ -42,7 +42,7 @@
           </v-row>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-top: 65px;">
+      <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn @click="dialogDetailSync = false">Trở về</v-btn>
         <v-btn
@@ -78,7 +78,9 @@ import snackbar from "@/store/modules/snackbar";
 export default class DetailEvidence extends Vue {
   @PropSync("dialogDetail", { type: Boolean }) dialogDetailSync!: boolean;
   @PropSync("evidences", { type: Array }) evidencesSync!: Array<IEvidence>;
+  @PropSync("checkValid", { type: Boolean }) checkValidSync!: boolean;
   @Prop(Object) evidence!: IEvidence;
+  @Prop(Boolean) finalEvidence!: boolean;
 
   async reviewEvidence(isValid: boolean) {
     if (this.evidence.id) {
@@ -106,6 +108,9 @@ export default class DetailEvidence extends Vue {
       if (_evidence) {
         const index = this.evidencesSync.findIndex(x => x.id == _evidence.id);
         this.evidencesSync.splice(index, 1, _evidence);
+        if (this.finalEvidence && _evidence.isValid) {
+          this.checkValidSync = true;
+        }
         this.dialogDetailSync = false;
       }
       snackbar.setDisplay(true);

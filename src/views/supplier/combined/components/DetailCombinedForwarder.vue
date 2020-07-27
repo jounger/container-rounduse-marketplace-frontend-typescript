@@ -4,13 +4,17 @@
       v-if="dialogAdd"
       :dialogAdd.sync="dialogAdd"
       :evidences.sync="evidences"
+      :checkValid.sync="checkValid"
+      :totalItems.sync="evidenceServerSideOptions.totalItems"
       :contract="combined.contract"
     />
     <DetailEvidence
       v-if="dialogDetail"
       :dialogDetail.sync="dialogDetail"
-      :evidence="evidence"
       :evidences.sync="evidences"
+      :checkValid.sync="checkValid"
+      :finalEvidence="finalEvidence"
+      :evidence="evidence"
     />
     <v-container class="mx-auto mt-5">
       <v-card v-if="combined">
@@ -304,7 +308,7 @@
                       <template v-slot:activator="{ on, attrs }">
                         <v-icon
                           style="color:gold;"
-                          v-if="!checkValid"
+                          v-if="!getValid"
                           v-bind="attrs"
                           v-on="on"
                           >report_problem</v-icon
@@ -352,13 +356,13 @@
                     :items="evidences"
                     item-key="id"
                     :loading="loading"
-                    :options.sync="options"
+                    :options.sync="evidenceOptions"
                     :server-items-length="evidenceServerSideOptions.totalItems"
                     :footer-props="{
                       'items-per-page-options':
                         evidenceServerSideOptions.itemsPerPageItems
                     }"
-                    :actions-append="options.page"
+                    :actions-append="evidenceOptions.page"
                     disable-sort
                     class="elevation-0"
                   >
@@ -374,6 +378,9 @@
                         <v-icon left>library_add_check </v-icon>Chi tiết
                       </v-btn>
                     </template>
+                    <template v-slot:item.isValid="{ item }">
+                      {{ item.isValid ? "Đã xác nhận" : "Chưa xác nhận" }}
+                    </template>
                   </v-data-table>
                 </v-list>
               </v-card>
@@ -382,7 +389,7 @@
         </v-tabs>
       </v-card>
       <!-- BIDDING -->
-      <v-card class="order-1 flex-grow-1 mx-auto my-1">
+      <v-card class="order-1 flex-grow-1 mx-auto my-1" v-if="combined">
         <v-card-title>Thông tin Hồ sơ trúng thầu</v-card-title>
 
         <v-card-text>
@@ -430,7 +437,7 @@
         <!-- TODO: table bids -->
         <v-data-table
           :headers="containerHeaders"
-          :items="combined.bid.containers"
+          :items="containers"
           item-key="id"
           :loading="loading"
           :options.sync="options"
@@ -496,6 +503,7 @@ export default class DetailCombinedForwarder extends Vue {
   containers: Array<IContainer> = [];
   dialogDetail = false;
   checkValid = false;
+  finalEvidence = false;
   combined = null as ICombined | null;
   combineds: Array<ICombined> = [];
   selectedContainer = null as IContainer | null;
@@ -582,43 +590,32 @@ export default class DetailCombinedForwarder extends Vue {
         break;
     }
     this.combined = item;
-    this.viewDetailEvidence(this.combined);
+    this.onEvidenceOptionsChange(this.evidenceOptions);
   }
 
   @Watch("options")
-  async onOptionsChange(val: DataOptions) {
+  onOptionsChange(val: DataOptions) {
     if (typeof val !== "undefined") {
-      this.loading = true;
-      const _combineds = await getCombinedsByBiddingDocument(
-        parseInt(this.getRouterId),
-        {
-          page: this.options.page - 1,
-          limit: this.options.itemsPerPage
+      if (this.combined) {
+        this.loading = true;
+        this.containers = [] as Array<IContainer>;
+        const bid = this.combined.bid as IBid;
+        const start = (val.page - 1) * val.itemsPerPage;
+        let end = start + val.itemsPerPage - 1;
+        if (end > bid.containers.length - 1) {
+          end = bid.containers.length - 1;
         }
-      )
-        .then(res => {
-          const response: PaginationResponse<ICombined> = res.data;
-          console.log("watch", response);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      this.loading = false;
-      if (_combineds) {
-        this.combineds = _combineds.data;
-        this.serverSideOptions.totalItems = _combineds.totalElements;
-        if (this.combineds.length > 0) {
-          this.combined = this.combineds[0];
-          const _bid = this.combined.bid as IBid;
-          this.viewDetailCombined(this.combined);
-          if (_bid.containers.length > 0) {
-            this.viewDetailContainer(_bid.containers[0] as IContainer);
-          }
+        for (let i = start; i <= end; i++) {
+          this.containers.push(bid.containers[i] as IContainer);
         }
+
+        this.loading = false;
       }
     }
+  }
+
+  get getValid() {
+    return this.checkValid;
   }
   get getRouterId() {
     return this.$route.params.id;
@@ -630,7 +627,8 @@ export default class DetailCombinedForwarder extends Vue {
       parseInt(this.getRouterId)
     )
       .then(res => {
-        const response = res.data;
+        const response: IBiddingDocument = res.data;
+        console.log(response);
         return response;
       })
       .catch(err => {
@@ -638,37 +636,77 @@ export default class DetailCombinedForwarder extends Vue {
         return null;
       });
     this.biddingDocument = _biddingDocument;
+    const _combineds = await getCombinedsByBiddingDocument(
+      parseInt(this.getRouterId),
+      {
+        page: this.options.page - 1,
+        limit: this.options.itemsPerPage
+      }
+    )
+      .then(res => {
+        const response: PaginationResponse<ICombined> = res.data;
+        console.log("watch", response);
+        return response;
+      })
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    if (_combineds) {
+      this.combineds = _combineds.data;
+      this.serverSideOptions.totalItems = _combineds.totalElements;
+      if (this.combineds.length > 0) {
+        this.combined = this.combineds[0];
+        const _bid = this.combined.bid as IBid;
+        this.viewDetailCombined(this.combined);
+        if (_bid.containers.length > 0) {
+          this.viewDetailContainer(_bid.containers[0] as IContainer);
+        }
+      }
+    }
   }
   openCreateEvidence() {
     this.update = false;
     this.dialogAdd = true;
   }
   openDetailEvidence(item: IEvidence) {
+    this.finalEvidence = false;
     this.evidence = item;
+    const index = this.evidences.findIndex((x: IEvidence) => x.id == item.id);
+    if (index == 0) {
+      this.finalEvidence = true;
+    }
     this.dialogDetail = true;
   }
-  async viewDetailEvidence(item: ICombined) {
-    if (item && item.contract) {
-      const _evidence = await getEvidencesByContract(
-        item.contract.id as number,
-        {
-          page: this.evidenceOptions.page - 1,
-          limit: this.evidenceOptions.itemsPerPage
-        }
-      )
-        .then(res => {
-          const response: PaginationResponse<IEvidence> = res.data;
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_evidence) {
-        this.evidences = _evidence.data;
-        this.evidenceServerSideOptions.totalItems = _evidence.totalElements;
-        if (this.evidences.length > 0 && this.evidences[0].isValid == true) {
-          this.checkValid = true;
+  @Watch("evidenceOptions")
+  async onEvidenceOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      if (
+        this.combined &&
+        this.combined.contract &&
+        this.combined.contract.id
+      ) {
+        const _evidence = await getEvidencesByContract(
+          this.combined.contract.id,
+          {
+            page: val.page - 1,
+            limit: val.itemsPerPage
+          }
+        )
+          .then(res => {
+            const response: PaginationResponse<IEvidence> = res.data;
+            return response;
+          })
+          .catch(err => {
+            console.log(err);
+            return null;
+          });
+        if (_evidence) {
+          this.evidences = _evidence.data;
+          this.evidenceServerSideOptions.totalItems = _evidence.totalElements;
+          if (this.evidences.length > 0 && this.evidences[0].isValid == true) {
+            this.checkValid = true;
+          }
         }
       }
     }

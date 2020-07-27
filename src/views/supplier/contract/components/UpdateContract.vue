@@ -1,19 +1,11 @@
 <template>
-  <v-dialog v-model="dialogAddSync" persistent max-width="600px">
+  <v-dialog v-model="dialogAddSync" max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">{{
-            update ? "Cập nhập Hợp đồng" : "Thêm mới Hợp đồng"
-          }}</span>
-          <v-btn
-            icon
-            dark
-            @click="dialogAddSync = false"
-            style="margin-left:308px;"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn></v-toolbar-title
+          ><span class="headline" style="color:white;"
+            >Cập nhập Hợp đồng</span
+          ></v-toolbar-title
         >
       </v-toolbar>
       <v-card-text>
@@ -22,20 +14,39 @@
           <v-row>
             <v-col cols="12" md="11">
               <v-text-field
-                label="Người gửi*"
-                name="sender"
+                label="Bên chủ hàng*"
+                name="merchant"
                 prepend-icon="person"
                 type="text"
-                :readonly="update"
-                :counter="20"
-                :rules="[minLength('sender', 5), maxLength('sender', 20)]"
-                v-model="contractLocal.evidence.sender"
+                readonly
+                v-model="merchant"
               ></v-text-field>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12" md="11">
               <v-text-field
+                label="Bên chủ xe*"
+                name="forwarder"
+                prepend-icon="person"
+                type="text"
+                readonly
+                v-model="forwarder"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="11">
+              <v-checkbox
+                v-model="contractLocal.required"
+                label="Yêu cầu hợp đồng"
+              />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="11">
+              <v-text-field
+                v-if="contractLocal.required"
                 label="% Tiền phạt*"
                 name="finesAgainstContractViolations"
                 prepend-icon="monetization_on"
@@ -45,36 +56,13 @@
               ></v-text-field>
             </v-col>
           </v-row>
-          <v-row>
-            <v-col cols="12" md="11">
-              <v-text-field
-                label="Chứng cớ*"
-                name="evidence"
-                prepend-icon="description"
-                type="text"
-                :rules="[required('evidence')]"
-                v-model="contractLocal.evidence.evidence"
-              ></v-text-field>
-            </v-col>
-          </v-row>
         </v-form>
       </v-card-text>
       <v-card-actions style="margin-top: 65px;">
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn
-          @click="updateContract()"
-          color="primary"
-          v-if="update"
-          :disabled="!valid"
+        <v-btn @click="updateContract()" color="primary" :disabled="!valid"
           >Cập nhập</v-btn
-        >
-        <v-btn
-          @click="createContract()"
-          color="primary"
-          v-else
-          :disabled="!valid"
-          >Thêm mới</v-btn
         >
       </v-card-actions>
     </v-card>
@@ -84,20 +72,19 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContract } from "@/entity/contract";
 import FormValidate from "@/mixin/form-validate";
-import { createContract, editContract } from "@/api/contract";
+import { editContract } from "@/api/contract";
 import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate]
 })
-export default class CreateContract extends Vue {
+export default class UpdateContract extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("contracts", { type: Array }) contractsSync?: Array<IContract>;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("totalItems", { type: Number }) totalItemsSync?: number;
   @Prop(Object) contract?: IContract;
-  @Prop(Boolean) update!: boolean;
 
   contractLocal = {
     finesAgainstContractViolation: 50,
@@ -109,31 +96,10 @@ export default class CreateContract extends Vue {
     required: false
   } as IContract;
   valid = false;
-  contractDatePicker = false;
+  merchant = "";
+  forwarder = "";
   created() {
-    if (this.update) {
-      this.contractLocal = Object.assign({}, this.contract);
-    }
-  }
-  createContract() {
-    if (this.contractLocal) {
-      createContract(this.contractLocal)
-        .then(res => {
-          const response: IContract = res.data;
-          this.messageSync = "Thêm mới thành công Hợp đồng: " + response.id;
-          if (this.contractsSync) {
-            this.contractsSync.unshift(response);
-          }
-          if (this.totalItemsSync) {
-            this.totalItemsSync += 1;
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
-    }
+    this.contractLocal = Object.assign({}, this.contract);
   }
   updateContract() {
     if (this.contractLocal.id) {

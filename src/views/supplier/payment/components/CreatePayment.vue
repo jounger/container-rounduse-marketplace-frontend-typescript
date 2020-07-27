@@ -1,19 +1,11 @@
 <template>
-  <v-dialog v-model="dialogAddSync" persistent max-width="600px">
+  <v-dialog v-model="dialogAddPaymentSync" max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
             update ? "Cập nhập Hóa đơn" : "Thêm mới Hóa đơn"
-          }}</span>
-          <v-btn
-            icon
-            dark
-            @click="dialogAddSync = false"
-            style="margin-left:310px;"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn></v-toolbar-title
+          }}</span></v-toolbar-title
         >
       </v-toolbar>
       <v-card-text>
@@ -141,17 +133,18 @@ import { IPayment } from "@/entity/payment";
 import FormValidate from "@/mixin/form-validate";
 import { createPayment, editPayment } from "@/api/payment";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
+import { IContract } from "@/entity/contract";
 
 @Component({
   mixins: [FormValidate]
 })
 export default class CreatePayment extends Vue {
-  @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("payments", { type: Array }) paymentsSync!: Array<IPayment>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
-  @Prop(Object) payment!: IPayment;
+  @PropSync("dialogAddPayment", { type: Boolean })
+  dialogAddPaymentSync!: boolean;
+  @PropSync("payments", { type: Array }) paymentsSync?: Array<IPayment>;
+  @Prop(Object) payment?: IPayment;
+  @Prop(Object) contract!: IContract;
   @Prop(Boolean) update!: boolean;
 
   dateInit = new Date().toISOString().substr(0, 10);
@@ -171,41 +164,65 @@ export default class CreatePayment extends Vue {
   created() {
     this.types = ["FINES", "PAYMENT"];
     if (this.update) {
-      this.paymentLocal = Object.assign({}, this.payment);
-      this.paymentDate = this.paymentLocal.paymentDate.slice(0, 10);
+      if (typeof this.payment != "undefined") {
+        this.paymentLocal = Object.assign({}, this.payment);
+        this.paymentDate = this.paymentLocal.paymentDate.slice(0, 10);
+      }
     }
   }
-  createPayment() {
-    if (this.paymentLocal) {
-      createPayment(this.paymentLocal)
+  async createPayment() {
+    if (this.paymentLocal && this.contract.id) {
+      const _payment = await createPayment(this.contract.id, this.paymentLocal)
         .then(res => {
           const response: IPayment = res.data;
-          this.messageSync = "Thêm mới thành công Hóa đơn: " + response.id;
-          this.paymentsSync.unshift(response);
-          this.totalItemsSync += 1;
+          snackbar.setSnackbar({
+            text: "Thêm mới thành công Hóa đơn: " + response.id,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_payment) {
+        this.dialogAddPaymentSync = false;
+      }
     }
   }
-  updatePayment() {
+  async updatePayment() {
     if (this.paymentLocal.id) {
-      editPayment(this.paymentLocal.id, this.paymentLocal)
+      const _payment = await editPayment(
+        this.paymentLocal.id,
+        this.paymentLocal
+      )
         .then(res => {
           console.log(res.data);
           const response: IPayment = res.data;
-          this.messageSync = "Cập nhập thành công Hóa đơn: " + response.id;
-          const index = this.paymentsSync.findIndex(x => x.id == response.id);
-          this.paymentsSync.splice(index, 1, response);
+          snackbar.setSnackbar({
+            text: "Cập nhập thành công Hóa đơn: " + response.id,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_payment) {
+        if (this.paymentsSync) {
+          const index = this.paymentsSync.findIndex(x => x.id == _payment.id);
+          this.paymentsSync.splice(index, 1, _payment);
+        }
+      }
     }
   }
 }

@@ -62,6 +62,8 @@ import snackbar from "@/store/modules/snackbar";
 export default class CreateEvidence extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("evidences", { type: Array }) evidencesSync!: Array<IEvidence>;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
+  @PropSync("checkValid", { type: Boolean }) checkValidSync!: boolean;
   @Prop(Object) contract!: IContract;
 
   evidenceLocal = {
@@ -95,6 +97,8 @@ export default class CreateEvidence extends Vue {
       if (_evidence) {
         if (this.evidencesSync) {
           this.evidencesSync.unshift(_evidence);
+          this.totalItemsSync += 1;
+          this.checkValidSync = false;
         }
         this.dialogAddSync = false;
       }

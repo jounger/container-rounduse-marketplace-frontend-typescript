@@ -242,16 +242,6 @@ export default class Bid extends Vue {
         this.expanded.push(value);
         this.biddingDocument = value;
       }
-    } else {
-      const index = this.expanded.findIndex(x => x.id === value.id);
-      if (index === -1) {
-        this.getBids(value);
-        this.expanded.push(value);
-        this.biddingDocument = value;
-      } else {
-        this.expanded.splice(index, 1);
-        this.biddingDocument = {} as IBiddingDocument;
-      }
     }
   }
 

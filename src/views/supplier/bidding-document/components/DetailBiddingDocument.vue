@@ -211,8 +211,9 @@
                     <v-icon>date_range</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
+                    <v-list-item-title>Đóng thầu</v-list-item-title>
                     <v-list-item-title>{{
-                      "Đóng thầu: " + formatDatetime(biddingDocument.bidClosing)
+                      formatDatetime(biddingDocument.bidClosing)
                     }}</v-list-item-title>
                     <v-list-item-subtitle>
                       {{
