@@ -65,7 +65,7 @@
                     </v-btn>
                   </template>
                   <v-list>
-                    <v-list-item @click="viewDetailReport(item)">
+                    <v-list-item @click="viewDetailReport()">
                       <v-list-item-icon>
                         <v-icon small>edit</v-icon>
                       </v-list-item-icon>
@@ -469,6 +469,16 @@ export default class ReportDetail extends Vue {
   }
   viewDetailBiddingDocument() {
     this.$router.push({ path: `/bidding-document/${this.report.report}` });
+  }
+  viewDetailReport() {
+    if (
+      this.report &&
+      this.report.report &&
+      typeof this.report.report != "number"
+    ) {
+      const report = this.report.report as IBiddingDocument;
+      this.$router.push({ path: `/report-bidding-document/${report.id}` });
+    }
   }
 }
 </script>

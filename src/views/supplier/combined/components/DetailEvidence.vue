@@ -32,7 +32,7 @@
               ></v-textarea>
             </v-col>
           </v-row>
-          <v-row>
+          <v-row style="margin-left:25px;">
             <v-col cols="12" md="11">
               <span style="color: green" v-if="evidence.isValid"
                 >Đã xác nhận

@@ -37,7 +37,7 @@
           </v-row>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-top: 65px;">
+      <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
         <v-btn @click="createEvidence()" color="primary" :disabled="!valid"

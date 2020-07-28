@@ -232,7 +232,7 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync, Watch } from "vue-property-decorator";
+import { Component, Vue, PropSync, Prop, Watch } from "vue-property-decorator";
 import { IBid } from "@/entity/bid";
 import { IContainer } from "@/entity/container";
 import FormValidate from "@/mixin/form-validate";
@@ -250,6 +250,7 @@ import { getContainersByInbound } from "@/api/container";
 import snackbar from "@/store/modules/snackbar";
 import { DataOptions } from "vuetify";
 import { IBillOfLading } from "@/entity/bill-of-lading";
+import { editBiddingNotifications } from "../../../../api/notification";
 @Component({
   mixins: [FormValidate, Utils]
 })
@@ -258,7 +259,11 @@ export default class CreateBid extends Vue {
   @PropSync("biddingDocument", { type: Object })
   biddingDocumentSync?: IBiddingDocument;
   @PropSync("totalItems", { type: Number }) totalItemsSync?: number;
+  @PropSync("totalItemsBidNo", { type: Number }) totalItemsBidNoSync?: number;
   @PropSync("bids", { type: Array }) bidsSync?: Array<IBid>;
+  @PropSync("biddingNotifications", { type: Array })
+  biddingNotificationsSync?: Array<IBiddingNotification>;
+  @Prop(Object) biddingNotification?: IBiddingNotification;
 
   biddingDocuments: Array<IBiddingDocument> = [];
   biddingDocumentSelected = null as IBiddingDocument | null;
@@ -445,6 +450,37 @@ export default class CreateBid extends Vue {
         }
         if (typeof this.totalItemsSync != "undefined") {
           this.totalItemsSync += 1;
+        }
+        if (
+          this.biddingNotification &&
+          typeof this.biddingNotification != "undefined" &&
+          this.biddingNotification.id
+        ) {
+          const _biddingNotification = await editBiddingNotifications(
+            this.biddingNotification.id,
+            {
+              isHide: true
+            }
+          )
+            .then(res => {
+              console.log(res.data);
+              const response = res.data;
+              return response;
+            })
+            .catch(err => {
+              console.log(err);
+              return null;
+            });
+          if (_biddingNotification) {
+            if (this.biddingNotificationsSync) {
+              const index = this.biddingNotificationsSync.findIndex(
+                x => x.id === _biddingNotification.id
+              );
+              this.biddingNotificationsSync.splice(index, 1);
+            }
+            if (typeof this.totalItemsBidNoSync != "undefined")
+              this.totalItemsBidNoSync -= 1;
+          }
         }
         this.dialogAddSync = false;
       }

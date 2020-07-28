@@ -169,7 +169,7 @@ export default class Report extends Vue {
     console.log(item);
     if (item && item.report && typeof item.report != "number") {
       const report = item.report as IBiddingDocument;
-      this.$router.push({ path: `/bidding-document/${report.id}` });
+      this.$router.push({ path: `/report-bidding-document/${report.id}` });
     }
   }
   openDetailDialog(item: IReport) {

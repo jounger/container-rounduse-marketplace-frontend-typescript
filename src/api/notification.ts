@@ -1,6 +1,5 @@
 import Vue from "vue";
 import { PaginationRequest } from "./payload";
-import { IBiddingNotification } from "../entity/bidding-notification";
 
 const config = {
   Authorization: "Bearer {auth_token}"
@@ -46,7 +45,7 @@ export function getShippingLineNotification(id: number) {
 }
 
 // Edit notification
-export function editBiddingNotifications(id: number, updates: IBiddingNotification) {
+export function editBiddingNotifications(id: number, updates: object) {
   return Vue.axios.patch(`/bidding-notification/${id}`, updates, {
     headers: config
   });

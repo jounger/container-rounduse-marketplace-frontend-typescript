@@ -27,7 +27,7 @@
           {{ formatDatetime(item.outbound.booking.cutOffTime) }}
         </template>
         <template v-slot:item.grossWeight="{ item }">
-          {{ item.outbound.grossWeight + "" + item.outbound.unitOfMeasurement }}
+          {{ item.outbound.grossWeight }} {{ item.outbound.unitOfMeasurement }}
         </template>
         <template v-slot:item.fcl="{ item }">
           {{ item.outbound.booking.isFcl ? "Có" : "Không" }}

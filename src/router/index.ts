@@ -150,7 +150,19 @@ const routes: Array<RouteConfig> = [
         "@/views/supplier/bidding-document/components/DetailBiddingDocument.vue"
       ),
     meta: {
-      auth: ["ROLE_MERCHANT", "ROLE_FORWARDER", "ROLE_MODERATOR"],
+      auth: ["ROLE_MERCHANT", "ROLE_FORWARDER"],
+      layout: "NavLayout"
+    }
+  },
+  {
+    path: "/report-bidding-document/:id",
+    name: "Report Bidding Document Detail",
+    component: () =>
+      import(
+        "@/views/supplier/bidding-document/components/ReportBiddingDocument.vue"
+      ),
+    meta: {
+      auth: ["ROLE_MODERATOR", "ROLE_FORWARDER"],
       layout: "NavLayout"
     }
   },

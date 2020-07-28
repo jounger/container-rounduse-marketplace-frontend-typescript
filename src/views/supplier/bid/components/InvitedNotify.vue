@@ -5,6 +5,9 @@
         v-if="dialogAdd"
         :biddingDocument.sync="biddingDocument"
         :dialogAdd.sync="dialogAdd"
+        :biddingNotification="biddingNotification"
+        :biddingNotifications.sync="biddingNotifications"
+        :totalItemsBidNo.sync="serverSideOptions.totalItems"
       />
       <!-- <UpdateBid
         v-if="dialogEdit"
@@ -13,9 +16,17 @@
         :message.sync="message"
         :snackbar.sync="snackbar"
       /> -->
+      <ConfirmBid
+        v-if="dialogConfirm"
+        :dialogConfirm.sync="dialogConfirm"
+        :biddingNotifications.sync="biddingNotifications"
+        :totalItems.sync="serverSideOptions.totalItems"
+        :biddingDocument="biddingDocument"
+        :biddingNotification="biddingNotification"
+      />
       <v-data-table
         :headers="headers"
-        :items="biddingDocuments"
+        :items="biddingNotifications"
         item-key="id"
         :loading="loading"
         :options.sync="options"
@@ -49,17 +60,20 @@
             tile
             outlined
             color="error"
-            @click.stop="openDeleteDialog(item)"
+            @click.stop="openConfirmDialog(item)"
             small
           >
             <v-icon left>mdi-pencil</v-icon> Từ chối
           </v-btn>
         </template>
         <template v-slot:item.bidOpening="{ item }">
-          {{ formatDatetime(item.bidOpening) }}
+          {{ formatDatetime(item.relatedResource.bidOpening) }}
+        </template>
+        <template v-slot:item.isMultipleAward="{ item }">
+          {{ item.relatedResource.isMultipleAward ? "Có" : "Không" }}
         </template>
         <template v-slot:item.bidClosing="{ item }">
-          {{ formatDatetime(item.bidClosing) }}
+          {{ formatDatetime(item.relatedResource.bidClosing) }}
         </template>
       </v-data-table>
     </v-card>
@@ -74,21 +88,21 @@ import { IBiddingNotification } from "@/entity/bidding-notification";
 import { getBiddingNotificationsByUser } from "@/api/notification";
 import Utils from "@/mixin/utils";
 import { DataOptions } from "vuetify";
+import ConfirmBid from "./ConfirmBid.vue";
 
 @Component({
   mixins: [Utils],
   components: {
-    CreateBid
+    CreateBid,
+    ConfirmBid
   }
 })
 export default class InvitedNotify extends Vue {
   biddingNotifications: Array<IBiddingNotification> = [];
   biddingNotification = {} as IBiddingNotification;
-
-  biddingDocuments: Array<IBiddingDocument> = [];
   biddingDocument = {} as IBiddingDocument;
   dialogAdd = false;
-  dialogDel = false;
+  dialogConfirm = false;
   loading = true;
   options = {
     page: 1,
@@ -103,12 +117,15 @@ export default class InvitedNotify extends Vue {
       text: "Mã",
       align: "start",
       sortable: false,
-      value: "id"
+      value: "relatedResource.id"
     },
-    { text: "Hãng tàu", value: "outbound.shippingLine" },
-    { text: "Loại cont", value: "outbound.containerType" },
-    { text: "Mã booking", value: "outbound.booking.bookingNumber" },
-    { text: "Giá gói thầu", value: "bidPackagePrice" },
+    { text: "Hãng tàu", value: "relatedResource.outbound.shippingLine" },
+    { text: "Loại cont", value: "relatedResource.outbound.containerType" },
+    {
+      text: "Mã booking",
+      value: "relatedResource.outbound.booking.bookingNumber"
+    },
+    { text: "Giá gói thầu", value: "relatedResource.bidPackagePrice" },
     { text: "Mở thầu", value: "bidOpening" },
     { text: "Đóng thầu", value: "bidClosing" },
     { text: "Nhiều thầu win", value: "isMultipleAward" },
@@ -129,14 +146,16 @@ export default class InvitedNotify extends Vue {
     { text: "Actions", value: "actions", sortable: false }
   ];
 
-  openAddDialog(item: IBiddingDocument) {
-    this.biddingDocument = item;
+  openAddDialog(item: IBiddingNotification) {
+    this.biddingDocument = item.relatedResource as IBiddingDocument;
+    this.biddingNotification = item;
     this.dialogAdd = true;
   }
 
-  openDeleteDialog(item: IBiddingDocument) {
-    this.biddingDocument = item;
-    this.dialogDel = true;
+  openConfirmDialog(item: IBiddingNotification) {
+    this.biddingNotification = item;
+    this.biddingDocument = item.relatedResource as IBiddingDocument;
+    this.dialogConfirm = true;
   }
 
   @Watch("options", { deep: true })
@@ -157,23 +176,20 @@ export default class InvitedNotify extends Vue {
           return null;
         });
       if (_biddingNotifications) {
-        this.biddingDocuments = _biddingNotifications.data
-          .filter(x => x.action == "ADDED")
-          .reduce(function(
-            pV: Array<IBiddingDocument>,
-            cV: IBiddingNotification
-          ) {
-            pV.push(cV.relatedResource);
-            return pV;
-          },
-          []);
-        this.serverSideOptions.totalItems = _biddingNotifications.totalElements;
+        this.biddingNotifications = _biddingNotifications.data.filter(
+          x => x.action == "ADDED" && x.isHide == false
+        );
+        this.serverSideOptions.totalItems = _biddingNotifications.data.filter(
+          x => x.action == "ADDED" && x.isHide == false
+        ).length;
       }
       this.loading = false;
     }
   }
-  clicked(value: IBiddingDocument) {
-    this.$router.push({ path: `/bidding-document/${value.id}` });
+  clicked(value: IBiddingNotification) {
+    this.$router.push({
+      path: `/bidding-document/${value.relatedResource.id}`
+    });
   }
 }
 </script>

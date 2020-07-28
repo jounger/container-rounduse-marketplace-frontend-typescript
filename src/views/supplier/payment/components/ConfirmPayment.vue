@@ -1,10 +1,10 @@
 <template>
-  <v-dialog v-model="dialogDelSync" max-width="600px">
+  <v-dialog v-model="dialogConfirmSync" max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;"
-            >Xóa hóa đơn</span
+            >Xác nhận hóa đơn</span
           ></v-toolbar-title
         >
       </v-toolbar>
@@ -13,7 +13,7 @@
         <v-form>
           <v-container>
             <span style="color: black; font-size:22px;"
-              >Bạn có chắc chắn muốn xóa hóa đơn này?</span
+              >Bạn có xác nhận đã nhận tiền cho hóa đơn này?</span
             >
             <v-divider class="mt-3"></v-divider>
             <v-list>
@@ -27,8 +27,8 @@
         </v-form>
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
-        <v-btn @click="dialogDelSync = false">Hủy</v-btn>
-        <v-btn @click="removePayment()" color="error">Xóa</v-btn>
+        <v-btn @click="dialogConfirmSync = false">Hủy</v-btn>
+        <v-btn @click="confirmPayment()" color="primary">Xác nhận</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -36,32 +36,29 @@
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPayment } from "@/entity/payment";
-import { removePayment } from "@/api/payment";
 import { getErrorMessage } from "@/utils/tool";
 import snackbar from "@/store/modules/snackbar";
+import { editPayment } from "../../../../api/payment";
 
 @Component
-export default class DeletePayment extends Vue {
-  @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
+export default class ConfirmPayment extends Vue {
+  @PropSync("dialogConfirm", { type: Boolean }) dialogConfirmSync!: boolean;
   @PropSync("payments", { type: Array }) paymentsSync!: Array<IPayment>;
-  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) payment!: IPayment;
 
-  async removePayment() {
+  async confirmPayment() {
     if (this.payment.id) {
-      await removePayment(this.payment.id)
+      const _payment = await editPayment(this.payment.id, { isPaid: true })
         .then(res => {
           console.log(res.data);
+          const response: IPayment = res.data;
           snackbar.setSnackbar({
-            text: "Xóa thành công Hóa đơn: " + this.payment.id,
+            text:
+              "Xác nhận đã nhận tiền thành công cho Hóa đơn: " +
+              this.payment.id,
             color: "success"
           });
-          const index = this.paymentsSync.findIndex(
-            x => x.id === this.payment.id
-          );
-          this.paymentsSync.splice(index, 1);
-          this.totalItemsSync -= 1;
-          this.dialogDelSync = false;
+          return response;
         })
         .catch(err => {
           console.log(err);
@@ -69,7 +66,13 @@ export default class DeletePayment extends Vue {
             text: getErrorMessage(err),
             color: "error"
           });
+          return null;
         });
+      if (_payment) {
+        const index = this.paymentsSync.findIndex(x => x.id === _payment.id);
+        this.paymentsSync.splice(index, 1, _payment);
+        this.dialogConfirmSync = false;
+      }
       snackbar.setDisplay(true);
     }
   }

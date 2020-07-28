@@ -9,32 +9,36 @@
         :finalEvidence="finalEvidence"
         :evidence="evidence"
       />
+      <CreateEvidence
+        v-if="dialogAddEvidence"
+        :dialogAdd.sync="dialogAddEvidence"
+        :evidences.sync="evidences"
+        :checkValid.sync="checkValid"
+        :totalItems.sync="evidenceServerSideOptions.totalItems"
+        :contract="contract"
+      />
       <CreatePayment
         v-if="dialogAddPayment"
-        :dialogAddPayment.sync="dialogAddPayment"
-        :contract="contract"
+        :dialogAdd.sync="dialogAddPayment"
+        :combined="combined"
+        :merchant="merchant"
         :update="false"
+        :readonly="false"
       />
-      <v-row justify="center">
-        <DeleteContract
-          :dialogDel.sync="dialogDel"
-          :contract="contract"
-          :contracts.sync="contracts"
-          :totalItems.sync="serverSideOptions.totalItems"
-        />
-      </v-row>
       <v-row justify="center">
         <UpdateContract
           v-if="dialogAdd"
-          :contract="contract"
+          :combined="combined"
           :contracts.sync="contracts"
           :dialogAdd.sync="dialogAdd"
+          :readonly="readonly"
+          :merchant="merchant"
           :totalItems.sync="serverSideOptions.totalItems"
         />
       </v-row>
       <v-data-table
         :headers="headers"
-        :items="combineds"
+        :items="combinedsWithIndex"
         :single-expand="singleExpand"
         :expanded.sync="expanded"
         show-expand
@@ -74,7 +78,10 @@
                   <v-list-item-title>Tạo hóa đơn</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item @click="openUpdateDialog(item)">
+              <v-list-item
+                @click="openUpdateDialog(item)"
+                v-if="$auth.user().roles[0] == 'ROLE_MERCHANT'"
+              >
                 <v-list-item-icon>
                   <v-icon small>edit</v-icon>
                 </v-list-item-icon>
@@ -82,13 +89,22 @@
                   <v-list-item-title>Chỉnh sửa</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
+              <v-list-item
+                @click="openDetailDialog(item)"
+                v-if="$auth.user().roles[0] == 'ROLE_FORWARDER'"
+              >
+                <v-list-item-icon>
+                  <v-icon small>edit</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Xem chi tiết</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
             </v-list>
           </v-menu>
         </template>
-        <template v-slot:item.merchant="{}">
-          {{
-            $auth.user().roles == "ROLE_MERCHANT" ? $auth.user().username : ""
-          }}
+        <template v-slot:item.merchant="{ item }">
+          {{ merchants[item.index] }}
         </template>
         <template v-slot:item.forwarder="{ item }">
           {{
@@ -152,7 +168,6 @@
 <script lang="ts">
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { IContract } from "@/entity/contract";
-import DeleteContract from "./components/DeleteContract.vue";
 import { PaginationResponse } from "@/api/payload";
 import { DataOptions } from "vuetify";
 import { IEvidence } from "@/entity/evidence";
@@ -162,29 +177,37 @@ import { ICombined } from "@/entity/combined";
 import DetailEvidence from "../combined/components/DetailEvidence.vue";
 import UpdateContract from "./components/UpdateContract.vue";
 import CreatePayment from "../payment/components/CreatePayment.vue";
+import { getBiddingDocumentByBid } from "@/api/bidding-document";
+import { IBiddingDocument } from "@/entity/bidding-document";
+import { IBid } from "@/entity/bid";
+import CreateEvidence from "../combined/components/CreateEvidence.vue";
 
 @Component({
   components: {
-    DeleteContract,
     DetailEvidence,
     UpdateContract,
-    CreatePayment
+    CreatePayment,
+    CreateEvidence
   }
 })
 export default class Contract extends Vue {
   contracts: Array<IContract> = [];
   combineds: Array<ICombined> = [];
   contract = {} as IContract;
+  combined = {} as ICombined;
   dialogDetail = false;
   dialogAdd = false;
   dialogAddPayment = false;
-  dialogDel = false;
-  checkValid = false;
+  dialogAddEvidence = false;
   finalEvidence = false;
   loading = true;
   update = false;
+  readonly = false;
+  checkValid = false;
   expanded: Array<IContract> = [];
   evidences: Array<IEvidence> = [];
+  merchants: Array<string> = [];
+  merchant = "";
   evidence = null as IEvidence | null;
   singleExpand = true;
   options = {
@@ -215,8 +238,6 @@ export default class Contract extends Vue {
       text: "% Tiền phạt",
       value: "contract.finesAgainstContractViolation"
     },
-    { text: "Hợp lệ", value: "isValid" },
-    { text: "Bắt buộc", value: "contract.required" },
     {
       text: "Hành động",
       value: "actions",
@@ -240,7 +261,9 @@ export default class Contract extends Vue {
     }
   ];
   openCreatePayment(item: ICombined) {
-    this.contract = item.contract as IContract;
+    this.combined = item;
+    const index = this.combineds.findIndex((x: ICombined) => x.id == item.id);
+    this.merchant = this.merchants[index];
     this.dialogAddPayment = true;
   }
   openDetailEvidence(item: IEvidence) {
@@ -252,6 +275,9 @@ export default class Contract extends Vue {
     }
     this.dialogDetail = true;
   }
+  openCreateEvidence() {
+    this.dialogAddEvidence = true;
+  }
   openCreateDialog() {
     this.contract = {} as IContract;
     this.update = false;
@@ -260,13 +286,40 @@ export default class Contract extends Vue {
 
   openUpdateDialog(item: ICombined) {
     console.log(item);
-    this.contract = item.contract as IContract;
+    this.combined = item;
+    const index = this.combineds.findIndex((x: ICombined) => x.id == item.id);
+    this.merchant = this.merchants[index];
+    this.readonly = false;
     this.dialogAdd = true;
   }
-
-  openDeleteDialog(item: IContract) {
-    this.contract = item;
-    this.dialogDel = true;
+  openDetailDialog(item: ICombined) {
+    console.log(item);
+    this.combined = item;
+    const index = this.combineds.findIndex((x: ICombined) => x.id == item.id);
+    this.merchant = this.merchants[index];
+    this.readonly = true;
+    this.dialogAdd = true;
+  }
+  get combinedsWithIndex() {
+    return this.combineds.map((combineds, index) => ({
+      ...combineds,
+      index: index
+    }));
+  }
+  async getBiddingDocument(id: number) {
+    const _biddingDocument = await getBiddingDocumentByBid(id)
+      .then(res => {
+        const response: IBiddingDocument = res.data;
+        return response;
+      })
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    if (_biddingDocument) {
+      this.merchants.push(_biddingDocument.merchant);
+    }
+    console.log(this.merchant);
   }
   @Watch("options")
   async onOptionsChange(val: DataOptions) {
@@ -287,6 +340,12 @@ export default class Contract extends Vue {
         });
       if (_combineds) {
         this.combineds = _combineds.data;
+        _combineds.data.forEach((x: ICombined) => {
+          const _bid = x.bid as IBid;
+          if (_bid.id) {
+            this.getBiddingDocument(_bid.id);
+          }
+        });
         this.serverSideOptions.totalItems = _combineds.totalElements;
       }
       this.loading = false;
@@ -312,15 +371,12 @@ export default class Contract extends Vue {
         if (_evidences) {
           this.evidences = _evidences.data;
           this.evidenceServerSideOptions.totalItems = _evidences.totalElements;
-          if (this.evidences.length > 0 && this.evidences[0].isValid == true) {
-            this.checkValid = true;
-          }
         }
       }
       this.loading = false;
     }
   }
-  async clicked(value: IContract) {
+  async clicked(value: ICombined) {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
@@ -328,12 +384,16 @@ export default class Contract extends Vue {
       } else {
         if (this.expanded.length > 0) {
           this.expanded.splice(0, this.expanded.length);
-          this.expanded.push(value);
-          this.contract = value;
-          await this.onEvidenceOptionsChange(this.evidenceOptions);
+          if (value.contract) {
+            this.expanded.push(value.contract);
+            this.contract = value.contract;
+            await this.onEvidenceOptionsChange(this.evidenceOptions);
+          }
         } else {
-          this.expanded.push(value);
-          this.contract = value;
+          if (value.contract) {
+            this.expanded.push(value.contract);
+            this.contract = value.contract;
+          }
         }
       }
     }

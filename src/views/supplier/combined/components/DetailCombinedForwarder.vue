@@ -666,7 +666,6 @@ export default class DetailCombinedForwarder extends Vue {
     }
   }
   openCreateEvidence() {
-    this.update = false;
     this.dialogAdd = true;
   }
   openDetailEvidence(item: IEvidence) {

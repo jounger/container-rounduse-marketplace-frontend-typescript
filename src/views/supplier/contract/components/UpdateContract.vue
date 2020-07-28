@@ -31,7 +31,7 @@
                 prepend-icon="person"
                 type="text"
                 readonly
-                v-model="forwarder"
+                v-model="combined.bid.bidder"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -39,6 +39,7 @@
             <v-col cols="12" md="11">
               <v-checkbox
                 v-model="contractLocal.required"
+                :readonly="readonly"
                 label="Yêu cầu hợp đồng"
               />
             </v-col>
@@ -47,21 +48,26 @@
             <v-col cols="12" md="11">
               <v-text-field
                 v-if="contractLocal.required"
+                readonly
                 label="% Tiền phạt*"
-                name="finesAgainstContractViolations"
+                name="finesAgainstContractViolation"
                 prepend-icon="monetization_on"
                 type="text"
-                :rules="[required('finesAgainstContractViolations')]"
-                v-model="contractLocal.finesAgainstContractViolations"
+                :rules="[required('finesAgainstContractViolation')]"
+                v-model="contractLocal.finesAgainstContractViolation"
               ></v-text-field>
             </v-col>
           </v-row>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-top: 65px;">
+      <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn @click="updateContract()" color="primary" :disabled="!valid"
+        <v-btn
+          @click="updateContract()"
+          color="primary"
+          :disabled="!valid"
+          v-if="!readonly"
           >Cập nhập</v-btn
         >
       </v-card-actions>
@@ -74,6 +80,7 @@ import { IContract } from "@/entity/contract";
 import FormValidate from "@/mixin/form-validate";
 import { editContract } from "@/api/contract";
 import { getErrorMessage } from "@/utils/tool";
+import { ICombined } from "@/entity/combined";
 
 @Component({
   mixins: [FormValidate]
@@ -84,22 +91,19 @@ export default class UpdateContract extends Vue {
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("totalItems", { type: Number }) totalItemsSync?: number;
-  @Prop(Object) contract?: IContract;
+  @Prop(Object) combined?: ICombined;
+  @Prop(Boolean) readonly!: boolean;
+  @Prop(String) merchant!: string;
 
-  contractLocal = {
-    finesAgainstContractViolation: 50,
-    evidence: {
-      sender: this.$auth.user().username,
-      evidence: "",
-      isValid: false
-    },
-    required: false
-  } as IContract;
+  contractLocal = {} as IContract;
   valid = false;
-  merchant = "";
-  forwarder = "";
   created() {
-    this.contractLocal = Object.assign({}, this.contract);
+    if (typeof this.combined != "undefined") {
+      this.contractLocal = Object.assign(
+        {},
+        this.combined.contract as IContract
+      );
+    }
   }
   updateContract() {
     if (this.contractLocal.id) {

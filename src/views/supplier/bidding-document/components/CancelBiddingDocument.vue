@@ -47,7 +47,7 @@ export default class CancelBiddingDocument extends Vue {
   @PropSync("dialogCancel", { type: Boolean }) dialogCancelSync!: boolean;
   @Prop(Object)
   biddingDocument!: IBiddingDocument;
-  @PropSync("biddingDocuments", { type: Array }) biddingDocumentsSync!: Array<
+  @PropSync("biddingDocuments", { type: Array }) biddingDocumentsSync?: Array<
     IBiddingDocument
   >;
 
@@ -77,10 +77,12 @@ export default class CancelBiddingDocument extends Vue {
           return null;
         });
       if (_biddingDocument) {
-        const index = this.biddingDocumentsSync.findIndex(
-          x => x.id === _biddingDocument.id
-        );
-        this.biddingDocumentsSync.splice(index, 1, _biddingDocument);
+        if (this.biddingDocumentsSync) {
+          const index = this.biddingDocumentsSync.findIndex(
+            x => x.id === _biddingDocument.id
+          );
+          this.biddingDocumentsSync.splice(index, 1, _biddingDocument);
+        }
         this.dialogCancelSync = false;
       }
       snackbar.setDisplay(true);
