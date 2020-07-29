@@ -21,7 +21,7 @@
         </v-btn>
       </v-toolbar>
 
-      <v-list three-line>
+      <v-list two-line>
         <v-list-item v-if="notifications.length == 0">
           <v-list-item-content>
             {{ "Không có thông báo mới!" }}
@@ -46,12 +46,15 @@
         </v-list-item>
       </v-list>
       <div class="text-center">
-        <v-pagination
-          v-model="options.page"
-          :length="serverSideOptions.totalPages"
-          :total-visible="0"
-          circle
-        ></v-pagination>
+        <v-btn
+          class="ma-2"
+          :loading="loading"
+          :disabled="loading"
+          @click="loadNotification()"
+          outlined
+          color="indigo"
+          >Xem thêm...</v-btn
+        >
       </div>
     </v-card>
   </v-menu>
@@ -84,8 +87,8 @@ import {
 
 @Component
 export default class Notification extends Vue {
-  notifications: Array<unknown> = [];
-  notification = {} as unknown;
+  notifications: Array<INotification> = [];
+  notification = {} as INotification;
   notificationSubscribe: Array<string> = [];
   options = {
     page: 1,
@@ -97,7 +100,7 @@ export default class Notification extends Vue {
     itemsPerPageItems: [5, 10, 20, 50]
   };
   loading = false;
-  messageCount = 1;
+  messageCount = 0;
 
   connected = false;
   socket = {} as WebSocket;
@@ -172,6 +175,12 @@ export default class Notification extends Vue {
     this.messageCount = 0;
   }
 
+  loadNotification() {
+    if (this.options.page < this.serverSideOptions.totalPages)
+      this.options.page += 1;
+    else console.log(this.options);
+  }
+
   @Watch("options", { immediate: true })
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined" && this.$auth.check()) {
@@ -181,8 +190,8 @@ export default class Notification extends Vue {
         limit: val.itemsPerPage
       })
         .then(res => {
-          const response: PaginationResponse<IBiddingNotification> = res.data;
-          // console.log("watch", response);
+          const response: PaginationResponse<INotification> = res.data;
+          console.log("watch", response);
           return response;
         })
         .catch(err => {
@@ -191,8 +200,9 @@ export default class Notification extends Vue {
         });
       this.loading = false;
       if (_notification) {
-        this.notifications = _notification.data;
+        this.notifications = [...this.notifications, ..._notification.data];
         this.serverSideOptions.totalPages = _notification.totalPages;
+        this.messageCount = this.notifications.filter(x => !x.isRead).length;
       }
     }
   }
@@ -265,7 +275,7 @@ export default class Notification extends Vue {
             this.notificationSubscribe.push(NOTIFICATION_LINK.DRIVER);
             break;
           default:
-            console.log("You're not our member");
+            console.log("You're not in subscribe list!");
             break;
         }
         console.log(this.notificationSubscribe);
@@ -275,11 +285,3 @@ export default class Notification extends Vue {
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 475px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

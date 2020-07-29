@@ -2,6 +2,7 @@
   <v-dialog
     v-model="dialogAddSync"
     fullscreen
+    persistent
     hide-overlay
     transition="dialog-bottom-transition"
   >
@@ -191,10 +192,10 @@
                 <v-col cols="12" md="6">
                   <v-text-field
                     v-model="shippingLineLocal.tin"
-                    prepend-icon="contact_phone"
+                    prepend-icon="card_travel"
                     :counter="20"
                     :rules="[minLength('tin', 5), maxLength('tin', 20)]"
-                    label="Tin*"
+                    label="Mã số thuế*"
                     type="number"
                   ></v-text-field>
                 </v-col>
@@ -247,6 +248,7 @@ import { IShippingLine } from "@/entity/shipping-line";
 import { createShippingLine } from "@/api/shipping-line";
 import FormValidate from "@/mixin/form-validate";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
@@ -256,8 +258,6 @@ export default class CreateShippingLine extends Vue {
   @PropSync("shippingLines", { type: Array }) shippingLinesSync!: Array<
     IShippingLine
   >;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
 
   shippingLineLocal = {
@@ -285,22 +285,32 @@ export default class CreateShippingLine extends Vue {
   valid = false;
   valid2 = false;
 
-  createShippingLine() {
+  async createShippingLine() {
     if (this.shippingLineLocal) {
       console.log(this.shippingLineLocal);
-      createShippingLine(this.shippingLineLocal)
+      const _shippingLine = await createShippingLine(this.shippingLineLocal)
         .then(res => {
           const response: IShippingLine = res.data;
-          this.messageSync =
-            "Thêm mới thành công hãng tàu: " + response.companyCode;
-          this.shippingLinesSync.unshift(response);
-          this.totalItemsSync += 1;
+          snackbar.setSnackbar({
+            text: "Thêm mới thành công hãng tàu: " + response.companyCode,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_shippingLine) {
+        this.shippingLinesSync.unshift(_shippingLine);
+        this.totalItemsSync += 1;
+        this.dialogAddSync = false;
+      }
+      snackbar.setDisplay(true);
     }
   }
 }

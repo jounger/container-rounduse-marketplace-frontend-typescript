@@ -1,6 +1,5 @@
 <template>
   <v-card tile>
-    <Snackbar :text="message" :snackbar.sync="snackbar" />
     <!-- TITLE -->
     <v-toolbar dark color="primary">
       <v-toolbar-title>Đăng ký tài khoản</v-toolbar-title>
@@ -29,7 +28,7 @@
                   type="text"
                   :counter="20"
                   :rules="[minLength('username', 2), maxLength('username', 20)]"
-                  v-model="username"
+                  v-model="supplier.username"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
@@ -43,11 +42,11 @@
                     minLength('password', 6),
                     maxLength('password', 120)
                   ]"
-                  v-model="password"
+                  v-model="supplier.password"
                 ></v-text-field>
               </v-col>
             </v-row>
-            <v-radio-group v-model="roles" :mandatory="true" row>
+            <v-radio-group v-model="role" :mandatory="true" row>
               <v-radio label="Đăng ký làm chủ xe" value="forwarder"></v-radio>
               <v-radio
                 label="Đăng ký làm chủ hàng"
@@ -61,7 +60,7 @@
                   label="Email*"
                   type="email"
                   prepend-icon="alternate_email"
-                  v-model="emailRegister"
+                  v-model="supplier.email"
                   :counter="50"
                   :rules="[
                     email('Register'),
@@ -78,7 +77,7 @@
                   type="number"
                   :counter="10"
                   :rules="[minLength('phone', 10), maxLength('phone', 10)]"
-                  v-model="phone"
+                  v-model="supplier.phone"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -91,7 +90,7 @@
                   :counter="100"
                   :rules="[minLength('address', 5), maxLength('address', 100)]"
                   type="text"
-                  v-model="address"
+                  v-model="supplier.address"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -103,7 +102,7 @@
         </v-stepper-content>
 
         <v-stepper-step :complete="stepper > 2" step="2" :editable="editable">{{
-          roles === "forwarder" ? "Thông tin chủ xe" : "Thông tin chủ hàng"
+          role === "forwarder" ? "Thông tin chủ xe" : "Thông tin chủ hàng"
         }}</v-stepper-step>
 
         <v-stepper-content step="2">
@@ -121,7 +120,7 @@
                     minLength('cpmpany code', 2),
                     maxLength('company code', 10)
                   ]"
-                  v-model="companyCode"
+                  v-model="supplier.companyCode"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
@@ -135,7 +134,7 @@
                     minLength('company name', 5),
                     maxLength('company name', 100)
                   ]"
-                  v-model="companyName"
+                  v-model="supplier.companyName"
                 >
                 </v-text-field>
               </v-col>
@@ -152,7 +151,7 @@
                     minLength('contact person', 5),
                     maxLength('contact person', 50)
                   ]"
-                  v-model="contactPerson"
+                  v-model="supplier.contactPerson"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
@@ -163,20 +162,20 @@
                   type="text"
                   :counter="50"
                   :rules="[minLength('website', 5), maxLength('website', 50)]"
-                  v-model="website"
+                  v-model="supplier.website"
                 ></v-text-field>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" md="6">
                 <v-text-field
-                  label="Tin*"
+                  label="Mã số thuế*"
                   name="tin"
-                  prepend-icon="contact_phone"
+                  prepend-icon="card_travel"
                   :counter="20"
                   :rules="[minLength('tin', 5), maxLength('tin', 20)]"
                   type="number"
-                  v-model="tin"
+                  v-model="supplier.tin"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
@@ -187,7 +186,7 @@
                   type="number"
                   :counter="20"
                   :rules="[minLength('fax', 5), maxLength('fax', 20)]"
-                  v-model="fax"
+                  v-model="supplier.fax"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -203,7 +202,7 @@
                     minLength('company description', 5),
                     maxLength('company description', 200)
                   ]"
-                  v-model="companyDescription"
+                  v-model="supplier.companyDescription"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
@@ -217,7 +216,7 @@
                     minLength('company address', 5),
                     maxLength('company address', 200)
                   ]"
-                  v-model="companyAddress"
+                  v-model="supplier.companyAddress"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -254,6 +253,9 @@
 import { Component, Vue } from "vue-property-decorator";
 import FormValidate from "@/mixin/form-validate";
 import Snackbar from "@/components/Snackbar.vue";
+import snackbar from "@/store/modules/snackbar";
+import { getErrorMessage } from "@/utils/tool";
+import { ISupplier } from "@/entity/supplier";
 @Component({
   mixins: [FormValidate],
   components: {
@@ -261,21 +263,24 @@ import Snackbar from "@/components/Snackbar.vue";
   }
 })
 export default class Register extends Vue {
-  username = "";
-  password = "";
-  emailRegister = "";
-  phone = "";
-  address = "";
-  roles = "forwarder";
-  website = "";
-  contactPerson = "";
-  companyName = "";
-  companyCode = "";
-  companyDescription = "";
-  companyAddress = "";
-  tin = "";
-  fax = "";
-  role: Array<string> = [];
+  supplier = {
+    username: "",
+    password: "",
+    email: "",
+    phone: "",
+    address: "",
+    website: "",
+    contactPerson: "",
+    companyName: "",
+    companyCode: "",
+    companyDescription: "",
+    companyAddress: "",
+    tin: "",
+    fax: "",
+    status: "PENDING",
+    roles: [] as Array<string>
+  } as ISupplier;
+  role = "forwarder";
   message = "";
   snackbar = false;
   editable = false;
@@ -284,43 +289,29 @@ export default class Register extends Vue {
   valid2 = false;
   checkbox = false;
 
-  public submit() {
-    this.role.push(this.roles);
-    console.log(this.role);
-    this.$http({
+  async submit() {
+    this.supplier.roles.push(this.role);
+    await this.$http({
       url: "/auth/signup",
       method: "POST",
-      data: {
-        username: this.username,
-        password: this.password,
-        email: this.emailRegister,
-        phone: this.phone,
-        roles: this.role,
-        address: this.address,
-        website: this.website,
-        contactPerson: this.contactPerson,
-        companyName: this.companyName,
-        companyCode: this.companyCode,
-        companyDescription: this.companyDescription,
-        companyAddress: this.companyAddress,
-        tin: this.tin,
-        fax: this.fax
-      }
+      data: this.supplier
     })
       .then(response => {
         console.warn("SUCCESS register", response);
-        this.message = "Đăng ký thành công người dùng " + this.username;
-        this.snackbar = true;
+        snackbar.setSnackbar({
+          text: "Đăng ký thành công người dùng " + response.data.username,
+          color: "success"
+        });
       })
       .catch(err => {
         console.error("ERROR! in register", err);
-        this.message = "Đã có lỗi xảy ra";
-        this.snackbar = true;
-      })
-      .finally(() => (this.role = [] as Array<string>));
-  }
-  public cancel(): void {
-    this.$router.push("/login");
+        snackbar.setSnackbar({
+          text: getErrorMessage(err),
+          color: "error"
+        });
+      });
+    snackbar.setDisplay(true);
+    this.supplier.roles = [] as Array<string>;
   }
 }
 </script>

@@ -1,28 +1,22 @@
 <template>
   <v-content>
-    <v-card>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
+    <v-card class="ma-5">
       <CreateOutbound
         :dialogAdd.sync="dialogAdd"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
         :outbounds.sync="outbounds"
         :totalItems.sync="serverSideOptions.totalItems"
       />
       <UpdateOutbound
         :outbound="outbound"
         :dialogEdit.sync="dialogEdit"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
         :outbounds.sync="outbounds"
+        :readonly="readonly"
       />
       <CreateBiddingDocument
         v-if="dialogCreateBiddingDocument"
         :biddingDocument.sync="biddingDocument"
         :outbound.sync="outbound"
         :dialogAdd.sync="dialogCreateBiddingDocument"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
       />
       <v-row justify="center">
         <DeleteOutbound
@@ -30,8 +24,6 @@
           :dialogDel.sync="dialogDel"
           :outbound="outbound"
           :outbounds.sync="outbounds"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
           :totalItems.sync="serverSideOptions.totalItems"
         />
       </v-row>
@@ -46,6 +38,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <!--  -->
@@ -83,7 +76,10 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item @click="openCreateBiddingDocument(item)">
+              <v-list-item
+                @click="openCreateBiddingDocument(item)"
+                v-if="item.status == 'CREATED'"
+              >
                 <v-list-item-icon>
                   <v-icon small>add</v-icon>
                 </v-list-item-icon>
@@ -91,7 +87,10 @@
                   <v-list-item-title>Mở đấu thầu</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item @click="openUpdateDialog(item)">
+              <v-list-item
+                @click="openUpdateDialog(item)"
+                v-if="item.status == 'CREATED'"
+              >
                 <v-list-item-icon>
                   <v-icon small>edit</v-icon>
                 </v-list-item-icon>
@@ -99,7 +98,21 @@
                   <v-list-item-title>Chỉnh sửa</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item @click="openDeleteDialog(item)">
+              <v-list-item
+                @click="openDetailDialog(item)"
+                v-if="item.status != 'CREATED'"
+              >
+                <v-list-item-icon>
+                  <v-icon small>description</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Xem chi tiết</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item
+                @click="openDeleteDialog(item)"
+                v-if="item.status == 'CREATED'"
+              >
                 <v-list-item-icon>
                   <v-icon small>delete</v-icon>
                 </v-list-item-icon>
@@ -119,7 +132,6 @@ import { Component, Watch, Vue } from "vue-property-decorator";
 import { IOutbound } from "@/entity/outbound";
 import CreateOutbound from "./components/CreateOutbound.vue";
 import UpdateOutbound from "./components/UpdateOutbound.vue";
-import Snackbar from "@/components/Snackbar.vue";
 import DeleteOutbound from "./components/DeleteOutbound.vue";
 import { getOutboundByMerchant } from "@/api/outbound";
 import { PaginationResponse } from "@/api/payload";
@@ -134,8 +146,7 @@ import { DataOptions } from "vuetify";
     CreateOutbound,
     UpdateOutbound,
     DeleteOutbound,
-    CreateBiddingDocument,
-    Snackbar
+    CreateBiddingDocument
   }
 })
 export default class Outbound extends Vue {
@@ -145,9 +156,8 @@ export default class Outbound extends Vue {
   dialogAdd = false;
   dialogEdit = false;
   dialogDel = false;
+  readonly = false;
   dialogCreateBiddingDocument = false;
-  message = "";
-  snackbar = false;
   loading = true;
   dateInit = new Date().toISOString().substr(0, 10);
   options = {
@@ -187,6 +197,12 @@ export default class Outbound extends Vue {
 
   openUpdateDialog(item: IOutbound) {
     this.outbound = item;
+    this.readonly = false;
+    this.dialogEdit = true;
+  }
+  openDetailDialog(item: IOutbound) {
+    this.outbound = item;
+    this.readonly = true;
     this.dialogEdit = true;
   }
 
@@ -201,30 +217,28 @@ export default class Outbound extends Vue {
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getOutboundByMerchant({
+      const _outbounds = await getOutboundByMerchant({
         page: val.page - 1,
         limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IOutbound> = res.data;
           console.log("watch", response);
-          this.outbounds = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_outbounds) {
+        this.outbounds = _outbounds.data;
+        this.serverSideOptions.totalItems = _outbounds.totalElements;
+      }
+      this.loading = false;
     }
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

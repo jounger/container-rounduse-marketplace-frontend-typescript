@@ -1,13 +1,13 @@
 <template>
   <v-content>
     <v-card class="ma-5">
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <CreateBid
         v-if="dialogAdd"
         :biddingDocument.sync="biddingDocument"
         :dialogAdd.sync="dialogAdd"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
+        :biddingNotification="biddingNotification"
+        :biddingNotifications.sync="biddingNotifications"
+        :totalItemsBidNo.sync="serverSideOptions.totalItems"
       />
       <!-- <UpdateBid
         v-if="dialogEdit"
@@ -16,16 +16,27 @@
         :message.sync="message"
         :snackbar.sync="snackbar"
       /> -->
+      <ConfirmBid
+        v-if="dialogConfirm"
+        :dialogConfirm.sync="dialogConfirm"
+        :biddingNotifications.sync="biddingNotifications"
+        :totalItems.sync="serverSideOptions.totalItems"
+        :biddingDocument="biddingDocument"
+        :biddingNotification="biddingNotification"
+      />
       <v-data-table
         :headers="headers"
-        :items="biddingDocuments"
+        :items="biddingNotifications"
         item-key="id"
         :loading="loading"
         :options.sync="options"
         @click:row="clicked"
-        :server-items-length="options.totalItems"
-        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :server-items-length="serverSideOptions.totalItems"
+        :footer-props="{
+          'items-per-page-options': serverSideOptions.itemsPerPageItems
+        }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <template v-slot:top>
@@ -49,17 +60,20 @@
             tile
             outlined
             color="error"
-            @click.stop="openDeleteDialog(item)"
+            @click.stop="openConfirmDialog(item)"
             small
           >
             <v-icon left>mdi-pencil</v-icon> Từ chối
           </v-btn>
         </template>
         <template v-slot:item.bidOpening="{ item }">
-          {{ formatDatetime(item.bidOpening) }}
+          {{ formatDatetime(item.relatedResource.bidOpening) }}
+        </template>
+        <template v-slot:item.isMultipleAward="{ item }">
+          {{ item.relatedResource.isMultipleAward ? "Có" : "Không" }}
         </template>
         <template v-slot:item.bidClosing="{ item }">
-          {{ formatDatetime(item.bidClosing) }}
+          {{ formatDatetime(item.relatedResource.bidClosing) }}
         </template>
       </v-data-table>
     </v-card>
@@ -69,35 +83,32 @@
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import CreateBid from "./CreateBid.vue";
-import Snackbar from "@/components/Snackbar.vue";
 import { PaginationResponse } from "@/api/payload";
 import { IBiddingNotification } from "@/entity/bidding-notification";
 import { getBiddingNotificationsByUser } from "@/api/notification";
 import Utils from "@/mixin/utils";
+import { DataOptions } from "vuetify";
+import ConfirmBid from "./ConfirmBid.vue";
 
 @Component({
   mixins: [Utils],
   components: {
     CreateBid,
-    Snackbar
+    ConfirmBid
   }
 })
 export default class InvitedNotify extends Vue {
   biddingNotifications: Array<IBiddingNotification> = [];
   biddingNotification = {} as IBiddingNotification;
-
-  biddingDocuments: Array<IBiddingDocument> = [];
   biddingDocument = {} as IBiddingDocument;
   dialogAdd = false;
-  dialogDel = false;
-  message = "";
-  snackbar = false;
+  dialogConfirm = false;
   loading = true;
-  dateInit = new Date().toISOString().substr(0, 10);
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -106,12 +117,15 @@ export default class InvitedNotify extends Vue {
       text: "Mã",
       align: "start",
       sortable: false,
-      value: "id"
+      value: "relatedResource.id"
     },
-    { text: "Hãng tàu", value: "outbound.shippingLine" },
-    { text: "Loại cont", value: "outbound.containerType" },
-    { text: "Mã booking", value: "outbound.booking.bookingNumber" },
-    { text: "Giá gói thầu", value: "bidPackagePrice" },
+    { text: "Hãng tàu", value: "relatedResource.outbound.shippingLine" },
+    { text: "Loại cont", value: "relatedResource.outbound.containerType" },
+    {
+      text: "Mã booking",
+      value: "relatedResource.outbound.booking.bookingNumber"
+    },
+    { text: "Giá gói thầu", value: "relatedResource.bidPackagePrice" },
     { text: "Mở thầu", value: "bidOpening" },
     { text: "Đóng thầu", value: "bidClosing" },
     { text: "Nhiều thầu win", value: "isMultipleAward" },
@@ -132,52 +146,50 @@ export default class InvitedNotify extends Vue {
     { text: "Actions", value: "actions", sortable: false }
   ];
 
-  openAddDialog(item: IBiddingDocument) {
-    this.biddingDocument = item;
+  openAddDialog(item: IBiddingNotification) {
+    this.biddingDocument = item.relatedResource as IBiddingDocument;
+    this.biddingNotification = item;
     this.dialogAdd = true;
   }
 
-  openDeleteDialog(item: IBiddingDocument) {
-    this.biddingDocument = item;
-    this.dialogDel = true;
+  openConfirmDialog(item: IBiddingNotification) {
+    this.biddingNotification = item;
+    this.biddingDocument = item.relatedResource as IBiddingDocument;
+    this.dialogConfirm = true;
   }
 
   @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
-      getBiddingNotificationsByUser({
+  async onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
+      const _biddingNotifications = await getBiddingNotificationsByUser({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IBiddingNotification> = res.data;
           console.log("watch", response);
-          this.biddingDocuments = response.data
-            .filter(x => x.action == "ADDED")
-            .reduce(function(
-              pV: Array<IBiddingDocument>,
-              cV: IBiddingNotification
-            ) {
-              pV.push(cV.relatedResource);
-              return pV;
-            },
-            []);
-          this.options.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_biddingNotifications) {
+        this.biddingNotifications = _biddingNotifications.data.filter(
+          x => x.action == "ADDED" && x.isHide == false
+        );
+        this.serverSideOptions.totalItems = _biddingNotifications.data.filter(
+          x => x.action == "ADDED" && x.isHide == false
+        ).length;
+      }
+      this.loading = false;
     }
   }
-  clicked(value: IBiddingDocument) {
-    this.$router.push({ path: `/bidding-document/${value.id}` });
+  clicked(value: IBiddingNotification) {
+    this.$router.push({
+      path: `/bidding-document/${value.relatedResource.id}`
+    });
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

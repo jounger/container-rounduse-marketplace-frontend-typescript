@@ -1,14 +1,21 @@
 <template>
   <v-content>
-    <v-card>
+    <v-card class="ma-5">
       <v-row justify="center">
         <DeletePayment
+          v-if="dialogDel"
           :dialogDel.sync="dialogDel"
           :payment="payment"
           :payments.sync="payments"
-          :totalItems.sync="options.totalItems"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
+          :totalItems.sync="serverSideOptions.totalItems"
+        />
+      </v-row>
+      <v-row justify="center">
+        <ConfirmPayment
+          v-if="dialogConfirm"
+          :dialogConfirm.sync="dialogConfirm"
+          :payment="payment"
+          :payments.sync="payments"
         />
       </v-row>
       <v-row justify="center">
@@ -17,22 +24,22 @@
           :payment="payment"
           :payments.sync="payments"
           :dialogAdd.sync="dialogAdd"
-          :message.sync="message"
-          :totalItems.sync="options.totalItems"
-          :snackbar.sync="snackbar"
+          :totalItems.sync="serverSideOptions.totalItems"
           :update="update"
+          :readonly="readonly"
         />
       </v-row>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-data-table
         :headers="headers"
         :items="payments"
-        :search="search"
         :loading="loading"
         :options.sync="options"
-        :server-items-length="options.totalItems"
-        :footer-props="{ 'items-per-page-options': options.itemsPerPageItems }"
+        :server-items-length="serverSideOptions.totalItems"
+        :footer-props="{
+          'items-per-page-options': serverSideOptions.itemsPerPageItems
+        }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <template v-slot:top>
@@ -44,20 +51,80 @@
             <v-spacer></v-spacer>
           </v-toolbar>
         </template>
-        <template v-slot:item.amountPayment="{ item }">
-          {{ currencyFormatter(item.amount) }}
-          ({{ item.isPaid == true ? "Đã trả" : "Chưa trả" }})
+        <template v-slot:item.status="{ item }">
+          <v-chip color="error" dark v-if="!item.isPaid">Chưa trả</v-chip>
+          <v-chip color="success" dark v-else>Đã trả</v-chip>
         </template>
         <template v-slot:item.paymentDate="{ item }">
           {{ formatDatetime(item.paymentDate) }}
         </template>
+        <template v-slot:item.type="{ item }">
+          {{ item.type == "FINES" ? "Tiền phạt" : "Tiền phí" }}
+        </template>
+        <template v-slot:item.amount="{ item }">
+          {{ currencyFormatter(item.amount) }}
+        </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon small class="mr-2" @click="openUpdateDialog(item)">
-            mdi-pencil
-          </v-icon>
-          <v-icon small @click="openDeleteDialog(item)">
-            mdi-delete
-          </v-icon>
+          <v-menu :close-on-click="true">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="pink" icon outlined v-bind="attrs" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                @click="openDetailDialog(item)"
+                v-if="item.isPaid == true"
+              >
+                <v-list-item-icon>
+                  <v-icon small>add</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Xem chi tiết</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item
+                @click="openConfirmDialog(item)"
+                v-if="
+                  item.recipient == $auth.user().username &&
+                    item.isPaid == false
+                "
+              >
+                <v-list-item-icon>
+                  <v-icon small>add</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Xác nhận</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item
+                @click="openUpdateDialog(item)"
+                v-if="
+                  item.sender == $auth.user().username && item.isPaid == false
+                "
+              >
+                <v-list-item-icon>
+                  <v-icon small>edit</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Chỉnh sửa Hóa đơn</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item
+                @click="openDeleteDialog(item)"
+                v-if="
+                  item.sender == $auth.user().username && item.isPaid == false
+                "
+              >
+                <v-list-item-icon>
+                  <v-icon small>delete</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Xóa Hóa đơn</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </template>
       </v-data-table>
     </v-card>
@@ -70,16 +137,17 @@ import CreatePayment from "./components/CreatePayment.vue";
 import DeletePayment from "./components/DeletePayment.vue";
 // import { getPayments } from "@/api/payment";
 import { PaginationResponse } from "@/api/payload";
-import Snackbar from "@/components/Snackbar.vue";
 import Utils from "@/mixin/utils";
 import { getPaymentsByUser } from "@/api/payment";
+import { DataOptions } from "vuetify";
+import ConfirmPayment from "./components/ConfirmPayment.vue";
 
 @Component({
   mixins: [Utils],
   components: {
     CreatePayment,
     DeletePayment,
-    Snackbar
+    ConfirmPayment
   }
 })
 export default class Payment extends Vue {
@@ -87,16 +155,16 @@ export default class Payment extends Vue {
   payment = {} as IPayment;
   dialogAdd = false;
   dialogDel = false;
-  search = "";
+  dialogConfirm = false;
   roleSearch = "";
-  message = "";
-  snackbar = false;
   loading = true;
   update = false;
+  readonly = false;
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -106,13 +174,18 @@ export default class Payment extends Vue {
       align: "start",
       value: "id"
     },
+    { text: "Hợp đồng", value: "contract" },
     { text: "Người gửi", value: "sender" },
     { text: "Người nhận", value: "recipient" },
     {
       text: "Số tiền",
-      value: "amountPayment"
+      value: "amount"
     },
-    { text: "Loại hình thanh toán", value: "type" },
+    {
+      text: "Trạng thái",
+      value: "status"
+    },
+    { text: "Loại hóa đơn", value: "type" },
     { text: "Ngày thanh toán", value: "paymentDate" },
     {
       text: "Hành động",
@@ -129,6 +202,14 @@ export default class Payment extends Vue {
   openUpdateDialog(item: IPayment) {
     console.log(item);
     this.payment = item;
+    this.readonly = false;
+    this.update = true;
+    this.dialogAdd = true;
+  }
+  openDetailDialog(item: IPayment) {
+    console.log(item);
+    this.payment = item;
+    this.readonly = true;
     this.update = true;
     this.dialogAdd = true;
   }
@@ -137,22 +218,33 @@ export default class Payment extends Vue {
     this.payment = item;
     this.dialogDel = true;
   }
+  openConfirmDialog(item: IPayment) {
+    this.payment = item;
+    this.dialogConfirm = true;
+  }
 
   @Watch("options", { deep: true })
-  onOptionsChange(val: object, oldVal: object) {
-    if (val !== oldVal) {
-      getPaymentsByUser({
-        page: this.options.page - 1,
-        limit: this.options.itemsPerPage
+  async onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
+      const _payments = await getPaymentsByUser({
+        page: val.page - 1,
+        limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IPayment> = res.data;
           console.log("watch", response);
-          this.payments = response.data;
-          this.options.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_payments) {
+        this.payments = _payments.data;
+        this.serverSideOptions.totalItems = _payments.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

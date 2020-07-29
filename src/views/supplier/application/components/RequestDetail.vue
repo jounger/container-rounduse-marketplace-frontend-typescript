@@ -115,9 +115,9 @@
           <v-row>
             <v-col cols="12" md="6">
               <v-text-field
-                label="Tin"
+                label="Mã số thuế"
                 name="tin"
-                prepend-icon="contact_phone"
+                prepend-icon="card_travel"
                 type="number"
                 v-model="supplier.tin"
                 readonly
@@ -168,7 +168,6 @@
               ></v-text-field>
             </v-col>
           </v-row>
-          <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
     </v-card>
@@ -178,6 +177,8 @@
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import { ISupplier } from "@/entity/supplier";
 import { getSupplier } from "@/api/supplier";
+import snackbar from "@/store/modules/snackbar";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   name: "RequestDetail"
@@ -187,16 +188,25 @@ export default class RequestDetail extends Vue {
 
   supplier = {} as ISupplier;
   role = "";
-  created() {
-    getSupplier(this.$auth.user().username)
+  async created() {
+    const _supplier = await getSupplier(this.$auth.user().username)
       .then(res => {
         const response: ISupplier = res.data;
-        this.supplier = response;
-        this.role = this.supplier.roles[0];
-        console.log(this.supplier);
+        return response;
       })
-      .catch(err => console.log(err))
-      .finally();
+      .catch(err => {
+        console.log(err);
+        snackbar.setSnackbar({
+          text: getErrorMessage(err),
+          color: "error"
+        });
+        snackbar.setDisplay(true);
+        return null;
+      });
+    if (_supplier) {
+      this.supplier = _supplier;
+      this.role = _supplier.roles[0];
+    }
   }
 }
 </script>

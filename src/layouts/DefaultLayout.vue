@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Snackbars />
     <Appbar />
     <slot />
   </div>
@@ -7,10 +8,13 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import Appbar from "@/components/Appbar.vue";
+import Snackbars from "../components/Snackbars.vue";
+
 @Component({
   name: "DefaultLayout",
   components: {
-    Appbar
+    Appbar,
+    Snackbars
   }
 })
 export default class DefaultLayout extends Vue {}

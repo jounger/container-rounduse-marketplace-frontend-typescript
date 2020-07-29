@@ -1,18 +1,10 @@
 <template>
-  <v-dialog v-model="dialogDelSync" persistent max-width="600px">
+  <v-dialog v-model="dialogDelSync" max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">Xóa hàng</span>
-          <v-btn
-            icon
-            dark
-            @click="dialogDelSync = false"
-            style="margin-left:403px;"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn></v-toolbar-title
-        >
+        </v-toolbar-title>
       </v-toolbar>
 
       <v-card-text>
@@ -21,7 +13,7 @@
             <span style="color: black; font-size:22px;"
               >Bạn có chắc chắn muốn xóa hàng xuất này?</span
             >
-            <div class="line"></div>
+            <v-divider class="mt-3"></v-divider>
             <v-list>
               <v-list-item>
                 <v-list-item-content>
@@ -30,12 +22,11 @@
               </v-list-item>
             </v-list>
           </v-container>
-          <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
         <v-btn @click="dialogDelSync = false">Hủy</v-btn>
-        <v-btn @click="removeOutbound()" color="red">Xóa</v-btn>
+        <v-btn @click="removeOutbound()" color="error">Xóa</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -45,14 +36,13 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IOutbound } from "@/entity/outbound";
 import { removeOutbound } from "@/api/outbound";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeleteOutbound extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
   @Prop(Object) outbound!: IOutbound;
   @PropSync("outbounds", { type: Array }) outboundsSync!: Array<IOutbound>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
 
   bookNo = "";
@@ -61,25 +51,30 @@ export default class DeleteOutbound extends Vue {
       this.bookNo = this.outbound.booking.bookingNumber;
     }
   }
-  removeOutbound() {
+  async removeOutbound() {
     if (this.outbound.id) {
-      removeOutbound(this.outbound.id)
+      await removeOutbound(this.outbound.id)
         .then(res => {
           console.log(res.data);
-          this.messageSync = "Xóa thành công hàng xuất: " + this.bookNo;
+          snackbar.setSnackbar({
+            text: "Xóa thành công hàng xuất: " + this.bookNo,
+            color: "success"
+          });
           const index = this.outboundsSync.findIndex(
             x => x.id === this.outbound.id
           );
           this.outboundsSync.splice(index, 1);
           this.totalItemsSync -= 1;
+          this.dialogDelSync = false;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
-        );
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+        });
+      snackbar.setDisplay(true);
     }
   }
 }

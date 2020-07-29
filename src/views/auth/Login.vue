@@ -1,7 +1,9 @@
 <template>
-  <v-card class="elevation-12">
+  <v-card width="550" height="370" class="mt-12">
     <v-toolbar color="primary" light flat>
-      <v-toolbar-title>Đăng nhập</v-toolbar-title>
+      <v-toolbar-title
+        ><span style="color: white">Đăng nhập</span></v-toolbar-title
+      >
     </v-toolbar>
     <v-card-text>
       <v-form>
@@ -23,7 +25,15 @@
           autocomplete="current-password"
           v-model="password"
         ></v-text-field>
-        <v-checkbox class="mx-2" label="Ghi nhớ đăng nhập"></v-checkbox>
+        <v-row>
+          <v-checkbox class="mx-2" label="Ghi nhớ đăng nhập"></v-checkbox>
+          <v-spacer></v-spacer>
+          <a
+            style="margin-top: 20px;
+    margin-right: 15px;"
+            >Quên mật khẩu</a
+          >
+        </v-row>
       </v-form>
     </v-card-text>
     <v-card-actions>
@@ -36,11 +46,13 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import snackbar from "@/store/modules/snackbar";
+import { getErrorMessage } from "@/utils/tool";
 @Component
 export default class Login extends Vue {
   public username = "admin";
   public password = "123456";
-  public mounted() {
+  public created() {
     if (this.$auth.check()) {
       setTimeout(() => {
         this.$router.push("/dashboard");
@@ -50,18 +62,26 @@ export default class Login extends Vue {
   public register() {
     this.$router.push("/register");
   }
-  public login() {
-    this.$auth
+  async login() {
+    await this.$auth
       .login({
         username: this.username,
         password: this.password
       })
       .then(res => {
         console.warn("SUCCESS login", res);
+        snackbar.setSnackbar({
+          text: "Xin chào, " + this.username,
+          color: "success"
+        });
       })
       .catch(err => {
-        console.error("ERROR! in login", err);
+        snackbar.setSnackbar({
+          text: getErrorMessage(err),
+          color: "error"
+        });
       });
+    snackbar.setDisplay(true);
   }
 }
 </script>

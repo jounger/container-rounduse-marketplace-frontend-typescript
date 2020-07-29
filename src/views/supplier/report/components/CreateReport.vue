@@ -2,6 +2,7 @@
   <v-dialog
     v-model="dialogAddSync"
     fullscreen
+    persistent
     hide-overlay
     transition="dialog-bottom-transition"
   >
@@ -27,11 +28,12 @@
               item-key="id"
               :loading="loading"
               :options.sync="options"
-              :server-items-length="options.totalItems"
+              :server-items-length="serverSideOptions.totalItems"
               :footer-props="{
-                'items-per-page-options': options.itemsPerPageItems
+                'items-per-page-options': serverSideOptions.itemsPerPageItems
               }"
               :actions-append="options.page"
+              disable-sort
               class="elevation-1 my-1"
             >
               <template v-slot:top>
@@ -132,6 +134,8 @@ import { IReport } from "@/entity/report";
 import { IBiddingNotification } from "@/entity/bidding-notification";
 import { getBiddingNotificationsByUser } from "@/api/notification";
 import { createReport } from "@/api/report";
+import snackbar from "@/store/modules/snackbar";
+import { DataOptions } from "vuetify";
 @Component({
   mixins: [FormValidate, Utils]
 })
@@ -139,8 +143,6 @@ export default class CreateReport extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("biddingDocument", { type: Object })
   biddingDocumentSync?: IBiddingDocument;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("reports", { type: Array }) reportsSync?: Array<IReport>;
   @PropSync("totalItems", { type: Number }) totalItemsSync?: number;
 
@@ -156,9 +158,10 @@ export default class CreateReport extends Vue {
   } as IReport;
   loading = true;
   options = {
-    descending: true,
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -184,46 +187,63 @@ export default class CreateReport extends Vue {
     { text: "Nhiều thầu win", value: "isMultipleAward" },
     { text: "Actions", value: "actions", sortable: false }
   ];
-  createReport() {
+  async createReport() {
     // TODO: API create bid
     if (this.biddingDocumentSelected && this.biddingDocumentSelected.id) {
       this.reportLocal.report = this.biddingDocumentSelected.id as number;
     }
-    createReport(this.reportLocal)
+    const _report = await createReport(this.reportLocal)
       .then(res => {
         const response: IReport = res.data;
-        this.messageSync = "Thêm mới thành công Report: " + response.id;
-        if (this.reportsSync) {
-          console.log(1);
-          this.reportsSync.unshift(response);
-        }
-        if (typeof this.totalItemsSync != "undefined") {
-          console.log(2);
-          this.totalItemsSync += 1;
-        }
+        snackbar.setSnackbar({
+          text: "Thêm mới thành công Report: " + response.id,
+          color: "success"
+        });
+        return response;
       })
       .catch(err => {
         console.log(err);
-        this.messageSync = getErrorMessage(err);
-      })
-      .finally(() => (this.snackbarSync = true));
+        snackbar.setSnackbar({
+          text: getErrorMessage(err),
+          color: "error"
+        });
+        return null;
+      });
+    if (_report) {
+      if (typeof this.reportsSync != "undefined") {
+        this.reportsSync.unshift(_report);
+      }
+      if (typeof this.totalItemsSync != "undefined") {
+        this.totalItemsSync += 1;
+      }
+      this.dialogAddSync = false;
+    }
+    snackbar.setDisplay(true);
   }
-  created() {
+  async created() {
     if (this.biddingDocumentSync && !isEmptyObject(this.biddingDocumentSync)) {
       this.biddingDocuments.push(this.biddingDocumentSync);
       this.biddingDocumentSelected = this.biddingDocumentSync;
-      this.options.totalItems = 1;
+      this.serverSideOptions.totalItems = 1;
       this.loading = false;
     } else {
-      getBiddingNotificationsByUser({
+      const _biddingNotifications = await getBiddingNotificationsByUser({
         page: 0,
-        limit: 100,
-        status: "ADDED"
+        limit: 100
       })
         .then(res => {
           const response: PaginationResponse<IBiddingNotification> = res.data;
           console.log("watch", response);
-          this.biddingDocuments = response.data.reduce(function(
+          return response;
+        })
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_biddingNotifications) {
+        this.biddingDocuments = _biddingNotifications.data
+          .filter(x => x.action == "ADDED")
+          .reduce(function(
             pV: Array<IBiddingDocument>,
             cV: IBiddingNotification
           ) {
@@ -231,10 +251,9 @@ export default class CreateReport extends Vue {
             return pV;
           },
           []);
-          this.options.totalItems = response.totalElements;
-        })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        this.serverSideOptions.totalItems = _biddingNotifications.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

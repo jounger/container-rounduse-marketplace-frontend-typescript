@@ -1,19 +1,11 @@
 <template>
-  <v-dialog v-model="dialogAddSync" persistent max-width="600px">
+  <v-dialog v-model="dialogAddSync" max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
             update ? "Cập nhập Đầu kéo" : "Thêm mới Đầu kéo"
-          }}</span>
-          <v-btn
-            icon
-            dark
-            @click="dialogAddSync = false"
-            style="margin-left:319px;"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn></v-toolbar-title
+          }}</span></v-toolbar-title
         >
       </v-toolbar>
       <v-card-text>
@@ -51,7 +43,6 @@
               ></v-text-field>
             </v-col>
           </v-row>
-          <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
       <v-card-actions style="margin-top: 65px;">
@@ -85,6 +76,7 @@ import {
   updateContainerTractor
 } from "@/api/container-tractor";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate, Utils]
@@ -94,8 +86,6 @@ export default class CreateTractor extends Vue {
   @PropSync("tractors", { type: Array }) tractorsSync!: Array<
     IContainerTractor
   >;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) tractor!: IContainerTractor;
   @Prop(Boolean) update!: boolean;
@@ -110,39 +100,58 @@ export default class CreateTractor extends Vue {
       this.tractorLocal = Object.assign({}, this.tractor);
     }
   }
-  createTractor() {
+  async createTractor() {
     if (this.tractorLocal) {
-      createContainerTractor(this.tractorLocal)
+      const _tractor = await createContainerTractor(this.tractorLocal)
         .then(res => {
           const response: IContainerTractor = res.data;
-          this.messageSync =
-            "Thêm mới thành công Đầu kéo: " + response.licensePlate;
-          this.tractorsSync.unshift(response);
-          this.totalItemsSync += 1;
+          snackbar.setSnackbar({
+            text: "Thêm mới thành công Đầu kéo: " + response.licensePlate,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_tractor) {
+        this.tractorsSync.unshift(_tractor);
+        this.totalItemsSync += 1;
+        this.dialogAddSync = false;
+      }
+      snackbar.setDisplay(true);
     }
   }
-  updateTractor() {
+  async updateTractor() {
     if (this.tractorLocal.id) {
-      updateContainerTractor(this.tractorLocal)
+      const _tractor = await updateContainerTractor(this.tractorLocal)
         .then(res => {
           console.log(res.data);
           const response: IContainerTractor = res.data;
-          this.messageSync =
-            "Cập nhập thành công Đầu kéo: " + response.licensePlate;
-          const index = this.tractorsSync.findIndex(x => x.id == response.id);
-          this.tractorsSync.splice(index, 1, response);
+          snackbar.setSnackbar({
+            text: "Cập nhập thành công Đầu kéo: " + response.licensePlate,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_tractor) {
+        const index = this.tractorsSync.findIndex(x => x.id == _tractor.id);
+        this.tractorsSync.splice(index, 1, _tractor);
+      }
+      snackbar.setDisplay(true);
     }
   }
 }

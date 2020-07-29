@@ -26,6 +26,7 @@
                     name="nameCode"
                     prepend-icon="verified_user"
                     type="text"
+                    readonly
                     v-model="portLocal.nameCode"
                     :rules="[required('name code')]"
                   ></v-text-field>
@@ -136,6 +137,7 @@ import GoogleMapMixins from "@/components/googlemaps/map-mixins";
 import { apiKey } from "@/components/googlemaps/map-constant";
 import Utils from "@/mixin/utils";
 import { getErrorMessage, isEmptyObject } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   components: {
@@ -149,8 +151,6 @@ export default class UpdatePort extends Vue {
   @Ref() inputAddress1!: HTMLInputElement;
   @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
   @PropSync("ports", { type: Array }) portsSync!: Array<IPort>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Object) port!: IPort;
 
   style = { width: "400px", height: "300px" };
@@ -169,22 +169,31 @@ export default class UpdatePort extends Vue {
       }
     }
   }
-  updatePort() {
+  async updatePort() {
     if (this.portLocal && this.portLocal.id) {
-      editPort(this.portLocal.id, this.portLocal)
+      const _port = await editPort(this.portLocal.id, this.portLocal)
         .then(res => {
           console.log(res.data);
           const response: IPort = res.data;
-          this.messageSync =
-            "Cập nhập thành công bến cảng: " + response.fullname;
-          const index = this.portsSync.findIndex(x => x.id == response.id);
-          this.portsSync.splice(index, 1, response);
+          snackbar.setSnackbar({
+            text: "Cập nhập thành công bến cảng: " + response.nameCode,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_port) {
+        const index = this.portsSync.findIndex(x => x.id == _port.id);
+        this.portsSync.splice(index, 1, _port);
+      }
+      snackbar.setDisplay(true);
     }
   }
   get mapConfig() {

@@ -2,6 +2,7 @@
   <v-dialog
     v-model="dialogEditSync"
     fullscreen
+    persistent
     hide-overlay
     transition="dialog-bottom-transition"
   >
@@ -27,6 +28,7 @@
               :items="[biddingDocument.outbound]"
               item-key="id"
               :hide-default-footer="true"
+              disable-sort
               class="elevation-1 my-1"
             >
               <!--  -->
@@ -190,6 +192,7 @@ import { updateBiddingDocument } from "@/api/bidding-document";
 import { IOutbound } from "@/entity/outbound";
 import { addTimeToDate, getErrorMessage } from "@/utils/tool";
 import DatetimePicker from "@/components/DatetimePicker.vue";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -201,14 +204,12 @@ export default class UpdateBiddingDocument extends Vue {
   @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
   @PropSync("biddingDocuments", { type: Array })
   biddingDocumentsSync!: Array<IBiddingDocument>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @Prop(Object)
   biddingDocument!: IBiddingDocument;
 
   dateInit = addTimeToDate(new Date().toString());
   biddingDocumentLocal = {
-    offeree: this.$auth.user().username,
+    merchant: this.$auth.user().username,
     outbound: -1 as number,
     discount: "",
     isMultipleAward: false,
@@ -261,25 +262,36 @@ export default class UpdateBiddingDocument extends Vue {
     }
   }
   // BiddingDocument
-  updateBiddingDocument() {
+  async updateBiddingDocument() {
     // TODO: API create biddingDocument
     if (this.biddingDocumentLocal) {
-      updateBiddingDocument(this.biddingDocumentLocal)
+      const _biddingDocument = await updateBiddingDocument(
+        this.biddingDocumentLocal
+      )
         .then(res => {
           console.log(res.data);
           const response: IBiddingDocument = res.data;
-          this.messageSync = "Cập nhập thành công HSMT: " + response.id;
-          const index = this.biddingDocumentsSync.findIndex(
-            x => x.id === response.id
-          );
-          this.biddingDocumentsSync.splice(index, 1, response);
-          this.stepper = 3;
+          snackbar.setSnackbar({
+            text: "Cập nhập thành công HSMT: " + response.id,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+        });
+      if (_biddingDocument) {
+        const index = this.biddingDocumentsSync.findIndex(
+          x => x.id === _biddingDocument.id
+        );
+        this.biddingDocumentsSync.splice(index, 1, _biddingDocument);
+        this.stepper = 3;
+      }
+      snackbar.setDisplay(true);
     }
   }
 

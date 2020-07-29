@@ -1,16 +1,6 @@
 <template>
   <v-content>
-    <v-card>
-      <v-row justify="center">
-        <ReportDetail
-          v-if="dialogDetail"
-          :dialogDetail.sync="dialogDetail"
-          :report="report"
-          :reports.sync="reports"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
-        />
-      </v-row>
+    <v-card class="ma-5">
       <v-row justify="center">
         <CreateFeedback
           v-if="dialogAdd"
@@ -18,12 +8,9 @@
           :report="report"
           :feedbacks.sync="feedbacks"
           :dialogAdd.sync="dialogAdd"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
           :update="update"
         />
       </v-row>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-card-title>
         Danh sách Report
         <v-spacer></v-spacer>
@@ -40,6 +27,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <template v-slot:item.reportId="{ item }">
@@ -51,7 +39,7 @@
             @click.stop="viewDetailReport(item)"
             small
           >
-            <v-icon left>mdi-pencil</v-icon> Xem HSMT
+            <v-icon left>business_center</v-icon> Xem HSMT
           </v-btn>
         </template>
         <template v-slot:item.action="{ item }">
@@ -63,7 +51,7 @@
             @click.stop="openCreateDialog(item)"
             small
           >
-            <v-icon left>mdi-pencil</v-icon> Feedback
+            <v-icon left>add</v-icon> Feedback
           </v-btn>
         </template>
       </v-data-table>
@@ -75,19 +63,15 @@ import { Component, Watch, Vue } from "vue-property-decorator";
 import { IReport } from "@/entity/report";
 // import { getReportsByStatus } from "@/api/report";
 import { PaginationResponse } from "@/api/payload";
-import Snackbar from "@/components/Snackbar.vue";
 import { IFeedback } from "@/entity/feedback";
 import CreateFeedback from "./components/CreateFeedback.vue";
-import ReportDetail from "../../supplier/report/components/ReportDetail.vue";
 import { getReports } from "@/api/report";
 import { DataOptions } from "vuetify";
 import { IBiddingDocument } from "@/entity/bidding-document";
 
 @Component({
   components: {
-    CreateFeedback,
-    ReportDetail,
-    Snackbar
+    CreateFeedback
   }
 })
 export default class Report extends Vue {
@@ -95,13 +79,10 @@ export default class Report extends Vue {
   report = {} as IReport;
 
   dialogAdd = false;
-  dialogDetail = false;
   feedbacks: Array<IFeedback> = [];
   feedback = {} as IFeedback;
   loading = true;
   update = false;
-  message = "";
-  snackbar = false;
   options = {
     page: 1,
     itemsPerPage: 5
@@ -137,30 +118,36 @@ export default class Report extends Vue {
   viewDetailReport(item: IReport) {
     if (item && item.report && typeof item.report != "number") {
       const bidDocument = item.report as IBiddingDocument;
-      this.$router.push({ path: `/bidding-document/${bidDocument.id}` });
+      this.$router.push({ path: `/report-bidding-document/${bidDocument.id}` });
     }
   }
   clicked(value: IReport) {
-    this.report = value;
-    this.dialogDetail = true;
+    const id = value.id;
+    this.$router.push({ path: `/report/${id}` });
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getReports({
+      const _reports = await getReports({
         page: val.page - 1,
         limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IReport> = res.data;
           console.log("watch", response);
-          this.reports = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_reports) {
+        this.reports = _reports.data;
+        this.serverSideOptions.totalItems = _reports.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

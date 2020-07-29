@@ -1,6 +1,6 @@
 <template>
   <v-content>
-    <v-card>
+    <v-card class="ma-5">
       <v-row justify="center">
         <DeleteRole
           v-if="dialogDel"
@@ -8,8 +8,6 @@
           :role="role"
           :roles.sync="roles"
           :totalItems.sync="serverSideOptions.totalItems"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
         />
       </v-row>
       <v-row justify="center">
@@ -19,17 +17,15 @@
           :roles.sync="roles"
           :totalItems.sync="serverSideOptions.totalItems"
           :dialogAdd.sync="dialogAdd"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
           :update="update"
         />
       </v-row>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-data-table
         :headers="headers"
         :items="roles"
         item-key="id"
         :loading="loading"
+        disable-sort
         :options.sync="options"
         :server-items-length="serverSideOptions.totalItems"
         :footer-props="{
@@ -67,7 +63,6 @@ import { Component, Watch, Vue } from "vue-property-decorator";
 import { IRole } from "@/entity/role";
 import { getRoles } from "@/api/role";
 import { PaginationResponse } from "@/api/payload";
-import Snackbar from "@/components/Snackbar.vue";
 import DeleteRole from "./components/DeleteRole.vue";
 import CreateRole from "./components/CreateRole.vue";
 import { DataOptions } from "vuetify";
@@ -75,8 +70,7 @@ import { DataOptions } from "vuetify";
 @Component({
   components: {
     CreateRole,
-    DeleteRole,
-    Snackbar
+    DeleteRole
   }
 })
 export default class Role extends Vue {
@@ -84,8 +78,6 @@ export default class Role extends Vue {
   role = {} as IRole;
   dialogAdd = false;
   dialogDel = false;
-  message = "";
-  snackbar = false;
   loading = true;
   update = false;
   options = {
@@ -128,21 +120,27 @@ export default class Role extends Vue {
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getRoles({
+      const _roles = await getRoles({
         page: val.page - 1,
         limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IRole> = res.data;
           console.log("watch", response);
-          this.roles = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_roles) {
+        this.roles = _roles.data;
+        this.serverSideOptions.totalItems = _roles.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

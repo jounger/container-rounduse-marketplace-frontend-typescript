@@ -1,26 +1,9 @@
 <template>
   <v-content>
-    <v-row justify="center">
-      <ConfirmBid
-        v-if="dialogConfirm"
-        :dialogConfirm.sync="dialogConfirm"
-        :bids.sync="bids"
-        :isAccept="isAccept"
-        :bid="bid"
-        :numberWinner.sync="numberWinner"
-      />
-      <CreateReport
-        v-if="dialogReport"
-        :dialogAdd.sync="dialogReport"
-        :biddingDocument.sync="biddingDocument"
-      />
-    </v-row>
-    <CreateBid
-      v-if="dialogBid"
-      :biddingDocument.sync="biddingDocument"
-      :dialogAdd.sync="dialogBid"
-      :bids.sync="bids"
-      :totalItems.sync="serverSideOptions.totalItems"
+    <CancelBiddingDocument
+      v-if="dialogCancel"
+      :dialogCancel.sync="dialogCancel"
+      :biddingDocument="biddingDocument"
     />
     <v-container
       class="d-flex justify-space-around align-start"
@@ -160,18 +143,13 @@
         <v-card-title
           >Thông tin đấu thầu
           <v-spacer></v-spacer>
-          <v-tooltip
-            left
-            v-if="
-              $auth.user().roles && $auth.user().roles[0] == 'ROLE_FORWARDER'
-            "
-          >
+          <v-tooltip left>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn @click="openReportDialog()" icon v-bind="attrs" v-on="on">
+              <v-btn @click="openCancelDialog()" icon v-bind="attrs" v-on="on">
                 <v-icon large color="red">report</v-icon>
               </v-btn>
             </template>
-            <span>Báo cáo HSMT</span>
+            <span>Hủy HSMT</span>
           </v-tooltip>
         </v-card-title>
 
@@ -256,12 +234,7 @@
                 </v-list-item>
               </v-list>
             </v-col>
-            <v-col
-              cols="12"
-              sm="6"
-              md="4"
-              v-if="$auth.user().roles[0] == 'ROLE_MERCHANT'"
-            >
+            <v-col cols="12" sm="6" md="4">
               <v-list dense>
                 <v-list-item>
                   <v-list-item-icon>
@@ -283,46 +256,12 @@
                 </v-list-item>
               </v-list>
             </v-col>
-            <v-col
-              cols="12"
-              sm="6"
-              md="4"
-              v-if="$auth.user().roles[0] == 'ROLE_FORWARDER'"
-            >
-              <v-list dense>
-                <v-list-item>
-                  <v-list-item-icon>
-                    <v-icon>people</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>{{
-                      biddingDocument.isMultipleAward
-                        ? "Nhiều thầu thắng"
-                        : "Một thầu thắng"
-                    }}</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </v-col>
           </v-row>
         </v-card-text>
 
         <v-divider class="mx-1"></v-divider>
 
-        <v-card-title
-          >Danh sách HSDT<v-spacer></v-spacer>
-          <v-btn
-            color="primary"
-            dark
-            class="mb-2"
-            @click="openCreateBidDialog()"
-            v-if="
-              $auth.user().roles[0] == 'ROLE_FORWARDER' && this.bids.length == 0
-            "
-          >
-            Thêm mới
-          </v-btn></v-card-title
-        >
+        <v-card-title>Danh sách HSDT<v-spacer></v-spacer></v-card-title>
 
         <!-- TODO: table bids -->
         <v-data-table
@@ -353,36 +292,6 @@
             {{ formatDatetime(item.bidValidityPeriod) }}
           </template>
           <template v-slot:item.actions="{ item }">
-            <v-btn
-              class="ma-1"
-              x-small
-              tile
-              outlined
-              color="success"
-              @click.stop="openConfirmBid(item, true)"
-              v-if="
-                item.status == 'PENDING' &&
-                  $auth.user().roles &&
-                  $auth.user().roles[0] == 'ROLE_MERCHANT'
-              "
-            >
-              <v-icon left>library_add_check </v-icon>Đồng ý
-            </v-btn>
-            <v-btn
-              class="ma-1"
-              x-small
-              tile
-              outlined
-              color="error"
-              @click.stop="openConfirmBid(item, false)"
-              v-if="
-                item.status == 'PENDING' &&
-                  $auth.user().roles &&
-                  $auth.user().roles[0] == 'ROLE_MERCHANT'
-              "
-            >
-              <v-icon left>remove_circle</v-icon>Từ chối
-            </v-btn>
             <span style="color: red;" v-if="item.status == 'REJECTED'">{{
               item.status
             }}</span>
@@ -450,38 +359,31 @@ import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { IBid } from "@/entity/bid";
-import { getBiddingDocument } from "@/api/bidding-document";
-import {
-  getBidsByBiddingDocument,
-  getBidByBiddingDocumentAndForwarder
-} from "@/api/bid";
+import { getBidsByBiddingDocument } from "@/api/bid";
 import { PaginationResponse } from "@/api/payload";
-import ConfirmBid from "./ConfirmBid.vue";
-import CreateReport from "../../report/components/CreateReport.vue";
-import CreateBid from "../../bid/components/CreateBid.vue";
 import { DataOptions } from "vuetify";
 import { IContainer } from "@/entity/container";
 import SupplierRating from "./SupplierRating.vue";
 import { getContainersByBid } from "@/api/container";
+import { IReport } from "@/entity/report";
+import { getReport } from "@/api/report";
+import CancelBiddingDocument from "./CancelBiddingDocument.vue";
 
 @Component({
   mixins: [FormValidate, Utils],
   components: {
-    ConfirmBid,
-    CreateBid,
-    CreateReport,
-    SupplierRating
+    SupplierRating,
+    CancelBiddingDocument
   }
 })
-export default class DetailBiddingDocument extends Vue {
+export default class ReportBiddingDocument extends Vue {
   biddingDocument = null as IBiddingDocument | null;
+  report = null as IReport | null;
   loading = false;
   containerSelected = [] as Array<IContainer>;
   isAccept = false;
-  dialogConfirm = false;
-  dialogReport = false;
-  dialogBid = false;
-  bid = null as IBid | null;
+  dialogCancel = false;
+  bid = {} as IBid;
   expanded: Array<IBid> = [];
   singleExpand = true;
   numberWinner = 0;
@@ -537,12 +439,6 @@ export default class DetailBiddingDocument extends Vue {
     }
   ];
 
-  openConfirmBid(item: IBid, accept: boolean) {
-    this.bid = item;
-    this.isAccept = accept;
-    this.dialogConfirm = true;
-  }
-
   clicked(value: IBid) {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
@@ -561,14 +457,6 @@ export default class DetailBiddingDocument extends Vue {
           this.containerSelected = value.containers as Array<IContainer>;
           this.bid = value;
         }
-      }
-    } else {
-      const index = this.expanded.findIndex(x => x.id === value.id);
-      if (index === -1) {
-        this.expanded.push(value);
-        // this.containerSelected.concat(value.containers as Array<IContainer>);
-      } else {
-        this.expanded.splice(index, 1);
       }
     }
   }
@@ -603,48 +491,29 @@ export default class DetailBiddingDocument extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val !== "undefined") {
       this.loading = true;
-      if (this.biddingDocument && this.$auth.user().roles) {
-        if (this.$auth.user().roles[0] == "ROLE_MERCHANT") {
-          const _bid = await getBidsByBiddingDocument(
-            this.biddingDocument.id as number,
-            {
-              page: this.options.page - 1,
-              limit: this.options.itemsPerPage
-            }
-          )
-            .then(res => {
-              const response: PaginationResponse<IBid> = res.data;
-              console.log("watch", response);
-              return response;
-            })
-            .catch(err => {
-              console.log(err);
-              return null;
-            });
-          if (_bid) {
-            this.bids = _bid.data;
-            this.numberWinner = this.bids.filter(
-              (x: IBid) => x.status == "ACCEPTED"
-            ).length;
-            this.serverSideOptions.totalItems = _bid.totalElements;
+      if (this.biddingDocument) {
+        const _bid = await getBidsByBiddingDocument(
+          this.biddingDocument.id as number,
+          {
+            page: this.options.page - 1,
+            limit: this.options.itemsPerPage
           }
-        } else if (this.$auth.user().roles[0] == "ROLE_FORWARDER") {
-          const _bid = await getBidByBiddingDocumentAndForwarder(
-            this.biddingDocument.id as number
-          )
-            .then(res => {
-              const response: IBid = res.data;
-              console.log("watch", response);
-              return response;
-            })
-            .catch(err => {
-              console.log(err);
-              return null;
-            });
-          if (_bid) {
-            this.bids.splice(0, this.bids.length, _bid);
-            this.serverSideOptions.totalItems = 1;
-          }
+        )
+          .then(res => {
+            const response: PaginationResponse<IBid> = res.data;
+            console.log("watch", response);
+            return response;
+          })
+          .catch(err => {
+            console.log(err);
+            return null;
+          });
+        if (_bid) {
+          this.bids = _bid.data;
+          this.numberWinner = this.bids.filter(
+            (x: IBid) => x.status == "ACCEPTED"
+          ).length;
+          this.serverSideOptions.totalItems = _bid.totalElements;
         }
         this.loading = false;
       }
@@ -656,9 +525,7 @@ export default class DetailBiddingDocument extends Vue {
 
   async created() {
     // TODO: API get Bidding Document
-    const _biddingDocument = await getBiddingDocument(
-      parseInt(this.getRouterId)
-    )
+    const _report = await getReport(parseInt(this.getRouterId))
       .then(res => {
         const response = res.data;
         return response;
@@ -667,14 +534,13 @@ export default class DetailBiddingDocument extends Vue {
         console.log(err);
         return null;
       });
-    this.biddingDocument = _biddingDocument;
-    console.log(this.biddingDocument);
+    if (_report) {
+      this.report = _report;
+      this.biddingDocument = _report.report as IBiddingDocument;
+    }
   }
-  openReportDialog() {
-    this.dialogReport = true;
-  }
-  openCreateBidDialog() {
-    this.dialogBid = true;
+  openCancelDialog() {
+    this.dialogCancel = true;
   }
 }
 </script>

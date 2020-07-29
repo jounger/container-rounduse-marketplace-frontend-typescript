@@ -2,6 +2,7 @@
   <v-dialog
     v-model="dialogAddSync"
     fullscreen
+    persistent
     hide-overlay
     transition="dialog-bottom-transition"
   >
@@ -133,6 +134,7 @@ import { IOperator } from "@/entity/operator";
 import FormValidate from "@/mixin/form-validate";
 import { createOperator, editOperator } from "@/api/operator";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
@@ -140,8 +142,6 @@ import { getErrorMessage } from "@/utils/tool";
 export default class CreateOperator extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("operators", { type: Array }) operatorsSync!: Array<IOperator>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) operator!: IOperator;
   @Prop(Boolean) update!: boolean;
@@ -165,39 +165,61 @@ export default class CreateOperator extends Vue {
       this.operatorLocal = Object.assign({}, this.operator);
     }
   }
-  createOperator() {
+  async createOperator() {
     if (this.operatorLocal) {
-      createOperator(this.operatorLocal)
+      const _operator = await createOperator(this.operatorLocal)
         .then(res => {
           const response: IOperator = res.data;
-          this.messageSync =
-            "Thêm mới thành công quản trị viên: " + response.username;
-          this.operatorsSync.unshift(response);
-          this.totalItemsSync += 1;
+          snackbar.setSnackbar({
+            text: "Thêm mới thành công quản trị viên: " + response.username,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_operator) {
+        this.operatorsSync.unshift(_operator);
+        this.totalItemsSync += 1;
+        this.dialogAddSync = false;
+      }
+      snackbar.setDisplay(true);
     }
   }
-  updateOperator() {
+  async updateOperator() {
     if (this.operatorLocal.id) {
-      editOperator(this.operatorLocal.id, this.operatorLocal)
+      const _operator = await editOperator(
+        this.operatorLocal.id,
+        this.operatorLocal
+      )
         .then(res => {
           const response: IOperator = res.data;
           console.log(response);
-          this.messageSync =
-            "Cập nhập thành công quản trị viên: " + response.username;
-          const index = this.operatorsSync.findIndex(x => x.id === response.id);
-          this.operatorsSync.splice(index, 1, response);
+          snackbar.setSnackbar({
+            text: "Cập nhập thành công quản trị viên: " + response.username,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_operator) {
+        const index = this.operatorsSync.findIndex(x => x.id === _operator.id);
+        this.operatorsSync.splice(index, 1, _operator);
+      }
+      snackbar.setDisplay(true);
     }
   }
 }

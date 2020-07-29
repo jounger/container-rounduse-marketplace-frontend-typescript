@@ -1,6 +1,6 @@
 <template>
   <v-content>
-    <v-card>
+    <v-card class="ma-5">
       <v-row justify="center">
         <SupplierDetail
           v-if="dialogDetail"
@@ -14,11 +14,8 @@
           :dialogReview.sync="dialogReview"
           :supplier="supplier"
           :suppliers.sync="suppliers"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
         />
       </v-row>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-card-title>
         Danh sách Supplier
       </v-card-title>
@@ -33,6 +30,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <template v-slot:item.action="{ item }">
@@ -70,14 +68,12 @@ import { Component, Watch, Vue } from "vue-property-decorator";
 import { ISupplier } from "@/entity/supplier";
 import { getSuppliers } from "@/api/supplier";
 import { PaginationResponse } from "@/api/payload";
-import Snackbar from "@/components/Snackbar.vue";
 import ReviewSupplier from "./components/ReviewSupplier.vue";
 import SupplierDetail from "./components/SupplierDetail.vue";
 import { DataOptions } from "vuetify";
 
 @Component({
   components: {
-    Snackbar,
     ReviewSupplier,
     SupplierDetail
   }
@@ -87,11 +83,8 @@ export default class Supplier extends Vue {
   supplier = {} as ISupplier;
 
   dialogDetail = false;
-  dialogDel = false;
   dialogReview = false;
   loading = true;
-  message = "";
-  snackbar = false;
   options = {
     page: 1,
     itemsPerPage: 5
@@ -120,31 +113,33 @@ export default class Supplier extends Vue {
     this.supplier = item;
     this.dialogDetail = true;
   }
-  openDeleteDialog(item: ISupplier) {
-    this.supplier = item;
-    this.dialogDel = true;
-  }
   openReviewDialog(item: ISupplier) {
     this.supplier = item;
     this.dialogReview = true;
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getSuppliers({
+      const _suppliers = await getSuppliers({
         page: val.page - 1,
         limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<ISupplier> = res.data;
           console.log("watch", response);
-          this.suppliers = response.data.filter(x => x.status != "PENDING");
-          this.serverSideOptions.totalItems = this.suppliers.length;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_suppliers) {
+        this.suppliers = _suppliers.data.filter(x => x.status != "PENDING");
+        this.serverSideOptions.totalItems = _suppliers.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

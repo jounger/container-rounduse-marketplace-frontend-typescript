@@ -2,6 +2,7 @@
   <v-dialog
     v-model="dialogAddSync"
     fullscreen
+    persistent
     hide-overlay
     transition="dialog-bottom-transition"
   >
@@ -47,6 +48,7 @@
                 name="name"
                 prepend-icon="directions_bus"
                 type="text"
+                :readonly="update"
                 v-model="containerTypeLocal.name"
                 :rules="[required('name')]"
               ></v-text-field>
@@ -77,7 +79,7 @@
                 name="payloadCapacity"
                 prepend-icon="fitness_center"
                 type="number"
-                v-model="containerTypeLocal.payloadCapacity"
+                v-model="containerTypeLocal.grossWeight"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -141,7 +143,6 @@
               ></v-text-field>
             </v-col>
           </v-row>
-          <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-card-text>
       </v-form>
     </v-card>
@@ -151,8 +152,9 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContainerType } from "@/entity/container-type";
 import FormValidate from "@/mixin/form-validate";
-import { createContainerType, updateContainerType } from "@/api/container-type";
+import { createContainerType, editContainerType } from "@/api/container-type";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
@@ -162,8 +164,6 @@ export default class CreateContainerType extends Vue {
   @PropSync("containerTypes", { type: Array }) containerTypesSync!: Array<
     IContainerType
   >;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Boolean) update!: boolean;
   @Prop(Object)
@@ -173,7 +173,7 @@ export default class CreateContainerType extends Vue {
     name: "",
     description: "",
     tareWeight: 0,
-    payloadCapacity: 0,
+    grossWeight: 0,
     cubicCapacity: 0,
     internalLength: 0,
     internalWidth: 0,
@@ -188,42 +188,64 @@ export default class CreateContainerType extends Vue {
       this.containerTypeLocal = Object.assign({}, this.containerType);
     }
   }
-  createContainerType() {
+  async createContainerType() {
     if (this.containerTypeLocal) {
-      createContainerType(this.containerTypeLocal)
+      const _containerType = await createContainerType(this.containerTypeLocal)
         .then(res => {
           console.log(res.data);
           const response: IContainerType = res.data;
-          this.messageSync =
-            "Thêm mới thành công loại Container: " + response.name;
-          this.containerTypesSync.unshift(response);
-          this.totalItemsSync += 1;
+          snackbar.setSnackbar({
+            text: "Thêm mới thành công loại Container: " + response.name,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_containerType) {
+        this.containerTypesSync.unshift(_containerType);
+        this.totalItemsSync += 1;
+        this.dialogAddSync = false;
+      }
+      snackbar.setDisplay(true);
     }
   }
-  updateContainerType() {
+  async updateContainerType() {
     if (this.containerTypeLocal.id) {
-      updateContainerType(this.containerTypeLocal)
+      const _containerType = await editContainerType(
+        this.containerTypeLocal.id,
+        this.containerTypeLocal
+      )
         .then(res => {
           console.log(res.data);
           const response: IContainerType = res.data;
-          this.messageSync =
-            "Cập nhập thành công loại Container: " + response.name;
-          const index = this.containerTypesSync.findIndex(
-            x => x.id == response.id
-          );
-          this.containerTypesSync.splice(index, 1, response);
+          snackbar.setSnackbar({
+            text: "Cập nhập thành công loại Container: " + response.name,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_containerType) {
+        const index = this.containerTypesSync.findIndex(
+          x => x.id === _containerType.id
+        );
+        this.containerTypesSync.splice(index, 1, _containerType);
+      }
+      snackbar.setDisplay(true);
     }
   }
 }

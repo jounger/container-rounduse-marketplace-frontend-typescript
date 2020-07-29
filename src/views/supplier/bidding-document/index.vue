@@ -1,6 +1,5 @@
 <template>
   <v-content>
-    <Snackbar :text="message" :snackbar.sync="snackbar" />
     <v-row justify="center">
       <DeleteBiddingDocument
         v-if="dialogDel"
@@ -8,8 +7,6 @@
         :biddingDocument="biddingDocument"
         :biddingDocuments.sync="biddingDocuments"
         :totalItems.sync="serverSideOptions.totalItems"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
       />
     </v-row>
     <v-row justify="center">
@@ -18,8 +15,6 @@
         :dialogCancel.sync="dialogCancel"
         :biddingDocument="biddingDocument"
         :biddingDocuments.sync="biddingDocuments"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
       />
     </v-row>
     <CreateBiddingDocument
@@ -28,16 +23,12 @@
       :outbounds.sync="outbounds"
       :dialogAdd.sync="dialogAdd"
       :totalItems.sync="serverSideOptions.totalItems"
-      :message.sync="message"
-      :snackbar.sync="snackbar"
     />
     <UpdateBiddingDocument
       v-if="dialogEdit"
       :biddingDocument="biddingDocument"
       :biddingDocuments.sync="biddingDocuments"
       :dialogEdit.sync="dialogEdit"
-      :message.sync="message"
-      :snackbar.sync="snackbar"
     />
     <v-container
       class="d-flex justify-space-around align-start mb-6 mx-1"
@@ -53,6 +44,9 @@
           <v-row
             ><v-col cols="12">
               <v-select
+                outlined
+                dense
+                hide-details
                 v-model="shippingLineSearch"
                 prepend-icon="directions_boat"
                 :items="shippingLinesToString"
@@ -62,6 +56,9 @@
           <v-row
             ><v-col cols="12">
               <v-select
+                outlined
+                dense
+                hide-details
                 v-model="containerTypeSearch"
                 prepend-icon="directions_bus"
                 :items="containerTypesToString"
@@ -70,16 +67,10 @@
           ></v-row>
           <v-row
             ><v-col cols="12">
-              <v-text-field
-                v-model="bookingNumberSearch"
-                prepend-icon="money"
-                type="text"
-                label="Mã booking"
-              ></v-text-field> </v-col
-          ></v-row>
-          <v-row
-            ><v-col cols="12">
               <v-select
+                outlined
+                dense
+                hide-details
                 v-model="statusSearch"
                 prepend-icon="strikethrough_s"
                 :items="status"
@@ -105,7 +96,7 @@
             'items-per-page-options': serverSideOptions.itemsPerPageItems
           }"
           :actions-append="options.page"
-          @click:row="clicked"
+          disable-sort
           class="elevation-1"
         >
           <!--  -->
@@ -160,7 +151,7 @@
                     <v-icon small>details</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
-                    <v-list-item-title>Xem trạng thái HSMT</v-list-item-title>
+                    <v-list-item-title>Chi tiết</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item
@@ -207,7 +198,6 @@ import { Component, Watch, Vue } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import CreateBiddingDocument from "./components/CreateBiddingDocument.vue";
 import UpdateBiddingDocument from "./components/UpdateBiddingDocument.vue";
-import Snackbar from "@/components/Snackbar.vue";
 import { IOutbound } from "@/entity/outbound";
 import { getBiddingDocuments } from "@/api/bidding-document";
 import { PaginationResponse } from "@/api/payload";
@@ -231,8 +221,7 @@ import { addTimeToDate } from "@/utils/tool";
     CreateBiddingDocument,
     UpdateBiddingDocument,
     DeleteBiddingDocument,
-    CancelBiddingDocument,
-    Snackbar
+    CancelBiddingDocument
   }
 })
 export default class BiddingDocument extends Vue {
@@ -253,14 +242,12 @@ export default class BiddingDocument extends Vue {
   isMultipleAwardSearch = false;
   bidOpeningSearch = "";
   bidClosingSearch = "";
-  message = "";
   search = "";
   // API list
   ports: Array<IPort> = [];
   shippingLines: Array<IShippingLine> = [];
   containerTypes: Array<IContainerType> = [];
   status: Array<string> = [];
-  snackbar = false;
   loading = true;
   dateInit = addTimeToDate(new Date().toString());
   options = {
@@ -308,26 +295,28 @@ export default class BiddingDocument extends Vue {
     this.$router.push({ path: `/bidding-document/${item.id}` });
   }
 
-  clicked(value: IBiddingDocument) {
-    this.$router.push({ path: `/bidding-document/${value.id}` });
-  }
-
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getBiddingDocuments({
+      const _biddingDocuments = await getBiddingDocuments({
         page: val.page - 1,
         limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IBiddingDocument> = res.data;
           console.log("watch", response);
-          this.biddingDocuments = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_biddingDocuments) {
+        this.biddingDocuments = _biddingDocuments.data;
+        this.serverSideOptions.totalItems = _biddingDocuments.totalElements;
+      }
+      this.loading = false;
     }
   }
 

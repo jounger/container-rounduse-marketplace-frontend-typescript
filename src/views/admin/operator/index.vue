@@ -1,14 +1,12 @@
 <template>
   <v-content>
-    <v-card>
+    <v-card class="ma-5">
       <v-row justify="center">
         <DeleteOperator
           :dialogDel.sync="dialogDel"
           :operator="operator"
           :operators.sync="operators"
           :totalItems.sync="serverSideOptions.totalItems"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
         />
       </v-row>
       <v-row justify="center">
@@ -17,19 +15,16 @@
           :operator="operator"
           :operators.sync="operators"
           :dialogAdd.sync="dialogAdd"
-          :message.sync="message"
           :totalItems.sync="serverSideOptions.totalItems"
-          :snackbar.sync="snackbar"
           :update="update"
         />
       </v-row>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-data-table
         :headers="headers"
         :items="operators"
-        :search="search"
         :loading="loading"
         :options.sync="options"
+        disable-sort
         :server-items-length="serverSideOptions.totalItems"
         :footer-props="{
           'items-per-page-options': serverSideOptions.itemsPerPageItems
@@ -68,14 +63,12 @@ import CreateOperator from "./components/CreateOperator.vue";
 import DeleteOperator from "./components/DeleteOperator.vue";
 import { getOperators } from "@/api/operator";
 import { PaginationResponse } from "@/api/payload";
-import Snackbar from "@/components/Snackbar.vue";
 import { DataOptions } from "vuetify";
 
 @Component({
   components: {
     CreateOperator,
-    DeleteOperator,
-    Snackbar
+    DeleteOperator
   }
 })
 export default class Operator extends Vue {
@@ -83,10 +76,6 @@ export default class Operator extends Vue {
   operator = {} as IOperator;
   dialogAdd = false;
   dialogDel = false;
-  search = "";
-  roleSearch = "";
-  message = "";
-  snackbar = false;
   loading = true;
   update = false;
   options = {
@@ -135,21 +124,27 @@ export default class Operator extends Vue {
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getOperators({
+      const _operators = await getOperators({
         page: val.page - 1,
         limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IOperator> = res.data;
           console.log("watch", response);
-          this.operators = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_operators) {
+        this.operators = _operators.data;
+        this.serverSideOptions.totalItems = _operators.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

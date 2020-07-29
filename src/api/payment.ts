@@ -18,8 +18,14 @@ export function getPaymentsByUser(paging: PaginationRequest) {
     headers: config
   });
 }
-export function createPayment(payment: IPayment) {
-  return Vue.axios.post("/payment", payment, {
+export function getPaymentsByContract(id: number, paging: PaginationRequest) {
+  return Vue.axios.get(`/payment/contract/${id}`, {
+    params: paging,
+    headers: config
+  });
+}
+export function createPayment(id: number, payment: IPayment) {
+  return Vue.axios.post(`/payment/contract/${id}`, payment, {
     headers: config
   });
 }

@@ -5,15 +5,7 @@
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
             update ? "Cập nhập Lái xe" : "Thêm mới Lái xe"
-          }}</span>
-          <v-btn
-            icon
-            dark
-            @click="dialogAddSync = false"
-            style="margin-left:344px;"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn></v-toolbar-title
+          }}</span></v-toolbar-title
         >
       </v-toolbar>
       <v-card-text>
@@ -110,7 +102,6 @@
               ></v-text-field>
             </v-col>
           </v-row>
-          <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
       <v-card-actions style="margin-top: 65px;">
@@ -136,6 +127,7 @@ import { IDriver } from "@/entity/driver";
 import FormValidate from "@/mixin/form-validate";
 import { createDriver, editDriver } from "@/api/driver";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
@@ -144,8 +136,6 @@ export default class CreateDriver extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @Prop(Object) driver!: IDriver;
   @PropSync("drivers", { type: Array }) driversSync!: Array<IDriver>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Boolean) update!: boolean;
 
@@ -169,38 +159,59 @@ export default class CreateDriver extends Vue {
     console.log(this.driver);
     this.driverLocal = Object.assign({}, this.driver);
   }
-  createDriver() {
+  async createDriver() {
     if (this.driverLocal) {
-      createDriver(this.driverLocal)
+      const _driver = await createDriver(this.driverLocal)
         .then(res => {
           console.log(res.data);
           const response: IDriver = res.data;
-          this.messageSync = "Thêm mới thành công lái xe: " + response.username;
-          this.driversSync.unshift(response);
-          this.totalItemsSync += 1;
+          snackbar.setSnackbar({
+            text: "Thêm mới thành công lái xe: " + response.username,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_driver) {
+        this.driversSync.unshift(_driver);
+        this.totalItemsSync += 1;
+        this.dialogAddSync = false;
+      }
+      snackbar.setDisplay(true);
     }
   }
-  updateDriver() {
+  async updateDriver() {
     if (this.driverLocal.id) {
-      editDriver(this.driverLocal.id, this.driverLocal)
+      const _driver = await editDriver(this.driverLocal.id, this.driverLocal)
         .then(res => {
           console.log(res.data);
           const response: IDriver = res.data;
-          this.messageSync = "Cập nhập thành công lái xe: " + response.username;
-          const index = this.driversSync.findIndex(x => x.id == response.id);
-          this.driversSync.splice(index, 1, response);
+          snackbar.setSnackbar({
+            text: "Cập nhập thành công lái xe: " + response.username,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_driver) {
+        const index = this.driversSync.findIndex(x => x.id == _driver.id);
+        this.driversSync.splice(index, 1, _driver);
+      }
+      snackbar.setDisplay(true);
     }
   }
 }

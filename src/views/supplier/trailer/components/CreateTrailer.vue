@@ -1,20 +1,12 @@
 <template>
-  <v-dialog v-model="dialogAddSync" persistent max-width="600px">
+  <v-dialog v-model="dialogAddSync" max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
             update ? "Cập nhập Rơ moóc" : "Thêm mới Rơ moóc"
           }}</span>
-          <v-btn
-            icon
-            dark
-            @click="dialogAddSync = false"
-            style="margin-left:310px;"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn></v-toolbar-title
-        >
+        </v-toolbar-title>
       </v-toolbar>
       <v-card-text>
         <v-form v-model="valid" validation>
@@ -40,10 +32,22 @@
               <v-select
                 v-model="trailerLocal.type"
                 prepend-icon="timeline"
-                :items="types"
+                :items="typesLoad"
                 :rules="[required('type')]"
+                :loading="loading"
+                no-data-text="Danh sách loại rơ moóc rỗng."
                 label="Loại rơ moóc*"
-              ></v-select>
+                ><v-btn
+                  text
+                  small
+                  color="primary"
+                  v-if="seeMore"
+                  slot="append-item"
+                  style="margin-left:185px;"
+                  @click="loadMore()"
+                  >Xem thêm</v-btn
+                ></v-select
+              >
             </v-col>
           </v-row>
           <v-row>
@@ -62,7 +66,6 @@
               ></v-text-field>
             </v-col>
           </v-row>
-          <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
       <v-card-actions style="margin-top: 65px;">
@@ -95,6 +98,7 @@ import {
   updateContainerSemiTrailer
 } from "@/api/container-semi-trailer";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
@@ -104,8 +108,6 @@ export default class CreateTrailer extends Vue {
   @PropSync("trailers", { type: Array }) trailersSync!: Array<
     IContainerSemiTrailer
   >;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) trailer!: IContainerSemiTrailer;
   @Prop(Boolean) update!: boolean;
@@ -117,46 +119,109 @@ export default class CreateTrailer extends Vue {
     numberOfAxles: 1
   } as IContainerSemiTrailer;
   valid = false;
+  loading = false;
+  seeMore = true;
+  limit = 5;
   types: Array<string> = [];
+  typesLoad: Array<string> = [];
+
+  getTypes(limit: number) {
+    this.typesLoad = [] as Array<string>;
+    if (!this.update) {
+      this.types.forEach((x: string, index: number) => {
+        if (index < limit) {
+          this.typesLoad.push(x);
+        }
+      });
+    } else {
+      console.log(this.trailerLocal);
+      this.types.forEach((x: string) => {
+        if (x == this.trailerLocal.type) {
+          console.log(1);
+          this.typesLoad.push(x);
+        }
+      });
+      this.types.forEach((x: string) => {
+        let check = false;
+        if (x == this.trailerLocal.type) {
+          check = true;
+        }
+        if (check == false && this.typesLoad.length < this.limit) {
+          console.log(this.limit);
+          this.typesLoad.push(x);
+        }
+      });
+    }
+    if (this.types.length <= this.limit) {
+      this.seeMore = false;
+    }
+    this.loading = false;
+  }
+  loadMore() {
+    this.limit += 5;
+    this.getTypes(this.limit);
+  }
   created() {
     this.types = ["T28", "T32", "T34", "T36", "T40", "T45", "T48", "T53"];
     if (this.update) {
       this.trailerLocal = Object.assign({}, this.trailer);
+      this.getTypes(10);
+    } else {
+      this.getTypes(5);
     }
   }
-  createTrailer() {
+  async createTrailer() {
     if (this.trailerLocal) {
-      createContainerSemiTrailer(this.trailerLocal)
+      const _trailer = await createContainerSemiTrailer(this.trailerLocal)
         .then(res => {
           const response: IContainerSemiTrailer = res.data;
-          this.messageSync =
-            "Thêm mới thành công Rơ moóc: " + response.licensePlate;
-          this.trailersSync.unshift(response);
-          this.totalItemsSync += 1;
+          snackbar.setSnackbar({
+            text: "Thêm mới thành công Rơ moóc: " + response.licensePlate,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_trailer) {
+        this.trailersSync.unshift(_trailer);
+        this.totalItemsSync += 1;
+        this.dialogAddSync = false;
+      }
+      snackbar.setDisplay(true);
     }
   }
-  updateTrailer() {
+  async updateTrailer() {
     if (this.trailerLocal.id) {
-      updateContainerSemiTrailer(this.trailerLocal)
+      const _trailer = await updateContainerSemiTrailer(this.trailerLocal)
         .then(res => {
           console.log(res.data);
           const response: IContainerSemiTrailer = res.data;
-          this.messageSync =
-            "Cập nhập thành công Rơ moóc: " + response.licensePlate;
-          const index = this.trailersSync.findIndex(x => x.id == response.id);
-          this.trailersSync.splice(index, 1, response);
+          snackbar.setSnackbar({
+            text: "Cập nhập thành công Rơ moóc: " + response.licensePlate,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_trailer) {
+        const index = this.trailersSync.findIndex(x => x.id == _trailer.id);
+        this.trailersSync.splice(index, 1, _trailer);
+      }
+      snackbar.setDisplay(true);
     }
   }
 }

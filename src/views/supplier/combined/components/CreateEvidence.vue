@@ -1,18 +1,10 @@
 <template>
-  <v-dialog v-model="dialogAddSync" persistent max-width="600px">
+  <v-dialog v-model="dialogAddSync" max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">Thêm mới Chứng cứ</span>
-          <v-btn
-            icon
-            dark
-            @click="dialogAddSync = false"
-            style="margin-left:302px;"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn></v-toolbar-title
-        >
+        </v-toolbar-title>
       </v-toolbar>
       <v-card-text>
         <v-form v-model="valid" validation>
@@ -43,10 +35,9 @@
               ></v-text-field>
             </v-col>
           </v-row>
-          <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-top: 65px;">
+      <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
         <v-btn @click="createEvidence()" color="primary" :disabled="!valid"
@@ -63,6 +54,7 @@ import FormValidate from "@/mixin/form-validate";
 import { createEvidence } from "@/api/evidence";
 import { IContract } from "@/entity/contract";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
@@ -70,8 +62,8 @@ import { getErrorMessage } from "@/utils/tool";
 export default class CreateEvidence extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("evidences", { type: Array }) evidencesSync!: Array<IEvidence>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
+  @PropSync("checkValid", { type: Boolean }) checkValidSync!: boolean;
   @Prop(Object) contract!: IContract;
 
   evidenceLocal = {
@@ -80,21 +72,37 @@ export default class CreateEvidence extends Vue {
     isValid: false
   } as IEvidence;
   valid = false;
-  createEvidence() {
+  async createEvidence() {
     if (this.contract.id) {
-      createEvidence(this.contract.id, this.evidenceLocal)
+      const _evidence = await createEvidence(
+        this.contract.id,
+        this.evidenceLocal
+      )
         .then(res => {
           const response: IEvidence = res.data;
-          this.messageSync = "Thêm mới thành công Chứng cứ: " + response.id;
-          if (this.evidencesSync) {
-            this.evidencesSync.unshift(response);
-          }
+          snackbar.setSnackbar({
+            text: "Thêm mới thành công Chứng cứ: " + response.id,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_evidence) {
+        if (this.evidencesSync) {
+          this.evidencesSync.unshift(_evidence);
+          this.totalItemsSync += 1;
+          this.checkValidSync = false;
+        }
+        this.dialogAddSync = false;
+      }
+      snackbar.setDisplay(true);
     }
   }
 }

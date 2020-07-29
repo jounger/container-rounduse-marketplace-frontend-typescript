@@ -1,19 +1,14 @@
 <template>
   <v-content>
-    <v-card>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
+    <v-card class="ma-5">
       <CreateInbound
         :dialogAdd.sync="dialogAdd"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
         :inbounds.sync="inbounds"
         :totalItems.sync="serverSideOptions.totalItems"
       />
       <UpdateInbound
         :inbound="inbound"
         :dialogEdit.sync="dialogEdit"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
         :inbounds.sync="inbounds"
       />
       <v-row justify="center">
@@ -22,53 +17,25 @@
           :dialogDel.sync="dialogDel"
           :inbound="inbound"
           :inbounds.sync="inbounds"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
           :totalItems.sync="serverSideOptions.totalItems"
         />
       </v-row>
       <v-row justify="center">
-        <DeleteContainer
-          v-if="dialogDelCont"
-          :dialogDelCont.sync="dialogDelCont"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
-          :container="container"
-          :containers.sync="containers"
-        />
-      </v-row>
-      <v-row justify="center">
         <CreateContainer
           v-if="dialogAddCont"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
           :container="container"
           :containers.sync="containers"
           :dialogAddCont.sync="dialogAddCont"
           :billOfLading="inbound.billOfLading"
+          :totalItems.sync="containerServerSideOptions.totalItems"
           :update="update"
         />
-      </v-row>
-      <v-row justify="center">
         <DeleteContainer
           v-if="dialogDelCont"
           :dialogDelCont.sync="dialogDelCont"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
           :container="container"
           :containers.sync="containers"
-        />
-      </v-row>
-      <v-row justify="center">
-        <CreateContainer
-          v-if="dialogAddCont"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
-          :container="container"
-          :containers.sync="containers"
-          :dialogAddCont.sync="dialogAddCont"
-          :billOfLading="inbound.billOfLading"
-          :update="update"
+          :totalItems.sync="containerServerSideOptions.totalItems"
         />
       </v-row>
       <v-data-table
@@ -86,6 +53,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <!--  -->
@@ -139,7 +107,15 @@
             <v-data-table
               :headers="containerHeaders"
               :items="containers"
-              :hide-default-footer="true"
+              :loading="loading"
+              :options.sync="containerOptions"
+              :server-items-length="containerServerSideOptions.totalItems"
+              :footer-props="{
+                'items-per-page-options':
+                  containerServerSideOptions.itemsPerPageItems
+              }"
+              :actions-append="containerOptions.page"
+              disable-sort
               dense
               dark
             >
@@ -174,7 +150,7 @@
                     color="success"
                     @click.stop="openCreateContainer()"
                     small
-                    v-if="containers.length < inbound.billOfLading.unit"
+                    v-if="checkUnit"
                   >
                     <span style="color:white;">Thêm Container</span>
                   </v-btn>
@@ -194,7 +170,6 @@ import CreateInbound from "./components/CreateInbound.vue";
 import UpdateInbound from "./components/UpdateInbound.vue";
 import DeleteInbound from "./components/DeleteInbound.vue";
 import Utils from "@/mixin/utils";
-import Snackbar from "@/components/Snackbar.vue";
 import { getInboundsByForwarder } from "@/api/inbound";
 import { PaginationResponse } from "@/api/payload";
 import { IContainer } from "@/entity/container";
@@ -210,8 +185,7 @@ import { DataOptions } from "vuetify";
     UpdateInbound,
     DeleteInbound,
     DeleteContainer,
-    CreateContainer,
-    Snackbar
+    CreateContainer
   }
 })
 export default class Inbound extends Vue {
@@ -227,17 +201,24 @@ export default class Inbound extends Vue {
   expanded: Array<IInbound> = [];
   singleExpand = true;
   search = "";
-  message = "";
   freeTime = "";
-  snackbar = false;
   loading = true;
   update = false;
+  checkUnit = true;
   dateInit = new Date().toISOString().substr(0, 10);
   options = {
     page: 1,
     itemsPerPage: 5
   } as DataOptions;
   serverSideOptions = {
+    totalItems: 0,
+    itemsPerPageItems: [5, 10, 20, 50]
+  };
+  containerOptions = {
+    page: 1,
+    itemsPerPage: 5
+  } as DataOptions;
+  containerServerSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -311,70 +292,81 @@ export default class Inbound extends Vue {
     this.container = item;
     this.dialogDelCont = true;
   }
-  getContainers(item: IInbound) {
-    if (item.id) {
-      getContainersByInbound(item.id, {
-        page: 0,
-        limit: 100
-      })
-        .then(res => {
-          const response = res.data;
-          this.containers = response.data;
+  @Watch("containerOptions")
+  async onContainerOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
+      if (this.inbound && this.inbound.id) {
+        const _containers = await getContainersByInbound(this.inbound.id, {
+          page: val.page - 1,
+          limit: val.itemsPerPage
         })
-        .catch(err => {
-          console.log(err);
-        })
-        .finally();
+          .then(res => {
+            const response = res.data;
+            return response;
+          })
+          .catch(err => {
+            console.log(err);
+            return null;
+          });
+        if (_containers) {
+          this.containers = _containers.data;
+          this.containerServerSideOptions.totalItems =
+            _containers.totalElements;
+          if (
+            this.containerServerSideOptions.totalItems ==
+            this.inbound.billOfLading.unit
+          ) {
+            this.checkUnit = false;
+          } else {
+            this.checkUnit = true;
+          }
+        }
+      }
+      this.loading = false;
     }
   }
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getInboundsByForwarder({
+      const _inbounds = await getInboundsByForwarder({
         page: val.page - 1,
         limit: val.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IInbound> = res.data;
           console.log("watch", response);
-          this.inbounds = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_inbounds) {
+        this.inbounds = _inbounds.data;
+        this.serverSideOptions.totalItems = _inbounds.totalElements;
+      }
+      this.loading = false;
     }
   }
-  clicked(value: IInbound) {
+  async clicked(value: IInbound) {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
         this.inbound = {} as IInbound;
       } else {
-        this.expanded.splice(0, this.expanded.length);
-        this.getContainers(value);
-        this.expanded.push(value);
-        this.inbound = value;
-      }
-    } else {
-      const index = this.expanded.findIndex(x => x.id === value.id);
-      if (index === -1) {
-        this.getContainers(value);
-        this.expanded.push(value);
-        this.inbound = value;
-      } else {
-        this.expanded.splice(index, 1);
-        this.inbound = {} as IInbound;
+        if (this.expanded.length > 0) {
+          this.expanded.splice(0, this.expanded.length);
+          this.expanded.push(value);
+          this.inbound = value;
+          this.onContainerOptionsChange(this.containerOptions);
+        } else {
+          this.expanded.push(value);
+          this.inbound = value;
+        }
       }
     }
   }
 }
 </script>
-<style type="text/css">
-.line {
-  margin-top: 10px;
-  width: 520px;
-  border-bottom: 1px solid black;
-  position: absolute;
-}
-</style>

@@ -2,6 +2,7 @@
   <v-dialog
     v-model="dialogEditSync"
     fullscreen
+    persistent
     hide-overlay
     transition="dialog-bottom-transition"
   >
@@ -11,7 +12,10 @@
         <v-btn icon dark @click="dialogEditSync = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title>Hộp thoại chỉnh sửa hàng xuất</v-toolbar-title>
+        <v-toolbar-title
+          >Hộp thoại {{ readonly ? "chi tiết" : "chỉnh sửa" }} hàng
+          xuất</v-toolbar-title
+        >
         <v-spacer></v-spacer>
       </v-toolbar>
       <!-- START CONTENT -->
@@ -42,8 +46,21 @@
                         prepend-icon="directions_boat"
                         :items="shippingLinesToString"
                         :rules="[required('shipping line')]"
+                        :loading="loadingShippingLines"
+                        :readonly="readonly"
+                        no-data-text="Danh sách hãng tàu rỗng."
                         label="Hãng tàu*"
-                      ></v-select>
+                        ><v-btn
+                          text
+                          small
+                          color="primary"
+                          v-if="seeMoreShippingLines"
+                          slot="append-item"
+                          style="margin-left:60px;"
+                          @click="loadMoreShippingLines()"
+                          >Xem thêm</v-btn
+                        ></v-select
+                      >
                     </v-col>
                     <v-col cols="12" sm="6">
                       <v-select
@@ -51,8 +68,21 @@
                         prepend-icon="directions_bus"
                         :items="containerTypesToString"
                         :rules="[required('container type')]"
+                        :loading="loadingContainerTypes"
+                        :readonly="readonly"
+                        no-data-text="Danh sách loại Cont rỗng."
                         label="Loại container*"
-                      ></v-select>
+                        ><v-btn
+                          text
+                          small
+                          color="primary"
+                          v-if="seeMoreContainerTypes"
+                          slot="append-item"
+                          style="margin-left:60px;"
+                          @click="loadMoreContainerTypes()"
+                          >Xem thêm</v-btn
+                        ></v-select
+                      >
                     </v-col>
                   </v-row>
                   <v-row>
@@ -60,6 +90,7 @@
                       <DatetimePicker
                         :datetime="outboundLocal.packingTime"
                         :return-value.sync="outboundLocal.packingTime"
+                        :readonly="readonly"
                         dateicon="flight_land"
                         datelabel="Ngày đóng hàng"
                         timelabel="Giờ đóng hàng"
@@ -75,7 +106,7 @@
                         type="text"
                         placeholder="Nơi đóng hàng"
                         :rules="[required('packing station')]"
-                        required
+                        :readonly="readonly"
                       />
                       <!-- <v-text-field
                       v-model="outboundLocal.packingStation"
@@ -92,12 +123,14 @@
                         prepend-icon="fitness_center"
                         type="number"
                         label="Khối lượng hàng"
+                        :readonly="readonly"
                       ></v-text-field> </v-col
                     ><v-col cols="12" sm="6">
                       <v-select
                         v-model="outboundLocal.unitOfMeasurement"
                         prepend-icon="strikethrough_s"
                         :items="unitOfMeasurements"
+                        :readonly="readonly"
                         label="Đơn vị đo"
                       ></v-select> </v-col
                   ></v-row>
@@ -108,6 +141,7 @@
                         prepend-icon="description"
                         type="text"
                         label="Mô tả hàng"
+                        :readonly="readonly"
                       ></v-text-field> </v-col
                   ></v-row>
 
@@ -115,7 +149,11 @@
                     color="primary"
                     @click="updateOutbound()"
                     :disabled="!valid"
+                    v-if="!readonly"
                     >Lưu và tiếp tục</v-btn
+                  >
+                  <v-btn color="primary" @click="stepper = 2" v-if="readonly"
+                    >Tiếp tục</v-btn
                   >
                 </v-form>
               </v-stepper-content>
@@ -138,7 +176,7 @@
                         :rules="[required('booking number')]"
                         type="text"
                         label="Số Booking*"
-                        required
+                        readonly
                       ></v-text-field> </v-col
                     ><v-col cols="12" sm="6">
                       <v-select
@@ -146,15 +184,29 @@
                         prepend-icon="flag"
                         :items="portsToString"
                         :rules="[required('port of loading')]"
+                        :loading="loadingPorts"
+                        :readonly="readonly"
+                        no-data-text="Danh sách bến cảng rỗng."
                         label="Cảng xuất hàng*"
-                        required
-                      ></v-select> </v-col
-                  ></v-row>
+                        ><v-btn
+                          text
+                          small
+                          color="primary"
+                          v-if="seeMorePorts"
+                          slot="append-item"
+                          style="margin-left:60px;"
+                          @click="loadMorePorts()"
+                          >Xem thêm</v-btn
+                        ></v-select
+                      >
+                    </v-col></v-row
+                  >
                   <v-row
                     ><v-col cols="12">
                       <DatetimePicker
                         :datetime="outboundLocal.booking.cutOffTime"
                         :return-value.sync="outboundLocal.booking.cutOffTime"
+                        :readonly="readonly"
                         dateicon="flight_takeoff"
                         datelabel="Ngày tàu cắt máng"
                         timelabel="Giờ cắt máng"
@@ -167,6 +219,7 @@
                         v-model="outboundLocal.booking.unit"
                         prepend-icon="commute"
                         :rules="[required('unit')]"
+                        :readonly="readonly"
                         label="Số lượng Container*"
                         type="number"
                         required
@@ -180,6 +233,7 @@
                     color="primary"
                     @click="updateBooking()"
                     :disabled="!valid2"
+                    v-if="!readonly"
                     >Lưu và hoàn tất</v-btn
                   >
                   <v-btn text @click="stepper = 1">Quay lại</v-btn>
@@ -340,6 +394,7 @@ import GoogleMapDistanceMatrix from "@/components/googlemaps/GoogleMapDistanceMa
 import { DistanceMatrix } from "@/components/googlemaps/map-interface";
 import Utils from "@/mixin/utils";
 import DatetimePicker from "@/components/DatetimePicker.vue";
+import snackbar from "@/store/modules/snackbar";
 
 @Component({
   components: {
@@ -355,10 +410,9 @@ import DatetimePicker from "@/components/DatetimePicker.vue";
 export default class UpdateOutbound extends Vue {
   @Ref() inputAddress1!: HTMLInputElement;
   @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
-  @Prop(Object) outbound!: IOutbound;
   @PropSync("outbounds", { type: Array }) outboundsSync!: Array<IOutbound>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
+  @Prop(Boolean) readonly!: boolean;
+  @Prop(Object) outbound!: IOutbound;
 
   distanceMatrixResult = null as DistanceMatrix | null;
   style = { width: "600px", height: "500px" };
@@ -376,11 +430,18 @@ export default class UpdateOutbound extends Vue {
   containerTypes: Array<IContainerType> = [];
   unitOfMeasurements: Array<string> = [];
   outboundLocal = null as IOutbound | null;
-  // outboundLocal form
-  packingTimePicker = false;
-
-  // B/L form
-  cutOffTimePicker = false;
+  loadingShippingLines = false;
+  seeMoreShippingLines = true;
+  limitShippingLines = 5;
+  loadingContainerTypes = false;
+  seeMoreContainerTypes = true;
+  limitContainerTypes = 5;
+  loadingPorts = false;
+  seeMorePorts = true;
+  limitPorts = 5;
+  shippingLine = "";
+  containerType = "";
+  port = "";
 
   // Outbound Update
   estimateTimeTravel() {
@@ -401,68 +462,92 @@ export default class UpdateOutbound extends Vue {
     }
   }
   @Watch("dialogEditSync")
-  onDialogEditSyncChange(val: boolean) {
+  async onDialogEditSyncChange(val: boolean) {
     if (val == true) {
       if (!isEmptyObject(this.outbound)) {
         this.outboundLocal = Object.assign({}, this.outbound);
         this.$nextTick(() => {
           this.inputAddress1.value = this.outbound.packingStation;
         });
+        this.shippingLine = this.outboundLocal.shippingLine;
+        this.containerType = this.outboundLocal.containerType;
+        this.port = this.outboundLocal.booking.portOfLoading;
       }
+      // API GET Ports
+      await this.getShippingLines(100);
+      await this.getContainerTypes(100);
+      await this.getPorts(100);
     } else {
       this.stepper = 1;
     }
   }
-  updateOutbound() {
+  async updateOutbound() {
     // TODO: API edit outbound
     if (this.outboundLocal && this.outboundLocal.id) {
-      this.outboundLocal.packingTime = addTimeToDate(
-        this.outboundLocal.packingTime
-      );
-      this.outboundLocal.booking.cutOffTime = addTimeToDate(
-        this.outboundLocal.booking.cutOffTime
-      );
       console.log(this.outboundLocal);
-      editOutbound(this.outboundLocal.id, this.outboundLocal)
+      const _outbound = await editOutbound(
+        this.outboundLocal.id,
+        this.outboundLocal
+      )
         .then(res => {
           console.log(res.data);
           const response: IOutbound = res.data;
-          this.messageSync =
-            "Cập nhập thành công hàng xuất: " + response.booking.bookingNumber;
-          const index = this.outboundsSync.findIndex(x => x.id == response.id);
-          this.outboundsSync.splice(index, 1, response);
-          this.stepper = 2;
+          snackbar.setSnackbar({
+            text:
+              "Cập nhập thành công hàng xuất: " +
+              response.booking.bookingNumber,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_outbound) {
+        const index = this.outboundsSync.findIndex(x => x.id == _outbound.id);
+        this.outboundsSync.splice(index, 1, _outbound);
+        this.stepper = 2;
+      }
+      snackbar.setDisplay(true);
     }
   }
-  updateBooking() {
+  async updateBooking() {
     if (this.outboundLocal && this.outboundLocal.booking.id) {
-      this.outboundLocal.booking.cutOffTime = addTimeToDate(
-        this.outboundLocal.booking.cutOffTime
-      );
-      editBooking(this.outboundLocal.booking.id, this.outboundLocal.booking)
+      const _booking = await editBooking(
+        this.outboundLocal.booking.id,
+        this.outboundLocal.booking
+      )
         .then(res => {
           const response: IBooking = res.data;
           if (this.outboundLocal) {
-            this.messageSync =
-              "Cập nhập thành công Booking: " + response.bookingNumber;
-            const index = this.outboundsSync.findIndex(
-              x => x.id === this.outbound.id
-            );
-            this.outboundLocal.booking = response;
-            this.outboundsSync.splice(index, 1, this.outboundLocal);
+            snackbar.setSnackbar({
+              text: "Cập nhập thành công Booking: " + response.bookingNumber,
+              color: "success"
+            });
+            return response;
           }
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_booking) {
+        const index = this.outboundsSync.findIndex(
+          x => x.id === this.outbound.id
+        );
+        this.outboundLocal.booking = _booking;
+        this.outboundsSync.splice(index, 1, this.outboundLocal);
+      }
+      snackbar.setDisplay(true);
     }
   }
   getPortAddress(portCode: string) {
@@ -473,46 +558,134 @@ export default class UpdateOutbound extends Vue {
     }
     return undefined;
   }
-  async created() {
-    if (!isEmptyObject(this.outbound)) {
-      this.outboundLocal = Object.assign({}, this.outbound);
-    }
-    // API GET Ports
-    const _ports = await getPorts({
-      page: 0,
-      limit: 100
-    })
-      .then(res => {
-        const response: PaginationResponse<IPort> = res.data;
-        return response.data;
-      })
-      .catch(err => console.log(err))
-      .finally();
-    this.ports = _ports || [];
-    // API GET Shipping Line
+  async getShippingLines(limit: number) {
+    this.loadingShippingLines = true;
+    this.shippingLines = [] as Array<IShippingLine>;
     const _shippingLines = await getShippingLines({
       page: 0,
-      limit: 100
+      limit: limit + 1
     })
       .then(res => {
         const response: PaginationResponse<IShippingLine> = res.data;
         return response.data.filter(x => x.roles[0] == "ROLE_SHIPPINGLINE");
       })
-      .catch(err => console.log(err))
-      .finally();
-    this.shippingLines = _shippingLines || [];
-    // API GET Container Type
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    if (_shippingLines) {
+      _shippingLines.forEach((x: IShippingLine) => {
+        if (x.companyCode == this.shippingLine) {
+          this.shippingLines.push(x);
+        }
+      });
+      _shippingLines.forEach((x: IShippingLine) => {
+        let check = false;
+        if (x.companyCode == this.shippingLine) {
+          check = true;
+        }
+        if (
+          check == false &&
+          this.shippingLines.length < this.limitShippingLines
+        ) {
+          this.shippingLines.push(x);
+        }
+      });
+    }
+    if (!_shippingLines || _shippingLines.length <= this.limitShippingLines) {
+      this.seeMoreShippingLines = false;
+    }
+    this.loadingShippingLines = false;
+  }
+  async loadMoreShippingLines() {
+    this.limitShippingLines += 5;
+    await this.getShippingLines(this.limitShippingLines);
+  }
+  async getContainerTypes(limit: number) {
+    this.loadingContainerTypes = true;
+    this.containerTypes = [] as Array<IContainerType>;
     const _containerTypes = await getContainerTypes({
       page: 0,
-      limit: 100
+      limit: limit + 1
     })
       .then(res => {
         const response: PaginationResponse<IContainerType> = res.data;
         return response.data;
       })
-      .catch(err => console.log(err))
-      .finally();
-    this.containerTypes = _containerTypes || [];
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    if (_containerTypes) {
+      _containerTypes.forEach((x: IContainerType) => {
+        if (x.name == this.containerType) {
+          this.containerTypes.push(x);
+        }
+      });
+      _containerTypes.forEach((x: IContainerType) => {
+        let check = false;
+        if (x.name == this.containerType) {
+          check = true;
+        }
+        if (
+          check == false &&
+          this.containerTypes.length < this.limitContainerTypes
+        ) {
+          this.containerTypes.push(x);
+        }
+      });
+    }
+    if (
+      !_containerTypes ||
+      _containerTypes.length <= this.limitContainerTypes
+    ) {
+      this.seeMoreContainerTypes = false;
+    }
+    this.loadingContainerTypes = false;
+  }
+  async loadMoreContainerTypes() {
+    this.limitContainerTypes += 5;
+    await this.getContainerTypes(this.limitContainerTypes);
+  }
+  async getPorts(limit: number) {
+    this.loadingPorts = true;
+    this.ports = [] as Array<IPort>;
+    const _ports = await getPorts({
+      page: 0,
+      limit: limit + 1
+    })
+      .then(res => {
+        const response: PaginationResponse<IPort> = res.data;
+        return response.data;
+      })
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    if (_ports) {
+      _ports.forEach((x: IPort) => {
+        if (x.nameCode == this.port) {
+          this.ports.push(x);
+        }
+      });
+      _ports.forEach((x: IPort) => {
+        let check = false;
+        if (x.nameCode == this.port) {
+          check = true;
+        }
+        if (check == false && this.ports.length < this.limitPorts) {
+          this.ports.push(x);
+        }
+      });
+    }
+    if (!_ports || _ports.length <= this.limitPorts) {
+      this.seeMorePorts = false;
+    }
+    this.loadingPorts = false;
+  }
+  async loadMorePorts() {
+    this.limitPorts += 5;
+    await this.getPorts(this.limitPorts);
   }
   get portsToString() {
     return this.ports.map(x => x.nameCode);

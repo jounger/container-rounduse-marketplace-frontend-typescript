@@ -1,6 +1,6 @@
 <template>
   <v-content>
-    <v-card>
+    <v-card class="ma-5">
       <v-row justify="center">
         <DeleteTractor
           v-if="dialogDel"
@@ -8,8 +8,6 @@
           :tractor="tractor"
           :totalItems.sync="serverSideOptions.totalItems"
           :tractors.sync="tractors"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
         />
       </v-row>
       <v-row justify="center">
@@ -18,13 +16,10 @@
           :tractor="tractor"
           :tractors.sync="tractors"
           :dialogAdd.sync="dialogAdd"
-          :message.sync="message"
           :totalItems.sync="serverSideOptions.totalItems"
-          :snackbar.sync="snackbar"
           :update="update"
         />
       </v-row>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-data-table
         :headers="headers"
         :items="tractors"
@@ -36,6 +31,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <template v-slot:top>
@@ -66,7 +62,6 @@
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { IContainerTractor } from "@/entity/container-tractor";
 import { PaginationResponse } from "@/api/payload";
-import Snackbar from "@/components/Snackbar.vue";
 import DeleteTractor from "./components/DeleteTractor.vue";
 import CreateTractor from "./components/CreateTractor.vue";
 import { getContainerTractorsByForwarder } from "@/api/container-tractor";
@@ -75,8 +70,7 @@ import { DataOptions } from "vuetify";
 @Component({
   components: {
     CreateTractor,
-    DeleteTractor,
-    Snackbar
+    DeleteTractor
   }
 })
 export default class Tractor extends Vue {
@@ -84,8 +78,6 @@ export default class Tractor extends Vue {
   tractor = {} as IContainerTractor;
   dialogAdd = false;
   dialogDel = false;
-  message = "";
-  snackbar = false;
   loading = true;
   update = false;
   options = {
@@ -127,20 +119,26 @@ export default class Tractor extends Vue {
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getContainerTractorsByForwarder({
+      const _tractors = await getContainerTractorsByForwarder({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IContainerTractor> = res.data;
-          this.tractors = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_tractors) {
+        this.tractors = _tractors.data;
+        this.serverSideOptions.totalItems = _tractors.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

@@ -1,15 +1,13 @@
 <template>
   <v-navigation-drawer v-model="drawerSync" app clipped v-if="$auth.check()">
     <v-list dense nav>
-      <v-list-item two-line :class="'px-0'">
+      <v-list-item two-line class="px-0" link to="/profile">
         <v-list-item-avatar>
           <v-img src="@/assets/images/ava.jpg" />
         </v-list-item-avatar>
 
         <v-list-item-content>
-          <v-list-item-title to="/profile">{{
-            capitalizeUsername
-          }}</v-list-item-title>
+          <v-list-item-title>{{ capitalizeUsername }}</v-list-item-title>
           <v-list-item-subtitle style="margin-top:10px;">
             {{ getUserRole }}</v-list-item-subtitle
           >
@@ -60,8 +58,7 @@ export default class Navigation extends Vue {
 
   protected navigation: object = NavigationSupplier;
   protected generalNavigation = [
-    { title: "Trang cá nhân", icon: "account_circle", link: "/profile" },
-    { title: "Thông báo", icon: "notifications", link: "/notification" }
+    { title: "Trang cá nhân", icon: "account_circle", link: "/profile" }
   ];
 
   get capitalizeUsername() {

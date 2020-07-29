@@ -1,14 +1,12 @@
 <template>
   <v-content>
-    <v-card>
+    <v-card class="ma-5">
       <v-row justify="center">
         <DeleteReport
           v-if="dialogDel"
           :dialogDel.sync="dialogDel"
           :report="report"
           :reports.sync="reports"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
           :totalItems.sync="serverSideOptions.totalItems"
         />
       </v-row>
@@ -17,8 +15,6 @@
           v-if="dialogAdd"
           :reports.sync="reports"
           :dialogAdd.sync="dialogAdd"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
           :totalItems.sync="serverSideOptions.totalItems"
         />
       </v-row>
@@ -28,21 +24,8 @@
           :report="report"
           :reports.sync="reports"
           :dialogEdit.sync="dialogEdit"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
         />
       </v-row>
-      <v-row justify="center">
-        <ReportDetail
-          v-if="dialogDetail"
-          :dialogDetail.sync="dialogDetail"
-          :report="report"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
-          :reports.sync="reports"
-        />
-      </v-row>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-card-title>
         Danh sách Report
         <v-divider class="mx-4" inset vertical></v-divider>
@@ -54,7 +37,6 @@
       <v-data-table
         :headers="headers"
         :items="reports"
-        @click:row="clicked"
         item-key="id"
         :loading="loading"
         :options.sync="options"
@@ -63,6 +45,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <template v-slot:item.reportId="{ item }">
@@ -78,12 +61,39 @@
           </v-btn>
         </template>
         <template v-slot:item.action="{ item }">
-          <v-icon small class="mr-2" @click.stop="openUpdateDialog(item)">
-            mdi-pencil
-          </v-icon>
-          <v-icon small @click.stop="openDeleteDialog(item)">
-            delete
-          </v-icon>
+          <v-menu :close-on-click="true">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="pink" icon outlined v-bind="attrs" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item @click.stop="openDetailDialog(item)">
+                <v-list-item-icon>
+                  <v-icon small>details</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Chi tiết Report</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item @click.stop="openUpdateDialog(item)">
+                <v-list-item-icon>
+                  <v-icon small>edit</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Chỉnh sửa</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item @click.stop="openDeleteDialog(item)">
+                <v-list-item-icon>
+                  <v-icon small>delete</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Xóa</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </template>
       </v-data-table>
     </v-card>
@@ -94,21 +104,18 @@ import { Component, Watch, Vue } from "vue-property-decorator";
 import { IReport } from "@/entity/report";
 // import { getReportsByStatus } from "@/api/report";
 import { PaginationResponse } from "@/api/payload";
-import Snackbar from "@/components/Snackbar.vue";
 import CreateReport from "./components/CreateReport.vue";
 import DeleteReport from "./components/DeleteReport.vue";
 import UpdateReport from "./components/UpdateReport.vue";
-import ReportDetail from "./components/ReportDetail.vue";
 import { getReportsByUser } from "@/api/report";
 import { DataOptions } from "vuetify";
+import { IBiddingDocument } from "@/entity/bidding-document";
 
 @Component({
   components: {
     CreateReport,
     DeleteReport,
-    UpdateReport,
-    ReportDetail,
-    Snackbar
+    UpdateReport
   }
 })
 export default class Report extends Vue {
@@ -118,11 +125,8 @@ export default class Report extends Vue {
   dialogAdd = false;
   dialogDel = false;
   dialogEdit = false;
-  dialogDetail = false;
   dialogMark = false;
   loading = true;
-  message = "";
-  snackbar = false;
   options = {
     page: 1,
     itemsPerPage: 5
@@ -164,31 +168,37 @@ export default class Report extends Vue {
   viewDetailReport(item: IReport) {
     console.log(item);
     if (item && item.report && typeof item.report != "number") {
-      const report = item.report as IReport;
-      this.$router.push({ path: `/bidding-document/${report.id}` });
+      const report = item.report as IBiddingDocument;
+      this.$router.push({ path: `/report-bidding-document/${report.id}` });
     }
   }
-  clicked(value: IReport) {
-    this.report = value;
-    this.dialogDetail = true;
+  openDetailDialog(item: IReport) {
+    const id = item.id;
+    this.$router.push({ path: `/report/${id}` });
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getReportsByUser({
+      const _reports = await getReportsByUser({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IReport> = res.data;
           console.log("watch", this.options);
-          this.reports = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_reports) {
+        this.reports = _reports.data;
+        this.serverSideOptions.totalItems = _reports.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

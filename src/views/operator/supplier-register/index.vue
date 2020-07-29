@@ -1,6 +1,6 @@
 <template>
   <v-content>
-    <v-card>
+    <v-card class="ma-5">
       <v-row justify="center">
         <RegisterDetail
           v-if="dialogDetail"
@@ -8,11 +8,8 @@
           :supplier="supplier"
           :suppliers.sync="suppliers"
           :totalItems.sync="serverSideOptions.totalItems"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
         />
       </v-row>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-card-title>
         Danh sách đơn đăng ký
       </v-card-title>
@@ -27,6 +24,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <template v-slot:item.action="{ item }">
@@ -53,23 +51,18 @@ import { ISupplier } from "@/entity/supplier";
 import { getSuppliersByStatus } from "@/api/supplier";
 import { PaginationResponse } from "@/api/payload";
 import RegisterDetail from "./components/RegisterDetail.vue";
-import Snackbar from "@/components/Snackbar.vue";
 import { DataOptions } from "vuetify";
 
 @Component({
   components: {
-    RegisterDetail,
-    Snackbar
+    RegisterDetail
   }
 })
 export default class Supplier extends Vue {
   suppliers: Array<ISupplier> = [];
   supplier = {} as ISupplier;
-
   dialogDetail = false;
   loading = true;
-  message = "";
-  snackbar = false;
   options = {
     page: 1,
     itemsPerPage: 5
@@ -100,22 +93,28 @@ export default class Supplier extends Vue {
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getSuppliersByStatus({
-        page: this.options.page - 1,
-        limit: this.options.itemsPerPage,
+      const _suppliers = await getSuppliersByStatus({
+        page: val.page - 1,
+        limit: val.itemsPerPage,
         status: "PENDING"
       })
         .then(res => {
           const response: PaginationResponse<ISupplier> = res.data;
           console.log(response.data);
-          this.suppliers = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_suppliers) {
+        this.suppliers = _suppliers.data;
+        this.serverSideOptions.totalItems = _suppliers.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

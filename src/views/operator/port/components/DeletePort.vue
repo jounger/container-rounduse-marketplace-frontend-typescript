@@ -1,18 +1,10 @@
 <template>
-  <v-dialog v-model="dialogDelSync" persistent max-width="600px">
+  <v-dialog v-model="dialogDelSync" max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">Xóa bến cảng</span>
-          <v-btn
-            icon
-            dark
-            @click="dialogDelSync = false"
-            style="margin-left:374px;"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn></v-toolbar-title
-        >
+        </v-toolbar-title>
       </v-toolbar>
 
       <v-card-text>
@@ -21,7 +13,7 @@
             <span style="color: black; font-size:22px;"
               >Bạn có chắc chắn muốn xóa bến cảng này?</span
             >
-            <div class="line"></div>
+            <v-divider class="mt-3"></v-divider>
             <v-list>
               <v-list-item>
                 <v-list-item-content>
@@ -30,12 +22,11 @@
               </v-list-item>
             </v-list>
           </v-container>
-          <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
         <v-btn @click="dialogDelSync = false">Hủy</v-btn>
-        <v-btn @click="removePort()" color="red">Xóa</v-btn>
+        <v-btn @click="removePort()" color="error">Xóa</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -45,33 +36,38 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPort } from "@/entity/port";
 import { removePort } from "@/api/port";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeletePort extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("ports", { type: Array }) portsSync!: Array<IPort>;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) port!: IPort;
 
-  removePort() {
+  async removePort() {
     if (this.port.id) {
-      removePort(this.port.id)
+      await removePort(this.port.id)
         .then(res => {
           console.log(res.data);
-          this.messageSync = "Xóa thành công bến cảng: " + this.port.fullname;
+          console.log(res.data);
+          snackbar.setSnackbar({
+            text: "Xóa thành công bến cảng: " + this.port.fullname,
+            color: "success"
+          });
           const index = this.portsSync.findIndex(x => x.id === this.port.id);
           this.portsSync.splice(index, 1);
           this.totalItemsSync -= 1;
+          this.dialogDelSync = false;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
-        );
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+        });
+      snackbar.setDisplay(true);
     }
   }
 }

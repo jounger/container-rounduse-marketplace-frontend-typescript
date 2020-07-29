@@ -1,5 +1,12 @@
 import { Vue, Component } from "vue-property-decorator";
-import { addMinutesToDate, formatDatetime, addTimeToDate, isEmptyObject, currencyFormatter } from '../utils/tool';
+import {
+  addMinutesToDate,
+  formatDatetime,
+  addTimeToDate,
+  isEmptyObject,
+  currencyFormatter,
+  convertTime
+} from "../utils/tool";
 
 @Component
 export default class Utils extends Vue {
@@ -7,7 +14,7 @@ export default class Utils extends Vue {
     return addTimeToDate(input);
   }
 
-  addMinutesToDate(d: string, m: number){
+  addMinutesToDate(d: string, m: number) {
     return addMinutesToDate(d, m);
   }
 
@@ -26,5 +33,8 @@ export default class Utils extends Vue {
 
   currencyFormatter(num: number, cur?: string) {
     return currencyFormatter(num, cur);
+  }
+  convertTime(input: string) {
+    return convertTime(input);
   }
 }

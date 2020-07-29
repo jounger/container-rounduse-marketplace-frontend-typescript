@@ -17,8 +17,16 @@
             ? "Thông tin Quản trị viên"
             : "Thông tin Công ty"
         }}</span
-      ></v-card-title
-    >
+      ><v-spacer></v-spacer>
+      <v-tooltip left v-if="$auth.user() && $auth.user().status == 'PENDING'">
+        <template v-slot:activator="{ on, attrs }">
+          <v-icon large v-bind="attrs" v-on="on" style="color:gold;"
+            >report_problem</v-icon
+          >
+        </template>
+        <span>Hồ sơ của bạn chưa được xác nhận bởi Quản trị viên.</span>
+      </v-tooltip>
+    </v-card-title>
 
     <v-divider inset></v-divider>
     <v-row>
@@ -82,10 +90,10 @@
       <v-col cols="12" md="6">
         <v-list-item>
           <v-list-item-icon>
-            <v-icon color="indigo">contact_phone</v-icon>
+            <v-icon color="indigo">card_travel</v-icon>
           </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-subtitle>Tin</v-list-item-subtitle>
+            <v-list-item-subtitle>Mã số thuế</v-list-item-subtitle>
             <v-list-item-title>{{
               profile ? profile.tin : ""
             }}</v-list-item-title>
@@ -137,7 +145,7 @@ export default class CardCompany extends Vue {
       this.$auth.user().roles[0] == "ROLE_FORWARDER" ||
       this.$auth.user().roles == "ROLE_SHIPPINGLINE"
     ) {
-      getSupplier(this.$auth.user().username).then(res => {
+      await getSupplier(this.$auth.user().username).then(res => {
         const response = res.data;
         this.profile = response;
       });

@@ -1,33 +1,48 @@
 <template>
   <v-content>
-    <v-card>
+    <v-card class="ma-5">
+      <DetailEvidence
+        v-if="dialogDetail"
+        :dialogDetail.sync="dialogDetail"
+        :evidences.sync="evidences"
+        :checkValid.sync="checkValid"
+        :finalEvidence="finalEvidence"
+        :evidence="evidence"
+      />
+      <CreateEvidence
+        v-if="dialogAddEvidence"
+        :dialogAdd.sync="dialogAddEvidence"
+        :evidences.sync="evidences"
+        :checkValid.sync="checkValid"
+        :totalItems.sync="evidenceServerSideOptions.totalItems"
+        :contract="contract"
+      />
+      <CreatePayment
+        v-if="dialogAddPayment"
+        :dialogAdd.sync="dialogAddPayment"
+        :combined="combined"
+        :merchant="merchant"
+        :update="false"
+        :readonly="false"
+      />
       <v-row justify="center">
-        <DeleteContract
-          :dialogDel.sync="dialogDel"
-          :contract="contract"
-          :contracts.sync="contracts"
-          :totalItems.sync="serverSideOptions.totalItems"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
-        />
-      </v-row>
-      <v-row justify="center">
-        <CreateContract
+        <UpdateContract
           v-if="dialogAdd"
-          :contract="contract"
+          :combined="combined"
           :contracts.sync="contracts"
           :dialogAdd.sync="dialogAdd"
-          :message.sync="message"
+          :readonly="readonly"
+          :merchant="merchant"
           :totalItems.sync="serverSideOptions.totalItems"
-          :snackbar.sync="snackbar"
-          :update="update"
         />
       </v-row>
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <v-data-table
         :headers="headers"
-        :items="contracts"
-        :search="search"
+        :items="combinedsWithIndex"
+        :single-expand="singleExpand"
+        :expanded.sync="expanded"
+        show-expand
+        @click:row="clicked"
         :loading="loading"
         :options.sync="options"
         :server-items-length="serverSideOptions.totalItems"
@@ -35,6 +50,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <template v-slot:top>
@@ -47,15 +63,103 @@
           </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon small class="mr-2" @click="openUpdateDialog(item)">
-            mdi-pencil
-          </v-icon>
-          <v-icon small @click="openDeleteDialog(item)">
-            mdi-delete
-          </v-icon>
+          <v-menu :close-on-click="true">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="pink" icon outlined v-bind="attrs" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item @click="openCreatePayment(item)">
+                <v-list-item-icon>
+                  <v-icon small>add</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Tạo hóa đơn</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item
+                @click="openUpdateDialog(item)"
+                v-if="$auth.user().roles[0] == 'ROLE_MERCHANT'"
+              >
+                <v-list-item-icon>
+                  <v-icon small>edit</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Chỉnh sửa</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item
+                @click="openDetailDialog(item)"
+                v-if="$auth.user().roles[0] == 'ROLE_FORWARDER'"
+              >
+                <v-list-item-icon>
+                  <v-icon small>edit</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Xem chi tiết</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </template>
-        <template v-slot:item.sender="{}">
-          {{ $auth.user().username }}
+        <template v-slot:item.merchant="{ item }">
+          {{ merchants[item.index] }}
+        </template>
+        <template v-slot:item.forwarder="{ item }">
+          {{
+            $auth.user().roles == "ROLE_FORWARDER"
+              ? $auth.user().username
+              : item.bid.bidder
+          }}
+        </template>
+        <template v-slot:expanded-item="{ headers }">
+          <td :colspan="headers.length" class="px-0">
+            <v-data-table
+              :headers="evidenceHeaders"
+              :items="evidences"
+              :loading="loading"
+              :options.sync="evidenceOptions"
+              :server-items-length="evidenceServerSideOptions.totalItems"
+              :footer-props="{
+                'items-per-page-options':
+                  evidenceServerSideOptions.itemsPerPageItems
+              }"
+              :actions-append="evidenceOptions.page"
+              disable-sort
+              dense
+              dark
+              ><template v-slot:item.actions="{ item }">
+                <v-btn
+                  class="ma-1"
+                  x-small
+                  tile
+                  outlined
+                  color="success"
+                  @click.stop="openDetailEvidence(item)"
+                >
+                  <v-icon left>library_add_check </v-icon>Chi tiết
+                </v-btn>
+              </template>
+              <template v-slot:item.isValid="{ item }">
+                {{ item.isValid ? "Đã xác nhận" : "Chưa xác nhận" }}
+              </template>
+              <template v-slot:footer>
+                <v-row justify="center">
+                  <v-btn
+                    class="ma-1"
+                    tile
+                    color="success"
+                    @click.stop="openCreateEvidence()"
+                    small
+                    v-if="$auth.user().roles[0] == 'ROLE_FORWARDER'"
+                  >
+                    <span style="color:white;">Thêm Chứng cứ</span>
+                  </v-btn>
+                </v-row>
+              </template>
+            </v-data-table>
+          </td>
         </template>
       </v-data-table>
     </v-card>
@@ -64,37 +168,61 @@
 <script lang="ts">
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { IContract } from "@/entity/contract";
-import CreateContract from "./components/CreateContract.vue";
-import DeleteContract from "./components/DeleteContract.vue";
-// import { getContracts } from "@/api/contract";
 import { PaginationResponse } from "@/api/payload";
-import Snackbar from "@/components/Snackbar.vue";
-import { getContractsByUser } from "@/api/contract";
 import { DataOptions } from "vuetify";
+import { IEvidence } from "@/entity/evidence";
+import { getEvidencesByContract } from "@/api/evidence";
+import { getCombinedsByUser } from "@/api/combined";
+import { ICombined } from "@/entity/combined";
+import DetailEvidence from "../combined/components/DetailEvidence.vue";
+import UpdateContract from "./components/UpdateContract.vue";
+import CreatePayment from "../payment/components/CreatePayment.vue";
+import { getBiddingDocumentByBid } from "@/api/bidding-document";
+import { IBiddingDocument } from "@/entity/bidding-document";
+import { IBid } from "@/entity/bid";
+import CreateEvidence from "../combined/components/CreateEvidence.vue";
 
 @Component({
   components: {
-    CreateContract,
-    DeleteContract,
-    Snackbar
+    DetailEvidence,
+    UpdateContract,
+    CreatePayment,
+    CreateEvidence
   }
 })
 export default class Contract extends Vue {
   contracts: Array<IContract> = [];
+  combineds: Array<ICombined> = [];
   contract = {} as IContract;
+  combined = {} as ICombined;
+  dialogDetail = false;
   dialogAdd = false;
-  dialogDel = false;
-  search = "";
-  roleSearch = "";
-  message = "";
-  snackbar = false;
+  dialogAddPayment = false;
+  dialogAddEvidence = false;
+  finalEvidence = false;
   loading = true;
   update = false;
+  readonly = false;
+  checkValid = false;
+  expanded: Array<IContract> = [];
+  evidences: Array<IEvidence> = [];
+  merchants: Array<string> = [];
+  merchant = "";
+  evidence = null as IEvidence | null;
+  singleExpand = true;
   options = {
     page: 1,
     itemsPerPage: 5
   } as DataOptions;
   serverSideOptions = {
+    totalItems: 0,
+    itemsPerPageItems: [5, 10, 20, 50]
+  };
+  evidenceOptions = {
+    page: 1,
+    itemsPerPage: 5
+  } as DataOptions;
+  evidenceServerSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -104,54 +232,170 @@ export default class Contract extends Vue {
       align: "start",
       value: "id"
     },
-    { text: "Người gửi", value: "sender" },
+    { text: "Bên chủ hàng", value: "merchant" },
+    { text: "Bên chủ xe", value: "forwarder" },
     {
       text: "% Tiền phạt",
-      value: "finesAgainstContractViolation"
+      value: "contract.finesAgainstContractViolation"
     },
-    { text: "Chứng cớ", value: "evidence.evidence" },
-    { text: "Hợp lệ", value: "evidence.isValid" },
-    { text: "Bắt buộc", value: "required" },
     {
       text: "Hành động",
       value: "actions",
       sortable: false
     }
   ];
+  evidenceHeaders = [
+    {
+      text: "Mã",
+      align: "start",
+      value: "id",
+      class: "elevation-1 primary"
+    },
+    { text: "Chứng cớ", value: "evidence", class: "elevation-1 primary" },
+    { text: "Hợp lệ", value: "isValid", class: "elevation-1 primary" },
+    {
+      text: "Actions",
+      value: "actions",
+      sortable: false,
+      class: "elevation-1 primary"
+    }
+  ];
+  openCreatePayment(item: ICombined) {
+    this.combined = item;
+    const index = this.combineds.findIndex((x: ICombined) => x.id == item.id);
+    this.merchant = this.merchants[index];
+    this.dialogAddPayment = true;
+  }
+  openDetailEvidence(item: IEvidence) {
+    this.finalEvidence = false;
+    this.evidence = item;
+    const index = this.evidences.findIndex((x: IEvidence) => x.id == item.id);
+    if (index == 0) {
+      this.finalEvidence = true;
+    }
+    this.dialogDetail = true;
+  }
+  openCreateEvidence() {
+    this.dialogAddEvidence = true;
+  }
   openCreateDialog() {
     this.contract = {} as IContract;
     this.update = false;
     this.dialogAdd = true;
   }
 
-  openUpdateDialog(item: IContract) {
+  openUpdateDialog(item: ICombined) {
     console.log(item);
-    this.contract = item;
-    this.update = true;
+    this.combined = item;
+    const index = this.combineds.findIndex((x: ICombined) => x.id == item.id);
+    this.merchant = this.merchants[index];
+    this.readonly = false;
     this.dialogAdd = true;
   }
-
-  openDeleteDialog(item: IContract) {
-    this.contract = item;
-    this.dialogDel = true;
+  openDetailDialog(item: ICombined) {
+    console.log(item);
+    this.combined = item;
+    const index = this.combineds.findIndex((x: ICombined) => x.id == item.id);
+    this.merchant = this.merchants[index];
+    this.readonly = true;
+    this.dialogAdd = true;
   }
-
+  get combinedsWithIndex() {
+    return this.combineds.map((combineds, index) => ({
+      ...combineds,
+      index: index
+    }));
+  }
+  async getBiddingDocument(id: number) {
+    const _biddingDocument = await getBiddingDocumentByBid(id)
+      .then(res => {
+        const response: IBiddingDocument = res.data;
+        return response;
+      })
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    if (_biddingDocument) {
+      this.merchants.push(_biddingDocument.merchant);
+    }
+    console.log(this.merchant);
+  }
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getContractsByUser({
-        page: this.options.page - 1,
-        limit: this.options.itemsPerPage
+      const _combineds = await getCombinedsByUser({
+        page: val.page - 1,
+        limit: val.itemsPerPage
       })
         .then(res => {
-          const response: PaginationResponse<IContract> = res.data;
+          const response: PaginationResponse<ICombined> = res.data;
           console.log("watch", response);
-          this.contracts = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_combineds) {
+        this.combineds = _combineds.data;
+        _combineds.data.forEach((x: ICombined) => {
+          const _bid = x.bid as IBid;
+          if (_bid.id) {
+            this.getBiddingDocument(_bid.id);
+          }
+        });
+        this.serverSideOptions.totalItems = _combineds.totalElements;
+      }
+      this.loading = false;
+    }
+  }
+  @Watch("evidenceOptions")
+  async onEvidenceOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
+      if (this.contract && this.contract.id) {
+        const _evidences = await getEvidencesByContract(this.contract.id, {
+          page: val.page - 1,
+          limit: val.itemsPerPage
+        })
+          .then(res => {
+            const response: PaginationResponse<IEvidence> = res.data;
+            return response;
+          })
+          .catch(err => {
+            console.log(err);
+            return null;
+          });
+        if (_evidences) {
+          this.evidences = _evidences.data;
+          this.evidenceServerSideOptions.totalItems = _evidences.totalElements;
+        }
+      }
+      this.loading = false;
+    }
+  }
+  async clicked(value: ICombined) {
+    if (this.singleExpand) {
+      if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
+        this.expanded.splice(0, this.expanded.length);
+        this.contract = {} as IContract;
+      } else {
+        if (this.expanded.length > 0) {
+          this.expanded.splice(0, this.expanded.length);
+          if (value.contract) {
+            this.expanded.push(value.contract);
+            this.contract = value.contract;
+            await this.onEvidenceOptionsChange(this.evidenceOptions);
+          }
+        } else {
+          if (value.contract) {
+            this.expanded.push(value.contract);
+            this.contract = value.contract;
+          }
+        }
+      }
     }
   }
 }

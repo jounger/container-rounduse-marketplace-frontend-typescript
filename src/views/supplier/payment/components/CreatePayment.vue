@@ -1,19 +1,11 @@
 <template>
-  <v-dialog v-model="dialogAddSync" persistent max-width="600px">
+  <v-dialog v-model="dialogAddSync" max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
             update ? "Cập nhập Hóa đơn" : "Thêm mới Hóa đơn"
-          }}</span>
-          <v-btn
-            icon
-            dark
-            @click="dialogAddSync = false"
-            style="margin-left:310px;"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn></v-toolbar-title
+          }}</span></v-toolbar-title
         >
       </v-toolbar>
       <v-card-text>
@@ -26,7 +18,7 @@
                 name="sender"
                 prepend-icon="record_voice_over"
                 type="text"
-                :readonly="update"
+                readonly
                 :counter="20"
                 :rules="[minLength('sender', 5), maxLength('sender', 20)]"
                 v-model="paymentLocal.sender"
@@ -38,7 +30,7 @@
                 name="recipient"
                 prepend-icon="hearing"
                 type="text"
-                :readonly="update"
+                readonly
                 :counter="20"
                 :rules="[minLength('recipient', 5), maxLength('recipient', 20)]"
                 v-model="paymentLocal.recipient"
@@ -52,6 +44,7 @@
                 name="detail"
                 prepend-icon="description"
                 type="text"
+                :readonly="readonly"
                 :rules="[required('detail')]"
                 v-model="paymentLocal.detail"
               ></v-text-field>
@@ -62,7 +55,9 @@
                 name="amount"
                 prepend-icon="monetization_on"
                 type="number"
+                :readonly="readonly"
                 :rules="[required('amount')]"
+                :hint="currencyFormatter(paymentLocal.amount)"
                 v-model="paymentLocal.amount"
               ></v-text-field>
             </v-col>
@@ -72,63 +67,39 @@
               <v-select
                 v-model="paymentLocal.type"
                 prepend-icon="money"
+                :readonly="update || readonly"
                 :items="types"
                 :rules="[required('type')]"
-                label="Loại hình thanh toán*"
+                label="Loại hóa đơn*"
               ></v-select>
             </v-col>
-            <v-col cols="12" md="6">
-              <v-menu
-                ref="paymentDatePicker"
-                v-model="paymentDatePicker"
-                :close-on-content-click="false"
-                :return-value.sync="paymentDate"
-                transition="scale-transition"
-                offset-y
-                min-width="290px"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
-                    v-model="paymentDate"
-                    label="Thời gian thanh toán*"
-                    prepend-icon="event"
-                    v-bind="attrs"
-                    v-on="on"
-                    :rules="[required('payment date')]"
-                  ></v-text-field>
-                </template>
-                <v-date-picker v-model="paymentDate" no-title scrollable>
-                  <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="paymentDatePicker = false"
-                    >Cancel</v-btn
-                  >
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="$refs.paymentDatePicker.save(paymentDate)"
-                    >OK</v-btn
-                  >
-                </v-date-picker>
-              </v-menu>
+            <v-col cols="12" md="5" style="margin-top:-12px;">
+              <DatetimePicker
+                :datetime="paymentLocal.paymentDate"
+                :return-value.sync="paymentLocal.paymentDate"
+                dateicon="event"
+                datelabel="Thời gian thanh toán*"
+                timelabel="Giờ thanh toán"
+                :readonly="readonly"
+              />
             </v-col>
           </v-row>
-          <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-top: 65px;">
+      <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
         <v-btn
           @click="updatePayment()"
           color="primary"
-          v-if="update"
+          v-if="update && !readonly"
           :disabled="!valid"
           >Cập nhập</v-btn
         >
         <v-btn
           @click="createPayment()"
           color="primary"
-          v-else
+          v-if="!update && !readonly"
           :disabled="!valid"
           >Thêm mới</v-btn
         >
@@ -142,22 +113,31 @@ import { IPayment } from "@/entity/payment";
 import FormValidate from "@/mixin/form-validate";
 import { createPayment, editPayment } from "@/api/payment";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
+import { ICombined } from "@/entity/combined";
+import { IBid } from "@/entity/bid";
+import Utils from "@/mixin/utils";
+import DatetimePicker from "@/components/DatetimePicker.vue";
 
 @Component({
-  mixins: [FormValidate]
+  mixins: [FormValidate, Utils],
+  components: {
+    DatetimePicker
+  }
 })
 export default class CreatePayment extends Vue {
-  @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("payments", { type: Array }) paymentsSync!: Array<IPayment>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
-  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
-  @Prop(Object) payment!: IPayment;
+  @PropSync("dialogAdd", { type: Boolean })
+  dialogAddSync!: boolean;
+  @PropSync("payments", { type: Array }) paymentsSync?: Array<IPayment>;
+  @Prop(Object) payment?: IPayment;
+  @Prop(Object) combined!: ICombined;
+  @Prop(String) merchant!: string;
   @Prop(Boolean) update!: boolean;
+  @Prop(Boolean) readonly!: boolean;
 
   dateInit = new Date().toISOString().substr(0, 10);
   paymentLocal = {
-    sender: "",
+    sender: this.$auth.user().username,
     recipient: "",
     detail: "",
     amount: 0,
@@ -167,46 +147,99 @@ export default class CreatePayment extends Vue {
   } as IPayment;
   valid = false;
   types: Array<string> = [];
-  paymentDatePicker = false;
-  paymentDate = this.dateInit;
   created() {
-    this.types = ["FINES", "PAYMENT"];
+    console.log(this.readonly);
+    if (this.$auth.user().roles[0] == "ROLE_MERCHANT") {
+      console.log(1);
+      this.types = ["Tiền phạt", "Tiền phí"];
+      if (this.combined) {
+        const _bid = this.combined.bid as IBid;
+        this.paymentLocal.recipient = _bid.bidder;
+      }
+    }
+    if (this.$auth.user().roles[0] == "ROLE_FORWARDER") {
+      this.types = ["Tiền phạt"];
+      this.paymentLocal.recipient = this.merchant;
+    }
     if (this.update) {
-      this.paymentLocal = Object.assign({}, this.payment);
-      this.paymentDate = this.paymentLocal.paymentDate.slice(0, 10);
+      if (typeof this.payment != "undefined") {
+        this.paymentLocal = Object.assign({}, this.payment);
+        if (this.paymentLocal.type == "FINES") {
+          this.paymentLocal.type = "Tiền phạt";
+        } else {
+          this.paymentLocal.type = "Tiền phí";
+        }
+      }
     }
   }
-  createPayment() {
-    if (this.paymentLocal) {
-      createPayment(this.paymentLocal)
+  async createPayment() {
+    if (
+      this.paymentLocal &&
+      this.combined.contract &&
+      this.combined.contract.id
+    ) {
+      if (this.paymentLocal.type == "Tiền phạt") {
+        this.paymentLocal.type = "FINES";
+      }
+      if (this.paymentLocal.type == "Tiền phí") {
+        this.paymentLocal.type = "PAYMENT";
+      }
+      const _payment = await createPayment(
+        this.combined.contract.id,
+        this.paymentLocal
+      )
         .then(res => {
           const response: IPayment = res.data;
-          this.messageSync = "Thêm mới thành công Hóa đơn: " + response.id;
-          this.paymentsSync.unshift(response);
-          this.totalItemsSync += 1;
+          snackbar.setSnackbar({
+            text: "Thêm mới thành công Hóa đơn: " + response.id,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_payment) {
+        this.dialogAddSync = false;
+      }
+      snackbar.setDisplay(true);
     }
   }
-  updatePayment() {
+  async updatePayment() {
     if (this.paymentLocal.id) {
-      editPayment(this.paymentLocal.id, this.paymentLocal)
+      const _payment = await editPayment(
+        this.paymentLocal.id,
+        this.paymentLocal
+      )
         .then(res => {
           console.log(res.data);
           const response: IPayment = res.data;
-          this.messageSync = "Cập nhập thành công Hóa đơn: " + response.id;
-          const index = this.paymentsSync.findIndex(x => x.id == response.id);
-          this.paymentsSync.splice(index, 1, response);
+          snackbar.setSnackbar({
+            text: "Cập nhập thành công Hóa đơn: " + response.id,
+            color: "success"
+          });
+          return response;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_payment) {
+        if (this.paymentsSync) {
+          const index = this.paymentsSync.findIndex(x => x.id == _payment.id);
+          this.paymentsSync.splice(index, 1, _payment);
+        }
+      }
+      snackbar.setDisplay(true);
     }
   }
 }

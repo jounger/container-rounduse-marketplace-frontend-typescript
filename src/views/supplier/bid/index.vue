@@ -1,15 +1,12 @@
 <template>
   <v-content>
     <v-card class="ma-5">
-      <Snackbar :text="message" :snackbar.sync="snackbar" />
       <CreateBid
         v-if="dialogAdd"
         :bid.sync="bid"
         :biddingDocument.sync="biddingDocument"
         :bids.sync="bids"
         :dialogAdd.sync="dialogAdd"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
         :totalItems.sync="serverSideOptions.totalItems"
       />
       <UpdateBid
@@ -18,8 +15,6 @@
         :bids.sync="bids"
         :biddingDocument.sync="biddingDocument"
         :dialogEdit.sync="dialogEdit"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
       />
       <v-row justify="center">
         <CancelBid
@@ -27,8 +22,6 @@
           :dialogCancel.sync="dialogCancel"
           :bid="bid"
           :bids.sync="bids"
-          :message.sync="message"
-          :snackbar.sync="snackbar"
         />
       </v-row>
       <v-data-table
@@ -46,6 +39,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        disable-sort
         class="elevation-1"
       >
         <template v-slot:top>
@@ -80,6 +74,7 @@
               :headers="bidHeaders"
               :items="bids"
               :hide-default-footer="true"
+              disable-sort
               dense
               dark
             >
@@ -128,21 +123,21 @@ import { IBid } from "@/entity/bid";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import CreateBid from "./components/CreateBid.vue";
 import { getBiddingDocuments } from "@/api/bidding-document";
-import Snackbar from "@/components/Snackbar.vue";
 import { PaginationResponse } from "@/api/payload";
 import { getBidByBiddingDocumentAndForwarder } from "@/api/bid";
 import Utils from "@/mixin/utils";
 import UpdateBid from "./components/UpdateBid.vue";
 import CancelBid from "./components/CancelBid.vue";
 import { DataOptions } from "vuetify";
+import snackbar from "@/store/modules/snackbar";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [Utils],
   components: {
     CreateBid,
     UpdateBid,
-    CancelBid,
-    Snackbar
+    CancelBid
   }
 })
 export default class Bid extends Vue {
@@ -155,10 +150,7 @@ export default class Bid extends Vue {
   dialogAdd = false;
   dialogEdit = false;
   dialogCancel = false;
-  message = "";
-  snackbar = false;
   loading = true;
-  dateInit = new Date().toISOString().substr(0, 10);
   options = {
     page: 1,
     itemsPerPage: 5
@@ -210,23 +202,33 @@ export default class Bid extends Vue {
       class: "elevation-1 primary"
     }
   ];
-  getBids(item: IBiddingDocument) {
+  async getBids(item: IBiddingDocument) {
+    this.loading = true;
     if (item.id) {
-      getBidByBiddingDocumentAndForwarder(item.id)
+      const _bid = await getBidByBiddingDocumentAndForwarder(item.id)
         .then(res => {
           const response = res.data;
           console.log(response);
-          if (this.bids.length == 0) {
-            this.bids.push(response);
-          } else {
-            this.bids.splice(0, 1, response);
-          }
+          return response;
         })
         .catch(err => {
           console.log(err);
-        })
-        .finally();
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          snackbar.setDisplay(true);
+          return null;
+        });
+      if (_bid) {
+        if (this.bids.length == 0) {
+          this.bids.push(_bid);
+        } else {
+          this.bids.splice(0, 1, _bid);
+        }
+      }
     }
+    this.loading = false;
     return this.bids;
   }
   clicked(value: IBiddingDocument) {
@@ -239,16 +241,6 @@ export default class Bid extends Vue {
         this.getBids(value);
         this.expanded.push(value);
         this.biddingDocument = value;
-      }
-    } else {
-      const index = this.expanded.findIndex(x => x.id === value.id);
-      if (index === -1) {
-        this.getBids(value);
-        this.expanded.push(value);
-        this.biddingDocument = value;
-      } else {
-        this.expanded.splice(index, 1);
-        this.biddingDocument = {} as IBiddingDocument;
       }
     }
   }
@@ -263,9 +255,11 @@ export default class Bid extends Vue {
       this.bid = item;
       this.dialogEdit = true;
     } else {
-      this.message =
-        "Không thể sửa khi chưa vượt quá thời gian Validity Period";
-      this.snackbar = true;
+      snackbar.setSnackbar({
+        text: "Không thể sửa khi chưa vượt quá thời gian Validity Period",
+        color: "error"
+      });
+      snackbar.setDisplay(true);
     }
   }
 
@@ -274,28 +268,41 @@ export default class Bid extends Vue {
       this.bid = item;
       this.dialogCancel = true;
     } else {
-      this.message =
-        "Không thể hủy khi chưa vượt quá thời gian Validity Period";
-      this.snackbar = true;
+      snackbar.setSnackbar({
+        text: "Không thể sửa khi chưa vượt quá thời gian Validity Period",
+        color: "error"
+      });
+      snackbar.setDisplay(true);
     }
   }
 
   @Watch("options")
-  onOptionsChange(val: DataOptions) {
+  async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      getBiddingDocuments({
+      const _biddingDocuments = await getBiddingDocuments({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
       })
         .then(res => {
           const response: PaginationResponse<IBiddingDocument> = res.data;
           console.log("watch", response.data);
-          this.biddingDocuments = response.data;
-          this.serverSideOptions.totalItems = response.totalElements;
+          return response;
         })
-        .catch(err => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch(err => {
+          console.log(err);
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          snackbar.setDisplay(true);
+          return null;
+        });
+      if (_biddingDocuments) {
+        this.biddingDocuments = _biddingDocuments.data;
+        this.serverSideOptions.totalItems = _biddingDocuments.totalElements;
+      }
+      this.loading = false;
     }
   }
 }

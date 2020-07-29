@@ -1,18 +1,10 @@
 <template>
-  <v-dialog v-model="dialogDelSync" persistent max-width="600px">
+  <v-dialog v-model="dialogDelSync" max-width="600px">
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">Xóa HSMT</span>
-          <v-btn
-            icon
-            dark
-            @click="dialogDelSync = false"
-            style="margin-left:403px;"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn></v-toolbar-title
-        >
+        </v-toolbar-title>
       </v-toolbar>
 
       <v-card-text>
@@ -21,7 +13,7 @@
             <span style="color: black; font-size:22px;"
               >Bạn có chắc chắn muốn xóa HSMT này?</span
             >
-            <div class="line"></div>
+            <v-divider class="mt-3"></v-divider>
             <v-list>
               <v-list-item>
                 <v-list-item-content>
@@ -34,7 +26,6 @@
               </v-list-item>
             </v-list>
           </v-container>
-          <v-btn type="submit" class="d-none" id="submitForm"></v-btn>
         </v-form>
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
@@ -49,6 +40,7 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { removeBiddingDocument } from "@/api/bidding-document";
 import { getErrorMessage } from "@/utils/tool";
+import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeleteBiddingDocument extends Vue {
@@ -56,31 +48,34 @@ export default class DeleteBiddingDocument extends Vue {
   @PropSync("biddingDocuments", { type: Array }) biddingDocumentsSync!: Array<
     IBiddingDocument
   >;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object)
   biddingDocument!: IBiddingDocument;
 
-  removeBiddingDocument() {
+  async removeBiddingDocument() {
     if (this.biddingDocument.id) {
-      removeBiddingDocument(this.biddingDocument.id)
+      await removeBiddingDocument(this.biddingDocument.id)
         .then(res => {
           console.log(res.data);
-          this.messageSync = "Xóa thành công HSMT: " + this.biddingDocument.id;
+          snackbar.setSnackbar({
+            text: "Xóa thành công HSMT: " + this.biddingDocument.id,
+            color: "success"
+          });
           const index = this.biddingDocumentsSync.findIndex(
             x => x.id === this.biddingDocument.id
           );
           this.biddingDocumentsSync.splice(index, 1);
           this.totalItemsSync -= 1;
+          this.dialogDelSync = false;
         })
         .catch(err => {
           console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(
-          () => ((this.snackbarSync = true), (this.dialogDelSync = false))
-        );
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+        });
+      snackbar.setDisplay(true);
     }
   }
 }
