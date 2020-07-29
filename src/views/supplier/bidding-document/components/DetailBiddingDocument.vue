@@ -481,7 +481,7 @@ export default class DetailBiddingDocument extends Vue {
   dialogConfirm = false;
   dialogReport = false;
   dialogBid = false;
-  bid = {} as IBid;
+  bid = null as IBid | null;
   expanded: Array<IBid> = [];
   singleExpand = true;
   numberWinner = 0;

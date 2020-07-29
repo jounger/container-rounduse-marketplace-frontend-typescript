@@ -437,7 +437,7 @@
         <!-- TODO: table bids -->
         <v-data-table
           :headers="containerHeaders"
-          :items="containers"
+          :items="combined.bid.containers"
           item-key="id"
           :loading="loading"
           :options.sync="options"
