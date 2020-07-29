@@ -12,6 +12,7 @@
         :container="container"
         :containers.sync="containers"
         :dialogDelCont.sync="dialogDelCont"
+        :totalItems.sync="serverSideOptions.totalItems"
       />
     </v-row>
     <v-row justify="center">

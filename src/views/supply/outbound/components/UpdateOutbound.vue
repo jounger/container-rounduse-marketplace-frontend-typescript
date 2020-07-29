@@ -12,7 +12,10 @@
         <v-btn icon dark @click="dialogEditSync = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title>Hộp thoại chỉnh sửa hàng xuất</v-toolbar-title>
+        <v-toolbar-title
+          >Hộp thoại {{ readonly ? "chi tiết" : "chỉnh sửa" }} hàng
+          xuất</v-toolbar-title
+        >
         <v-spacer></v-spacer>
       </v-toolbar>
       <!-- START CONTENT -->
@@ -44,6 +47,7 @@
                         :items="shippingLinesToString"
                         :rules="[required('shipping line')]"
                         :loading="loadingShippingLines"
+                        :readonly="readonly"
                         no-data-text="Danh sách hãng tàu rỗng."
                         label="Hãng tàu*"
                         ><v-btn
@@ -65,6 +69,7 @@
                         :items="containerTypesToString"
                         :rules="[required('container type')]"
                         :loading="loadingContainerTypes"
+                        :readonly="readonly"
                         no-data-text="Danh sách loại Cont rỗng."
                         label="Loại container*"
                         ><v-btn
@@ -85,6 +90,7 @@
                       <DatetimePicker
                         :datetime="outboundLocal.packingTime"
                         :return-value.sync="outboundLocal.packingTime"
+                        :readonly="readonly"
                         dateicon="flight_land"
                         datelabel="Ngày đóng hàng"
                         timelabel="Giờ đóng hàng"
@@ -100,7 +106,7 @@
                         type="text"
                         placeholder="Nơi đóng hàng"
                         :rules="[required('packing station')]"
-                        required
+                        :readonly="readonly"
                       />
                       <!-- <v-text-field
                       v-model="outboundLocal.packingStation"
@@ -117,12 +123,14 @@
                         prepend-icon="fitness_center"
                         type="number"
                         label="Khối lượng hàng"
+                        :readonly="readonly"
                       ></v-text-field> </v-col
                     ><v-col cols="12" sm="6">
                       <v-select
                         v-model="outboundLocal.unitOfMeasurement"
                         prepend-icon="strikethrough_s"
                         :items="unitOfMeasurements"
+                        :readonly="readonly"
                         label="Đơn vị đo"
                       ></v-select> </v-col
                   ></v-row>
@@ -133,6 +141,7 @@
                         prepend-icon="description"
                         type="text"
                         label="Mô tả hàng"
+                        :readonly="readonly"
                       ></v-text-field> </v-col
                   ></v-row>
 
@@ -140,7 +149,11 @@
                     color="primary"
                     @click="updateOutbound()"
                     :disabled="!valid"
+                    v-if="!readonly"
                     >Lưu và tiếp tục</v-btn
+                  >
+                  <v-btn color="primary" @click="stepper = 2" v-if="readonly"
+                    >Tiếp tục</v-btn
                   >
                 </v-form>
               </v-stepper-content>
@@ -172,6 +185,7 @@
                         :items="portsToString"
                         :rules="[required('port of loading')]"
                         :loading="loadingPorts"
+                        :readonly="readonly"
                         no-data-text="Danh sách bến cảng rỗng."
                         label="Cảng xuất hàng*"
                         ><v-btn
@@ -192,6 +206,7 @@
                       <DatetimePicker
                         :datetime="outboundLocal.booking.cutOffTime"
                         :return-value.sync="outboundLocal.booking.cutOffTime"
+                        :readonly="readonly"
                         dateicon="flight_takeoff"
                         datelabel="Ngày tàu cắt máng"
                         timelabel="Giờ cắt máng"
@@ -204,6 +219,7 @@
                         v-model="outboundLocal.booking.unit"
                         prepend-icon="commute"
                         :rules="[required('unit')]"
+                        :readonly="readonly"
                         label="Số lượng Container*"
                         type="number"
                         required
@@ -217,6 +233,7 @@
                     color="primary"
                     @click="updateBooking()"
                     :disabled="!valid2"
+                    v-if="!readonly"
                     >Lưu và hoàn tất</v-btn
                   >
                   <v-btn text @click="stepper = 1">Quay lại</v-btn>
@@ -393,8 +410,9 @@ import snackbar from "@/store/modules/snackbar";
 export default class UpdateOutbound extends Vue {
   @Ref() inputAddress1!: HTMLInputElement;
   @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
-  @Prop(Object) outbound!: IOutbound;
   @PropSync("outbounds", { type: Array }) outboundsSync!: Array<IOutbound>;
+  @Prop(Boolean) readonly!: boolean;
+  @Prop(Object) outbound!: IOutbound;
 
   distanceMatrixResult = null as DistanceMatrix | null;
   style = { width: "600px", height: "500px" };

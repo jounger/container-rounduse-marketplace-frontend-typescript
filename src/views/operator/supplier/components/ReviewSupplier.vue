@@ -41,17 +41,15 @@
         <v-btn @click="dialogReviewSync = false">Hủy</v-btn>
         <v-btn
           @click="reviewSupplier('BANNED')"
-          color="red"
+          color="error"
           v-if="supplier.status == 'ACTIVE'"
-          :disabled="finish"
-          ><span style="color:white;">Khóa tài khoản</span></v-btn
+          >Khóa tài khoản</v-btn
         >
         <v-btn
           @click="reviewSupplier('ACTIVE')"
-          color="green"
+          color="success"
           v-if="supplier.status == 'BANNED'"
-          :disabled="finish"
-          ><span style="color:white;">Mở khóa</span></v-btn
+          >Mở khóa</v-btn
         >
       </v-card-actions>
     </v-card>
@@ -71,7 +69,6 @@ export default class ReviewSupplier extends Vue {
   @Prop(Object) supplier!: ISupplier;
 
   reason = "";
-  finish = false;
   async reviewSupplier(status: string) {
     if (this.supplier.id) {
       const _supplier = await reviewSupplier(this.supplier.id, {
@@ -100,7 +97,7 @@ export default class ReviewSupplier extends Vue {
       if (_supplier) {
         const index = this.suppliersSync.findIndex(x => x.id == _supplier.id);
         this.suppliersSync.splice(index, 1, _supplier);
-        this.finish = true;
+        this.dialogReviewSync = false;
       }
       snackbar.setDisplay(true);
     }

@@ -169,9 +169,9 @@
             <v-row>
               <v-col cols="12" md="6">
                 <v-text-field
-                  label="Tin*"
+                  label="Mã số thuế*"
                   name="tin"
-                  prepend-icon="contact_phone"
+                  prepend-icon="card_travel"
                   :counter="20"
                   :rules="[minLength('tin', 5), maxLength('tin', 20)]"
                   type="number"

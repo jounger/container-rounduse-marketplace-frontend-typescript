@@ -46,6 +46,7 @@ import snackbar from "@/store/modules/snackbar";
 export default class DeleteContainer extends Vue {
   @PropSync("dialogDelCont", { type: Boolean }) dialogDelContSync!: boolean;
   @PropSync("containers", { type: Array }) containersSync!: Array<IContainer>;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) container!: IContainer;
 
   async removeContainer() {
@@ -62,6 +63,7 @@ export default class DeleteContainer extends Vue {
             x => x.id === this.container.id
           );
           this.containersSync.splice(index, 1);
+          this.totalItemsSync -= 1;
           this.dialogDelContSync = false;
         })
         .catch(err => {

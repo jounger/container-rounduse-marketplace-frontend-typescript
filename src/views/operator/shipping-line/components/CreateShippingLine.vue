@@ -192,10 +192,10 @@
                 <v-col cols="12" md="6">
                   <v-text-field
                     v-model="shippingLineLocal.tin"
-                    prepend-icon="contact_phone"
+                    prepend-icon="card_travel"
                     :counter="20"
                     :rules="[minLength('tin', 5), maxLength('tin', 20)]"
-                    label="Tin*"
+                    label="Mã số thuế*"
                     type="number"
                   ></v-text-field>
                 </v-col>

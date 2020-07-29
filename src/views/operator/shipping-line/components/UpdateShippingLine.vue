@@ -93,7 +93,7 @@
           </v-stepper-content>
 
           <v-stepper-step :complete="stepper > 2" step="2" :editable="editable"
-            >Thông tin hãng tàu</v-stepper-step
+            >Thông tin hãng tàu<small>Thông tin công ty</small></v-stepper-step
           >
 
           <v-stepper-content step="2">
@@ -185,11 +185,11 @@
                 <v-col cols="12" md="6">
                   <v-text-field
                     v-model="shippingLineLocal.tin"
-                    prepend-icon="contact_phone"
+                    prepend-icon="card_travel"
                     :counter="20"
                     :rules="[minLength('tin', 5), maxLength('tin', 20)]"
                     readonly
-                    label="Tin*"
+                    label="Mã số thuế*"
                     type="number"
                   ></v-text-field>
                 </v-col>
@@ -257,7 +257,7 @@ export default class UpdateShippingLine extends Vue {
   allStatus: Array<string> = [];
   shippingLineLocal = {} as IShippingLine;
   created() {
-    this.allStatus = ["PENDING", "ACTIVE", "BANNED"];
+    this.allStatus = ["ACTIVE", "BANNED"];
     this.shippingLineLocal = Object.assign({}, this.shippingLine);
   }
   // ShippingLine Update
@@ -289,7 +289,11 @@ export default class UpdateShippingLine extends Vue {
           x => x.id == _shippingLine.id
         );
         this.shippingLinesSync.splice(index, 1, _shippingLine);
-        this.stepper = 2;
+        if (this.stepper == 2) {
+          this.dialogEditSync = false;
+        } else {
+          this.stepper = 2;
+        }
       }
       snackbar.setDisplay(true);
     }

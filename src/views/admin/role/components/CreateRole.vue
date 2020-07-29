@@ -12,7 +12,7 @@
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
           <v-row>
-            <v-col cols="12" md="10">
+            <v-col cols="12" md="11">
               <v-text-field
                 label="Tên quyền*"
                 name="name"
@@ -26,7 +26,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" md="10">
+            <v-col cols="12" md="11">
               <v-select
                 v-model="roleLocal.permissions"
                 :items="permissionsToString"
@@ -46,7 +46,7 @@
                   color="primary"
                   v-if="seeMore"
                   slot="append-item"
-                  style="margin-left:165px;"
+                  style="margin-left:190px;"
                   @click="loadMorePermissions()"
                   >Xem thêm</v-btn
                 >
@@ -55,7 +55,7 @@
           </v-row>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-top: 65px;">
+      <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
         <v-btn

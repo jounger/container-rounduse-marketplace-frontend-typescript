@@ -32,11 +32,11 @@
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
         <v-btn @click="dialogConfirmSync = false">Hủy</v-btn>
-        <v-btn @click="reviewSupplier(status)" color="green" v-if="status"
-          ><span style="color: white;">Đồng ý</span></v-btn
+        <v-btn @click="reviewSupplier(status)" color="success" v-if="status"
+          >Đồng ý</v-btn
         >
-        <v-btn @click="reviewSupplier(status)" color="red" v-else
-          ><span style="color: white;">Từ chối</span></v-btn
+        <v-btn @click="reviewSupplier(status)" color="error" v-else
+          >Từ chối</v-btn
         >
       </v-card-actions>
     </v-card>

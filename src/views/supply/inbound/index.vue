@@ -27,6 +27,7 @@
           :containers.sync="containers"
           :dialogAddCont.sync="dialogAddCont"
           :billOfLading="inbound.billOfLading"
+          :totalItems.sync="containerServerSideOptions.totalItems"
           :update="update"
         />
         <DeleteContainer
@@ -34,6 +35,7 @@
           :dialogDelCont.sync="dialogDelCont"
           :container="container"
           :containers.sync="containers"
+          :totalItems.sync="containerServerSideOptions.totalItems"
         />
       </v-row>
       <v-data-table

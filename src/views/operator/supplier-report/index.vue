@@ -39,7 +39,7 @@
             @click.stop="viewDetailReport(item)"
             small
           >
-            <v-icon left>mdi-pencil</v-icon> Xem HSMT
+            <v-icon left>business_center</v-icon> Xem HSMT
           </v-btn>
         </template>
         <template v-slot:item.action="{ item }">
@@ -51,7 +51,7 @@
             @click.stop="openCreateDialog(item)"
             small
           >
-            <v-icon left>mdi-pencil</v-icon> Feedback
+            <v-icon left>add</v-icon> Feedback
           </v-btn>
         </template>
       </v-data-table>
@@ -118,7 +118,7 @@ export default class Report extends Vue {
   viewDetailReport(item: IReport) {
     if (item && item.report && typeof item.report != "number") {
       const bidDocument = item.report as IBiddingDocument;
-      this.$router.push({ path: `/bidding-document/${bidDocument.id}` });
+      this.$router.push({ path: `/report-bidding-document/${bidDocument.id}` });
     }
   }
   clicked(value: IReport) {

@@ -83,7 +83,6 @@ export default class Supplier extends Vue {
   supplier = {} as ISupplier;
 
   dialogDetail = false;
-  dialogDel = false;
   dialogReview = false;
   loading = true;
   options = {
@@ -113,10 +112,6 @@ export default class Supplier extends Vue {
   openDetailDialog(item: ISupplier) {
     this.supplier = item;
     this.dialogDetail = true;
-  }
-  openDeleteDialog(item: ISupplier) {
-    this.supplier = item;
-    this.dialogDel = true;
   }
   openReviewDialog(item: ISupplier) {
     this.supplier = item;

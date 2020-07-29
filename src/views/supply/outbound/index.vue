@@ -10,6 +10,7 @@
         :outbound="outbound"
         :dialogEdit.sync="dialogEdit"
         :outbounds.sync="outbounds"
+        :readonly="readonly"
       />
       <CreateBiddingDocument
         v-if="dialogCreateBiddingDocument"
@@ -75,7 +76,10 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item @click="openCreateBiddingDocument(item)">
+              <v-list-item
+                @click="openCreateBiddingDocument(item)"
+                v-if="item.status == 'CREATED'"
+              >
                 <v-list-item-icon>
                   <v-icon small>add</v-icon>
                 </v-list-item-icon>
@@ -83,7 +87,10 @@
                   <v-list-item-title>Mở đấu thầu</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item @click="openUpdateDialog(item)">
+              <v-list-item
+                @click="openUpdateDialog(item)"
+                v-if="item.status == 'CREATED'"
+              >
                 <v-list-item-icon>
                   <v-icon small>edit</v-icon>
                 </v-list-item-icon>
@@ -91,7 +98,21 @@
                   <v-list-item-title>Chỉnh sửa</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item @click="openDeleteDialog(item)">
+              <v-list-item
+                @click="openDetailDialog(item)"
+                v-if="item.status != 'CREATED'"
+              >
+                <v-list-item-icon>
+                  <v-icon small>description</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Xem chi tiết</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item
+                @click="openDeleteDialog(item)"
+                v-if="item.status == 'CREATED'"
+              >
                 <v-list-item-icon>
                   <v-icon small>delete</v-icon>
                 </v-list-item-icon>
@@ -135,6 +156,7 @@ export default class Outbound extends Vue {
   dialogAdd = false;
   dialogEdit = false;
   dialogDel = false;
+  readonly = false;
   dialogCreateBiddingDocument = false;
   loading = true;
   dateInit = new Date().toISOString().substr(0, 10);
@@ -175,6 +197,12 @@ export default class Outbound extends Vue {
 
   openUpdateDialog(item: IOutbound) {
     this.outbound = item;
+    this.readonly = false;
+    this.dialogEdit = true;
+  }
+  openDetailDialog(item: IOutbound) {
+    this.outbound = item;
+    this.readonly = true;
     this.dialogEdit = true;
   }
 

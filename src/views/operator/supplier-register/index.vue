@@ -61,7 +61,6 @@ import { DataOptions } from "vuetify";
 export default class Supplier extends Vue {
   suppliers: Array<ISupplier> = [];
   supplier = {} as ISupplier;
-
   dialogDetail = false;
   loading = true;
   options = {

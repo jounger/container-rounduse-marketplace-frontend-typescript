@@ -283,6 +283,27 @@
                 </v-list-item>
               </v-list>
             </v-col>
+            <v-col
+              cols="12"
+              sm="6"
+              md="4"
+              v-if="$auth.user().roles[0] == 'ROLE_FORWARDER'"
+            >
+              <v-list dense>
+                <v-list-item>
+                  <v-list-item-icon>
+                    <v-icon>people</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>{{
+                      biddingDocument.isMultipleAward
+                        ? "Nhiều thầu thắng"
+                        : "Một thầu thắng"
+                    }}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-col>
           </v-row>
         </v-card-text>
 

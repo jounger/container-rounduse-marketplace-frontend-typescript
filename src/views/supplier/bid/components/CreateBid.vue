@@ -104,8 +104,10 @@
           <!-- SELECT CONTAINER -->
           <v-stepper-content step="3">
             <v-tabs background-color="white" color="deep-purple accent-4" left>
-              <v-tab>Danh sach Inbound</v-tab>
-              <v-tab>Selected Containers</v-tab>
+              <v-tab>Danh sách Inbound</v-tab>
+              <v-tab
+                >Danh sách Containers đã chọn ({{ containers.length }})</v-tab
+              >
 
               <v-tab-item>
                 <v-container fluid>
@@ -187,6 +189,7 @@
                         containerServerSideOptions.itemsPerPageItems
                     }"
                     :actions-append="containerOptions.page"
+                    disable-sort
                   >
                     <template v-slot:item.actions="{ item }">
                       <v-checkbox
@@ -205,9 +208,23 @@
               </v-tab-item>
             </v-tabs>
             <v-btn
+              v-if="
+                biddingDocumentSelected &&
+                  biddingDocumentSelected.isMultipleAward
+              "
               color="primary"
               @click="stepper = 4"
               :disabled="containers.length == 0"
+              >Tiếp tục</v-btn
+            >
+            <v-btn
+              v-if="
+                biddingDocumentSelected &&
+                  !biddingDocumentSelected.isMultipleAward
+              "
+              color="primary"
+              @click="stepper = 4"
+              :disabled="containers.length < unit"
               >Tiếp tục</v-btn
             >
             <v-btn text @click="stepper = 2">Quay lại</v-btn>

@@ -25,7 +25,15 @@
           autocomplete="current-password"
           v-model="password"
         ></v-text-field>
-        <v-checkbox class="mx-2" label="Ghi nhớ đăng nhập"></v-checkbox>
+        <v-row>
+          <v-checkbox class="mx-2" label="Ghi nhớ đăng nhập"></v-checkbox>
+          <v-spacer></v-spacer>
+          <a
+            style="margin-top: 20px;
+    margin-right: 15px;"
+            >Quên mật khẩu</a
+          >
+        </v-row>
       </v-form>
     </v-card-text>
     <v-card-actions>
