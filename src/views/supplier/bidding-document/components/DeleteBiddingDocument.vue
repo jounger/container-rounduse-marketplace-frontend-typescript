@@ -30,7 +30,7 @@
       </v-card-text>
       <v-card-actions style="margin-left: 205px;">
         <v-btn @click="dialogDelSync = false">Hủy</v-btn>
-        <v-btn @click="removeBiddingDocument()" color="red">Xóa</v-btn>
+        <v-btn @click="removeBiddingDocument()" color="error">Xóa</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

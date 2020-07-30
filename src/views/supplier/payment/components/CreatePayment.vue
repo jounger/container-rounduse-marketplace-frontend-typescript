@@ -3,9 +3,12 @@
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">{{
-            update ? "Cập nhập Hóa đơn" : "Thêm mới Hóa đơn"
-          }}</span></v-toolbar-title
+          ><span class="headline" style="color:white;"
+            >{{
+              update ? (readonly ? "Thông tin" : "Cập nhập") : "Thêm mới"
+            }}
+            Hóa đơn</span
+          ></v-toolbar-title
         >
       </v-toolbar>
       <v-card-text>
@@ -162,14 +165,16 @@ export default class CreatePayment extends Vue {
       this.paymentLocal.recipient = this.merchant;
     }
     if (this.update) {
+      this.types = ["Tiền phạt", "Tiền phí"];
       if (typeof this.payment != "undefined") {
         this.paymentLocal = Object.assign({}, this.payment);
-        if (this.paymentLocal.type == "FINES") {
+        if (this.payment.type == "FINES") {
           this.paymentLocal.type = "Tiền phạt";
         } else {
           this.paymentLocal.type = "Tiền phí";
         }
       }
+      console.log(this.paymentLocal);
     }
   }
   async createPayment() {
@@ -220,7 +225,7 @@ export default class CreatePayment extends Vue {
           console.log(res.data);
           const response: IPayment = res.data;
           snackbar.setSnackbar({
-            text: "Cập nhập thành công Hóa đơn: " + response.id,
+            text: "Cập nhật thành công Hóa đơn: " + response.id,
             color: "success"
           });
           return response;

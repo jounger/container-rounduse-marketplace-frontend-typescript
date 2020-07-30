@@ -29,7 +29,7 @@
         <UpdateContract
           v-if="dialogAdd"
           :combined="combined"
-          :contracts.sync="contracts"
+          :contract.sync="contract"
           :dialogAdd.sync="dialogAdd"
           :readonly="readonly"
           :merchant="merchant"
@@ -191,10 +191,9 @@ import CreateEvidence from "../combined/components/CreateEvidence.vue";
   }
 })
 export default class Contract extends Vue {
-  contracts: Array<IContract> = [];
   combineds: Array<ICombined> = [];
-  contract = {} as IContract;
-  combined = {} as ICombined;
+  contract = null as IContract | null;
+  combined = null as ICombined | null;
   dialogDetail = false;
   dialogAdd = false;
   dialogAddPayment = false;
@@ -278,14 +277,10 @@ export default class Contract extends Vue {
   openCreateEvidence() {
     this.dialogAddEvidence = true;
   }
-  openCreateDialog() {
-    this.contract = {} as IContract;
-    this.update = false;
-    this.dialogAdd = true;
-  }
 
   openUpdateDialog(item: ICombined) {
     console.log(item);
+    this.contract = item.contract as IContract;
     this.combined = item;
     const index = this.combineds.findIndex((x: ICombined) => x.id == item.id);
     this.merchant = this.merchants[index];
@@ -294,6 +289,7 @@ export default class Contract extends Vue {
   }
   openDetailDialog(item: ICombined) {
     console.log(item);
+    this.contract = item.contract as IContract;
     this.combined = item;
     const index = this.combineds.findIndex((x: ICombined) => x.id == item.id);
     this.merchant = this.merchants[index];

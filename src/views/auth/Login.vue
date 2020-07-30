@@ -25,7 +25,7 @@
           autocomplete="current-password"
           v-model="password"
         ></v-text-field>
-        <v-row>
+        <v-row style="margin-left: -7px">
           <v-checkbox class="mx-2" label="Ghi nhớ đăng nhập"></v-checkbox>
           <v-spacer></v-spacer>
           <a
@@ -46,8 +46,8 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import snackbar from "@/store/modules/snackbar";
-import { getErrorMessage } from "@/utils/tool";
+// import snackbar from "@/store/modules/snackbar";
+// import { getErrorMessage } from "@/utils/tool";
 @Component
 export default class Login extends Vue {
   public username = "admin";
@@ -70,18 +70,19 @@ export default class Login extends Vue {
       })
       .then(res => {
         console.warn("SUCCESS login", res);
-        snackbar.setSnackbar({
-          text: "Xin chào, " + this.username,
-          color: "success"
-        });
+        // snackbar.setSnackbar({
+        //   text: "Xin chào, " + this.username,
+        //   color: "success"
+        // });
       })
       .catch(err => {
-        snackbar.setSnackbar({
-          text: getErrorMessage(err),
-          color: "error"
-        });
+        console.log(err);
+        // snackbar.setSnackbar({
+        //   text: getErrorMessage(err),
+        //   color: "error"
+        // });
       });
-    snackbar.setDisplay(true);
+    // snackbar.setDisplay(true);
   }
 }
 </script>

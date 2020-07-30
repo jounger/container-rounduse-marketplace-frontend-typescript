@@ -134,7 +134,7 @@ export default class CreateTractor extends Vue {
           console.log(res.data);
           const response: IContainerTractor = res.data;
           snackbar.setSnackbar({
-            text: "Cập nhập thành công Đầu kéo: " + response.licensePlate,
+            text: "Cập nhật thành công Đầu kéo: " + response.licensePlate,
             color: "success"
           });
           return response;

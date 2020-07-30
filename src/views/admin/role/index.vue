@@ -75,7 +75,7 @@ import { DataOptions } from "vuetify";
 })
 export default class Role extends Vue {
   roles: Array<IRole> = [];
-  role = {} as IRole;
+  role = null as IRole | null;
   dialogAdd = false;
   dialogDel = false;
   loading = true;
@@ -103,7 +103,6 @@ export default class Role extends Vue {
   ];
 
   openCreateDialog() {
-    this.role = {} as IRole;
     this.update = false;
     this.dialogAdd = true;
   }

@@ -494,7 +494,7 @@ export default class UpdateOutbound extends Vue {
           const response: IOutbound = res.data;
           snackbar.setSnackbar({
             text:
-              "Cập nhập thành công hàng xuất: " +
+              "Cập nhật thành công hàng xuất: " +
               response.booking.bookingNumber,
             color: "success"
           });
@@ -526,7 +526,7 @@ export default class UpdateOutbound extends Vue {
           const response: IBooking = res.data;
           if (this.outboundLocal) {
             snackbar.setSnackbar({
-              text: "Cập nhập thành công Booking: " + response.bookingNumber,
+              text: "Cập nhật thành công Booking: " + response.bookingNumber,
               color: "success"
             });
             return response;

@@ -100,11 +100,19 @@
                 >
                   close
                 </v-icon>
-                <span style="color:red;" v-if="item.status == 'REJECTED'"
-                  >REJECTED</span
-                >
-                <span style="color:green;" v-if="item.status == 'ACCEPTED'"
-                  >ACCEPTED</span
+                <v-chip
+                  v-if="item.status != 'PENDING'"
+                  :style="
+                    item.status == 'ACCEPTED'
+                      ? 'background-color:green'
+                      : item.status == 'REJECTED'
+                      ? 'background-color:red'
+                      : item.status == 'EXPIRED'
+                      ? 'background-color:cadetblue'
+                      : 'background-color:darkgoldenrod'
+                  "
+                  dark
+                  >{{ item.status }}</v-chip
                 >
               </template>
               <template v-slot:item.bidPrice="{ item }">
@@ -142,9 +150,9 @@ import { getErrorMessage } from "@/utils/tool";
 })
 export default class Bid extends Vue {
   biddingDocuments: Array<IBiddingDocument> = [];
-  biddingDocument = {} as IBiddingDocument;
+  biddingDocument = null as IBiddingDocument | null;
   bids: Array<IBid> = [];
-  bid = {} as IBid;
+  bid = null as IBid | null;
   expanded: Array<IBiddingDocument> = [];
   singleExpand = true;
   dialogAdd = false;

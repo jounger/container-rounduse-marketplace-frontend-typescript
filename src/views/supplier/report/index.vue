@@ -30,7 +30,7 @@
         Danh sách Report
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
-        <v-btn color="primary" dark class="mb-2" @click="openCreateDialog()"
+        <v-btn color="primary" dark class="mb-2" @click="dialogAdd = true"
           >Thêm mới</v-btn
         >
       </v-card-title>
@@ -59,6 +59,23 @@
           >
             <v-icon left>mdi-pencil</v-icon> Xem HSMT
           </v-btn>
+        </template>
+        <template v-slot:item.status="{ item }">
+          <v-chip
+            :style="
+              item.status == 'PENDING'
+                ? 'background-color:orange'
+                : item.status == 'RESOLVED'
+                ? 'background-color:blueviolet'
+                : item.status == 'REJECTED'
+                ? 'background-color:red'
+                : item.status == 'UPDATED'
+                ? 'background-color:cornflowerblue'
+                : 'background-color:green'
+            "
+            dark
+            >{{ item.status }}</v-chip
+          >
         </template>
         <template v-slot:item.action="{ item }">
           <v-menu :close-on-click="true">
@@ -120,7 +137,7 @@ import { IBiddingDocument } from "@/entity/bidding-document";
 })
 export default class Report extends Vue {
   reports: Array<IReport> = [];
-  report = {} as IReport;
+  report = null as IReport | null;
 
   dialogAdd = false;
   dialogDel = false;
@@ -152,10 +169,6 @@ export default class Report extends Vue {
       align: "center"
     }
   ];
-
-  openCreateDialog() {
-    this.dialogAdd = true;
-  }
 
   openUpdateDialog(item: IReport) {
     this.report = item;

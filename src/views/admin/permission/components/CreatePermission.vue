@@ -128,7 +128,7 @@ export default class CreatePermission extends Vue {
           console.log(res.data);
           const response: IPermission = res.data;
           snackbar.setSnackbar({
-            text: "Cập nhập thành công vai trò: " + response.name,
+            text: "Cập nhật thành công vai trò: " + response.name,
             color: "success"
           });
           return response;

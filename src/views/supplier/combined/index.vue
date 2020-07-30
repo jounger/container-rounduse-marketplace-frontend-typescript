@@ -20,6 +20,11 @@
             <v-toolbar-title>Danh sách hàng đã ghép</v-toolbar-title>
           </v-toolbar>
         </template>
+        <template v-slot:item.status="{ item }">
+          <v-chip style="background-color:blueviolet" dark>{{
+            item.outbound.status
+          }}</v-chip>
+        </template>
         <template v-slot:item.packingTime="{ item }">
           {{ formatDatetime(item.outbound.packingTime) }}
         </template>
@@ -85,7 +90,7 @@ export default class Combined extends Vue {
     },
     { text: "Booking No.", value: "outbound.booking.bookingNumber" },
     { text: "Hãng tàu", value: "outbound.shippingLine" },
-    { text: "Trạng thái", value: "outbound.status" },
+    { text: "Trạng thái", value: "status" },
     { text: "Thời gian đóng hàng", value: "packingTime" },
     { text: "Thời gian tàu chạy", value: "cutOffTime" },
     { text: "Nơi đóng hàng", value: "outbound.packingStation" },
@@ -106,13 +111,6 @@ export default class Combined extends Vue {
     } else if (this.$auth.user().roles[0] == "ROLE_FORWARDER") {
       this.$router.push({ path: `/combined-forwarder/${id}` });
     }
-  }
-
-  created() {
-    // TODO: Fake data
-    // this.reduceData(this.combineds);
-    this.serverSideOptions.totalItems = 10;
-    this.loading = false;
   }
 
   @Watch("options")

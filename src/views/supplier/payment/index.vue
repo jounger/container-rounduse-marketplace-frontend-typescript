@@ -52,8 +52,9 @@
           </v-toolbar>
         </template>
         <template v-slot:item.status="{ item }">
-          <v-chip color="error" dark v-if="!item.isPaid">Chưa trả</v-chip>
-          <v-chip color="success" dark v-else>Đã trả</v-chip>
+          <v-chip :color="item.isPaid ? 'success' : 'error'" dark>{{
+            item.isPaid ? "Đã trả" : "Chưa trả"
+          }}</v-chip>
         </template>
         <template v-slot:item.paymentDate="{ item }">
           {{ formatDatetime(item.paymentDate) }}
@@ -152,7 +153,7 @@ import ConfirmPayment from "./components/ConfirmPayment.vue";
 })
 export default class Payment extends Vue {
   payments: Array<IPayment> = [];
-  payment = {} as IPayment;
+  payment = null as IPayment | null;
   dialogAdd = false;
   dialogDel = false;
   dialogConfirm = false;
@@ -194,20 +195,17 @@ export default class Payment extends Vue {
     }
   ];
   openCreateDialog() {
-    this.payment = {} as IPayment;
     this.update = false;
     this.dialogAdd = true;
   }
 
   openUpdateDialog(item: IPayment) {
-    console.log(item);
     this.payment = item;
     this.readonly = false;
     this.update = true;
     this.dialogAdd = true;
   }
   openDetailDialog(item: IPayment) {
-    console.log(item);
     this.payment = item;
     this.readonly = true;
     this.update = true;

@@ -46,6 +46,11 @@
             >
           </v-toolbar>
         </template>
+        <template v-slot:item.status="{ item }">
+          <v-chip :color="item.status == 'ACTIVE' ? 'success' : 'error'" dark>{{
+            item.status
+          }}</v-chip>
+        </template>
         <template v-slot:item.actions="{ item }">
           <v-icon small class="mr-2" @click="openUpdateDialog(item)">
             mdi-pencil
@@ -87,7 +92,7 @@ import { DataOptions } from "vuetify";
 })
 export default class Driver extends Vue {
   drivers: Array<IDriver> = [];
-  driver = {} as IDriver;
+  driver = null as IDriver | null;
   dialogAdd = false;
   dialogDel = false;
   loading = true;
@@ -120,9 +125,6 @@ export default class Driver extends Vue {
   ];
 
   openCreateDialog() {
-    this.driver = {} as IDriver;
-    this.driver.status = "ACTIVE";
-    this.driver.roles = ["ROLE_DRIVER"];
     this.update = false;
     this.dialogAdd = true;
   }

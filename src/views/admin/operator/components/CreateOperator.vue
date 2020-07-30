@@ -202,7 +202,7 @@ export default class CreateOperator extends Vue {
           const response: IOperator = res.data;
           console.log(response);
           snackbar.setSnackbar({
-            text: "Cập nhập thành công quản trị viên: " + response.username,
+            text: "Cập nhật thành công quản trị viên: " + response.username,
             color: "success"
           });
           return response;

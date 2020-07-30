@@ -173,7 +173,7 @@ export default class CreateDiscount extends Vue {
           console.log(res.data);
           const response: IDiscount = res.data;
           snackbar.setSnackbar({
-            text: "Cập nhập thành công Mã giảm giá: " + response.code,
+            text: "Cập nhật thành công Mã giảm giá: " + response.code,
             color: "success"
           });
           return response;

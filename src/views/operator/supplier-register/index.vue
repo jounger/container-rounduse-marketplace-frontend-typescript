@@ -27,6 +27,9 @@
         disable-sort
         class="elevation-1"
       >
+        <template v-slot:item.status="{ item }">
+          <v-chip color="orange" dark>{{ item.status }}</v-chip>
+        </template>
         <template v-slot:item.action="{ item }">
           <v-menu :loading="item.createloading" :disabled="item.createloading">
             <template v-slot:activator="{ on, attrs }">
@@ -60,7 +63,7 @@ import { DataOptions } from "vuetify";
 })
 export default class Supplier extends Vue {
   suppliers: Array<ISupplier> = [];
-  supplier = {} as ISupplier;
+  supplier = null as ISupplier | null;
   dialogDetail = false;
   loading = true;
   options = {

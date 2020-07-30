@@ -75,7 +75,7 @@ import { DataOptions } from "vuetify";
 })
 export default class Tractor extends Vue {
   tractors: Array<IContainerTractor> = [];
-  tractor = {} as IContainerTractor;
+  tractor = null as IContainerTractor | null;
   dialogAdd = false;
   dialogDel = false;
   loading = true;
@@ -103,7 +103,6 @@ export default class Tractor extends Vue {
   ];
   openCreateDialog() {
     this.update = false;
-    this.tractor = {} as IContainerTractor;
     this.dialogAdd = true;
   }
 

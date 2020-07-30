@@ -80,7 +80,7 @@ import { DataOptions } from "vuetify";
 })
 export default class Discount extends Vue {
   discounts: Array<IDiscount> = [];
-  discount = {} as IDiscount;
+  discount = null as IDiscount | null;
   dialogAdd = false;
   dialogDel = false;
   loading = true;
@@ -111,13 +111,11 @@ export default class Discount extends Vue {
     }
   ];
   openCreateDialog() {
-    this.discount = {} as IDiscount;
     this.update = false;
     this.dialogAdd = true;
   }
 
   openUpdateDialog(item: IDiscount) {
-    console.log(item);
     this.discount = item;
     this.update = true;
     this.dialogAdd = true;

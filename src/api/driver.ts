@@ -19,6 +19,11 @@ export function getDriversByForwarder(paging: PaginationRequest) {
     headers: config
   });
 }
+export function getDriverById(id: number) {
+  return Vue.axios.get(`/driver/${id}`, {
+    headers: config
+  });
+}
 export function createDriver(driver: IDriver) {
   return Vue.axios.post("/driver/forwarder/", driver, {
     headers: config

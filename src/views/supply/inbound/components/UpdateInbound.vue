@@ -448,7 +448,7 @@ export default class UpdateInbound extends Vue {
           console.log("response", response);
           snackbar.setSnackbar({
             text:
-              "Cập nhập thành công hàng nhập: " +
+              "Cập nhật thành công hàng nhập: " +
               response.billOfLading.billOfLadingNumber,
             color: "success"
           });
@@ -481,7 +481,7 @@ export default class UpdateInbound extends Vue {
           const response: IBillOfLading = res.data;
           console.log("response", response);
           snackbar.setSnackbar({
-            text: "Cập nhập thành công B/L: " + response.billOfLadingNumber,
+            text: "Cập nhật thành công B/L: " + response.billOfLadingNumber,
             color: "success"
           });
           return response;

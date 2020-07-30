@@ -1,23 +1,7 @@
 <template>
   <v-content>
     <v-row justify="center">
-      <v-card class="mx-12 my-5" width="800">
-        <v-row justify="center">
-          <MarkFeedback
-            v-if="dialogMark"
-            :dialogMark.sync="dialogMark"
-            :feedback="feedback"
-            :feedbacks.sync="feedbacks"
-          />
-        </v-row>
-        <v-row justify="center">
-          <DeleteFeedback
-            v-if="dialogDel"
-            :dialogDel.sync="dialogDel"
-            :feedback="feedback"
-            :feedbacks.sync="feedbacks"
-          />
-        </v-row>
+      <v-card class="mx-12 my-5" width="800" v-if="report">
         <v-row justify="center">
           <ChangeStatusReport
             v-if="dialogConfirm"
@@ -36,7 +20,7 @@
               <v-list-item-content>
                 <v-list-item-title
                   ><span style="font-weight:bold;">{{
-                    report.sender
+                    forwarderFullname
                   }}</span></v-list-item-title
                 >
                 <v-list-item-subtitle>{{
@@ -65,7 +49,7 @@
                     </v-btn>
                   </template>
                   <v-list>
-                    <v-list-item @click="viewDetailReport()">
+                    <v-list-item @click="viewDetailBiddingDocument()">
                       <v-list-item-icon>
                         <v-icon small>edit</v-icon>
                       </v-list-item-icon>
@@ -133,92 +117,13 @@
         </v-list>
         <v-divider></v-divider>
         <v-card-title>Phản hồi</v-card-title>
-        <v-list dense nav>
-          <v-list-item
-            three-line
-            class="px-0"
-            v-for="(item, index) in feedbacks"
-            :key="index"
-          >
-            <v-list-item-avatar>
-              <v-img src="@/assets/images/ava.jpg" />
-            </v-list-item-avatar>
-            <v-list-item-content style="margin-top: 10px;">
-              <v-list-item-title style="font-weight:bold;">{{
-                item.sender
-              }}</v-list-item-title>
-              <v-list-item-subtitle>
-                {{ item.message
-                }}<v-menu
-                  :close-on-click="true"
-                  v-if="
-                    report.status == 'PENDING' || report.status == 'UPDATED'
-                  "
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn text small v-bind="attrs" v-on="on">
-                      <span class="mb-3">...</span>
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-item
-                      @click="openUpdateDialog(item)"
-                      v-if="item.sender == $auth.user().username"
-                    >
-                      <v-list-item-icon>
-                        <v-icon small>edit</v-icon>
-                      </v-list-item-icon>
-                      <v-list-item-content>
-                        <v-list-item-title>Chỉnh sửa</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item
-                      @click="openDeleteDialog(item)"
-                      v-if="item.sender == $auth.user().username"
-                    >
-                      <v-list-item-icon>
-                        <v-icon small>delete</v-icon>
-                      </v-list-item-icon>
-                      <v-list-item-content>
-                        <v-list-item-title>Xóa</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-menu></v-list-item-subtitle
-              >
-              <v-list-item-subtitle>
-                <a
-                  v-if="
-                    item.sender != $auth.user().username &&
-                      $auth.user().roles[0] == 'ROLE_FORWARDER'
-                  "
-                  @click="openMarkDialog(item)"
-                  >Đánh giá .</a
-                >
-                <a
-                  style="margin-left:10px;"
-                  v-if="
-                    report.status != 'REJECTED' &&
-                      report.status != 'CLOSED' &&
-                      item.sender != $auth.user().username &&
-                      $auth.user().roles[0] == 'ROLE_FORWARDER'
-                  "
-                  @click="focus = true"
-                  >Phản hồi .</a
-                ><a
-                  v-if="
-                    report.status != 'REJECTED' &&
-                      report.status != 'CLOSED' &&
-                      (item.sender == $auth.user().username ||
-                        $auth.user().roles[0] == 'ROLE_MODERATOR')
-                  "
-                  @click="focus = true"
-                  >Phản hồi .</a
-                >
-                {{ convertTime(item.sendDate) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
+        <v-list dense nav v-for="(item, index) in feedbacks" :key="index">
+          <UserFeedback
+            :item="item"
+            :report="report"
+            :forwarderFullname="forwarderFullname"
+            :feedbacks.sync="feedbacks"
+          />
         </v-list>
         <v-row
           style="margin-left:-2px;margin-right:2px;"
@@ -238,7 +143,7 @@
               clearable
               row-height="24"
               rows="1"
-              placeholder="Viết feedback ..."
+              placeholder="Phản hồi ..."
               @keydown.enter.exact.prevent
               @keyup.enter.exact="createFeedback"
               @keydown.enter.shift.exact="newline"
@@ -250,79 +155,33 @@ import { Component, Vue } from "vue-property-decorator";
 import Utils from "@/mixin/utils";
 import { IReport } from "@/entity/report";
 import { IFeedback } from "@/entity/feedback";
-import DeleteFeedback from "../../../operator/supplier-report/components/DeleteFeedback.vue";
 import {
   getFeedbacksByReport,
   createFeedbackToModerator,
   createFeedback
 } from "@/api/feedback";
 import { PaginationResponse } from "@/api/payload";
-import MarkFeedback from "./MarkFeedback.vue";
 import ChangeStatusReport from "./ChangeStatusReport.vue";
 import { IBiddingDocument } from "@/entity/bidding-document";
-import { IOutbound } from "@/entity/outbound";
-import { IBid } from "@/entity/bid";
-import { IBooking } from "@/entity/booking";
 import { getReport } from "@/api/report";
-import snackbar from "@/store/modules/snackbar";
-import { getErrorMessage } from "@/utils/tool";
+import { getSupplier } from "@/api/supplier";
+import UserFeedback from "./UserFeedback.vue";
 
 @Component({
   mixins: [Utils],
   components: {
-    DeleteFeedback,
-    MarkFeedback,
+    UserFeedback,
     ChangeStatusReport
   }
 })
 export default class ReportDetail extends Vue {
   focus = false;
+  forwarderFullname = "";
   feedbacks: Array<IFeedback> = [];
-  mapFeedbacks = new Map();
-  report = {
-    sender: "",
-    report: {
-      merchant: "",
-      outbound: {
-        goodsDescription: "",
-        packingTime: "",
-        packingStation: "",
-        deliveryTime: "",
-        grossWeight: 0,
-        unitOfMeasurement: "",
-        booking: {
-          bookingNumber: "",
-          unit: 0,
-          cutOffTime: "",
-          isFcl: false,
-          portOfLoading: ""
-        } as IBooking
-      } as IOutbound,
-      bids: [] as Array<IBid>,
-      discount: "",
-      isMultipleAward: false,
-      bidOpening: "",
-      bidClosing: "",
-      dateOfDecision: "",
-      currencyOfPayment: "",
-      bidPackagePrice: 0,
-      bidFloorPrice: 0,
-      priceLeadership: 0,
-      status: ""
-    } as IBiddingDocument,
-    title: "",
-    detail: "",
-    status: "",
-    sendDate: ""
-  } as IReport;
-  dialogFeedback = false;
-  dialogDel = false;
-  dialogMark = false;
+  report = null as IReport | null;
   receiver = "";
   dialogConfirm = false;
   status = "";
-  feedback = {} as IFeedback;
-  update = false;
   openFeedback = false;
   feedbackLocal = {
     sender: this.$auth.user().username,
@@ -334,9 +193,24 @@ export default class ReportDetail extends Vue {
     console.log(0);
     this.feedbackLocal.message = `${this.feedbackLocal.message}`;
   }
+  async getFullname(username: string) {
+    const _fullname = await getSupplier(username)
+      .then(res => {
+        const response = res.data;
+        return response.contactPerson;
+      })
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    if (_fullname) {
+      return _fullname;
+    }
+  }
   async createFeedback() {
     if (
       this.feedbackLocal &&
+      this.report &&
       this.report.id &&
       this.feedbackLocal.message != ""
     ) {
@@ -347,18 +221,10 @@ export default class ReportDetail extends Vue {
         )
           .then(res => {
             const response: IFeedback = res.data;
-            snackbar.setSnackbar({
-              text: "Thêm mới thành công Phản hồi: " + response.id,
-              color: "success"
-            });
             return response;
           })
           .catch(err => {
             console.log(err);
-            snackbar.setSnackbar({
-              text: getErrorMessage(err),
-              color: "error"
-            });
             return null;
           });
         if (_feedback) {
@@ -369,7 +235,6 @@ export default class ReportDetail extends Vue {
           message: "",
           satisfactionPoints: 0
         } as IFeedback;
-        snackbar.setDisplay(true);
       } else {
         const _feedback = await createFeedbackToModerator(
           this.report.id,
@@ -378,18 +243,10 @@ export default class ReportDetail extends Vue {
         )
           .then(res => {
             const response: IFeedback = res.data;
-            snackbar.setSnackbar({
-              text: "Thêm mới thành công Phản hồi: " + response.id,
-              color: "success"
-            });
             return response;
           })
           .catch(err => {
             console.log(err);
-            snackbar.setSnackbar({
-              text: getErrorMessage(err),
-              color: "error"
-            });
             return null;
           });
         if (_feedback) {
@@ -400,7 +257,6 @@ export default class ReportDetail extends Vue {
           message: "",
           satisfactionPoints: 0
         } as IFeedback;
-        snackbar.setDisplay(true);
       }
     }
   }
@@ -419,6 +275,7 @@ export default class ReportDetail extends Vue {
       });
     if (_report) {
       this.report = _report;
+      this.forwarderFullname = await this.getFullname(_report.sender);
     }
     const _feedbacks = await getFeedbacksByReport(parseInt(this.getRouterId), {
       page: 0,
@@ -434,44 +291,17 @@ export default class ReportDetail extends Vue {
       });
     if (_feedbacks) {
       this.feedbacks = _feedbacks.data;
+      console.log("feedbacks", this.feedbacks);
     }
   }
-  openCreateDialog(item: IFeedback) {
-    console.log("feedback", item);
-    this.receiver = item.sender;
-    this.update = false;
-    this.feedback = {} as IFeedback;
-    this.dialogFeedback = true;
-  }
-  openCreateFeedbackDialog() {
-    this.update = false;
-    this.feedback = {} as IFeedback;
-    this.dialogFeedback = true;
-  }
 
-  openUpdateDialog(item: IFeedback) {
-    this.update = true;
-    this.feedback = item;
-    this.dialogFeedback = true;
-  }
-
-  openDeleteDialog(item: IFeedback) {
-    this.feedback = item;
-    this.dialogDel = true;
-  }
-  openMarkDialog(item: IFeedback) {
-    this.feedback = item;
-    this.dialogMark = true;
-  }
   openConfirmDialog(status: string) {
     this.status = status;
     this.dialogConfirm = true;
   }
   viewDetailBiddingDocument() {
-    this.$router.push({ path: `/bidding-document/${this.report.report}` });
-  }
-  viewDetailReport() {
     if (
+      this.report &&
       this.report &&
       this.report.report &&
       typeof this.report.report != "number"

@@ -75,7 +75,7 @@ import { DataOptions } from "vuetify";
 })
 export default class Permission extends Vue {
   permissions: Array<IPermission> = [];
-  permission = {} as IPermission;
+  permission = null as IPermission | null;
   dialogAdd = false;
   dialogDel = false;
   loading = true;
@@ -103,7 +103,6 @@ export default class Permission extends Vue {
   ];
   openCreateDialog() {
     this.update = false;
-    this.permission = {} as IPermission;
     this.dialogAdd = true;
   }
 

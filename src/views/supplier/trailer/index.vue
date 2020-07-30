@@ -78,7 +78,7 @@ import { DataOptions } from "vuetify";
 })
 export default class Trailer extends Vue {
   trailers: Array<IContainerSemiTrailer> = [];
-  trailer = {} as IContainerSemiTrailer;
+  trailer = null as IContainerSemiTrailer | null;
   dialogAdd = false;
   dialogDel = false;
   loading = true;
@@ -107,7 +107,6 @@ export default class Trailer extends Vue {
   ];
   openCreateDialog() {
     this.update = false;
-    this.trailer = {} as IContainerSemiTrailer;
     this.dialogAdd = true;
   }
 

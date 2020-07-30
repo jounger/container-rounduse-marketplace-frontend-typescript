@@ -18,6 +18,14 @@ export function getOperatorById(id: number) {
     headers: config
   });
 }
+export function getOperatorByUsername(username: string) {
+  return Vue.axios.get(`/operator/username`, {
+    params: {
+      username: username
+    },
+    headers: config
+  });
+}
 
 export function createOperator(operator: IOperator) {
   return Vue.axios.post("/operator", operator, {

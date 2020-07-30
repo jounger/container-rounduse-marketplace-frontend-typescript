@@ -166,7 +166,7 @@ export default class CreateFeedback extends Vue {
           console.log(res.data);
           const response: IFeedback = res.data;
           snackbar.setSnackbar({
-            text: "Cập nhập thành công Phản hồi: " + response.id,
+            text: "Cập nhật thành công Phản hồi: " + response.id,
             color: "success"
           });
           return response;

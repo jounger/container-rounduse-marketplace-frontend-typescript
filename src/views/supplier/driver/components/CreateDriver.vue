@@ -90,7 +90,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12">
+            <v-col cols="12" md="6">
               <v-text-field
                 label="Địa chỉ"
                 name="address"
@@ -101,10 +101,21 @@
                 v-model="driverLocal.address"
               ></v-text-field>
             </v-col>
+            <v-col cols="12" md="6">
+              <v-select
+                v-if="update"
+                v-model="driverLocal.status"
+                prepend-icon="insert_emoticon"
+                :items="allStatus"
+                :rules="[required('status')]"
+                label="Trạng thái"
+              >
+              </v-select>
+            </v-col>
           </v-row>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-top: 65px;">
+      <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
         <v-btn
@@ -155,9 +166,12 @@ export default class CreateDriver extends Vue {
     }
   } as IDriver;
   valid = false;
+  allStatus: Array<string> = [];
   created() {
-    console.log(this.driver);
-    this.driverLocal = Object.assign({}, this.driver);
+    this.allStatus = ["ACTIVE", "BANNED"];
+    if (this.update) {
+      this.driverLocal = Object.assign({}, this.driver);
+    }
   }
   async createDriver() {
     if (this.driverLocal) {
@@ -194,7 +208,7 @@ export default class CreateDriver extends Vue {
           console.log(res.data);
           const response: IDriver = res.data;
           snackbar.setSnackbar({
-            text: "Cập nhập thành công lái xe: " + response.username,
+            text: "Cập nhật thành công lái xe: " + response.username,
             color: "success"
           });
           return response;

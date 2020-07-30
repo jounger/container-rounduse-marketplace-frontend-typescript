@@ -255,14 +255,14 @@ export default class UpdateShippingLine extends Vue {
   valid = true;
   valid1 = true;
   allStatus: Array<string> = [];
-  shippingLineLocal = {} as IShippingLine;
+  shippingLineLocal = null as IShippingLine | null;
   created() {
     this.allStatus = ["ACTIVE", "BANNED"];
     this.shippingLineLocal = Object.assign({}, this.shippingLine);
   }
   // ShippingLine Update
   async updateShippingLine() {
-    if (this.shippingLineLocal.id) {
+    if (this.shippingLineLocal && this.shippingLineLocal.id) {
       const _shippingLine = await editShippingLine(
         this.shippingLineLocal.id,
         this.shippingLineLocal
@@ -271,7 +271,7 @@ export default class UpdateShippingLine extends Vue {
           console.log(res.data);
           const response: IShippingLine = res.data;
           snackbar.setSnackbar({
-            text: "Cập nhập thành công hãng tàu: " + response.companyCode,
+            text: "Cập nhật thành công hãng tàu: " + response.companyCode,
             color: "success"
           });
           return response;

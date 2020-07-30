@@ -3,6 +3,7 @@
     <v-card class="ma-5">
       <v-row justify="center">
         <DeleteOperator
+          v-if="dialogDel"
           :dialogDel.sync="dialogDel"
           :operator="operator"
           :operators.sync="operators"
@@ -44,6 +45,11 @@
             >
           </v-toolbar>
         </template>
+        <template v-slot:item.status="{ item }">
+          <v-chip :color="item.status == 'ACTIVE' ? 'success' : 'error'" dark>{{
+            item.status
+          }}</v-chip>
+        </template>
         <template v-slot:item.actions="{ item }">
           <v-icon small class="mr-2" @click="openUpdateDialog(item)">
             mdi-pencil
@@ -73,7 +79,7 @@ import { DataOptions } from "vuetify";
 })
 export default class Operator extends Vue {
   operators: Array<IOperator> = [];
-  operator = {} as IOperator;
+  operator = null as IOperator | null;
   dialogAdd = false;
   dialogDel = false;
   loading = true;
@@ -106,7 +112,6 @@ export default class Operator extends Vue {
     }
   ];
   openCreateDialog() {
-    this.operator = {} as IOperator;
     this.update = false;
     this.dialogAdd = true;
   }

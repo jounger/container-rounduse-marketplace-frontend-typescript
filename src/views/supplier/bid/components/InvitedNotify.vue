@@ -9,13 +9,6 @@
         :biddingNotifications.sync="biddingNotifications"
         :totalItemsBidNo.sync="serverSideOptions.totalItems"
       />
-      <!-- <UpdateBid
-        v-if="dialogEdit"
-        :bid.sync="bid"
-        :dialogEdit.sync="dialogEdit"
-        :message.sync="message"
-        :snackbar.sync="snackbar"
-      /> -->
       <ConfirmBid
         v-if="dialogConfirm"
         :dialogConfirm.sync="dialogConfirm"
@@ -182,6 +175,7 @@ export default class InvitedNotify extends Vue {
         this.serverSideOptions.totalItems = _biddingNotifications.data.filter(
           x => x.action == "ADDED" && x.isHide == false
         ).length;
+        console.log(_biddingNotifications.totalElements);
       }
       this.loading = false;
     }

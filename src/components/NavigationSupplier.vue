@@ -76,7 +76,7 @@ export default class NavigationSupplier extends Vue {
     { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
     { title: "Quản lý hàng nhập", icon: "flight_land", link: "/inbound" },
     { title: "Quản lý Hàng ghép", icon: "table_chart", link: "/combined" },
-    // { title: "Quản lý Hợp đồng", icon: "folder", link: "/contract" },
+    { title: "Quản lý Hợp đồng", icon: "folder", link: "/contract" },
     { title: "Quản lý Hóa đơn", icon: "store", link: "/payment" },
     {
       title: "Quản lý đấu thầu",

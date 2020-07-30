@@ -119,6 +119,21 @@
               dense
               dark
             >
+              <template v-slot:item.status="{ item }">
+                <v-chip
+                  :style="
+                    item.status == 'CREATED'
+                      ? 'background-color:orange'
+                      : item.status == 'BIDDING'
+                      ? 'background-color:cornflowerblue'
+                      : item.status == 'COMBINED'
+                      ? 'background-color:blueviolet'
+                      : 'background-color:green'
+                  "
+                  dark
+                  >{{ item.status }}</v-chip
+                >
+              </template>
               <template v-slot:item.actions="{ item }">
                 <v-icon
                   small
@@ -135,12 +150,6 @@
                 >
                   delete
                 </v-icon>
-                <span style="color:green;" v-if="item.status == 'BIDDING'"
-                  >BIDDING</span
-                >
-                <span style="color:green;" v-if="item.status == 'COMBINED'"
-                  >COMBINED</span
-                >
               </template>
               <template v-slot:footer>
                 <v-row justify="center">
@@ -192,7 +201,7 @@ export default class Inbound extends Vue {
   inbounds: Array<IInbound> = [];
   inbound = {} as IInbound;
   containers: Array<IContainer> = [];
-  container = {} as IContainer;
+  container = null as IContainer | null;
   dialogAddCont = false;
   dialogDelCont = false;
   dialogAdd = false;
@@ -202,7 +211,7 @@ export default class Inbound extends Vue {
   singleExpand = true;
   search = "";
   freeTime = "";
-  loading = true;
+  loading = false;
   update = false;
   checkUnit = true;
   dateInit = new Date().toISOString().substr(0, 10);
@@ -261,12 +270,8 @@ export default class Inbound extends Vue {
       value: "tractor.licensePlate",
       class: "elevation-1 primary"
     },
-    { text: "Hành động", value: "actions", class: "elevation-1 primary" }
+    { text: "", value: "actions", class: "elevation-1 primary" }
   ];
-
-  created() {
-    this.loading = false;
-  }
 
   openUpdateDialog(item: IInbound) {
     this.inbound = item;
@@ -279,7 +284,6 @@ export default class Inbound extends Vue {
   }
   openCreateContainer() {
     this.update = false;
-    this.container = {} as IContainer;
     this.dialogAddCont = true;
   }
   openUpdateContainer(item: IContainer) {

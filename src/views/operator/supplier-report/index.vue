@@ -30,6 +30,23 @@
         disable-sort
         class="elevation-1"
       >
+        <template v-slot:item.status="{ item }">
+          <v-chip
+            :style="
+              item.status == 'PENDING'
+                ? 'background-color:orange'
+                : item.status == 'RESOLVED'
+                ? 'background-color:blueviolet'
+                : item.status == 'REJECTED'
+                ? 'background-color:red'
+                : item.status == 'UPDATED'
+                ? 'background-color:cornflowerblue'
+                : 'background-color:green'
+            "
+            dark
+            >{{ item.status }}</v-chip
+          >
+        </template>
         <template v-slot:item.reportId="{ item }">
           <v-btn
             class="ma-1"
@@ -76,11 +93,11 @@ import { IBiddingDocument } from "@/entity/bidding-document";
 })
 export default class Report extends Vue {
   reports: Array<IReport> = [];
-  report = {} as IReport;
+  report = null as IReport | null;
 
   dialogAdd = false;
   feedbacks: Array<IFeedback> = [];
-  feedback = {} as IFeedback;
+  feedback = null as IFeedback | null;
   loading = true;
   update = false;
   options = {
@@ -112,7 +129,6 @@ export default class Report extends Vue {
   openCreateDialog(item: IReport) {
     this.report = item;
     this.update = false;
-    this.feedback = {} as IFeedback;
     this.dialogAdd = true;
   }
   viewDetailReport(item: IReport) {

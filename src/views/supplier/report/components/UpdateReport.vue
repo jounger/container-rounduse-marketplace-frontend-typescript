@@ -87,7 +87,7 @@ export default class CreateReport extends Vue {
           console.log(res.data);
           const response: IReport = res.data;
           snackbar.setSnackbar({
-            text: "Cập nhập thành công Report: " + response.id,
+            text: "Cập nhật thành công Report: " + response.id,
             color: "success"
           });
           return response;

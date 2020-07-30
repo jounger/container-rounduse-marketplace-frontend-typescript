@@ -116,6 +116,19 @@
             </v-toolbar>
           </template>
           <!--  -->
+          <template v-slot:item.status="{ item }">
+            <v-chip
+              :style="
+                item.status == 'BIDDING'
+                  ? 'background-color:cornflowerblue'
+                  : item.status == 'COMBINED'
+                  ? 'background-color:blueviolet'
+                  : 'background-color:red'
+              "
+              dark
+              >{{ item.status }}</v-chip
+            >
+          </template>
           <template v-slot:item.actions="{ item }">
             <v-menu :close-on-click="true">
               <template v-slot:activator="{ on, attrs }">

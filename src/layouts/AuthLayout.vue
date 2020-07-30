@@ -1,6 +1,5 @@
 <template>
   <div class="mt-12">
-    <Snackbars />
     <v-row justify="center" class="mt-12">
       <slot />
     </v-row>

@@ -4,7 +4,7 @@
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;"
-            >Cập nhập Hợp đồng</span
+            >{{ readonly ? "Thông tin" : "Cập nhập" }} Hợp đồng</span
           ></v-toolbar-title
         >
       </v-toolbar>
@@ -87,22 +87,19 @@ import { ICombined } from "@/entity/combined";
 })
 export default class UpdateContract extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("contracts", { type: Array }) contractsSync?: Array<IContract>;
+  @PropSync("contract", { type: Object }) contractSync!: IContract;
   @PropSync("message", { type: String }) messageSync!: string;
   @PropSync("snackbar", { type: Boolean }) snackbarSync!: boolean;
   @PropSync("totalItems", { type: Number }) totalItemsSync?: number;
-  @Prop(Object) combined?: ICombined;
   @Prop(Boolean) readonly!: boolean;
   @Prop(String) merchant!: string;
+  @Prop(Object) combined!: ICombined;
 
   contractLocal = {} as IContract;
   valid = false;
   created() {
-    if (typeof this.combined != "undefined") {
-      this.contractLocal = Object.assign(
-        {},
-        this.combined.contract as IContract
-      );
+    if (typeof this.contractSync != "undefined") {
+      this.contractLocal = Object.assign({}, this.contractSync);
     }
   }
   updateContract() {
@@ -111,13 +108,8 @@ export default class UpdateContract extends Vue {
         .then(res => {
           console.log(res.data);
           const response: IContract = res.data;
-          this.messageSync = "Cập nhập thành công Hợp đồng: " + response.id;
-          if (this.contractsSync) {
-            const index = this.contractsSync.findIndex(
-              x => x.id == response.id
-            );
-            this.contractsSync.splice(index, 1, response);
-          }
+          this.messageSync = "Cập nhật thành công Hợp đồng: " + response.id;
+          this.contractSync = response;
         })
         .catch(err => {
           console.log(err);

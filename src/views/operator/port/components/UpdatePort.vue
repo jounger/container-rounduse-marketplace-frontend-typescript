@@ -176,7 +176,7 @@ export default class UpdatePort extends Vue {
           console.log(res.data);
           const response: IPort = res.data;
           snackbar.setSnackbar({
-            text: "Cập nhập thành công bến cảng: " + response.nameCode,
+            text: "Cập nhật thành công bến cảng: " + response.nameCode,
             color: "success"
           });
           return response;

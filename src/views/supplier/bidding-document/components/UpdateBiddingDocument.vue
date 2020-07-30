@@ -272,7 +272,7 @@ export default class UpdateBiddingDocument extends Vue {
           console.log(res.data);
           const response: IBiddingDocument = res.data;
           snackbar.setSnackbar({
-            text: "Cập nhập thành công HSMT: " + response.id,
+            text: "Cập nhật thành công HSMT: " + response.id,
             color: "success"
           });
           return response;

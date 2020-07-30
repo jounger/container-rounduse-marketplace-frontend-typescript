@@ -134,10 +134,8 @@ export default class CreateTrailer extends Vue {
         }
       });
     } else {
-      console.log(this.trailerLocal);
       this.types.forEach((x: string) => {
         if (x == this.trailerLocal.type) {
-          console.log(1);
           this.typesLoad.push(x);
         }
       });
@@ -147,7 +145,6 @@ export default class CreateTrailer extends Vue {
           check = true;
         }
         if (check == false && this.typesLoad.length < this.limit) {
-          console.log(this.limit);
           this.typesLoad.push(x);
         }
       });
@@ -204,7 +201,7 @@ export default class CreateTrailer extends Vue {
           console.log(res.data);
           const response: IContainerSemiTrailer = res.data;
           snackbar.setSnackbar({
-            text: "Cập nhập thành công Rơ moóc: " + response.licensePlate,
+            text: "Cập nhật thành công Rơ moóc: " + response.licensePlate,
             color: "success"
           });
           return response;

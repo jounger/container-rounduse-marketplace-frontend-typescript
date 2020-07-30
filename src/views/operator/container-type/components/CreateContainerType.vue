@@ -226,7 +226,7 @@ export default class CreateContainerType extends Vue {
           console.log(res.data);
           const response: IContainerType = res.data;
           snackbar.setSnackbar({
-            text: "Cập nhập thành công loại Container: " + response.name,
+            text: "Cập nhật thành công loại Container: " + response.name,
             color: "success"
           });
           return response;

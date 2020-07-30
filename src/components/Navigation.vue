@@ -7,7 +7,7 @@
         </v-list-item-avatar>
 
         <v-list-item-content>
-          <v-list-item-title>{{ capitalizeUsername }}</v-list-item-title>
+          <v-list-item-title>{{ fullname }}</v-list-item-title>
           <v-list-item-subtitle style="margin-top:10px;">
             {{ getUserRole }}</v-list-item-subtitle
           >
@@ -45,6 +45,11 @@ import { Vue, Component, PropSync } from "vue-property-decorator";
 import NavigationOperator from "./NavigationOperator.vue";
 import NavigationSupplier from "./NavigationSupplier.vue";
 import { toCapitalize } from "@/utils/tool";
+import { getOperatorByUsername } from "@/api/operator";
+import { IOperator } from "@/entity/operator";
+import { getDriverById } from "@/api/driver";
+import { getSupplier } from "../api/supplier";
+import { getShippingLine } from "../api/shipping-line";
 
 @Component({
   name: "Navigation",
@@ -60,12 +65,77 @@ export default class Navigation extends Vue {
   protected generalNavigation = [
     { title: "Trang cá nhân", icon: "account_circle", link: "/profile" }
   ];
+  fullname = "";
 
-  get capitalizeUsername() {
-    if (this.$auth.user() && this.$auth.user().username)
-      return toCapitalize(this.$auth.user().username);
-    this.$auth.logout();
-    return "";
+  async getFullName() {
+    if (this.$auth.user() && this.$auth.user().username) {
+      if (
+        this.$auth.user().roles[0] == "ROLE_ADMIN" ||
+        this.$auth.user().roles[0] == "ROLE_MODERATOR"
+      ) {
+        const _fullname = await getOperatorByUsername(
+          this.$auth.user().username
+        )
+          .then(res => {
+            const response: IOperator = res.data;
+            console.log(response.fullname);
+            return toCapitalize(response.fullname);
+          })
+          .catch(err => {
+            console.log(err);
+            return "";
+          });
+        console.log(_fullname);
+        if (_fullname) {
+          this.fullname = _fullname;
+        }
+      } else if (this.$auth.user().roles[0] == "ROLE_DRIVER") {
+        const _fullname = await getDriverById(this.$auth.user().id)
+          .then(res => {
+            const response = res.data;
+            return toCapitalize(response.fullname);
+          })
+          .catch(err => {
+            console.log(err);
+            return "";
+          });
+        console.log(_fullname);
+        if (_fullname) {
+          this.fullname = _fullname;
+        }
+      } else if (
+        this.$auth.user().roles[0] == "ROLE_FORWARDER" ||
+        this.$auth.user().roles[0] == "ROLE_MERCHANT"
+      ) {
+        const _fullname = await getSupplier(this.$auth.user().username)
+          .then(res => {
+            const response = res.data;
+            return toCapitalize(response.contactPerson);
+          })
+          .catch(err => {
+            console.log(err);
+            return "";
+          });
+        console.log(_fullname);
+        if (_fullname) {
+          this.fullname = _fullname;
+        }
+      } else {
+        const _fullname = await getShippingLine(this.$auth.user().id)
+          .then(res => {
+            const response = res.data;
+            return toCapitalize(response.contactPerson);
+          })
+          .catch(err => {
+            console.log(err);
+            return "";
+          });
+        console.log(_fullname);
+        if (_fullname) {
+          this.fullname = _fullname;
+        }
+      }
+    }
   }
 
   get getUserRole() {
@@ -90,10 +160,11 @@ export default class Navigation extends Vue {
     }
   }
 
-  created() {
+  async created() {
     if (this.$auth.check(["ROLE_ADMIN", "ROLE_MODERATOR"])) {
       this.navigation = NavigationOperator;
     }
+    await this.getFullName();
   }
 }
 </script>

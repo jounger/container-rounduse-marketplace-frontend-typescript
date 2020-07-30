@@ -50,9 +50,6 @@ export default class DeleteReport extends Vue {
   @PropSync("report", { type: Object }) reportSync!: IReport;
   @Prop(String) status!: string;
 
-  created() {
-    console.log(this.reportSync);
-  }
   async changeStatusReport() {
     if (this.reportSync.id) {
       const _report = await editReport(this.reportSync.id, {

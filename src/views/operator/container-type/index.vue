@@ -75,7 +75,7 @@ import { DataOptions } from "vuetify";
 })
 export default class ContainerType extends Vue {
   containerTypes: Array<IContainerType> = [];
-  containerType = {} as IContainerType;
+  containerType = null as IContainerType | null;
   dialogAdd = false;
   dialogDel = false;
   loading = true;
@@ -111,7 +111,6 @@ export default class ContainerType extends Vue {
   ];
 
   openCreateDialog() {
-    this.containerType = {} as IContainerType;
     this.update = false;
     this.dialogAdd = true;
   }

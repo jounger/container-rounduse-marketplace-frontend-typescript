@@ -144,7 +144,6 @@ export default class CreateRole extends Vue {
                 }
               }
               if (check == false && this.permissions.length < this.limit) {
-                console.log(this.limit);
                 this.permissions.push(x);
               }
             });
@@ -178,7 +177,6 @@ export default class CreateRole extends Vue {
   }
   async createRole() {
     if (this.roleLocal) {
-      console.log(this.roleLocal);
       const _role = await createRole(this.roleLocal)
         .then(res => {
           const response: IRole = res.data;
@@ -211,7 +209,7 @@ export default class CreateRole extends Vue {
           console.log(res.data);
           const response: IRole = res.data;
           snackbar.setSnackbar({
-            text: "Cập nhập thành công quyền: " + response.name,
+            text: "Cập nhật thành công quyền: " + response.name,
             color: "success"
           });
           return response;

@@ -9,7 +9,7 @@
           </p>
           <p>
             Xem chi tiết đơn đăng ký tại
-            <a @click="openDetailDialog()">đây</a>
+            <a @click="dialog = true">đây</a>
           </p>
         </v-col>
       </v-row>
@@ -30,10 +30,7 @@ import RequestDetail from "./components/RequestDetail.vue";
   }
 })
 export default class Application extends Vue {
-  public supplier: ISupplier | null = null;
+  supplier = null as ISupplier | null;
   dialog = false;
-  public openDetailDialog() {
-    this.dialog = true;
-  }
 }
 </script>

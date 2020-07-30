@@ -46,7 +46,6 @@ export default class MarkFeedback extends Vue {
   @PropSync("dialogMark", { type: Boolean }) dialogMarkSync!: boolean;
   @PropSync("feedbacks", { type: Array }) feedbacksSync!: Array<IFeedback>;
   @Prop(Object) feedback!: IFeedback;
-  @Prop(Boolean) update!: boolean;
 
   feedbackLocal = {} as IFeedback;
   valid = false;

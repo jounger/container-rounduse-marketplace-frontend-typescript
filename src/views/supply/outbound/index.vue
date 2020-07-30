@@ -14,7 +14,6 @@
       />
       <CreateBiddingDocument
         v-if="dialogCreateBiddingDocument"
-        :biddingDocument.sync="biddingDocument"
         :outbound.sync="outbound"
         :dialogAdd.sync="dialogCreateBiddingDocument"
       />
@@ -53,6 +52,21 @@
           </v-toolbar>
         </template>
         <!--  -->
+        <template v-slot:item.status="{ item }">
+          <v-chip
+            :style="
+              item.status == 'CREATED'
+                ? 'background-color:orange'
+                : item.status == 'BIDDING'
+                ? 'background-color:cornflowerblue'
+                : item.status == 'COMBINED'
+                ? 'background-color:blueviolet'
+                : 'background-color:green'
+            "
+            dark
+            >{{ item.status }}</v-chip
+          >
+        </template>
         <template v-slot:item.packingTime="{ item }">
           {{ formatDatetime(item.packingTime) }}
         </template>
@@ -135,7 +149,6 @@ import UpdateOutbound from "./components/UpdateOutbound.vue";
 import DeleteOutbound from "./components/DeleteOutbound.vue";
 import { getOutboundByMerchant } from "@/api/outbound";
 import { PaginationResponse } from "@/api/payload";
-import { IBiddingDocument } from "@/entity/bidding-document";
 import Utils from "@/mixin/utils";
 import CreateBiddingDocument from "../../supplier/bidding-document/components/CreateBiddingDocument.vue";
 import { DataOptions } from "vuetify";
@@ -150,7 +163,6 @@ import { DataOptions } from "vuetify";
   }
 })
 export default class Outbound extends Vue {
-  biddingDocument = {} as IBiddingDocument;
   outbounds: Array<IOutbound> = [];
   outbound = {} as IOutbound;
   dialogAdd = false;
@@ -158,7 +170,7 @@ export default class Outbound extends Vue {
   dialogDel = false;
   readonly = false;
   dialogCreateBiddingDocument = false;
-  loading = true;
+  loading = false;
   dateInit = new Date().toISOString().substr(0, 10);
   options = {
     page: 1,
@@ -190,10 +202,6 @@ export default class Outbound extends Vue {
       value: "actions"
     }
   ];
-
-  created() {
-    this.loading = false;
-  }
 
   openUpdateDialog(item: IOutbound) {
     this.outbound = item;

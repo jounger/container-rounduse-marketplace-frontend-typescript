@@ -47,6 +47,11 @@
             </v-btn>
           </v-toolbar>
         </template>
+        <template v-slot:item.status="{ item }">
+          <v-chip :color="item.status == 'ACTIVE' ? 'success' : 'error'" dark>{{
+            item.status
+          }}</v-chip>
+        </template>
         <template v-slot:item.actions="{ item }">
           <v-menu :close-on-click="true">
             <template v-slot:activator="{ on, attrs }">
@@ -97,7 +102,7 @@ import { DataOptions } from "vuetify";
 })
 export default class ShippingLine extends Vue {
   shippingLines: Array<IShippingLine> = [];
-  shippingLine = {} as IShippingLine;
+  shippingLine = null as IShippingLine | null;
 
   dialogAdd = false;
   dialogDel = false;
@@ -158,16 +163,6 @@ export default class ShippingLine extends Vue {
         this.serverSideOptions.totalItems = _shippingLines.totalElements;
       }
       this.loading = false;
-    }
-  }
-
-  @Watch("shippingLine", { deep: true })
-  onShippingLineChange(val: IShippingLine, oldVal: IShippingLine) {
-    if (val.status !== oldVal.status) {
-      const index = this.shippingLines.findIndex(
-        x => x.id === this.shippingLine.id
-      );
-      this.shippingLines.splice(index, 1, val);
     }
   }
 }
