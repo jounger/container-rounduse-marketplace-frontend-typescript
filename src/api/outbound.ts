@@ -1,6 +1,6 @@
 import Vue from "vue";
 import { PaginationRequest } from "./payload";
-import { IOutbound } from '../entity/outbound';
+import { IOutbound } from "../entity/outbound";
 
 const config = {
   Authorization: "Bearer {auth_token}"

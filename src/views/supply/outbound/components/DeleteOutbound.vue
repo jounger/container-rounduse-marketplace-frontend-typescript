@@ -47,8 +47,8 @@ export default class DeleteOutbound extends Vue {
 
   bookNo = "";
   created() {
-    if (typeof this.outbound.booking.bookingNumber != "undefined") {
-      this.bookNo = this.outbound.booking.bookingNumber;
+    if (typeof this.outbound.booking.number != "undefined") {
+      this.bookNo = this.outbound.booking.number;
     }
   }
   async removeOutbound() {

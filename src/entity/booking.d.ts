@@ -1,7 +1,6 @@
-import { IPort } from "./port";
 export interface IBooking {
   id?: number;
-  bookingNumber: string;
+  number: string;
   unit: number;
   cutOffTime: string;
   isFcl: boolean;

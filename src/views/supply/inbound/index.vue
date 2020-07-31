@@ -242,7 +242,7 @@ export default class Inbound extends Vue {
     { text: "Loại cont", value: "containerType" },
     { text: "Thời gian lấy cont", value: "pickUpTime" },
     { text: "Thời gian được thuê cont", value: "freetime" },
-    { text: "B/L No.", value: "billOfLading.billOfLadingNumber" },
+    { text: "B/L No.", value: "billOfLading.number" },
     { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery" },
     { text: "Số cont đăng ký", value: "billOfLading.unit" },
     {

@@ -1,4 +1,2 @@
-import { IVehicle } from './vehicle';
-export interface IContainerTractor extends IVehicle {
-
-}
+import { IVehicle } from "./vehicle";
+export type IContainerTractor = IVehicle;

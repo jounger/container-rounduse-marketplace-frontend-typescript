@@ -88,7 +88,7 @@ export default class Combined extends Vue {
       sortable: false,
       value: "id"
     },
-    { text: "Booking No.", value: "outbound.booking.bookingNumber" },
+    { text: "Booking No.", value: "outbound.booking.number" },
     { text: "Hãng tàu", value: "outbound.shippingLine" },
     { text: "Trạng thái", value: "status" },
     { text: "Thời gian đóng hàng", value: "packingTime" },

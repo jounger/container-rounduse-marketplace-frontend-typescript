@@ -240,7 +240,7 @@ export default class UpdateBiddingDocument extends Vue {
       sortable: false,
       value: "id"
     },
-    { text: "Booking No.", value: "booking.bookingNumber" },
+    { text: "Booking No.", value: "booking.number" },
     { text: "Hãng tàu", value: "shippingLine" },
     { text: "Trạng thái", value: "status" },
     { text: "Thời gian đóng hàng", value: "packingTime" },

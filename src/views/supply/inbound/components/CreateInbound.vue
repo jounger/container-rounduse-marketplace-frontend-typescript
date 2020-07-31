@@ -151,7 +151,7 @@
                   <v-row
                     ><v-col cols="12" sm="6">
                       <v-text-field
-                        v-model="inboundLocal.billOfLading.billOfLadingNumber"
+                        v-model="inboundLocal.billOfLading.number"
                         prepend-icon="play_for_work"
                         type="text"
                         :rules="[required('Số B/L')]"
@@ -203,7 +203,10 @@
                   </v-row>
                   <v-btn
                     color="primary"
-                    @click="stepper = 3"
+                    @click="
+                      stepper = 3;
+                      createNewCode();
+                    "
                     :disabled="!valid2"
                     >Tiếp tục</v-btn
                   >
@@ -217,7 +220,18 @@
                 >Tạo hàng nhập</v-stepper-step
               >
               <v-stepper-content step="3">
-                <v-form ref="finishForm" v-model="valid" validation>
+                <v-form ref="finishForm" v-model="valid3" validation>
+                  <v-row>
+                    <v-col cols="12">
+                      <v-text-field
+                        v-model="inboundLocal.code"
+                        prepend-icon="gesture"
+                        type="string"
+                        :rules="[required('code')]"
+                        label="Mã hàng nhập"
+                      ></v-text-field
+                    ></v-col>
+                  </v-row>
                   <v-checkbox
                     v-model="checkbox"
                     :rules="[required('agree term')]"
@@ -428,6 +442,8 @@ import DatetimePicker from "@/components/DatetimePicker.vue";
 import snackbar from "@/store/modules/snackbar";
 import { DataOptions } from "vuetify";
 import { getContainersByInbound } from "@/api/container";
+import { getSupplier } from "@/api/supplier";
+import { ISupplier } from "@/entity/supplier";
 
 @Component({
   components: {
@@ -448,6 +464,7 @@ export default class CreateInbound extends Vue {
   @PropSync("inbounds", { type: Array }) inboundsSync!: Array<IInbound>;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
 
+  supplier = null as ISupplier | null;
   distanceMatrixResult = null as DistanceMatrix | null;
   style = { width: "600px", height: "500px" };
   origin = null as google.maps.places.PlaceResult | null;
@@ -463,6 +480,7 @@ export default class CreateInbound extends Vue {
   limitPorts = 5;
   loading = false;
   inboundLocal = {
+    code: "",
     shippingLine: "",
     containerType: "",
     returnStation: "",
@@ -470,7 +488,7 @@ export default class CreateInbound extends Vue {
     emptyTime: "",
     pickupTime: this.dateInit,
     billOfLading: {
-      billOfLadingNumber: "",
+      number: "",
       containers: [] as Array<IContainer>,
       portOfDelivery: "",
       freeTime: this.dateInit,
@@ -483,6 +501,7 @@ export default class CreateInbound extends Vue {
   stepper = 1;
   valid = true;
   valid2 = true;
+  valid3 = true;
   update = true;
   // API list
   ports: Array<IPort> = [];
@@ -548,6 +567,27 @@ export default class CreateInbound extends Vue {
     }
   }
 
+  createNewCode() {
+    const randomString = Math.random()
+      .toString(36)
+      .substring(9);
+    if (this.supplier != null) {
+      // code = supplier + unit + containerType + shippingLine + billOfLading +  year-month-day
+      this.inboundLocal.code =
+        this.supplier.companyCode +
+        "_" +
+        this.inboundLocal.billOfLading.unit +
+        "x" +
+        this.inboundLocal.containerType +
+        "_" +
+        this.inboundLocal.shippingLine +
+        "_" +
+        this.dateInit.slice(0, 10).replace(/-/g, "") +
+        "_" +
+        randomString;
+    }
+  }
+
   @Watch("dialogAddSync")
   onDialogAddSyncChange(val: boolean) {
     if (val == false) {
@@ -588,6 +628,7 @@ export default class CreateInbound extends Vue {
     this.stepper = 1;
     this.valid = false;
     this.valid2 = false;
+    this.valid3 = false;
     this.dateInit = addTimeToDate(new Date().toString());
     this.distanceMatrixResult = null;
     this.inboundLocal = {
@@ -598,7 +639,7 @@ export default class CreateInbound extends Vue {
       emptyTime: "",
       pickupTime: this.dateInit,
       billOfLading: {
-        billOfLadingNumber: "",
+        number: "",
         containers: [] as Array<IContainer>,
         portOfDelivery: "",
         freeTime: this.dateInit,
@@ -618,8 +659,7 @@ export default class CreateInbound extends Vue {
         console.log("response", response);
         snackbar.setSnackbar({
           text:
-            "Thêm mới thành công hàng nhập: " +
-            response.billOfLading.billOfLadingNumber,
+            "Thêm mới thành công hàng nhập: " + response.billOfLading.number,
           color: "success"
         });
         return response;
@@ -772,6 +812,16 @@ export default class CreateInbound extends Vue {
     await this.getShippingLines(5);
     await this.getContainerTypes(5);
     await this.getPorts(5);
+    const _supplier = await getSupplier(this.$auth.user().username)
+      .then(res => {
+        const response: ISupplier = res.data;
+        return response;
+      })
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    this.supplier = _supplier;
   }
 
   beforeDestroy() {

@@ -244,7 +244,7 @@ export default class Update extends Vue {
     emptyTime: "",
     pickupTime: "",
     billOfLading: {
-      billOfLadingNumber: "",
+      number: "",
       unit: 0,
       containers: [] as Array<IContainer>,
       portOfDelivery: "",
@@ -304,7 +304,7 @@ export default class Update extends Vue {
     },
     { text: "Hãng tàu", value: "outbound.shippingLine" },
     { text: "Loại cont", value: "outbound.containerType" },
-    { text: "Mã booking", value: "outbound.booking.bookingNumber" },
+    { text: "Mã booking", value: "outbound.booking.number" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
     { text: "Mở thầu", value: "bidOpening" },
     { text: "Đóng thầu", value: "bidClosing" },

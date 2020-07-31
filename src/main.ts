@@ -5,11 +5,11 @@ import store from "./store";
 import vuetify from "./plugins/vuetify";
 import "./plugins/vue-axios";
 import "./plugins/vue-auth";
-import NavLayout from './layouts/NavLayout.vue';
-import AuthLayout from './layouts/AuthLayout.vue';
-import DefaultLayout from './layouts/DefaultLayout.vue';
-import EmptyLayout from './layouts/EmptyLayout.vue';
-import RegisterLayout from './layouts/RegisterLayout.vue';
+import NavLayout from "./layouts/NavLayout.vue";
+import AuthLayout from "./layouts/AuthLayout.vue";
+import DefaultLayout from "./layouts/DefaultLayout.vue";
+import EmptyLayout from "./layouts/EmptyLayout.vue";
+import RegisterLayout from "./layouts/RegisterLayout.vue";
 
 Vue.component("NavLayout", NavLayout);
 Vue.component("AuthLayout", AuthLayout);

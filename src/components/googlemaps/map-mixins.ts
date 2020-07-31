@@ -1,9 +1,8 @@
 import { Vue, Component } from "vue-property-decorator";
-import { DistanceMatrix } from './map-interface';
+import { DistanceMatrix } from "./map-interface";
 
 @Component
 export default class GoogleMapMixins extends Vue {
-
   rejectEmptyElement(list: Array<any>) {
     return list.filter(x => x && x.length >= 5);
   }

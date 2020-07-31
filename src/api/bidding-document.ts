@@ -32,7 +32,6 @@ export function getBiddingDocumentsByExistCombined(paging: PaginationRequest) {
   });
 }
 
-
 export function createBiddingDocument(biddingDocument: IBiddingDocument) {
   return Vue.axios.post("/bidding-document", biddingDocument, {
     headers: config

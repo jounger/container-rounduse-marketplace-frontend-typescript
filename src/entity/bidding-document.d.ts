@@ -1,6 +1,6 @@
 import { IOutbound } from "./outbound";
-import { IBid } from './bid';
-import { IDiscount } from './discount';
+import { IBid } from "./bid";
+import { IDiscount } from "./discount";
 export interface IBiddingDocument {
   id?: number;
   merchant: string; // IMerchant username

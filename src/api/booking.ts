@@ -17,8 +17,8 @@ export function getBooking(id: number) {
     headers: config
   });
 }
-export function getBookingsByBookingNumber(bookingNumber: string) {
-  return Vue.axios.get(`/booking/${bookingNumber}`, {
+export function getBookingsByBookingNumber(number: string) {
+  return Vue.axios.get(`/booking/${number}`, {
     headers: config
   });
 }

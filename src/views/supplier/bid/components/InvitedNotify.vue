@@ -116,7 +116,7 @@ export default class InvitedNotify extends Vue {
     { text: "Loại cont", value: "relatedResource.outbound.containerType" },
     {
       text: "Mã booking",
-      value: "relatedResource.outbound.booking.bookingNumber"
+      value: "relatedResource.outbound.booking.number"
     },
     { text: "Giá gói thầu", value: "relatedResource.bidPackagePrice" },
     { text: "Mở thầu", value: "bidOpening" },
