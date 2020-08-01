@@ -1,4 +1,2 @@
-import { ISupplier } from './supplier';
-export interface IShippingLine extends ISupplier {
-
-}
+import { ISupplier } from "./supplier";
+export type IShippingLine = ISupplier;

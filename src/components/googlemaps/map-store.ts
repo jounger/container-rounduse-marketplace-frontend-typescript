@@ -1,9 +1,14 @@
-import { Module, VuexModule, MutationAction, getModule } from 'vuex-module-decorators'
-import { Loader, google, LoaderOptions } from 'google-maps';
-import store from '@/store/index';
+import {
+  Module,
+  VuexModule,
+  MutationAction,
+  getModule
+} from "vuex-module-decorators";
+import { Loader, google, LoaderOptions } from "google-maps";
+import store from "@/store/index";
 
 @Module({
-  name: 'gmap',
+  name: "gmap",
   dynamic: true,
   store: store
 })
@@ -14,12 +19,12 @@ class GmapModule extends VuexModule {
     return this.google;
   }
 
-  @MutationAction({ mutate: ['google'] })
+  @MutationAction({ mutate: ["google"] })
   async setUpGmapLoaderGmap(key: string, options: LoaderOptions) {
     const google = await new Loader(key, options).load();
     return {
       google: google
-    }
+    };
   }
 }
 

@@ -171,7 +171,7 @@
                         <v-list-item-content>
                           <v-list-item-title>{{
                             "Mã Booking: " +
-                              biddingDocument.outbound.booking.bookingNumber
+                              biddingDocument.outbound.booking.number
                           }}</v-list-item-title>
                           <v-list-item-subtitle>
                             {{

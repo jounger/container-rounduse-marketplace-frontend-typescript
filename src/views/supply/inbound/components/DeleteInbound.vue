@@ -19,7 +19,7 @@
                 <v-list-item-content>
                   <v-list-item-title>{{
                     typeof inbound.billOfLading !== "undefined"
-                      ? inbound.billOfLading.billOfLadingNumber
+                      ? inbound.billOfLading.number
                       : ""
                   }}</v-list-item-title>
                 </v-list-item-content>
@@ -56,8 +56,7 @@ export default class DeleteInbound extends Vue {
           console.log("response", res);
           snackbar.setSnackbar({
             text:
-              "Xóa thành công hàng nhập: " +
-              this.inbound.billOfLading.billOfLadingNumber,
+              "Xóa thành công hàng nhập: " + this.inbound.billOfLading.number,
             color: "success"
           });
           const index = this.inboundsSync.findIndex(

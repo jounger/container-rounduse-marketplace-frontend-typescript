@@ -132,7 +132,7 @@
                   <v-row
                     ><v-col cols="12" sm="6">
                       <v-text-field
-                        v-model="inboundLocal.billOfLading.billOfLadingNumber"
+                        v-model="inboundLocal.billOfLading.number"
                         prepend-icon="play_for_work"
                         type="text"
                         :rules="[required('Số B/L')]"
@@ -448,8 +448,7 @@ export default class UpdateInbound extends Vue {
           console.log("response", response);
           snackbar.setSnackbar({
             text:
-              "Cập nhật thành công hàng nhập: " +
-              response.billOfLading.billOfLadingNumber,
+              "Cập nhật thành công hàng nhập: " + response.billOfLading.number,
             color: "success"
           });
           return response;
@@ -481,7 +480,7 @@ export default class UpdateInbound extends Vue {
           const response: IBillOfLading = res.data;
           console.log("response", response);
           snackbar.setSnackbar({
-            text: "Cập nhật thành công B/L: " + response.billOfLadingNumber,
+            text: "Cập nhật thành công B/L: " + response.number,
             color: "success"
           });
           return response;

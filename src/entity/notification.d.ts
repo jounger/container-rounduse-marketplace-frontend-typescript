@@ -1,7 +1,7 @@
-import { IBiddingDocument } from './bidding-document';
-import { ICombined } from './combined';
-import { IOutbound } from './outbound';
-import { IReport } from './report';
+import { IBiddingDocument } from "./bidding-document";
+import { ICombined } from "./combined";
+import { IOutbound } from "./outbound";
+import { IReport } from "./report";
 export interface INotification {
   id?: number;
   recipient: string; // username

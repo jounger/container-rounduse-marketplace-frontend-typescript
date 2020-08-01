@@ -157,7 +157,7 @@
                   <v-row
                     ><v-col cols="12" sm="6">
                       <v-text-field
-                        v-model="outboundLocal.booking.bookingNumber"
+                        v-model="outboundLocal.booking.number"
                         prepend-icon="child_friendly"
                         :rules="[required('booking number')]"
                         type="text"
@@ -214,7 +214,10 @@
                   ></v-checkbox>
                   <v-btn
                     color="primary"
-                    @click="stepper = 3"
+                    @click="
+                      stepper = 3;
+                      createNewCode();
+                    "
                     :disabled="!valid2"
                     >Tiếp tục</v-btn
                   >
@@ -230,7 +233,18 @@
               >
 
               <v-stepper-content step="3">
-                <v-form ref="finishForm">
+                <v-form ref="finishForm" v-model="valid3" validation>
+                  <v-row>
+                    <v-col cols="12">
+                      <v-text-field
+                        v-model="outboundLocal.code"
+                        prepend-icon="gesture"
+                        type="string"
+                        :rules="[required('code')]"
+                        label="Mã hàng xuất"
+                      ></v-text-field
+                    ></v-col>
+                  </v-row>
                   <v-checkbox
                     v-model="checkbox"
                     label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
@@ -371,6 +385,8 @@ import { DistanceMatrix } from "@/components/googlemaps/map-interface";
 import Utils from "@/mixin/utils";
 import DatetimePicker from "@/components/DatetimePicker.vue";
 import snackbar from "@/store/modules/snackbar";
+import { getSupplier } from "@/api/supplier";
+import { ISupplier } from "@/entity/supplier";
 
 @Component({
   components: {
@@ -389,6 +405,7 @@ export default class CreateOutbound extends Vue {
   @PropSync("outbounds", { type: Array }) outboundsSync!: Array<IOutbound>;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
 
+  supplier = null as ISupplier | null;
   distanceMatrixResult = null as DistanceMatrix | null;
   style = { width: "600px", height: "500px" };
   origin = null as google.maps.places.PlaceResult | null;
@@ -403,6 +420,7 @@ export default class CreateOutbound extends Vue {
   seeMorePorts = true;
   limitPorts = 5;
   outboundLocal = {
+    code: "",
     shippingLine: "",
     containerType: "",
     status: "",
@@ -413,7 +431,7 @@ export default class CreateOutbound extends Vue {
     grossWeight: 0,
     unitOfMeasurement: "KG",
     booking: {
-      bookingNumber: "",
+      number: "",
       unit: 0,
       cutOffTime: this.dateInit,
       isFcl: true,
@@ -426,6 +444,7 @@ export default class CreateOutbound extends Vue {
   stepper = 1;
   valid = true;
   valid2 = true;
+  valid3 = true;
   // API list
   ports: Array<IPort> = [];
   shippingLines: Array<IShippingLine> = [];
@@ -447,6 +466,27 @@ export default class CreateOutbound extends Vue {
     }
   }
 
+  createNewCode() {
+    const randomString = Math.random()
+      .toString(36)
+      .substring(9);
+    if (this.supplier != null) {
+      // code = supplier + unit + containerType + shippingLine + billOfLading +  year-month-day
+      this.outboundLocal.code =
+        this.supplier.companyCode +
+        "_" +
+        this.outboundLocal.booking.unit +
+        "x" +
+        this.outboundLocal.containerType +
+        "_" +
+        this.outboundLocal.shippingLine +
+        "_" +
+        this.dateInit.slice(0, 10).replace(/-/g, "") +
+        "_" +
+        randomString;
+    }
+  }
+
   @Watch("dialogAddSync")
   onDialogAddSyncChange(val: boolean) {
     if (val == false) {
@@ -461,6 +501,7 @@ export default class CreateOutbound extends Vue {
     this.stepper = 1;
     this.valid = false;
     this.valid2 = false;
+    this.valid3 = false;
     this.dateInit = addTimeToDate(new Date().toString());
     this.distanceMatrixResult = null;
     this.outboundLocal = {
@@ -474,7 +515,7 @@ export default class CreateOutbound extends Vue {
       grossWeight: 0,
       unitOfMeasurement: "KG",
       booking: {
-        bookingNumber: "",
+        number: "",
         unit: 0,
         cutOffTime: this.dateInit,
         isFcl: true,
@@ -493,8 +534,7 @@ export default class CreateOutbound extends Vue {
         const response: IOutbound = res.data;
         console.log("response", response);
         snackbar.setSnackbar({
-          text:
-            "Thêm mới thành công hàng xuất: " + response.booking.bookingNumber,
+          text: "Thêm mới thành công hàng xuất: " + response.booking.number,
           color: "success"
         });
         return response;
@@ -620,6 +660,16 @@ export default class CreateOutbound extends Vue {
     await this.getShippingLines(5);
     await this.getContainerTypes(5);
     await this.getPorts(5);
+    const _supplier = await getSupplier(this.$auth.user().username)
+      .then(res => {
+        const response: ISupplier = res.data;
+        return response;
+      })
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    this.supplier = _supplier;
   }
   get portsToString() {
     return this.ports.map(x => x.nameCode);

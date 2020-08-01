@@ -86,8 +86,7 @@
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>{{
-                    "Mã Booking: " +
-                      biddingDocument.outbound.booking.bookingNumber
+                    "Mã Booking: " + biddingDocument.outbound.booking.number
                   }}</v-list-item-title>
                   <v-list-item-subtitle>
                     {{

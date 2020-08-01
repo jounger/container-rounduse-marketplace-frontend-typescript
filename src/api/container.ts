@@ -18,7 +18,10 @@ export function getContainer(id: number) {
     headers: config
   });
 }
-export function getContainersByBillOfLading(id: number, paging: PaginationRequest) {
+export function getContainersByBillOfLading(
+  id: number,
+  paging: PaginationRequest
+) {
   return Vue.axios.get(`/container/bill-of-lading/${id}`, {
     params: paging,
     headers: config

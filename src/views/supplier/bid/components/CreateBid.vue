@@ -299,7 +299,7 @@ export default class CreateBid extends Vue {
     emptyTime: "",
     pickupTime: "",
     billOfLading: {
-      billOfLadingNumber: "",
+      number: "",
       unit: 0,
       containers: [] as Array<IContainer>,
       portOfDelivery: "",
@@ -359,7 +359,7 @@ export default class CreateBid extends Vue {
     },
     { text: "Hãng tàu", value: "outbound.shippingLine" },
     { text: "Loại cont", value: "outbound.containerType" },
-    { text: "Mã booking", value: "outbound.booking.bookingNumber" },
+    { text: "Mã booking", value: "outbound.booking.number" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
     { text: "Mở thầu", value: "bidOpening" },
     { text: "Đóng thầu", value: "bidClosing" },
@@ -376,7 +376,7 @@ export default class CreateBid extends Vue {
     { text: "Hãng tàu", value: "shippingLine" },
     { text: "Loại cont", value: "containerType" },
     { text: "Time lấy cont", value: "pickUpTime" },
-    { text: "B/L No.", value: "billOfLading.billOfLadingNumber" },
+    { text: "B/L No.", value: "billOfLading.number" },
     { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery" },
     { text: "Số lượng cont đăng ký", value: "billOfLading.unit" }
   ];

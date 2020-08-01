@@ -171,7 +171,7 @@
                   <v-row
                     ><v-col cols="12" sm="6">
                       <v-text-field
-                        v-model="outboundLocal.booking.bookingNumber"
+                        v-model="outboundLocal.booking.number"
                         prepend-icon="child_friendly"
                         :rules="[required('booking number')]"
                         type="text"
@@ -493,9 +493,7 @@ export default class UpdateOutbound extends Vue {
           console.log(res.data);
           const response: IOutbound = res.data;
           snackbar.setSnackbar({
-            text:
-              "Cập nhật thành công hàng xuất: " +
-              response.booking.bookingNumber,
+            text: "Cập nhật thành công hàng xuất: " + response.booking.number,
             color: "success"
           });
           return response;
@@ -526,7 +524,7 @@ export default class UpdateOutbound extends Vue {
           const response: IBooking = res.data;
           if (this.outboundLocal) {
             snackbar.setSnackbar({
-              text: "Cập nhật thành công Booking: " + response.bookingNumber,
+              text: "Cập nhật thành công Booking: " + response.number,
               color: "success"
             });
             return response;

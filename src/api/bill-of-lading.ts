@@ -20,10 +20,8 @@ export function getBillOfLading(id: number) {
     headers: config
   });
 }
-export function getBillOfLadingByBillOfLadingNumber(
-  billOfLadingNumber: string
-) {
-  return Vue.axios.get(`/bill-of-lading/${billOfLadingNumber}`, {
+export function getBillOfLadingByBillOfLadingNumber(number: string) {
+  return Vue.axios.get(`/bill-of-lading/${number}`, {
     headers: config
   });
 }

@@ -1,6 +1,6 @@
 import Vue from "vue";
 import { PaginationRequest } from "./payload";
-import { IShippingLine } from '../entity/shipping-line';
+import { IShippingLine } from "../entity/shipping-line";
 
 const config = {
   Authorization: "Bearer {auth_token}"
