@@ -78,6 +78,7 @@
                     dateicon="event_available"
                     datelabel="Ngày mở thầu"
                     timelabel="Giờ mở thầu"
+                    readonly
                   />
                 </v-col>
                 <!-- Bid Closing -->
@@ -139,6 +140,7 @@
               <v-checkbox
                 v-model="biddingDocumentLocal.isMultipleAward"
                 label="Cho phép nhiều nhà thầu cùng thắng"
+                readonly
               ></v-checkbox>
               <v-btn
                 color="primary"
@@ -158,10 +160,12 @@
                 type="text"
                 prepend-icon="loyalty"
                 label="Mã giảm giá"
+                readonly
               ></v-text-field>
               <v-checkbox
                 v-model="autoSendCheckbox"
                 label="Tự động gửi thư mời thầu"
+                readonly
               ></v-checkbox>
               <v-checkbox
                 v-model="checkbox"

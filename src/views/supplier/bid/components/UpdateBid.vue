@@ -7,6 +7,10 @@
     transition="dialog-bottom-transition"
   >
     <v-card tile>
+      <ListContainer
+        :containers.sync="containers"
+        :dialogContainer.sync="dialogContainer"
+      />
       <!-- TITLE -->
       <v-toolbar dark color="primary">
         <v-btn icon dark @click="dialogEditSync = false">
@@ -115,12 +119,16 @@
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
                     <v-btn
+                      v-if="
+                        biddingDocumentSelected &&
+                          biddingDocumentSelected.isMultipleAward
+                      "
                       color="primary"
                       dark
                       class="mb-2"
-                      @click="dialogAdd = true"
+                      @click="dialogContainer = true"
                     >
-                      Chọn thêm Container
+                      Thêm Container
                     </v-btn>
                   </v-toolbar>
                 </template>
@@ -212,20 +220,21 @@ import { IContainer } from "@/entity/container";
 import FormValidate from "@/mixin/form-validate";
 import { IInbound } from "@/entity/inbound";
 import Utils from "@/mixin/utils";
-import { getInboundsByOutboundAndForwarder } from "@/api/inbound";
 import { PaginationResponse } from "@/api/payload";
 import { createBid } from "@/api/bid";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { isEmptyObject, addTimeToDate, getErrorMessage } from "@/utils/tool";
 import { getBiddingNotificationsByUser } from "@/api/notification";
 import { IBiddingNotification } from "@/entity/bidding-notification";
-import { IOutbound } from "@/entity/outbound";
-import { getContainersByInbound } from "@/api/container";
 import snackbar from "@/store/modules/snackbar";
 import { DataOptions } from "vuetify";
 import { IBillOfLading } from "@/entity/bill-of-lading";
+import ListContainer from "./ListContainer.vue";
 @Component({
-  mixins: [FormValidate, Utils]
+  mixins: [FormValidate, Utils],
+  components: {
+    ListContainer
+  }
 })
 export default class Update extends Vue {
   @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
@@ -240,6 +249,7 @@ export default class Update extends Vue {
   singleExpand = true;
   dateInit = addTimeToDate(new Date().toString());
   bidLocal = {} as IBid;
+  dialogContainer = false;
   inbound = {
     emptyTime: "",
     pickupTime: "",
@@ -396,26 +406,6 @@ export default class Update extends Vue {
     }
     this.onContainerOptionsChange(this.containerOptions);
   }
-  async clicked(value: IInbound) {
-    console.log("value", value);
-    if (this.singleExpand) {
-      if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
-        this.expanded.splice(0, this.expanded.length);
-        this.inbound.billOfLading.containers = [] as Array<IContainer>;
-      } else {
-        console.log(0);
-        if (this.expanded.length > 0) {
-          this.expanded.splice(0, this.expanded.length);
-          this.expanded.push(value);
-          this.inbound = value;
-          this.onOptionsChange(this.options);
-        } else {
-          this.expanded.push(value);
-          this.inbound = value;
-        }
-      }
-    }
-  }
   @Watch("biddingDocumentOptions")
   async onBiddingDocumentOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
@@ -464,38 +454,6 @@ export default class Update extends Vue {
       this.loading = false;
     }
   }
-  @Watch("inboundOptions")
-  async onInboundOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined") {
-      console.log(1);
-      this.loading = true;
-      if (
-        this.biddingDocumentSelected &&
-        this.biddingDocumentSelected.outbound
-      ) {
-        const _outbound = this.biddingDocumentSelected.outbound as IOutbound;
-        this.unit = _outbound.booking.unit;
-        const _outboundId = _outbound.id as number;
-        const _inbounds = await getInboundsByOutboundAndForwarder(_outboundId, {
-          page: val.page - 1,
-          limit: val.itemsPerPage
-        })
-          .then(res => {
-            const response: PaginationResponse<IInbound> = res.data;
-            return response;
-          })
-          .catch(err => {
-            console.log(err);
-            return null;
-          });
-        this.loading = false;
-        if (_inbounds) {
-          this.inbounds = _inbounds.data;
-          this.inboundServerSideOptions.totalItems = _inbounds.totalElements;
-        }
-      }
-    }
-  }
   @Watch("containerOptions")
   async onContainerOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
@@ -513,31 +471,6 @@ export default class Update extends Vue {
         this.containersSelected.push(this.containers[i]);
       }
 
-      this.loading = false;
-    }
-  }
-  @Watch("options")
-  async onOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined") {
-      this.loading = true;
-      if (this.inbound && this.inbound.id) {
-        const _containers = await getContainersByInbound(this.inbound.id, {
-          page: val.page - 1,
-          limit: val.itemsPerPage
-        })
-          .then(res => {
-            const response: PaginationResponse<IContainer> = res.data;
-            return response;
-          })
-          .catch(err => {
-            console.log(err);
-            return null;
-          });
-        if (_containers) {
-          this.serverSideOptions.totalItems = _containers.totalElements;
-          this.inbound.billOfLading.containers = _containers.data;
-        }
-      }
       this.loading = false;
     }
   }

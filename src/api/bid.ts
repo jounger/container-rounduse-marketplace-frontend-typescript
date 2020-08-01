@@ -45,6 +45,21 @@ export function createBid(id: number, bid: IBid) {
     headers: config
   });
 }
+export function addContainer(id: number, conId: number) {
+  return Vue.axios.post(`/bid/${id}/container/${conId}`, {
+    headers: config
+  });
+}
+export function removeContainer(id: number, conId: number) {
+  return Vue.axios.delete(`/bid/${id}/container/${conId}`, {
+    headers: config
+  });
+}
+export function replaceContainer(id: number, updates: object) {
+  return Vue.axios.patch(`/bid/${id}/container`, updates, {
+    headers: config
+  });
+}
 
 export function updateBid(bid: IBid) {
   return Vue.axios.put("/bid", bid, {

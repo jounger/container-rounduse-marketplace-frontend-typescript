@@ -148,17 +148,6 @@
                     <v-list-item-title>Chỉnh sửa</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item
-                  @click.stop="openEditDialog(item)"
-                  v-if="item.status == 'CANCELED'"
-                >
-                  <v-list-item-icon>
-                    <v-icon small>edit</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>Mở lại thầu</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
                 <v-list-item @click.stop="openDetailDialog(item)">
                   <v-list-item-icon>
                     <v-icon small>details</v-icon>

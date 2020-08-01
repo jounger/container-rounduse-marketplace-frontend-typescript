@@ -20,6 +20,9 @@
         fullname
       }}</v-list-item-title>
       <v-list-item-subtitle>
+        <span style="color: black;" v-if="item.recipient != report.sender"
+          >@{{ recipient }}</span
+        >
         {{ item.message
         }}<v-menu
           :close-on-click="true"
@@ -73,7 +76,7 @@
               item.sender != $auth.user().username &&
               $auth.user().roles[0] == 'ROLE_FORWARDER'
           "
-          @click="focus = true"
+          @click="replyFeedback()"
           >Phản hồi .</a
         ><a
           v-if="
@@ -82,7 +85,7 @@
               (item.sender == $auth.user().username ||
                 $auth.user().roles[0] == 'ROLE_MODERATOR')
           "
-          @click="focus = true"
+          @click="replyFeedback()"
           >Phản hồi .</a
         >
         {{ convertTime(item.sendDate) }}
@@ -111,7 +114,12 @@ export default class UserFeedback extends Vue {
   @Prop(Object) report!: IReport;
   @Prop(String) forwarderFullname!: string;
   @PropSync("feedbacks", { type: Array }) feedbacksSync!: Array<IFeedback>;
+  @PropSync("message", { type: String }) messageSync!: string;
+  @PropSync("feedbackItem", { type: Object }) feedbackItemSync!: IFeedback;
+  @PropSync("showCreateFeedback", { type: Boolean })
+  showCreateFeedbackSync!: boolean;
   fullname = "";
+  recipient = "";
   update = false;
   dialogFeedback = false;
   dialogDel = false;
@@ -137,6 +145,27 @@ export default class UserFeedback extends Vue {
       if (_fullname) {
         this.fullname = _fullname;
       }
+    }
+    if (this.item.recipient != this.report.sender) {
+      const _fullname = await getOperatorByUsername(this.item.recipient)
+        .then(res => {
+          const response = res.data;
+          return response.fullname;
+        })
+        .catch(err => {
+          console.log(err);
+          return null;
+        });
+      if (_fullname) {
+        this.recipient = _fullname;
+      }
+    }
+  }
+  replyFeedback() {
+    console.log(1);
+    this.feedbackItemSync.recipient = this.item.sender;
+    if (this.$auth.user().roles[0] == "ROLE_FORWARDER") {
+      this.showCreateFeedbackSync = true;
     }
   }
   openUpdateDialog(item: IFeedback) {

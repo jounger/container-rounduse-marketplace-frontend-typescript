@@ -537,6 +537,7 @@ export default class CreateBid extends Vue {
           this.expanded.splice(0, this.expanded.length);
           this.expanded.push(value);
           this.inbound = value;
+          this.inbound.billOfLading.containers = [] as Array<IContainer>;
           this.onOptionsChange(this.options);
         } else {
           this.expanded.push(value);
