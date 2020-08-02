@@ -37,9 +37,8 @@
             <template v-slot:expanded-item="{ headers }">
               <td :colspan="headers.length" class="px-0">
                 <v-data-table
-                  v-model="containers"
                   :headers="containerHeaders"
-                  :items="inbound.billOfLading.containers"
+                  :items="containers"
                   item-key="id"
                   :loading="loading"
                   :options.sync="options"
@@ -54,19 +53,33 @@
                   dense
                 >
                   <template v-slot:item.actions="{ item }">
-                    <v-checkbox
-                      v-model="containers"
-                      :value="item"
-                      @change="changeContainerServerSideOptions(item)"
-                      :disabled="
-                        containers.length == unit &&
-                          containers.findIndex(
+                    <v-btn
+                      class="ma-1"
+                      tile
+                      outlined
+                      color="success"
+                      @click.stop="createContainerBid(item)"
+                      small
+                      v-if="
+                        action == 'ADD' &&
+                          containersSelected.findIndex(
                             x => x.containerNumber == item.containerNumber
                           ) == -1
                       "
-                      style="margin:0px;padding:0px"
-                      hide-details
-                    ></v-checkbox>
+                    >
+                      <v-icon left>add</v-icon> Thêm Cont
+                    </v-btn>
+                    <v-btn
+                      class="ma-1"
+                      tile
+                      outlined
+                      color="primary"
+                      @click.stop="changeContainerBid(item)"
+                      small
+                      v-if="action == 'CHANGE'"
+                    >
+                      <v-icon left>add</v-icon> Đổi Cont
+                    </v-btn>
                   </template>
                 </v-data-table>
               </td>
@@ -74,9 +87,10 @@
           </v-data-table>
         </v-container>
       </v-card-text>
-      <v-card-actions style="margin-left: 205px;">
+      <v-card-actions>
+        <v-spacer></v-spacer>
         <v-btn @click="dialogContainerSync = false">Hủy</v-btn>
-        <v-btn @click="dialogContainerSync = false" color="error"
+        <v-btn @click="dialogContainerSync = false" color="primary"
           >Hoàn tất</v-btn
         >
       </v-card-actions>
@@ -88,40 +102,34 @@ import { Component, Vue, PropSync, Prop, Watch } from "vue-property-decorator";
 import { getErrorMessage } from "@/utils/tool";
 import snackbar from "@/store/modules/snackbar";
 import { IBiddingDocument } from "@/entity/bidding-document";
-import { IBiddingNotification } from "@/entity/notification";
-import { editBiddingNotifications } from "@/api/notification";
-import { getContainersByInbound } from "../../../../api/container";
-import { getInboundsByOutboundAndForwarder } from "../../../../api/inbound";
-import { IContainer } from "../../../../entity/container";
-import { PaginationResponse } from "../../../../api/payload";
-import { IInbound } from "../../../../entity/inbound";
-import { IOutbound } from "../../../../entity/outbound";
+import { getContainersByInbound } from "@/api/container";
+import { getInboundsByOutboundAndForwarder } from "@/api/inbound";
+import { IContainer } from "@/entity/container";
+import { PaginationResponse } from "@/api/payload";
+import { IInbound } from "@/entity/inbound";
+import { IOutbound } from "@/entity/outbound";
 import { DataOptions } from "vuetify";
-import { IBillOfLading } from "../../../../entity/bill-of-lading";
+import Utils from "@/mixin/utils";
+import { addContainer, replaceContainer } from "@/api/bid";
+import { IBid } from "@/entity/bid";
 
-@Component
+@Component({
+  mixins: [Utils]
+})
 export default class ListContainer extends Vue {
   @PropSync("dialogContainer", { type: Boolean }) dialogContainerSync!: boolean;
   @Prop(Object) biddingDocumentSelected!: IBiddingDocument;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
-  @Prop(Object) biddingDocument!: IBiddingDocument;
-  @Prop(Object) biddingNotification!: IBiddingNotification;
+  @PropSync("containersSelected", { type: Array })
+  containersSelectedSync!: Array<IContainer>;
+  @Prop(String) action!: string;
+  @Prop(Object) container!: IContainer;
+  @Prop(Object) bid!: IBid;
   expanded: Array<IInbound> = [];
   singleExpand = true;
   inbounds: Array<IInbound> = [];
-  unit = 0;
-  inbound = {
-    emptyTime: "",
-    pickupTime: "",
-    billOfLading: {
-      billOfLadingNumber: "",
-      unit: 0,
-      containers: [] as Array<IContainer>,
-      portOfDelivery: "",
-      freeTime: ""
-    } as IBillOfLading,
-    returnStation: ""
-  } as IInbound;
+  containers: Array<IContainer> = [];
+  inbound = null as IInbound | null;
   loading = true;
   options = {
     page: 1,
@@ -149,7 +157,7 @@ export default class ListContainer extends Vue {
     { text: "Hãng tàu", value: "shippingLine" },
     { text: "Loại cont", value: "containerType" },
     { text: "Time lấy cont", value: "pickUpTime" },
-    { text: "B/L No.", value: "billOfLading.billOfLadingNumber" },
+    { text: "B/L No.", value: "billOfLading.number" },
     { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery" },
     { text: "Số lượng cont đăng ký", value: "billOfLading.unit" }
   ];
@@ -173,7 +181,7 @@ export default class ListContainer extends Vue {
       value: "tractor.licensePlate",
       class: "elevation-1 primary"
     },
-    { text: "Chọn Cont", value: "actions", class: "elevation-1 primary" }
+    { text: "Hành động", value: "actions", class: "elevation-1 primary" }
   ];
 
   async clicked(value: IInbound) {
@@ -181,18 +189,93 @@ export default class ListContainer extends Vue {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
-        this.inbound.billOfLading.containers = [] as Array<IContainer>;
+        this.containers = [] as Array<IContainer>;
       } else {
         console.log(0);
         if (this.expanded.length > 0) {
           this.expanded.splice(0, this.expanded.length);
           this.expanded.push(value);
+          this.containers = [] as Array<IContainer>;
           this.inbound = value;
           this.onOptionsChange(this.options);
         } else {
           this.expanded.push(value);
           this.inbound = value;
         }
+      }
+    }
+  }
+  async createContainerBid(item: IContainer) {
+    if (this.bid.id && item.id) {
+      console.log(0);
+      const _bid = await addContainer(this.bid.id, item.id)
+        .then(res => {
+          console.log(1);
+          const response: IBid = res.data;
+          snackbar.setSnackbar({
+            text:
+              "Thêm mới thành công Container " +
+              item.containerNumber +
+              " cho HSDT " +
+              response.id,
+            color: "success"
+          });
+          console.log(2);
+          return response;
+        })
+        .catch(err => {
+          console.log(3);
+          console.log(err);
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_bid) {
+        console.log(4);
+        this.containersSelectedSync.unshift(item);
+        this.totalItemsSync += 1;
+      }
+      snackbar.setDisplay(true);
+    }
+  }
+
+  async changeContainerBid(item: IContainer) {
+    if (this.bid.id && item.id) {
+      const _bid = await replaceContainer(this.bid.id, {
+        oldContainerId: this.container.id,
+        newContainerId: item.id
+      })
+        .then(res => {
+          const response: IBid = res.data;
+          snackbar.setSnackbar({
+            text:
+              "Đổi thành công Container " +
+              this.container.containerNumber +
+              " thành Container " +
+              item.containerNumber +
+              " cho HSDT " +
+              response.id,
+            color: "success"
+          });
+          return response;
+        })
+        .catch(err => {
+          console.log(err);
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_bid) {
+        console.log(_bid);
+        const index = this.containersSelectedSync.findIndex(
+          x => x.containerNumber == this.container.containerNumber
+        );
+        this.containersSelectedSync.splice(index, 1, item);
+        snackbar.setDisplay(true);
       }
     }
   }
@@ -206,7 +289,6 @@ export default class ListContainer extends Vue {
         this.biddingDocumentSelected.outbound
       ) {
         const _outbound = this.biddingDocumentSelected.outbound as IOutbound;
-        this.unit = _outbound.booking.unit;
         const _outboundId = _outbound.id as number;
         const _inbounds = await getInboundsByOutboundAndForwarder(_outboundId, {
           page: val.page - 1,
@@ -246,8 +328,10 @@ export default class ListContainer extends Vue {
             return null;
           });
         if (_containers) {
-          this.serverSideOptions.totalItems = _containers.totalElements;
-          this.inbound.billOfLading.containers = _containers.data;
+          this.containers = _containers.data.filter(
+            (x: IContainer) => x.status == "CREATED"
+          );
+          this.serverSideOptions.totalItems = this.containers.length;
         }
       }
       this.loading = false;

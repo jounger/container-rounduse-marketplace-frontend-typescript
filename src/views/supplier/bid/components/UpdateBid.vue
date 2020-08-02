@@ -8,8 +8,26 @@
   >
     <v-card tile>
       <ListContainer
-        :containers.sync="containers"
+        v-if="dialogContainer"
         :dialogContainer.sync="dialogContainer"
+        :biddingDocumentSelected="biddingDocumentSelected"
+        :bid.sync="bidSync"
+        :action="action"
+        :container="container"
+        :containersSelected.sync="containersSelected"
+        :totalItems.sync="containerServerSideOptions.totalItems"
+        :page="containerOptions.page"
+        :itemsPerPage="containerOptions.itemsPerPage"
+      />
+      <ConfirmContainer
+        v-if="dialogConfirm"
+        :dialogConfirm.sync="dialogConfirm"
+        :container="container"
+        :bid.sync="bidSync"
+        :containersSelected.sync="containersSelected"
+        :totalItems.sync="containerServerSideOptions.totalItems"
+        :page="containerOptions.page"
+        :itemsPerPage="containerOptions.itemsPerPage"
       />
       <!-- TITLE -->
       <v-toolbar dark color="primary">
@@ -69,9 +87,10 @@
                 v-if="biddingDocumentSelected"
                 type="number"
                 :rules="[
-                  minNumber(
+                  minNumber('bid price', biddingDocumentSelected.bidFloorPrice),
+                  maxNumber(
                     'bid price',
-                    biddingDocumentSelected.bidFloorPrice + 1
+                    biddingDocumentSelected.bidPackagePrice
                   )
                 ]"
                 label="Giá gửi thầu"
@@ -82,8 +101,8 @@
                 type="time"
                 suffix="PST"
               ></v-text-field> -->
-              <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
-                >Tiếp tục</v-btn
+              <v-btn color="primary" @click="updateBid()" :disabled="!valid"
+                >Lưu Tiếp tục</v-btn
               >
               <v-btn text @click="stepper = 1">Quay lại</v-btn>
             </v-form>
@@ -121,12 +140,13 @@
                     <v-btn
                       v-if="
                         biddingDocumentSelected &&
-                          biddingDocumentSelected.isMultipleAward
+                          biddingDocumentSelected.isMultipleAward &&
+                          containers.length < unit
                       "
                       color="primary"
                       dark
                       class="mb-2"
-                      @click="dialogContainer = true"
+                      @click="openCreateContainerBid()"
                     >
                       Thêm Container
                     </v-btn>
@@ -156,7 +176,10 @@
                       </v-list-item>
                       <v-list-item
                         @click.stop="openDeleteDialog(item)"
-                        v-if="biddingDocumentSelected.isMultipleAward"
+                        v-if="
+                          biddingDocumentSelected.isMultipleAward &&
+                            containers.length > 0
+                        "
                       >
                         <v-list-item-icon>
                           <v-icon small>delete</v-icon>
@@ -192,20 +215,7 @@
               :disabled="containers.length < unit"
               >Tiếp tục</v-btn
             >
-            <v-btn text @click="stepper = 2">Quay lại</v-btn>
-          </v-stepper-content>
-          <v-stepper-step step="4">Hoàn thành</v-stepper-step>
-          <v-stepper-content step="4">
-            <v-form ref="finishForm">
-              <v-checkbox
-                v-model="checkbox"
-                label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
-              ></v-checkbox>
-              <v-btn color="primary" @click="createBid()" :disabled="!checkbox"
-                >Hoàn tất</v-btn
-              >
-              <v-btn text @click="stepper = 3">Quay lại</v-btn>
-            </v-form>
+            <v-btn text @click="dialogEditSync = false">Hoàn tất</v-btn>
           </v-stepper-content>
         </v-stepper>
       </v-list>
@@ -214,26 +224,25 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync, Prop, Watch } from "vue-property-decorator";
+import { Component, Vue, PropSync, Watch } from "vue-property-decorator";
 import { IBid } from "@/entity/bid";
 import { IContainer } from "@/entity/container";
 import FormValidate from "@/mixin/form-validate";
-import { IInbound } from "@/entity/inbound";
 import Utils from "@/mixin/utils";
-import { PaginationResponse } from "@/api/payload";
-import { createBid } from "@/api/bid";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { isEmptyObject, addTimeToDate, getErrorMessage } from "@/utils/tool";
-import { getBiddingNotificationsByUser } from "@/api/notification";
-import { IBiddingNotification } from "@/entity/bidding-notification";
 import snackbar from "@/store/modules/snackbar";
 import { DataOptions } from "vuetify";
-import { IBillOfLading } from "@/entity/bill-of-lading";
 import ListContainer from "./ListContainer.vue";
+import { editBid } from "@/api/bid";
+import ConfirmContainer from "./ConfirmContainer.vue";
+import { IOutbound } from "@/entity/outbound";
+
 @Component({
   mixins: [FormValidate, Utils],
   components: {
-    ListContainer
+    ListContainer,
+    ConfirmContainer
   }
 })
 export default class Update extends Vue {
@@ -241,49 +250,22 @@ export default class Update extends Vue {
   @PropSync("biddingDocument", { type: Object })
   biddingDocumentSync!: IBiddingDocument;
   @PropSync("bids", { type: Array }) bidsSync!: Array<IBid>;
-  @Prop(Object) bid!: IBid;
+  @PropSync("bid", { type: Object }) bidSync!: IBid;
 
   biddingDocuments: Array<IBiddingDocument> = [];
   biddingDocumentSelected = null as IBiddingDocument | null;
-  expanded: Array<IInbound> = [];
-  singleExpand = true;
+  container = null as IContainer | null;
+  action = "";
+  dialogConfirm = false;
   dateInit = addTimeToDate(new Date().toString());
   bidLocal = {} as IBid;
   dialogContainer = false;
-  inbound = {
-    emptyTime: "",
-    pickupTime: "",
-    billOfLading: {
-      number: "",
-      unit: 0,
-      containers: [] as Array<IContainer>,
-      portOfDelivery: "",
-      freeTime: ""
-    } as IBillOfLading,
-    returnStation: ""
-  } as IInbound;
   loading = true;
-  options = {
-    page: 1,
-    itemsPerPage: 5
-  } as DataOptions;
-  serverSideOptions = {
-    totalItems: 0,
-    itemsPerPageItems: [5, 10, 20, 50]
-  };
   biddingDocumentOptions = {
     page: 1,
     itemsPerPage: 5
   } as DataOptions;
   biddingDocumentServerSideOptions = {
-    totalItems: 0,
-    itemsPerPageItems: [5, 10, 20, 50]
-  };
-  inboundOptions = {
-    page: 1,
-    itemsPerPage: 5
-  } as DataOptions;
-  inboundServerSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -296,13 +278,11 @@ export default class Update extends Vue {
     itemsPerPageItems: [5, 10, 20, 50]
   };
   // Form validate
-  checkbox = false;
   editable = false;
   unit = 0;
   stepper = 1;
   valid = true;
   // Inbound
-  inbounds: Array<IInbound> = [];
   containers: Array<IContainer> = [];
   containersSelected: Array<IContainer> = [];
   headers = [
@@ -339,72 +319,18 @@ export default class Update extends Vue {
     { text: "Hành động", value: "actions" }
   ];
   // Bid
-  getInbound() {
-    this.inboundOptions = {
-      page: 1,
-      itemsPerPage: 5
-    } as DataOptions;
+  openCreateContainerBid() {
+    this.action = "ADD";
+    this.dialogContainer = true;
   }
-  async createBid() {
-    // TODO: API create bid
-    if (this.biddingDocumentSync.id) {
-      this.bidLocal.containers = this.containers.reduce(function(
-        pV: Array<number>,
-        cV: IContainer
-      ) {
-        if (cV.id) {
-          pV.push(cV.id);
-        }
-        return pV;
-      },
-      []);
-      const _bid = await createBid(this.biddingDocumentSync.id, this.bidLocal)
-        .then(res => {
-          const response: IBid = res.data;
-          console.log("response", response);
-          snackbar.setSnackbar({
-            text: "Thêm mới thành công Hồ sơ dự thầu: " + response.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_bid) {
-        if (this.bidsSync) {
-          this.bidsSync.unshift(_bid);
-        }
-        this.dialogEditSync = false;
-      }
-      snackbar.setDisplay(true);
-    }
+  openChangeDialog(item: IContainer) {
+    this.container = item;
+    this.action = "CHANGE";
+    this.dialogContainer = true;
   }
-  changeContainerServerSideOptions(item: IContainer) {
-    if (this.containers.length > 0) {
-      let check = false;
-      this.containers.forEach((x: IContainer) => {
-        console.log(x);
-        console.log(item);
-        if (x === item) {
-          console.log(1);
-          check = true;
-        }
-      });
-      if (check === false) {
-        this.containerServerSideOptions.totalItems -= 1;
-      } else {
-        this.containerServerSideOptions.totalItems += 1;
-      }
-    } else {
-      this.containerServerSideOptions.totalItems -= 1;
-    }
-    this.onContainerOptionsChange(this.containerOptions);
+  openDeleteDialog(item: IContainer) {
+    this.container = item;
+    this.dialogConfirm = true;
   }
   @Watch("biddingDocumentOptions")
   async onBiddingDocumentOptionsChange(val: DataOptions) {
@@ -417,39 +343,10 @@ export default class Update extends Vue {
       ) {
         this.biddingDocuments.push(this.biddingDocumentSync);
         this.biddingDocumentSelected = this.biddingDocumentSync;
+        const _outbound = this.biddingDocumentSelected.outbound as IOutbound;
+        this.unit = _outbound.booking.unit;
         this.biddingDocumentServerSideOptions.totalItems = 1;
         this.loading = false;
-      } else {
-        const _biddingNotificationsByUsers = await getBiddingNotificationsByUser(
-          {
-            page: val.page - 1,
-            limit: val.itemsPerPage
-          }
-        )
-          .then(res => {
-            const response: PaginationResponse<IBiddingNotification> = res.data;
-            console.log("watch", response);
-            return response;
-          })
-          .catch(err => {
-            console.log(err);
-            return null;
-          });
-        this.loading = false;
-        if (_biddingNotificationsByUsers) {
-          this.biddingDocuments = _biddingNotificationsByUsers.data
-            .filter(x => x.action == "ADDED")
-            .reduce(function(
-              pV: Array<IBiddingDocument>,
-              cV: IBiddingNotification
-            ) {
-              pV.push(cV.relatedResource);
-              return pV;
-            },
-            []);
-          this.biddingDocumentServerSideOptions.totalItems =
-            _biddingNotificationsByUsers.totalElements;
-        }
       }
       this.loading = false;
     }
@@ -475,9 +372,39 @@ export default class Update extends Vue {
     }
   }
   created() {
-    this.bidLocal = Object.assign({}, this.bid);
+    this.bidLocal = Object.assign({}, this.bidSync);
     this.containers = this.bidLocal.containers as Array<IContainer>;
     this.containerServerSideOptions.totalItems = this.bidLocal.containers.length;
+  }
+  async updateBid() {
+    if (this.bidSync.id) {
+      console.log(this.bidSync.bidder);
+      console.log(this.$auth.user().username);
+      const _bid = await editBid(this.bidSync.id, {
+        bidPrice: this.bidLocal.bidPrice
+      })
+        .then(res => {
+          const response = res.data;
+          snackbar.setSnackbar({
+            text: "Cập nhập thành công HSDT" + response.id,
+            color: "success"
+          });
+          return response;
+        })
+        .catch(err => {
+          console.log(err);
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_bid) {
+        this.bidSync = _bid;
+        this.stepper = 3;
+      }
+      snackbar.setDisplay(true);
+    }
   }
 }
 </script>

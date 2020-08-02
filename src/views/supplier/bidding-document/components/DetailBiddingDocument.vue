@@ -401,7 +401,7 @@
           <template v-slot:expanded-item="{ headers }">
             <td :colspan="headers.length" class="px-0">
               <v-data-table
-                v-if="biddingDocument.isMultipleAward"
+                v-if="bid && biddingDocument.isMultipleAward"
                 :headers="containerHeaders"
                 :items="bid.containers"
                 :loading="loading"
@@ -420,7 +420,7 @@
               >
               </v-data-table>
               <v-data-table
-                v-if="!biddingDocument.isMultipleAward"
+                v-if="bid && !biddingDocument.isMultipleAward"
                 :headers="containerHeaders"
                 :items="bid.containers"
                 :loading="loading"
@@ -570,6 +570,21 @@ export default class DetailBiddingDocument extends Vue {
         this.expanded.splice(index, 1);
       }
     }
+  }
+  @Watch("getRouterId")
+  async onGetRouterIdChange() {
+    const _biddingDocument = await getBiddingDocument(
+      parseInt(this.getRouterId)
+    )
+      .then(res => {
+        const response = res.data;
+        return response;
+      })
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    this.biddingDocument = _biddingDocument;
   }
   @Watch("containerOptions")
   async onContainerOptionsChange(val: DataOptions) {

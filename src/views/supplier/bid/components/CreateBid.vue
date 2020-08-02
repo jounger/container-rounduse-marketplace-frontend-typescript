@@ -79,9 +79,10 @@
                 v-if="biddingDocumentSelected"
                 type="number"
                 :rules="[
-                  minNumber(
+                  minNumber('bid price', biddingDocumentSelected.bidFloorPrice),
+                  maxNumber(
                     'bid price',
-                    biddingDocumentSelected.bidFloorPrice + 1
+                    biddingDocumentSelected.bidPackagePrice
                   )
                 ]"
                 label="Giá gửi thầu"
@@ -137,7 +138,6 @@
                     <template v-slot:expanded-item="{ headers }">
                       <td :colspan="headers.length" class="px-0">
                         <v-data-table
-                          v-model="containers"
                           :headers="containerHeaders"
                           :items="inbound.billOfLading.containers"
                           item-key="id"

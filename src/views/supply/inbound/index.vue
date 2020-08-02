@@ -159,7 +159,10 @@
                     color="success"
                     @click.stop="openCreateContainer()"
                     small
-                    v-if="checkUnit"
+                    v-if="
+                      containerServerSideOptions.totalItems <
+                        inbound.billOfLading.unit
+                    "
                   >
                     <span style="color:white;">Thêm Container</span>
                   </v-btn>
@@ -213,7 +216,6 @@ export default class Inbound extends Vue {
   freeTime = "";
   loading = false;
   update = false;
-  checkUnit = true;
   dateInit = new Date().toISOString().substr(0, 10);
   options = {
     page: 1,
@@ -317,14 +319,6 @@ export default class Inbound extends Vue {
           this.containers = _containers.data;
           this.containerServerSideOptions.totalItems =
             _containers.totalElements;
-          if (
-            this.containerServerSideOptions.totalItems ==
-            this.inbound.billOfLading.unit
-          ) {
-            this.checkUnit = false;
-          } else {
-            this.checkUnit = true;
-          }
         }
       }
       this.loading = false;

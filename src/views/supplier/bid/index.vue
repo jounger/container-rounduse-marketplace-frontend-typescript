@@ -11,7 +11,7 @@
       />
       <UpdateBid
         v-if="dialogEdit"
-        :bid="bid"
+        :bid.sync="bid"
         :bids.sync="bids"
         :biddingDocument.sync="biddingDocument"
         :dialogEdit.sync="dialogEdit"

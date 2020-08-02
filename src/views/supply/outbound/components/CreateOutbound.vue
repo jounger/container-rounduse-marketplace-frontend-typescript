@@ -242,6 +242,7 @@
                         type="string"
                         :rules="[required('code')]"
                         label="Mã hàng xuất"
+                        readonly
                       ></v-text-field
                     ></v-col>
                   </v-row>

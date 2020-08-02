@@ -229,6 +229,7 @@
                         type="string"
                         :rules="[required('code')]"
                         label="Mã hàng nhập"
+                        readonly
                       ></v-text-field
                     ></v-col>
                   </v-row>
@@ -304,10 +305,7 @@
                     {{ item.tractor.licensePlate }}
                   </template>
                 </v-data-table>
-                <v-btn
-                  color="primary"
-                  @click="dialogAddSync = false"
-                  :disabled="containers.length == 0"
+                <v-btn color="primary" @click="dialogAddSync = false"
                   >Hoàn tất</v-btn
                 >
                 <v-btn text @click="stepper = 3">Quay lại</v-btn>
@@ -649,6 +647,8 @@ export default class CreateInbound extends Vue {
   }
   async createInbound() {
     this.inboundLocal.billOfLading.containers = this.containers;
+    console.log(this.inboundLocal);
+    console.log(this.containers);
     /* TODO: Calculate Empty Time:
      * emptyTime = (duration: portOfDelivery -> returnStation) + pickupTime (+ bias)
      */
