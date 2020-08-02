@@ -129,9 +129,10 @@
             :report="report"
             :forwarderFullname="forwarderFullname"
             :feedbacks.sync="feedbacks"
-            :message.sync="feedbackLocal.message"
-            :feedbackItem.sync="feedbackLocal"
+            :feedbackRecipient.sync="feedbackLocal.recipient"
             :showCreateFeedback.sync="showCreateFeedback"
+            :recipientLabel.sync="recipient"
+            :focus.sync="focus"
           />
         </v-list>
         <v-row
@@ -142,11 +143,22 @@
               ($auth.user().roles[0] == 'ROLE_MODERATOR' || showCreateFeedback)
           "
         >
-          <v-col cols="12" md="1"
+          <v-col cols="12" md="1" style="margin-top: 30px;"
             ><v-avatar size="43">
               <v-img src="@/assets/images/ava.jpg" /> </v-avatar
           ></v-col>
           <v-col cols="12" md="11">
+            <span style="font-size: 14px; margin-left: 24px;"
+              >Phản hồi tới: </span
+            ><span style="color: black; font-weight: bold;">{{
+              recipient
+            }}</span
+            ><v-divider class="mx-4" inset vertical></v-divider
+            ><a
+              style="font-size: 14px;color: green;font-weight: bold;"
+              @click="recipient = forwarderFullname"
+              >Mặc định</a
+            >
             <v-textarea
               v-model="feedbackLocal.message"
               :autofocus="focus"
@@ -190,11 +202,11 @@ import UserFeedback from "./UserFeedback.vue";
 export default class ReportDetail extends Vue {
   focus = false;
   seeMore = true;
+  recipient = "";
   showCreateFeedback = false;
   forwarderFullname = "";
   feedbacks: Array<IFeedback> = [];
   report = null as IReport | null;
-  receiver = "";
   limit = 5;
   dialogConfirm = false;
   status = "";
@@ -249,6 +261,8 @@ export default class ReportDetail extends Vue {
           });
         if (_feedback) {
           this.feedbacks.push(_feedback);
+          this.recipient = this.forwarderFullname;
+          console.log(_feedback);
         }
         this.feedbackLocal = {
           sender: this.$auth.user().username,
@@ -258,7 +272,7 @@ export default class ReportDetail extends Vue {
       } else {
         const _feedback = await createFeedbackToModerator(
           this.report.id,
-          this.receiver,
+          this.feedbackLocal.recipient,
           this.feedbackLocal
         )
           .then(res => {
@@ -271,6 +285,7 @@ export default class ReportDetail extends Vue {
           });
         if (_feedback) {
           this.feedbacks.push(_feedback);
+          console.log(_feedback);
         }
         this.feedbackLocal = {
           sender: this.$auth.user().username,
@@ -325,6 +340,7 @@ export default class ReportDetail extends Vue {
     if (_report) {
       this.report = _report;
       this.forwarderFullname = await this.getFullname(_report.sender);
+      this.recipient = this.forwarderFullname;
     }
     await this.getFeedbacks(5);
   }

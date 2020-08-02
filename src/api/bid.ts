@@ -45,13 +45,17 @@ export function createBid(id: number, bid: IBid) {
     headers: config
   });
 }
-export function addContainer(id: number, conId: number) {
-  return Vue.axios.post(`/bid/${id}/container/${conId}`, {
-    headers: config
-  });
+export function addContainer(id: number, contId: number) {
+  return Vue.axios.post(
+    `/bid/${id}/container/${contId}`,
+    {},
+    {
+      headers: config
+    }
+  );
 }
-export function removeContainer(id: number, conId: number) {
-  return Vue.axios.delete(`/bid/${id}/container/${conId}`, {
+export function removeContainer(id: number, contId: number) {
+  return Vue.axios.delete(`/bid/${id}/container/${contId}`, {
     headers: config
   });
 }

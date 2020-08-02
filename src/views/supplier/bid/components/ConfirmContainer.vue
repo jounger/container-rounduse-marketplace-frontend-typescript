@@ -47,6 +47,8 @@ export default class ConfirmContainer extends Vue {
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @PropSync("containersSelected", { type: Array })
   containersSelectedSync!: Array<IContainer>;
+  @PropSync("listContainersSelected", { type: Array })
+  listContainersSelectedSync!: Array<IContainer>;
   @Prop(Object) container!: IContainer;
   @Prop(Object) bid!: IBid;
 
@@ -79,6 +81,10 @@ export default class ConfirmContainer extends Vue {
           x => x.containerNumber == this.container.containerNumber
         );
         this.containersSelectedSync.splice(index, 1);
+        const indexList = this.listContainersSelectedSync.findIndex(
+          x => x.containerNumber == this.container.containerNumber
+        );
+        this.listContainersSelectedSync.splice(indexList, 1);
         this.totalItemsSync -= 1;
         this.dialogConfirmSync = false;
       }

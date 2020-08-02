@@ -10,87 +10,123 @@
       </v-toolbar>
 
       <v-card-text>
-        <v-container fluid>
-          <v-data-table
-            :headers="inboundHeaders"
-            :items="inbounds"
-            :single-expand="true"
-            :expanded.sync="expanded"
-            show-expand
-            @click:row="clicked"
-            item-key="id"
-            :loading="loading"
-            :options.sync="inboundOptions"
-            :server-items-length="inboundServerSideOptions.totalItems"
-            :footer-props="{
-              'items-per-page-options':
-                inboundServerSideOptions.itemsPerPageItems
-            }"
-            :actions-append="inboundOptions.page"
-            disable-sort
-            class="elevation-1 my-1"
+        <v-tabs background-color="white" color="deep-purple accent-4" left>
+          <v-tab>Danh sách Inbound</v-tab>
+          <v-tab
+            >Danh sách Containers đã chọn ({{
+              selectedContainers.length
+            }})</v-tab
           >
-            <template v-slot:item.pickUpTime="{ item }">
-              {{ formatDatetime(item.pickupTime) }}
-            </template>
-            <!-- Show containers expened -->
-            <template v-slot:expanded-item="{ headers }">
-              <td :colspan="headers.length" class="px-0">
-                <v-data-table
-                  :headers="containerHeaders"
-                  :items="containers"
-                  item-key="id"
-                  :loading="loading"
-                  :options.sync="options"
-                  :server-items-length="serverSideOptions.totalItems"
-                  :footer-props="{
-                    'items-per-page-options':
-                      serverSideOptions.itemsPerPageItems
-                  }"
-                  :actions-append="options.page"
-                  disable-sort
-                  dark
-                  dense
-                >
-                  <template v-slot:item.actions="{ item }">
-                    <v-btn
-                      class="ma-1"
-                      tile
-                      outlined
-                      color="success"
-                      @click.stop="createContainerBid(item)"
-                      small
-                      v-if="
-                        action == 'ADD' &&
-                          containersSelected.findIndex(
-                            x => x.containerNumber == item.containerNumber
-                          ) == -1
-                      "
+
+          <v-tab-item>
+            <v-container fluid>
+              <v-data-table
+                :headers="inboundHeaders"
+                :items="inbounds"
+                :single-expand="true"
+                :expanded.sync="expanded"
+                show-expand
+                @click:row="clicked"
+                item-key="id"
+                :loading="loading"
+                :options.sync="inboundOptions"
+                :server-items-length="inboundServerSideOptions.totalItems"
+                :footer-props="{
+                  'items-per-page-options':
+                    inboundServerSideOptions.itemsPerPageItems
+                }"
+                :actions-append="inboundOptions.page"
+                disable-sort
+                class="elevation-1 my-1"
+              >
+                <template v-slot:item.pickUpTime="{ item }">
+                  {{ formatDatetime(item.pickupTime) }}
+                </template>
+                <!-- Show containers expened -->
+                <template v-slot:expanded-item="{ headers }">
+                  <td :colspan="headers.length" class="px-0">
+                    <v-data-table
+                      :headers="containerHeaders"
+                      :items="containers"
+                      item-key="id"
+                      :loading="loading"
+                      :options.sync="options"
+                      :server-items-length="serverSideOptions.totalItems"
+                      :footer-props="{
+                        'items-per-page-options':
+                          serverSideOptions.itemsPerPageItems
+                      }"
+                      :actions-append="options.page"
+                      disable-sort
+                      dark
+                      dense
                     >
-                      <v-icon left>add</v-icon> Thêm Cont
-                    </v-btn>
-                    <v-btn
-                      class="ma-1"
-                      tile
-                      outlined
-                      color="primary"
-                      @click.stop="changeContainerBid(item)"
-                      small
-                      v-if="action == 'CHANGE'"
-                    >
-                      <v-icon left>add</v-icon> Đổi Cont
-                    </v-btn>
-                  </template>
-                </v-data-table>
-              </td>
-            </template>
-          </v-data-table>
-        </v-container>
+                      <template v-slot:item.actions="{ item }">
+                        <v-switch
+                          v-if="action == 'ADD'"
+                          v-model="selectedContainers"
+                          :value="item"
+                          @change="changeContainerServerSideOptions(item)"
+                          :loading="loading"
+                          light
+                        ></v-switch>
+                        <v-btn
+                          class="ma-1"
+                          tile
+                          outlined
+                          color="primary"
+                          @click.stop="changeContainerBid(item)"
+                          small
+                          v-if="action == 'CHANGE'"
+                        >
+                          <v-icon left>add</v-icon> Đổi Cont
+                        </v-btn>
+                      </template>
+                    </v-data-table>
+                  </td>
+                </template>
+              </v-data-table>
+            </v-container>
+          </v-tab-item>
+          <v-tab-item>
+            <v-container fluid>
+              <v-data-table
+                :headers="containerSelectedHeaders"
+                :items="selectedContainersList"
+                item-key="id"
+                :loading="loading"
+                :options.sync="containerOptions"
+                :server-items-length="containerServerSideOptions.totalItems"
+                :footer-props="{
+                  'items-per-page-options':
+                    containerServerSideOptions.itemsPerPageItems
+                }"
+                :actions-append="containerOptions.page"
+                disable-sort
+              >
+                <template v-slot:item.actions="{ item }">
+                  <v-switch
+                    v-model="selectedContainers"
+                    :value="item"
+                    :loading="loading"
+                    @change="
+                      changeContainerServerSideOptions(item);
+                      onContainerOptionsChange(containerOptions);
+                    "
+                  ></v-switch>
+                </template>
+              </v-data-table>
+            </v-container>
+          </v-tab-item>
+        </v-tabs>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn @click="dialogContainerSync = false">Hủy</v-btn>
-        <v-btn @click="dialogContainerSync = false" color="primary"
+        <v-btn
+          @click="dialogContainerSync = false"
+          color="primary"
+          v-if="action == 'ADD'"
           >Hoàn tất</v-btn
         >
       </v-card-actions>
@@ -110,7 +146,7 @@ import { IInbound } from "@/entity/inbound";
 import { IOutbound } from "@/entity/outbound";
 import { DataOptions } from "vuetify";
 import Utils from "@/mixin/utils";
-import { addContainer, replaceContainer } from "@/api/bid";
+import { addContainer, replaceContainer, removeContainer } from "@/api/bid";
 import { IBid } from "@/entity/bid";
 
 @Component({
@@ -122,13 +158,19 @@ export default class ListContainer extends Vue {
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @PropSync("containersSelected", { type: Array })
   containersSelectedSync!: Array<IContainer>;
+  @PropSync("listContainersSelected", { type: Array })
+  listContainersSelectedSync!: Array<IContainer>;
   @Prop(String) action!: string;
   @Prop(Object) container!: IContainer;
   @Prop(Object) bid!: IBid;
   expanded: Array<IInbound> = [];
   singleExpand = true;
+  unit = 0;
+  selectedNumber = 0;
   inbounds: Array<IInbound> = [];
   containers: Array<IContainer> = [];
+  selectedContainers: Array<IContainer> = [];
+  selectedContainersList: Array<IContainer> = [];
   inbound = null as IInbound | null;
   loading = true;
   options = {
@@ -144,6 +186,14 @@ export default class ListContainer extends Vue {
     itemsPerPage: 5
   } as DataOptions;
   inboundServerSideOptions = {
+    totalItems: 0,
+    itemsPerPageItems: [5, 10, 20, 50]
+  };
+  containerOptions = {
+    page: 1,
+    itemsPerPage: 5
+  } as DataOptions;
+  containerServerSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -183,7 +233,29 @@ export default class ListContainer extends Vue {
     },
     { text: "Hành động", value: "actions", class: "elevation-1 primary" }
   ];
-
+  containerSelectedHeaders = [
+    {
+      text: "Container No.",
+      align: "start",
+      sortable: false,
+      value: "containerNumber"
+    },
+    { text: "Tài xế", value: "driver" },
+    {
+      text: "Rơ mọt",
+      value: "trailer.licensePlate"
+    },
+    {
+      text: "Đầu kéo",
+      value: "tractor.licensePlate"
+    },
+    { text: "Chọn Cont", value: "actions" }
+  ];
+  created() {
+    this.selectedContainers = this.listContainersSelectedSync;
+    this.selectedNumber = this.listContainersSelectedSync.length;
+    this.containerServerSideOptions.totalItems = this.listContainersSelectedSync.length;
+  }
   async clicked(value: IInbound) {
     console.log("value", value);
     if (this.singleExpand) {
@@ -194,8 +266,8 @@ export default class ListContainer extends Vue {
         console.log(0);
         if (this.expanded.length > 0) {
           this.expanded.splice(0, this.expanded.length);
-          this.expanded.push(value);
           this.containers = [] as Array<IContainer>;
+          this.expanded.push(value);
           this.inbound = value;
           this.onOptionsChange(this.options);
         } else {
@@ -205,13 +277,33 @@ export default class ListContainer extends Vue {
       }
     }
   }
+  async changeContainerServerSideOptions(item: IContainer) {
+    if (this.selectedContainers.length > this.selectedNumber) {
+      let check = false;
+      console.log(this.selectedContainers);
+      console.log(item);
+      this.selectedContainers.forEach((x: IContainer) => {
+        if (x === item) {
+          check = true;
+        }
+      });
+      if (check === false) {
+        await this.removeContainer(item);
+      } else {
+        await this.createContainerBid(item);
+      }
+    } else {
+      await this.removeContainer(item);
+    }
+    this.onContainerOptionsChange(this.containerOptions);
+  }
   async createContainerBid(item: IContainer) {
+    this.loading = true;
     if (this.bid.id && item.id) {
-      console.log(0);
       const _bid = await addContainer(this.bid.id, item.id)
         .then(res => {
-          console.log(1);
           const response: IBid = res.data;
+          console.log("bid", response);
           snackbar.setSnackbar({
             text:
               "Thêm mới thành công Container " +
@@ -220,11 +312,9 @@ export default class ListContainer extends Vue {
               response.id,
             color: "success"
           });
-          console.log(2);
           return response;
         })
         .catch(err => {
-          console.log(3);
           console.log(err);
           snackbar.setSnackbar({
             text: getErrorMessage(err),
@@ -233,12 +323,37 @@ export default class ListContainer extends Vue {
           return null;
         });
       if (_bid) {
-        console.log(4);
-        this.containersSelectedSync.unshift(item);
+        console.log(_bid);
+        const _containers: Array<IContainer> = _bid.containers as Array<
+          IContainer
+        >;
+        _containers.forEach((x: IContainer) => {
+          if (x.containerNumber == item.containerNumber) {
+            this.containersSelectedSync.unshift(x);
+            this.listContainersSelectedSync.unshift(x);
+          }
+        });
+        this.selectedContainers.forEach((x: IContainer) => {
+          if (x.containerNumber == item.containerNumber) {
+            x.status = "BIDDING";
+          }
+        });
+        this.containers.forEach((x: IContainer) => {
+          if (x.containerNumber == item.containerNumber) {
+            x.status = "BIDDING";
+          }
+        });
+        this.containerServerSideOptions.totalItems += 1;
         this.totalItemsSync += 1;
+      } else {
+        const index = this.selectedContainers.findIndex(
+          x => x.containerNumber == item.containerNumber
+        );
+        this.selectedContainers.splice(index, 1);
       }
       snackbar.setDisplay(true);
     }
+    this.loading = false;
   }
 
   async changeContainerBid(item: IContainer) {
@@ -270,14 +385,67 @@ export default class ListContainer extends Vue {
           return null;
         });
       if (_bid) {
-        console.log(_bid);
+        const _containers: Array<IContainer> = _bid.containers as Array<
+          IContainer
+        >;
         const index = this.containersSelectedSync.findIndex(
           x => x.containerNumber == this.container.containerNumber
         );
-        this.containersSelectedSync.splice(index, 1, item);
-        snackbar.setDisplay(true);
+        const indexList = this.listContainersSelectedSync.findIndex(
+          x => x.containerNumber == this.container.containerNumber
+        );
+        _containers.forEach((x: IContainer) => {
+          if (x.containerNumber == item.containerNumber) {
+            this.containersSelectedSync.splice(index, 1, x);
+            this.listContainersSelectedSync.splice(indexList, 1, x);
+          }
+        });
+        this.dialogContainerSync = false;
+      }
+      snackbar.setDisplay(true);
+    }
+  }
+  async removeContainer(item: IContainer) {
+    this.loading = true;
+    if (item.id && this.bid.id) {
+      const _bid = await removeContainer(this.bid.id, item.id)
+        .then(res => {
+          const response: IBid = res.data;
+          snackbar.setSnackbar({
+            text:
+              "Xóa thành công Container " +
+              item.containerNumber +
+              " khỏi HSDT " +
+              this.bid.id,
+            color: "success"
+          });
+          return response;
+        })
+        .catch(err => {
+          console.log(err);
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      snackbar.setDisplay(true);
+      if (_bid) {
+        const index = this.containersSelectedSync.findIndex(
+          x => x.containerNumber == item.containerNumber
+        );
+        this.containersSelectedSync.splice(index, 1);
+        const indexList = this.listContainersSelectedSync.findIndex(
+          x => x.containerNumber == item.containerNumber
+        );
+        this.listContainersSelectedSync.splice(indexList, 1);
+        this.totalItemsSync -= 1;
+        this.containerServerSideOptions.totalItems -= 1;
+      } else {
+        this.selectedContainers.push(item);
       }
     }
+    this.loading = false;
   }
   @Watch("inboundOptions")
   async onInboundOptionsChange(val: DataOptions) {
@@ -289,6 +457,7 @@ export default class ListContainer extends Vue {
         this.biddingDocumentSelected.outbound
       ) {
         const _outbound = this.biddingDocumentSelected.outbound as IOutbound;
+        this.unit = _outbound.booking.unit;
         const _outboundId = _outbound.id as number;
         const _inbounds = await getInboundsByOutboundAndForwarder(_outboundId, {
           page: val.page - 1,
@@ -314,6 +483,7 @@ export default class ListContainer extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
+      this.containers = [] as Array<IContainer>;
       if (this.inbound && this.inbound.id) {
         const _containers = await getContainersByInbound(this.inbound.id, {
           page: val.page - 1,
@@ -328,12 +498,43 @@ export default class ListContainer extends Vue {
             return null;
           });
         if (_containers) {
-          this.containers = _containers.data.filter(
-            (x: IContainer) => x.status == "CREATED"
-          );
+          _containers.data.forEach((x: IContainer) => {
+            if (x.status == "CREATED") {
+              this.containers.push(x);
+            } else {
+              this.selectedContainers.forEach((item: IContainer) => {
+                if (
+                  item.containerNumber &&
+                  item.containerNumber == x.containerNumber
+                ) {
+                  this.containers.push(x);
+                }
+              });
+            }
+          });
+          console.log(this.containers);
+          console.log(this.selectedContainers);
+          console.log(this.selectedContainers[0] === this.containers[0]);
           this.serverSideOptions.totalItems = this.containers.length;
         }
       }
+      this.loading = false;
+    }
+  }
+  @Watch("containerOptions")
+  async onContainerOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.selectedContainersList = [] as Array<IContainer>;
+      this.loading = true;
+      const start = (val.page - 1) * val.itemsPerPage;
+      let end = start + val.itemsPerPage - 1;
+      if (end > this.selectedContainers.length - 1) {
+        end = this.selectedContainers.length - 1;
+      }
+      for (let i = start; i <= end; i++) {
+        this.selectedContainersList.push(this.selectedContainers[i]);
+      }
+
       this.loading = false;
     }
   }

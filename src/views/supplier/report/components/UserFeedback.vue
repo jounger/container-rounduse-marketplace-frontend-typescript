@@ -12,18 +12,20 @@
       :feedback="feedback"
       :feedbacks.sync="feedbacksSync"
     />
-    <v-list-item-avatar>
+    <v-list-item-avatar v-if="!edit">
       <v-img src="@/assets/images/ava.jpg" />
     </v-list-item-avatar>
-    <v-list-item-content style="margin-top: 10px;">
+    <v-list-item-content style="margin-top: 10px;" v-if="!edit">
       <v-list-item-title style="font-weight:bold;">{{
         fullname
       }}</v-list-item-title>
       <v-list-item-subtitle>
-        <span style="color: black;" v-if="item.recipient != report.sender"
+        <span
+          style="color: black;"
+          v-if="feedbackLocal.recipient != report.sender"
           >@{{ recipient }}</span
         >
-        {{ item.message
+        {{ feedbackLocal.message
         }}<v-menu
           :close-on-click="true"
           v-if="report.status == 'PENDING' || report.status == 'UPDATED'"
@@ -35,8 +37,8 @@
           </template>
           <v-list>
             <v-list-item
-              @click="openUpdateDialog(item)"
-              v-if="item.sender == $auth.user().username"
+              @click="editFeedback()"
+              v-if="feedbackLocal.sender == $auth.user().username"
             >
               <v-list-item-icon>
                 <v-icon small>edit</v-icon>
@@ -46,8 +48,8 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              @click="openDeleteDialog(item)"
-              v-if="item.sender == $auth.user().username"
+              @click="openDeleteDialog()"
+              v-if="feedbackLocal.sender == $auth.user().username"
             >
               <v-list-item-icon>
                 <v-icon small>delete</v-icon>
@@ -62,10 +64,10 @@
       <v-list-item-subtitle>
         <a
           v-if="
-            item.sender != $auth.user().username &&
+            feedbackLocal.sender != $auth.user().username &&
               $auth.user().roles[0] == 'ROLE_FORWARDER'
           "
-          @click="openMarkDialog(item)"
+          @click="openMarkDialog()"
           >Đánh giá .</a
         >
         <a
@@ -73,7 +75,7 @@
           v-if="
             report.status != 'REJECTED' &&
               report.status != 'CLOSED' &&
-              item.sender != $auth.user().username &&
+              feedbackLocal.sender != $auth.user().username &&
               $auth.user().roles[0] == 'ROLE_FORWARDER'
           "
           @click="replyFeedback()"
@@ -82,7 +84,7 @@
           v-if="
             report.status != 'REJECTED' &&
               report.status != 'CLOSED' &&
-              (item.sender == $auth.user().username ||
+              (feedbackLocal.sender == $auth.user().username ||
                 $auth.user().roles[0] == 'ROLE_MODERATOR')
           "
           @click="replyFeedback()"
@@ -91,6 +93,34 @@
         {{ convertTime(item.sendDate) }}
       </v-list-item-subtitle>
     </v-list-item-content>
+    <v-row style="margin-left:-2px;margin-right:2px;" v-if="edit">
+      <v-col cols="12" md="1" style="margin-top: 30px;"
+        ><v-avatar size="43"> <v-img src="@/assets/images/ava.jpg" /> </v-avatar
+      ></v-col>
+      <v-col cols="12" md="11">
+        <span style="font-size: 14px; margin-left: 24px;">Phản hồi tới: </span
+        ><span style="color: black; font-weight: bold;"
+          >{{ updateRecipient
+          }}<v-divider class="mx-4" inset vertical></v-divider></span
+        ><a
+          style="font-size: 14px;color: green;font-weight: bold;"
+          @click="updateRecipient = forwarderFullname"
+          >Mặc định</a
+        >
+        <v-textarea
+          v-model="message"
+          outlined
+          rounded
+          auto-grow
+          clearable
+          row-height="24"
+          rows="1"
+          placeholder="Phản hồi ..."
+          @keydown.enter.exact.prevent
+          @keyup.enter.exact="updateFeedback"
+          @keydown.enter.shift.exact="newline"
+        ></v-textarea></v-col
+    ></v-row>
   </v-list-item>
 </template>
 <script lang="ts">
@@ -101,6 +131,9 @@ import { getOperatorByUsername } from "@/api/operator";
 import { IReport } from "@/entity/report";
 import MarkFeedback from "./MarkFeedback.vue";
 import DeleteFeedback from "../../../operator/supplier-report/components/DeleteFeedback.vue";
+import { editFeedback } from "@/api/feedback";
+import snackbar from "@/store/modules/snackbar";
+import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [Utils],
@@ -110,24 +143,65 @@ import DeleteFeedback from "../../../operator/supplier-report/components/DeleteF
   }
 })
 export default class UserFeedback extends Vue {
-  @Prop(Object) item!: IFeedback;
-  @Prop(Object) report!: IReport;
-  @Prop(String) forwarderFullname!: string;
   @PropSync("feedbacks", { type: Array }) feedbacksSync!: Array<IFeedback>;
-  @PropSync("message", { type: String }) messageSync!: string;
-  @PropSync("feedbackItem", { type: Object }) feedbackItemSync!: IFeedback;
+  @PropSync("feedbackRecipient", { type: String })
+  feedbackRecipientSync!: string;
   @PropSync("showCreateFeedback", { type: Boolean })
   showCreateFeedbackSync!: boolean;
+  @PropSync("focus", { type: Boolean })
+  focusSync!: boolean;
+  @PropSync("recipientLabel", { type: String }) recipientLabelSync!: string;
+  @Prop(Object) report!: IReport;
+  @Prop(String) forwarderFullname!: string;
+  @Prop(Object) item!: IFeedback;
+  message = "";
   fullname = "";
   recipient = "";
+  updateRecipient = "";
+  edit = false;
   update = false;
   dialogFeedback = false;
   dialogDel = false;
   dialogMark = false;
   feedback = null as IFeedback | null;
+  feedbackLocal = {
+    sender: this.$auth.user().username,
+    recipient: "",
+    message: "",
+    satisfactionPoints: 0
+  } as IFeedback;
 
   async created() {
+    this.feedbackLocal = Object.assign({}, this.item);
     await this.getFullname();
+  }
+  async updateFeedback() {
+    if (this.item.id) {
+      const _feedback = await editFeedback(this.item.id, {
+        message: this.message
+      })
+        .then(res => {
+          const response: IFeedback = res.data;
+          snackbar.setSnackbar({
+            text: "Cập nhật thành công phản hồi " + response.id,
+            color: "success"
+          });
+          return response;
+        })
+        .catch(err => {
+          console.log(err);
+          snackbar.setSnackbar({
+            text: getErrorMessage(err),
+            color: "error"
+          });
+          return null;
+        });
+      if (_feedback) {
+        this.feedbackLocal = _feedback;
+        this.edit = false;
+      }
+      snackbar.setDisplay(true);
+    }
   }
   async getFullname() {
     if (this.item.sender == this.report.sender) {
@@ -158,28 +232,32 @@ export default class UserFeedback extends Vue {
         });
       if (_fullname) {
         this.recipient = _fullname;
+        this.updateRecipient = this.recipient;
       }
+    } else {
+      this.updateRecipient = this.forwarderFullname;
     }
   }
   replyFeedback() {
     console.log(1);
-    this.feedbackItemSync.recipient = this.item.sender;
+    this.feedbackRecipientSync = this.item.sender;
+    this.recipientLabelSync = this.fullname;
     if (this.$auth.user().roles[0] == "ROLE_FORWARDER") {
       this.showCreateFeedbackSync = true;
     }
+    this.focusSync = true;
   }
-  openUpdateDialog(item: IFeedback) {
-    this.update = true;
-    this.feedback = item;
-    this.dialogFeedback = true;
+  editFeedback() {
+    this.edit = true;
+    this.message = this.item.message;
   }
 
-  openDeleteDialog(item: IFeedback) {
-    this.feedback = item;
+  openDeleteDialog() {
+    this.feedback = this.item;
     this.dialogDel = true;
   }
-  openMarkDialog(item: IFeedback) {
-    this.feedback = item;
+  openMarkDialog() {
+    this.feedback = this.item;
     this.dialogMark = true;
   }
 }

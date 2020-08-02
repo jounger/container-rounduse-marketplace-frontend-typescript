@@ -16,8 +16,7 @@
         :container="container"
         :containersSelected.sync="containersSelected"
         :totalItems.sync="containerServerSideOptions.totalItems"
-        :page="containerOptions.page"
-        :itemsPerPage="containerOptions.itemsPerPage"
+        :listContainersSelected.sync="containers"
       />
       <ConfirmContainer
         v-if="dialogConfirm"
@@ -26,8 +25,7 @@
         :bid.sync="bidSync"
         :containersSelected.sync="containersSelected"
         :totalItems.sync="containerServerSideOptions.totalItems"
-        :page="containerOptions.page"
-        :itemsPerPage="containerOptions.itemsPerPage"
+        :listContainersSelected.sync="containers"
       />
       <!-- TITLE -->
       <v-toolbar dark color="primary">
@@ -79,7 +77,7 @@
             <small>Thông tin chung</small>
           </v-stepper-step>
           <v-stepper-content step="2">
-            <v-form ref="bidForm" v-model="valid" validation>
+            <v-form ref="bidForm" v-model="valid" lazy-validation>
               <v-text-field
                 v-model="bidLocal.bidPrice"
                 :hint="currencyFormatter(bidLocal.bidPrice)"
@@ -102,7 +100,7 @@
                 suffix="PST"
               ></v-text-field> -->
               <v-btn color="primary" @click="updateBid()" :disabled="!valid"
-                >Lưu Tiếp tục</v-btn
+                >Lưu và Tiếp tục</v-btn
               >
               <v-btn text @click="stepper = 1">Quay lại</v-btn>
             </v-form>
@@ -141,7 +139,7 @@
                       v-if="
                         biddingDocumentSelected &&
                           biddingDocumentSelected.isMultipleAward &&
-                          containers.length < unit
+                          containerServerSideOptions.totalItems < unit
                       "
                       color="primary"
                       dark
@@ -166,7 +164,7 @@
                       </v-btn>
                     </template>
                     <v-list>
-                      <v-list-item @click.stop="openChangeDialog(item)">
+                      <v-list-item @click="openChangeDialog(item)">
                         <v-list-item-icon>
                           <v-icon small>edit</v-icon>
                         </v-list-item-icon>
@@ -175,7 +173,7 @@
                         </v-list-item-content>
                       </v-list-item>
                       <v-list-item
-                        @click.stop="openDeleteDialog(item)"
+                        @click="openDeleteDialog(item)"
                         v-if="
                           biddingDocumentSelected.isMultipleAward &&
                             containers.length > 0
@@ -201,9 +199,9 @@
                   biddingDocumentSelected.isMultipleAward
               "
               color="primary"
-              @click="stepper = 4"
+              @click="dialogEditSync = false"
               :disabled="containers.length == 0"
-              >Tiếp tục</v-btn
+              >Hoàn tất</v-btn
             >
             <v-btn
               v-if="
@@ -211,11 +209,11 @@
                   !biddingDocumentSelected.isMultipleAward
               "
               color="primary"
-              @click="stepper = 4"
+              @click="dialogEditSync = false"
               :disabled="containers.length < unit"
-              >Tiếp tục</v-btn
+              >Hoàn tất</v-btn
             >
-            <v-btn text @click="dialogEditSync = false">Hoàn tất</v-btn>
+            <v-btn text @click="stepper = 2">Quay lại</v-btn>
           </v-stepper-content>
         </v-stepper>
       </v-list>
@@ -278,7 +276,7 @@ export default class Update extends Vue {
     itemsPerPageItems: [5, 10, 20, 50]
   };
   // Form validate
-  editable = false;
+  editable = true;
   unit = 0;
   stepper = 1;
   valid = true;
