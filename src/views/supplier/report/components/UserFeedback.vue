@@ -101,12 +101,8 @@
         <span style="font-size: 14px; margin-left: 24px;">Phản hồi tới: </span
         ><span style="color: black; font-weight: bold;"
           >{{ updateRecipient
-          }}<v-divider class="mx-4" inset vertical></v-divider></span
-        ><a
-          style="font-size: 14px;color: green;font-weight: bold;"
-          @click="updateRecipient = forwarderFullname"
-          >Mặc định</a
-        >
+          }}<v-divider class="mx-4" inset vertical></v-divider
+        ></span>
         <v-textarea
           v-model="message"
           outlined

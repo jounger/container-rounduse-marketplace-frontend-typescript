@@ -155,8 +155,9 @@
             }}</span
             ><v-divider class="mx-4" inset vertical></v-divider
             ><a
+              v-if="$auth.user().roles[0] == 'ROLE_MODERATOR'"
               style="font-size: 14px;color: green;font-weight: bold;"
-              @click="recipient = forwarderFullname"
+              @click="setDefault()"
               >Mặc định</a
             >
             <v-textarea
@@ -270,9 +271,10 @@ export default class ReportDetail extends Vue {
           satisfactionPoints: 0
         } as IFeedback;
       } else {
+        console.log(this.feedbackLocal);
         const _feedback = await createFeedbackToModerator(
           this.report.id,
-          this.feedbackLocal.recipient,
+          this.report.sender,
           this.feedbackLocal
         )
           .then(res => {
@@ -359,6 +361,10 @@ export default class ReportDetail extends Vue {
       const report = this.report.report as IBiddingDocument;
       this.$router.push({ path: `/report-bidding-document/${report.id}` });
     }
+  }
+  setDefault() {
+    this.recipient = this.forwarderFullname;
+    this.feedbackLocal.recipient = "";
   }
 }
 </script>
