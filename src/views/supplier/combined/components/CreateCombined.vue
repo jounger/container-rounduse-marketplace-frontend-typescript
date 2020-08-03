@@ -38,6 +38,7 @@
                 'items-per-page-options': serverSideOptions.itemsPerPageItems
               }"
               :actions-append="options.page"
+              no-data-text="Danh sách HSDT rỗng."
               disable-sort
               class="elevation-0"
             >
@@ -58,6 +59,7 @@
                         containerServerSideOptions.itemsPerPageItems
                     }"
                     :actions-append="containerOptions.page"
+                    no-data-text="Danh sách Container đã chọn rỗng."
                     disable-sort
                     dark
                     dense

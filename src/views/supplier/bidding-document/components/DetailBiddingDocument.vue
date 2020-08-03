@@ -339,6 +339,7 @@
             'items-per-page-options': serverSideOptions.itemsPerPageItems
           }"
           :actions-append="options.page"
+          no-data-text="Danh sách Hồ sơ dự thầu rỗng."
           disable-sort
           class="elevation-0"
         >

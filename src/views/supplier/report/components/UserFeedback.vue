@@ -31,7 +31,13 @@
           v-if="report.status == 'PENDING' || report.status == 'UPDATED'"
         >
           <template v-slot:activator="{ on, attrs }">
-            <v-btn text small v-bind="attrs" v-on="on">
+            <v-btn
+              text
+              small
+              v-bind="attrs"
+              v-on="on"
+              v-if="feedbackLocal.sender == $auth.user().username"
+            >
               <span class="mb-3">...</span>
             </v-btn>
           </template>

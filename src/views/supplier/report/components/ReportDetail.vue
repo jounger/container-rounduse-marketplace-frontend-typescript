@@ -37,15 +37,8 @@
                 >Tiêu đề
                 <v-menu :close-on-click="true">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      color="pink"
-                      icon
-                      outlined
-                      v-bind="attrs"
-                      v-on="on"
-                      class="ml-10"
-                    >
-                      <v-icon>mdi-dots-vertical</v-icon>
+                    <v-btn text v-bind="attrs" v-on="on" class="ml-10">
+                      <span style="margin-bottom: 10px;">...</span>
                     </v-btn>
                   </template>
                   <v-list>
@@ -188,7 +181,6 @@ import {
 } from "@/api/feedback";
 import { PaginationResponse } from "@/api/payload";
 import ChangeStatusReport from "./ChangeStatusReport.vue";
-import { IBiddingDocument } from "@/entity/bidding-document";
 import { getReport } from "@/api/report";
 import { getSupplier } from "@/api/supplier";
 import UserFeedback from "./UserFeedback.vue";
@@ -352,14 +344,8 @@ export default class ReportDetail extends Vue {
     this.dialogConfirm = true;
   }
   viewDetailBiddingDocument() {
-    if (
-      this.report &&
-      this.report &&
-      this.report.report &&
-      typeof this.report.report != "number"
-    ) {
-      const report = this.report.report as IBiddingDocument;
-      this.$router.push({ path: `/report-bidding-document/${report.id}` });
+    if (this.report && this.report.id) {
+      this.$router.push({ path: `/report-bidding-document/${this.report.id}` });
     }
   }
   setDefault() {

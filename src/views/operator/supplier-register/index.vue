@@ -24,6 +24,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        no-data-text="Danh sách đơn đăng ký rỗng."
         disable-sort
         class="elevation-1"
       >
@@ -33,9 +34,16 @@
         <template v-slot:item.action="{ item }">
           <v-menu :loading="item.createloading" :disabled="item.createloading">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn color="secondary" dark v-bind="attrs" v-on="on">
-                <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn>
+              <v-btn
+                color="pink"
+                icon
+                outlined
+                v-bind="attrs"
+                v-on="on"
+                class="ml-10"
+              >
+                <v-icon>mdi-dots-vertical</v-icon></v-btn
+              >
             </template>
             <v-list>
               <v-list-item @click="openDetailDialog(item)">

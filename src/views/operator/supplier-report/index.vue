@@ -27,6 +27,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        no-data-text="Danh sách Report rỗng."
         disable-sort
         class="elevation-1"
       >
@@ -84,7 +85,6 @@ import { IFeedback } from "@/entity/feedback";
 import CreateFeedback from "./components/CreateFeedback.vue";
 import { getReports } from "@/api/report";
 import { DataOptions } from "vuetify";
-import { IBiddingDocument } from "@/entity/bidding-document";
 
 @Component({
   components: {
@@ -132,10 +132,7 @@ export default class Report extends Vue {
     this.dialogAdd = true;
   }
   viewDetailReport(item: IReport) {
-    if (item && item.report && typeof item.report != "number") {
-      const bidDocument = item.report as IBiddingDocument;
-      this.$router.push({ path: `/report-bidding-document/${bidDocument.id}` });
-    }
+    this.$router.push({ path: `/report-bidding-document/${item.id}` });
   }
   clicked(value: IReport) {
     const id = value.id;

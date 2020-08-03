@@ -29,6 +29,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        no-data-text="Danh sách HSMT nhận được rỗng."
         disable-sort
         class="elevation-1"
       >

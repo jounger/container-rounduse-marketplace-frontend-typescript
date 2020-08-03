@@ -35,6 +35,7 @@
                   serverSideOptions.itemsPerPageItems
               }"
               :actions-append="options.page"
+              no-data-text="Danh sách hàng xuất rỗng."
               disable-sort
               class="elevation-1 my-1"
             >

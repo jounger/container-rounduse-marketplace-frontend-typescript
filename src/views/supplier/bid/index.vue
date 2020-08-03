@@ -39,6 +39,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        no-data-text="Danh sách HSMT đã tham gia rỗng."
         disable-sort
         class="elevation-1"
       >
@@ -74,6 +75,7 @@
               :headers="bidHeaders"
               :items="bids"
               :hide-default-footer="true"
+              no-data-text="Danh sách Hồ sơ dự thầu rỗng."
               disable-sort
               dense
               dark
@@ -83,6 +85,21 @@
               </template>
               <template v-slot:item.bidValidityPeriodText="{ item }">
                 {{ formatDatetime(item.bidValidityPeriod) }}
+              </template>
+              <template v-slot:item.status="{ item }">
+                <v-chip
+                  :style="
+                    item.status == 'ACCEPTED'
+                      ? 'background-color:green'
+                      : item.status == 'REJECTED'
+                      ? 'background-color:red'
+                      : item.status == 'EXPIRED'
+                      ? 'background-color:cadetblue'
+                      : 'background-color:darkgoldenrod'
+                  "
+                  dark
+                  >{{ item.status }}</v-chip
+                >
               </template>
               <template v-slot:item.actions="{ item }">
                 <v-icon
@@ -100,20 +117,6 @@
                 >
                   close
                 </v-icon>
-                <v-chip
-                  v-if="item.status != 'PENDING'"
-                  :style="
-                    item.status == 'ACCEPTED'
-                      ? 'background-color:green'
-                      : item.status == 'REJECTED'
-                      ? 'background-color:red'
-                      : item.status == 'EXPIRED'
-                      ? 'background-color:cadetblue'
-                      : 'background-color:darkgoldenrod'
-                  "
-                  dark
-                  >{{ item.status }}</v-chip
-                >
               </template>
               <template v-slot:item.bidPrice="{ item }">
                 {{ currencyFormatter(item.bidPrice) }}
@@ -192,10 +195,11 @@ export default class Bid extends Vue {
       class: "elevation-1 primary"
     },
     {
-      text: "Cont qty",
+      text: "Số lượng Cont",
       value: "containers.length",
       class: "elevation-1 primary"
     },
+    { text: "Trạng thái", value: "status", class: "elevation-1 primary" },
     { text: "Giá thầu", value: "bidPrice", class: "elevation-1 primary" },
     { text: "Ngày thầu", value: "bidDateText", class: "elevation-1 primary" },
     {

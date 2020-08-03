@@ -34,6 +34,7 @@
                   biddingDocumentServerSideOptions.itemsPerPageItems
               }"
               :actions-append="biddingDocumentOptions.page"
+              no-data-text="Danh sách HSMT nhận được rỗng."
               disable-sort
               class="elevation-1 my-1"
             >
@@ -127,6 +128,7 @@
                       'items-per-page-options':
                         inboundServerSideOptions.itemsPerPageItems
                     }"
+                    no-data-text="Danh sách hàng nhập rỗng."
                     :actions-append="inboundOptions.page"
                     disable-sort
                     class="elevation-1 my-1"
@@ -150,6 +152,7 @@
                           }"
                           :actions-append="options.page"
                           disable-sort
+                          no-data-text="Danh sách Container rỗng."
                           dark
                           dense
                         >
@@ -188,6 +191,7 @@
                       'items-per-page-options':
                         containerServerSideOptions.itemsPerPageItems
                     }"
+                    no-data-text="Danh sách Container đã chọn rỗng."
                     :actions-append="containerOptions.page"
                     disable-sort
                   >

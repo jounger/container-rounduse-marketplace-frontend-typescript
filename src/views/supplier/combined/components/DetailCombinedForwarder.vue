@@ -363,6 +363,7 @@
                         evidenceServerSideOptions.itemsPerPageItems
                     }"
                     :actions-append="evidenceOptions.page"
+                    no-data-text="Danh sách Chứng cứ rỗng."
                     disable-sort
                     class="elevation-0"
                   >
@@ -446,6 +447,7 @@
             'items-per-page-options': serverSideOptions.itemsPerPageItems
           }"
           :actions-append="options.page"
+          no-data-text="Danh sách Container đã chọn rỗng."
           disable-sort
           class="elevation-0"
         >
@@ -621,8 +623,52 @@ export default class DetailCombinedForwarder extends Vue {
     return this.$route.params.id;
   }
 
-  async created() {
+  @Watch("getRouterId")
+  async onRouterIdChange() {
     // TODO: Fake data
+    const _biddingDocument = await getBiddingDocument(
+      parseInt(this.getRouterId)
+    )
+      .then(res => {
+        const response: IBiddingDocument = res.data;
+        console.log(response);
+        return response;
+      })
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    this.biddingDocument = _biddingDocument;
+    const _combineds = await getCombinedsByBiddingDocument(
+      parseInt(this.getRouterId),
+      {
+        page: this.options.page - 1,
+        limit: this.options.itemsPerPage
+      }
+    )
+      .then(res => {
+        const response: PaginationResponse<ICombined> = res.data;
+        console.log("watch", response);
+        return response;
+      })
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    if (_combineds) {
+      this.combineds = _combineds.data;
+      this.serverSideOptions.totalItems = _combineds.totalElements;
+      if (this.combineds.length > 0) {
+        this.combined = this.combineds[0];
+        const _bid = this.combined.bid as IBid;
+        this.viewDetailCombined(this.combined);
+        if (_bid.containers.length > 0) {
+          this.viewDetailContainer(_bid.containers[0] as IContainer);
+        }
+      }
+    }
+  }
+  async created() {
     const _biddingDocument = await getBiddingDocument(
       parseInt(this.getRouterId)
     )

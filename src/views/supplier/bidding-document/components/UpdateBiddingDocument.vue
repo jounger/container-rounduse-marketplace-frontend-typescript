@@ -28,6 +28,7 @@
               :items="[biddingDocument.outbound]"
               item-key="id"
               :hide-default-footer="true"
+              no-data-text="Danh sách hàng xuất nhận được rỗng."
               disable-sort
               class="elevation-1 my-1"
             >

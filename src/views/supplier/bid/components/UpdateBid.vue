@@ -54,6 +54,7 @@
                   biddingDocumentServerSideOptions.itemsPerPageItems
               }"
               :actions-append="biddingDocumentOptions.page"
+              no-data-text="Danh sách HSMT đã chọn rỗng."
               disable-sort
               class="elevation-1 my-1"
             >
@@ -119,6 +120,7 @@
                 item-key="id"
                 :loading="loading"
                 :options.sync="containerOptions"
+                no-data-text="Danh sách Container đã chọn rỗng."
                 :server-items-length="containerServerSideOptions.totalItems"
                 :footer-props="{
                   'items-per-page-options':

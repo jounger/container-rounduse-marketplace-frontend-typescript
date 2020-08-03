@@ -32,6 +32,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        no-data-text="Danh sách vai trò rỗng."
         class="elevation-1"
       >
         <template v-slot:top>

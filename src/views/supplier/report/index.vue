@@ -45,6 +45,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        no-data-text="Danh sách Report rỗng."
         disable-sort
         class="elevation-1"
       >
@@ -57,7 +58,7 @@
             @click.stop="viewDetailReport(item)"
             small
           >
-            <v-icon left>mdi-pencil</v-icon> Xem HSMT
+            <v-icon left>business_center</v-icon> Xem HSMT
           </v-btn>
         </template>
         <template v-slot:item.status="{ item }">
@@ -126,7 +127,6 @@ import DeleteReport from "./components/DeleteReport.vue";
 import UpdateReport from "./components/UpdateReport.vue";
 import { getReportsByUser } from "@/api/report";
 import { DataOptions } from "vuetify";
-import { IBiddingDocument } from "@/entity/bidding-document";
 
 @Component({
   components: {
@@ -179,11 +179,7 @@ export default class Report extends Vue {
     this.dialogDel = true;
   }
   viewDetailReport(item: IReport) {
-    console.log(item);
-    if (item && item.report && typeof item.report != "number") {
-      const report = item.report as IBiddingDocument;
-      this.$router.push({ path: `/report-bidding-document/${report.id}` });
-    }
+    this.$router.push({ path: `/report-bidding-document/${item.id}` });
   }
   openDetailDialog(item: IReport) {
     const id = item.id;

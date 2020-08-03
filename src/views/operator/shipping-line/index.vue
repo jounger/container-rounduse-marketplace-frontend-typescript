@@ -33,6 +33,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        no-data-text="Danh sách hãng tàu rỗng."
         disable-sort
         class="elevation-1"
       >

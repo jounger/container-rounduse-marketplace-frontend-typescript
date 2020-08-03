@@ -35,6 +35,7 @@
                   'items-per-page-options':
                     inboundServerSideOptions.itemsPerPageItems
                 }"
+                no-data-text="Danh sách hàng nhập rỗng."
                 :actions-append="inboundOptions.page"
                 disable-sort
                 class="elevation-1 my-1"
@@ -51,6 +52,7 @@
                       item-key="id"
                       :loading="loading"
                       :options.sync="options"
+                      no-data-text="Danh sách Container khả dụng rỗng."
                       :server-items-length="serverSideOptions.totalItems"
                       :footer-props="{
                         'items-per-page-options':

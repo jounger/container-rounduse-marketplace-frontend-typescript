@@ -36,6 +36,7 @@
         :footer-props="{
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
+        no-data-text="Danh sách hàng xuất rỗng."
         :actions-append="options.page"
         disable-sort
         class="elevation-1"
@@ -152,7 +153,6 @@ import { PaginationResponse } from "@/api/payload";
 import Utils from "@/mixin/utils";
 import CreateBiddingDocument from "../../supplier/bidding-document/components/CreateBiddingDocument.vue";
 import { DataOptions } from "vuetify";
-
 @Component({
   mixins: [Utils],
   components: {
@@ -243,6 +243,8 @@ export default class Outbound extends Vue {
         });
       if (_outbounds) {
         this.outbounds = _outbounds.data;
+
+        console.log(new Date(this.outbounds[0].packingTime).getTime());
         this.serverSideOptions.totalItems = _outbounds.totalElements;
       }
       this.loading = false;

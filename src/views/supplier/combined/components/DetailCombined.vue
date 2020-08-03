@@ -321,6 +321,7 @@
                         evidenceServerSideOptions.itemsPerPageItems
                     }"
                     :actions-append="evidenceOptions.page"
+                    no-data-text="Danh sách Chứng cứ rỗng."
                     disable-sort
                     class="elevation-0"
                   >
@@ -364,6 +365,7 @@
             'items-per-page-options': serverSideOptions.itemsPerPageItems
           }"
           :actions-append="options.page"
+          no-data-text="Danh sách HSDT rỗng."
           disable-sort
           class="elevation-0"
         >
@@ -387,6 +389,7 @@
                     containerServerSideOptions.itemsPerPageItems
                 }"
                 :actions-append="containerOptions.page"
+                no-data-text="Danh sách Container tham gia rỗng."
                 disable-sort
                 dark
                 dense
@@ -643,8 +646,23 @@ export default class DetailCombined extends Vue {
     return this.$route.params.id;
   }
 
-  async created() {
+  @Watch("getRouterId")
+  async onGetRouterIdChange() {
     // TODO: Fake data
+    const _biddingDocument = await getBiddingDocument(
+      parseInt(this.getRouterId)
+    )
+      .then(res => {
+        const response = res.data;
+        return response;
+      })
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    this.biddingDocument = _biddingDocument;
+  }
+  async created() {
     const _biddingDocument = await getBiddingDocument(
       parseInt(this.getRouterId)
     )

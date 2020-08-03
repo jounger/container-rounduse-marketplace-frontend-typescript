@@ -277,6 +277,7 @@
           :footer-props="{
             'items-per-page-options': serverSideOptions.itemsPerPageItems
           }"
+          no-data-text="Danh sách HSDT rỗng."
           :actions-append="options.page"
           disable-sort
           class="elevation-0"
@@ -522,6 +523,22 @@ export default class ReportBiddingDocument extends Vue {
     return this.$route.params.id;
   }
 
+  @Watch("getRouterId")
+  async onRouterIdChange() {
+    const _report = await getReport(parseInt(this.getRouterId))
+      .then(res => {
+        const response = res.data;
+        return response;
+      })
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+    if (_report) {
+      this.report = _report;
+      this.biddingDocument = _report.report as IBiddingDocument;
+    }
+  }
   async created() {
     // TODO: API get Bidding Document
     const _report = await getReport(parseInt(this.getRouterId))

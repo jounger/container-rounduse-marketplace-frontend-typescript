@@ -31,6 +31,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
+        no-data-text="Danh sách quản trị viên rỗng."
         class="elevation-1"
       >
         <template v-slot:top>

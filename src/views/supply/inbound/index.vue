@@ -52,6 +52,7 @@
         :footer-props="{
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
+        no-data-text="Danh sách hàng nhập rỗng."
         :actions-append="options.page"
         disable-sort
         class="elevation-1"
