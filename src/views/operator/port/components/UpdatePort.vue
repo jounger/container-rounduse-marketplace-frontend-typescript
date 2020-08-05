@@ -28,7 +28,7 @@
                     type="text"
                     readonly
                     v-model="portLocal.nameCode"
-                    :rules="[required('name code')]"
+                    :rules="[required('mã bến cảng')]"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -40,7 +40,7 @@
                     prepend-icon="flag"
                     type="text"
                     v-model="portLocal.fullname"
-                    :rules="[required('fullname')]"
+                    :rules="[required('tên bến cảng')]"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -52,7 +52,7 @@
                     class="place-input"
                     type="text"
                     placeholder="Vị trí cảng"
-                    :rules="[required('address')]"
+                    :rules="[required('vị trí bến cảng')]"
                     required
                   />
                   <!-- <v-text-field

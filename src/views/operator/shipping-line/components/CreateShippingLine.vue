@@ -36,8 +36,8 @@
                     prepend-icon="mdi-account"
                     :counter="20"
                     :rules="[
-                      minLength('username', 2),
-                      maxLength('username', 20)
+                      minLength('Tên đăng nhập', 2),
+                      maxLength('Tên đăng nhập', 20)
                     ]"
                     type="text"
                     label="Tên đăng nhập*"
@@ -48,8 +48,8 @@
                     prepend-icon="mdi-lock"
                     :counter="120"
                     :rules="[
-                      minLength('password', 6),
-                      maxLength('password', 120)
+                      minLength('Mật khẩu', 6),
+                      maxLength('Mật khẩu', 120)
                     ]"
                     type="password"
                     label="Mật khẩu*"
@@ -62,9 +62,9 @@
                     prepend-icon="alternate_email"
                     :counter="50"
                     :rules="[
-                      email('Shipping Line'),
-                      minLength('email', 5),
-                      maxLength('email', 50)
+                      email('hãng tàu'),
+                      minLength('Email', 5),
+                      maxLength('Email', 50)
                     ]"
                     type="text"
                     label="Email*"
@@ -74,7 +74,10 @@
                     v-model="shippingLineLocal.phone"
                     prepend-icon="phone"
                     :counter="10"
-                    :rules="[minLength('phone', 10), maxLength('phone', 10)]"
+                    :rules="[
+                      minLength('Số điện thoại', 10),
+                      maxLength('Số điện thoại', 10)
+                    ]"
                     type="number"
                     label="Số điện thoại*"
                   ></v-text-field> </v-col
@@ -87,8 +90,8 @@
                     type="text"
                     :counter="100"
                     :rules="[
-                      minLength('address', 5),
-                      maxLength('address', 100)
+                      minLength('Địa chỉ hãng tàu', 5),
+                      maxLength('Địa chỉ hãng tàu', 100)
                     ]"
                     label="Địa chỉ*"
                   ></v-text-field> </v-col
@@ -114,8 +117,8 @@
                     prepend-icon="verified_user"
                     :counter="10"
                     :rules="[
-                      minLength('Company code', 2),
-                      maxLength('Company code', 10)
+                      minLength('Mã công ty', 2),
+                      maxLength('Mã công ty', 10)
                     ]"
                     label="Mã công ty*"
                     type="text"
@@ -127,8 +130,8 @@
                     prepend-icon="directions_boat"
                     :counter="100"
                     :rules="[
-                      minLength('Company name', 5),
-                      maxLength('Company name', 100)
+                      minLength('Tên công ty', 5),
+                      maxLength('Tên công ty', 100)
                     ]"
                     label="Tên công ty*"
                     type="text"
@@ -142,8 +145,8 @@
                     prepend-icon="add_ic_call"
                     :counter="50"
                     :rules="[
-                      minLength('contact person', 5),
-                      maxLength('contact person', 50)
+                      minLength('Người liên hệ', 5),
+                      maxLength('Người liên hệ', 50)
                     ]"
                     label="Người liên hệ*"
                     type="text"
@@ -154,7 +157,7 @@
                     v-model="shippingLineLocal.website"
                     prepend-icon="copyright"
                     :counter="50"
-                    :rules="[minLength('website', 5), maxLength('website', 50)]"
+                    :rules="[minLength('Website', 5), maxLength('Website', 50)]"
                     label="Website*"
                     type="text"
                   ></v-text-field>
@@ -168,8 +171,8 @@
                     prepend-icon="description"
                     :counter="200"
                     :rules="[
-                      minLength('company description', 5),
-                      maxLength('company description', 200)
+                      minLength('Mô tả công ty', 5),
+                      maxLength('Mô tả công ty', 200)
                     ]"
                     type="text"
                   ></v-text-field>
@@ -180,8 +183,8 @@
                     prepend-icon="location_city"
                     :counter="200"
                     :rules="[
-                      minLength('company address', 5),
-                      maxLength('company address', 200)
+                      minLength('Địa chỉ công ty', 5),
+                      maxLength('Địa chỉ công ty', 200)
                     ]"
                     label="Địa chỉ công ty*"
                     type="text"
@@ -194,7 +197,10 @@
                     v-model="shippingLineLocal.tin"
                     prepend-icon="card_travel"
                     :counter="20"
-                    :rules="[minLength('tin', 5), maxLength('tin', 20)]"
+                    :rules="[
+                      minLength('Mã số thuế', 5),
+                      maxLength('Mã số thuế', 20)
+                    ]"
                     label="Mã số thuế*"
                     type="number"
                   ></v-text-field>
@@ -204,8 +210,8 @@
                     v-model="shippingLineLocal.fax"
                     prepend-icon="perm_phone_msg"
                     :counter="20"
-                    :rules="[minLength('fax', 5), maxLength('fax', 20)]"
-                    label="Fax*"
+                    :rules="[minLength('FAX', 5), maxLength('FAX', 20)]"
+                    label="FAX*"
                     type="number"
                   ></v-text-field>
                 </v-col>

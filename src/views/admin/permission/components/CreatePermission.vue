@@ -20,7 +20,10 @@
                 type="text"
                 :readonly="update"
                 :counter="20"
-                :rules="[minLength('name', 5), maxLength('name', 20)]"
+                :rules="[
+                  minLength('Tên vai trò', 5),
+                  maxLength('Tên vai trò', 20)
+                ]"
                 v-model="permissionLocal.name"
               ></v-text-field>
             </v-col>
@@ -34,8 +37,8 @@
                 type="text"
                 :counter="100"
                 :rules="[
-                  minLength('description', 5),
-                  maxLength('description', 100)
+                  minLength('Mô tả vai trò', 5),
+                  maxLength('Mô tả vai trò', 100)
                 ]"
                 v-model="permissionLocal.description"
               ></v-text-field>

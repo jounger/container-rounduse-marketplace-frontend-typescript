@@ -86,9 +86,12 @@
                 v-if="biddingDocumentSelected"
                 type="number"
                 :rules="[
-                  minNumber('bid price', biddingDocumentSelected.bidFloorPrice),
+                  minNumber(
+                    'Giá gửi thầu',
+                    biddingDocumentSelected.bidFloorPrice
+                  ),
                   maxNumber(
-                    'bid price',
+                    'Giá gửi thầu',
                     biddingDocumentSelected.bidPackagePrice
                   )
                 ]"

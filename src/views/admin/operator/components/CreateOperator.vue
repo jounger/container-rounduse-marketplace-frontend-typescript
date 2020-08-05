@@ -43,7 +43,10 @@
                   v-model="operatorLocal.username"
                   :readonly="update"
                   :counter="20"
-                  :rules="[minLength('username', 2), maxLength('username', 20)]"
+                  :rules="[
+                    minLength('Tên đăng nhập', 2),
+                    maxLength('Tên đăng nhập', 20)
+                  ]"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
@@ -55,8 +58,8 @@
                   v-model="operatorLocal.password"
                   :counter="120"
                   :rules="[
-                    minLength('password', 6),
-                    maxLength('password', 120)
+                    minLength('Mật khẩu', 6),
+                    maxLength('Mật khẩu', 120)
                   ]"
                 ></v-text-field>
               </v-col>
@@ -70,9 +73,9 @@
                   v-model="operatorLocal.email"
                   :counter="50"
                   :rules="[
-                    email('Operator'),
-                    minLength('email', 5),
-                    maxLength('email', 50)
+                    email('quản trị viên'),
+                    minLength('Email', 5),
+                    maxLength('Email', 50)
                   ]"
                 ></v-text-field>
               </v-col>
@@ -83,7 +86,10 @@
                   prepend-icon="phone"
                   v-model="operatorLocal.phone"
                   :counter="10"
-                  :rules="[minLength('phone', 10), maxLength('phone', 10)]"
+                  :rules="[
+                    minLength('Số điện thoại', 10),
+                    maxLength('Số điện thoại', 10)
+                  ]"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -95,7 +101,7 @@
                   type="text"
                   prepend-icon="perm_identity"
                   v-model="operatorLocal.fullname"
-                  :rules="[required('fullname')]"
+                  :rules="[required('họ và tên')]"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
@@ -104,7 +110,7 @@
                   name="address"
                   prepend-icon="location_on"
                   :counter="100"
-                  :rules="[minLength('address', 5), maxLength('address', 100)]"
+                  :rules="[minLength('Địa chỉ', 5), maxLength('Địa chỉ', 100)]"
                   type="text"
                   v-model="operatorLocal.address"
                 ></v-text-field>
@@ -119,7 +125,7 @@
                   prepend-icon="security"
                   :items="roles"
                   label="Phân quyền*"
-                  :rules="[required('role')]"
+                  :rules="[required('phân quyền')]"
                 ></v-select> </v-col
             ></v-row>
           </v-container>

@@ -19,10 +19,7 @@
                 prepend-icon="tram"
                 type="text"
                 :counter="20"
-                :rules="[
-                  minLength('licensePlate', 5),
-                  maxLength('licensePlate', 20)
-                ]"
+                :rules="[minLength('Biển số', 5), maxLength('Biển số', 20)]"
                 v-model="tractorLocal.licensePlate"
               ></v-text-field>
             </v-col>
@@ -35,9 +32,9 @@
                 prepend-icon="format_size"
                 type="number"
                 :rules="[
-                  required('numberOfAxles'),
-                  minNumber('numberOfAxles', 1),
-                  maxNumber('numberOfAxles', 4)
+                  required('số trục'),
+                  minNumber('Số lượng trục', 1),
+                  maxNumber('Số lượng trục', 5)
                 ]"
                 v-model="tractorLocal.numberOfAxles"
               ></v-text-field>

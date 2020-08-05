@@ -110,7 +110,10 @@
                       )
                     "
                     prepend-icon="money"
-                    :rules="[required('bid package price')]"
+                    :rules="[
+                      required('giá gói thầu'),
+                      minNumber('Giá gói thầu', 0)
+                    ]"
                     type="number"
                     label="Giá gói thầu"
                   ></v-text-field> </v-col
@@ -125,11 +128,12 @@
                     "
                     prepend-icon="local_atm"
                     :rules="[
-                      required('bid floor price'),
+                      required('giá sàn'),
                       maxNumber(
-                        'bid floor price',
+                        'Giá sàn',
                         parseInt(biddingDocumentLocal.bidPackagePrice)
-                      )
+                      ),
+                      minNumber('Giá sàn', 0)
                     ]"
                     type="number"
                     label="Giá sàn"
@@ -140,7 +144,7 @@
                     v-model="biddingDocumentLocal.currencyOfPayment"
                     prepend-icon="strikethrough_s"
                     :items="currencyOfPayments"
-                    :rules="[required('currency')]"
+                    :rules="[required('loại tiền tệ')]"
                     label="Loại tiền tệ"
                   ></v-select>
                 </v-col>
@@ -171,7 +175,6 @@
               ></v-checkbox>
               <v-checkbox
                 v-model="checkbox"
-                :rules="[required('agree term')]"
                 label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
               ></v-checkbox>
               <v-btn

@@ -45,7 +45,7 @@
                         v-model="outboundLocal.shippingLine"
                         prepend-icon="directions_boat"
                         :items="shippingLinesToString"
-                        :rules="[required('shipping line')]"
+                        :rules="[required('hãng tàu')]"
                         :loading="loadingShippingLines"
                         :readonly="readonly"
                         no-data-text="Danh sách hãng tàu rỗng."
@@ -67,7 +67,7 @@
                         v-model="outboundLocal.containerType"
                         prepend-icon="directions_bus"
                         :items="containerTypesToString"
-                        :rules="[required('container type')]"
+                        :rules="[required('loại Container')]"
                         :loading="loadingContainerTypes"
                         :readonly="readonly"
                         no-data-text="Danh sách loại Cont rỗng."
@@ -105,7 +105,7 @@
                         class="place-input"
                         type="text"
                         placeholder="Nơi đóng hàng"
-                        :rules="[required('packing station')]"
+                        :rules="[required('nơi đóng hàng')]"
                         :readonly="readonly"
                       />
                       <!-- <v-text-field
@@ -173,7 +173,7 @@
                       <v-text-field
                         v-model="outboundLocal.booking.number"
                         prepend-icon="child_friendly"
-                        :rules="[required('booking number')]"
+                        :rules="[required('Số booking')]"
                         type="text"
                         label="Số Booking*"
                         readonly
@@ -183,7 +183,7 @@
                         v-model="outboundLocal.booking.portOfLoading"
                         prepend-icon="flag"
                         :items="portsToString"
-                        :rules="[required('port of loading')]"
+                        :rules="[required('cảng xuất hàng')]"
                         :loading="loadingPorts"
                         :readonly="readonly"
                         no-data-text="Danh sách bến cảng rỗng."
@@ -218,7 +218,7 @@
                       <v-text-field
                         v-model="outboundLocal.booking.unit"
                         prepend-icon="commute"
-                        :rules="[required('unit')]"
+                        :rules="[required('số lượng Container cần')]"
                         :readonly="readonly"
                         label="Số lượng Container*"
                         type="number"

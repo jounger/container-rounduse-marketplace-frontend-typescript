@@ -21,7 +21,10 @@
                 v-model="driverLocal.username"
                 :readonly="update"
                 :counter="20"
-                :rules="[minLength('username', 2), maxLength('username', 20)]"
+                :rules="[
+                  minLength('Tên đăng nhập', 2),
+                  maxLength('Tên đăng nhập', 20)
+                ]"
               ></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
@@ -32,7 +35,7 @@
                 prepend-icon="mdi-lock"
                 type="password"
                 :counter="120"
-                :rules="[minLength('password', 6), maxLength('password', 120)]"
+                :rules="[minLength('Mật khẩu', 6), maxLength('Mật khẩu', 120)]"
                 v-model="driverLocal.password"
               ></v-text-field>
             </v-col>
@@ -46,7 +49,10 @@
                 type="text"
                 v-model="driverLocal.fullname"
                 :counter="50"
-                :rules="[minLength('fullname', 5), maxLength('fullname', 50)]"
+                :rules="[
+                  minLength('Họ và tên lái xe', 5),
+                  maxLength('Họ và tên lái xe', 50)
+                ]"
               ></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
@@ -57,7 +63,10 @@
                 type="text"
                 v-model="driverLocal.driverLicense"
                 :counter="50"
-                :rules="[minLength('fullname', 5), maxLength('fullname', 50)]"
+                :rules="[
+                  minLength('Số bằng lái', 5),
+                  maxLength('Số bằng lái', 50)
+                ]"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -70,9 +79,9 @@
                 type="text"
                 :counter="50"
                 :rules="[
-                  email('Driver'),
-                  minLength('email', 5),
-                  maxLength('email', 50)
+                  email('lái xe'),
+                  minLength('Email', 5),
+                  maxLength('Email', 50)
                 ]"
                 v-model="driverLocal.email"
               ></v-text-field>
@@ -84,7 +93,10 @@
                 prepend-icon="call"
                 type="number"
                 :counter="10"
-                :rules="[minLength('phone', 10), maxLength('phone', 10)]"
+                :rules="[
+                  minLength('Số điện thoại', 10),
+                  maxLength('Số điện thoại', 10)
+                ]"
                 v-model="driverLocal.phone"
               ></v-text-field>
             </v-col>
@@ -97,7 +109,7 @@
                 prepend-icon="location_on"
                 type="text"
                 :counter="100"
-                :rules="[minLength('address', 5), maxLength('address', 100)]"
+                :rules="[minLength('Địa chỉ', 5), maxLength('Địa chỉ', 100)]"
                 v-model="driverLocal.address"
               ></v-text-field>
             </v-col>
@@ -107,7 +119,7 @@
                 v-model="driverLocal.status"
                 prepend-icon="insert_emoticon"
                 :items="allStatus"
-                :rules="[required('status')]"
+                :rules="[required('trạng thái hoạt động')]"
                 label="Trạng thái"
               >
               </v-select>

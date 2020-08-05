@@ -50,7 +50,7 @@
                 type="text"
                 :readonly="update"
                 v-model="containerTypeLocal.name"
-                :rules="[required('name')]"
+                :rules="[required('Tên loại Container')]"
               ></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
