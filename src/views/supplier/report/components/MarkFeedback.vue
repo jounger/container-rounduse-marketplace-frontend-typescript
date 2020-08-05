@@ -16,7 +16,7 @@
               empty-icon="$ratingFull"
               half-increments
               hover
-              :rules="[required('rating')]"
+              :rules="[required('số sao đánh giá')]"
             ></v-rating>
           </v-row>
         </v-form>

@@ -661,8 +661,8 @@ export default class DetailBiddingDocument extends Vue {
             this.serverSideOptions.totalItems = 1;
           }
         }
-        this.loading = false;
       }
+      this.loading = false;
     }
   }
   get getRouterId() {

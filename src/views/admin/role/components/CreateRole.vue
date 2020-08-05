@@ -21,7 +21,7 @@
                 v-model="roleLocal.name"
                 :readonly="update"
                 :counter="20"
-                :rules="[minLength('name', 5), maxLength('name', 20)]"
+                :rules="[minLength('Tên quyền', 5), maxLength('Tên quyền', 20)]"
               ></v-text-field>
             </v-col>
           </v-row>

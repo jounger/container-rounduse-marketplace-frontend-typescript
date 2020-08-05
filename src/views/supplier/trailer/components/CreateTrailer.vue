@@ -19,10 +19,7 @@
                 prepend-icon="format_strikethrough"
                 type="text"
                 :counter="20"
-                :rules="[
-                  minLength('licensePlate', 5),
-                  maxLength('licensePlate', 20)
-                ]"
+                :rules="[minLength('Biển số', 5), maxLength('Biển số', 20)]"
                 v-model="trailerLocal.licensePlate"
               ></v-text-field>
             </v-col>
@@ -33,7 +30,7 @@
                 v-model="trailerLocal.type"
                 prepend-icon="timeline"
                 :items="typesLoad"
-                :rules="[required('type')]"
+                :rules="[required('loại rơ moóc')]"
                 :loading="loading"
                 no-data-text="Danh sách loại rơ moóc rỗng."
                 label="Loại rơ moóc*"
@@ -58,9 +55,9 @@
                 prepend-icon="format_size"
                 type="number"
                 :rules="[
-                  required('numberOfAxles'),
-                  minNumber('numberOfAxles', 1),
-                  maxNumber('numberOfAxles', 4)
+                  required('số lượng trục'),
+                  minNumber('Số lượng trục', 1),
+                  maxNumber('Số lượng trục', 5)
                 ]"
                 v-model="trailerLocal.numberOfAxles"
               ></v-text-field>

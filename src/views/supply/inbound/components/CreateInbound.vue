@@ -65,7 +65,7 @@
                         prepend-icon="directions_boat"
                         :items="shippingLinesToString"
                         :loading="loadingShippingLines"
-                        :rules="[required('shipping line')]"
+                        :rules="[required('hãng tàu')]"
                         no-data-text="Danh sách hãng tàu rỗng."
                         label="Hãng tàu*"
                         ><v-btn
@@ -85,7 +85,7 @@
                         prepend-icon="directions_bus"
                         :loading="loadingContainerTypes"
                         :items="containerTypesToString"
-                        :rules="[required('container type')]"
+                        :rules="[required('loại Container')]"
                         label="Loại container*"
                         no-data-text="Danh sách loại Cont rỗng."
                         ><v-btn
@@ -109,7 +109,7 @@
                         class="place-input"
                         type="text"
                         placeholder="Nơi trả hàng"
-                        :rules="[required('return station')]"
+                        :rules="[required('nơi trả hàng')]"
                         required
                       />
                       <!-- <v-text-field
@@ -163,7 +163,7 @@
                         prepend-icon="flag"
                         :loading="loadingPorts"
                         :items="portsToString"
-                        :rules="[required('port of loading')]"
+                        :rules="[required('cảng lấy Container đặc')]"
                         no-data-text="Danh sách bến cảng rỗng."
                         label="Cảng lấy cont đặc*"
                         ><v-btn
@@ -196,7 +196,7 @@
                         v-model="inboundLocal.billOfLading.unit"
                         prepend-icon="local_shipping"
                         type="number"
-                        :rules="[required('unit')]"
+                        :rules="[required('số lượng Container đăng ký')]"
                         label="Số lượng cont*"
                       ></v-text-field
                     ></v-col>
@@ -227,7 +227,6 @@
                         v-model="inboundLocal.code"
                         prepend-icon="gesture"
                         type="string"
-                        :rules="[required('code')]"
                         label="Mã hàng nhập"
                         readonly
                       ></v-text-field
@@ -235,7 +234,6 @@
                   </v-row>
                   <v-checkbox
                     v-model="checkbox"
-                    :rules="[required('agree term')]"
                     label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
                   ></v-checkbox>
                   <v-btn

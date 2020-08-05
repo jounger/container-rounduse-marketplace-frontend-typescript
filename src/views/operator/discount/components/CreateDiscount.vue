@@ -20,7 +20,7 @@
                 prepend-icon="loyalty"
                 type="text"
                 v-model="discountLocal.code"
-                :rules="[required('code')]"
+                :rules="[required('mã giảm giá')]"
               ></v-text-field>
             </v-col>
             <v-col cols="12" md="6">

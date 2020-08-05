@@ -28,7 +28,10 @@
                 prepend-icon="menu"
                 type="text"
                 :counter="20"
-                :rules="[minLength('title', 5), maxLength('title', 100)]"
+                :rules="[
+                  minLength('Tiêu đề Report', 5),
+                  maxLength('Tiêu đề Report', 100)
+                ]"
                 v-model="reportLocal.title"
               ></v-text-field>
             </v-col>
@@ -42,7 +45,10 @@
                 prepend-icon="description"
                 type="text"
                 :counter="200"
-                :rules="[minLength('detail', 5), maxLength('detail', 200)]"
+                :rules="[
+                  minLength('Nội dung Report', 5),
+                  maxLength('Nội dung Report', 200)
+                ]"
                 v-model="reportLocal.detail"
               ></v-textarea>
             </v-col>

@@ -27,7 +27,10 @@
                   prepend-icon="mdi-account"
                   type="text"
                   :counter="20"
-                  :rules="[minLength('username', 2), maxLength('username', 20)]"
+                  :rules="[
+                    minLength('Tên đăng nhập', 2),
+                    maxLength('Tên đăng nhập', 20)
+                  ]"
                   v-model="supplier.username"
                 ></v-text-field>
               </v-col>
@@ -39,8 +42,8 @@
                   type="password"
                   :counter="120"
                   :rules="[
-                    minLength('password', 6),
-                    maxLength('password', 120)
+                    minLength('Mật khẩu', 6),
+                    maxLength('Mật khẩu', 120)
                   ]"
                   v-model="supplier.password"
                 ></v-text-field>
@@ -63,9 +66,9 @@
                   v-model="supplier.email"
                   :counter="50"
                   :rules="[
-                    email('Register'),
-                    minLength('email', 5),
-                    maxLength('email', 50)
+                    email('đăng ký'),
+                    minLength('Email', 5),
+                    maxLength('Email', 50)
                   ]"
                 ></v-text-field>
               </v-col>
@@ -76,7 +79,10 @@
                   prepend-icon="phone"
                   type="number"
                   :counter="10"
-                  :rules="[minLength('phone', 10), maxLength('phone', 10)]"
+                  :rules="[
+                    minLength('Số điện thoại', 10),
+                    maxLength('Số điện thoại', 10)
+                  ]"
                   v-model="supplier.phone"
                 ></v-text-field>
               </v-col>
@@ -88,7 +94,7 @@
                   name="address"
                   prepend-icon="location_on"
                   :counter="100"
-                  :rules="[minLength('address', 5), maxLength('address', 100)]"
+                  :rules="[minLength('Đỉa chỉ', 5), maxLength('Địa chỉ', 100)]"
                   type="text"
                   v-model="supplier.address"
                 ></v-text-field>
@@ -117,8 +123,8 @@
                   type="text"
                   :counter="10"
                   :rules="[
-                    minLength('cpmpany code', 2),
-                    maxLength('company code', 10)
+                    minLength('Mã công ty', 2),
+                    maxLength('Mã công ty', 10)
                   ]"
                   v-model="supplier.companyCode"
                 ></v-text-field>
@@ -131,8 +137,8 @@
                   type="text"
                   :counter="100"
                   :rules="[
-                    minLength('company name', 5),
-                    maxLength('company name', 100)
+                    minLength('Tên công ty', 5),
+                    maxLength('Tên công ty', 100)
                   ]"
                   v-model="supplier.companyName"
                 >
@@ -148,8 +154,8 @@
                   type="text"
                   :counter="50"
                   :rules="[
-                    minLength('contact person', 5),
-                    maxLength('contact person', 50)
+                    minLength('Người liên hệ', 5),
+                    maxLength('Người liên hệ', 50)
                   ]"
                   v-model="supplier.contactPerson"
                 ></v-text-field>
@@ -161,7 +167,7 @@
                   prepend-icon="copyright"
                   type="text"
                   :counter="50"
-                  :rules="[minLength('website', 5), maxLength('website', 50)]"
+                  :rules="[minLength('Website', 5), maxLength('Website', 50)]"
                   v-model="supplier.website"
                 ></v-text-field>
               </v-col>
@@ -173,19 +179,22 @@
                   name="tin"
                   prepend-icon="card_travel"
                   :counter="20"
-                  :rules="[minLength('tin', 5), maxLength('tin', 20)]"
+                  :rules="[
+                    minLength('Mã số thuế', 5),
+                    maxLength('Mã số thuế', 20)
+                  ]"
                   type="number"
                   v-model="supplier.tin"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  label="Fax*"
+                  label="FAX*"
                   name="fax"
                   prepend-icon="perm_phone_msg"
                   type="number"
                   :counter="20"
-                  :rules="[minLength('fax', 5), maxLength('fax', 20)]"
+                  :rules="[minLength('FAX', 5), maxLength('FAX', 20)]"
                   v-model="supplier.fax"
                 ></v-text-field>
               </v-col>
@@ -199,8 +208,8 @@
                   type="text"
                   :counter="200"
                   :rules="[
-                    minLength('company description', 5),
-                    maxLength('company description', 200)
+                    minLength('Mô tả công ty', 5),
+                    maxLength('Mô tả công ty', 200)
                   ]"
                   v-model="supplier.companyDescription"
                 ></v-text-field>
@@ -213,8 +222,8 @@
                   type="text"
                   :counter="200"
                   :rules="[
-                    minLength('company address', 5),
-                    maxLength('company address', 200)
+                    minLength('Địa chỉ công ty', 5),
+                    maxLength('Địa chỉ công ty', 200)
                   ]"
                   v-model="supplier.companyAddress"
                 ></v-text-field>

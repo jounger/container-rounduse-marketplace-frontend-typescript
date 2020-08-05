@@ -31,7 +31,10 @@
                 prepend-icon="description"
                 type="text"
                 :counter="200"
-                :rules="[minLength('message', 5), maxLength('message', 200)]"
+                :rules="[
+                  minLength('Nội dung feedback', 5),
+                  maxLength('Nội dung feedback', 200)
+                ]"
                 v-model="feedbackLocal.message"
               ></v-textarea>
             </v-col>

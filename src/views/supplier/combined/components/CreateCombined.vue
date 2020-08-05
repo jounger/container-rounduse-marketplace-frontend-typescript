@@ -100,7 +100,7 @@
                 v-model="combinedLocal.contract.finesAgainstContractViolations"
                 prepend-icon="money"
                 type="number"
-                :rules="[required('finesAgainstContractViolations')]"
+                :rules="[required('phần trăm tiền phạt')]"
                 label="% tiền phạt"
               ></v-text-field>
               <v-btn color="primary" @click="stepper = 3" :disabled="!valid"

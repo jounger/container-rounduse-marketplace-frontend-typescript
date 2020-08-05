@@ -53,7 +53,7 @@
                 name="finesAgainstContractViolation"
                 prepend-icon="monetization_on"
                 type="text"
-                :rules="[required('finesAgainstContractViolation')]"
+                :rules="[required('phần trăm tiền phạt')]"
                 v-model="contractLocal.finesAgainstContractViolation"
               ></v-text-field>
             </v-col>

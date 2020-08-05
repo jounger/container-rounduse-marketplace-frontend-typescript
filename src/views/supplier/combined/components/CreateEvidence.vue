@@ -18,7 +18,6 @@
                 type="text"
                 readonly
                 :counter="20"
-                :rules="[minLength('sender', 5), maxLength('sender', 20)]"
                 v-model="evidenceLocal.sender"
               ></v-text-field>
             </v-col>
@@ -30,7 +29,7 @@
                 name="evidence"
                 prepend-icon="description"
                 type="text"
-                :rules="[required('evidence')]"
+                :rules="[required('chứng cứ')]"
                 v-model="evidenceLocal.evidence"
               ></v-text-field>
             </v-col>

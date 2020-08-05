@@ -23,7 +23,6 @@
                 type="text"
                 readonly
                 :counter="20"
-                :rules="[minLength('sender', 5), maxLength('sender', 20)]"
                 v-model="paymentLocal.sender"
               ></v-text-field>
             </v-col>
@@ -35,7 +34,6 @@
                 type="text"
                 readonly
                 :counter="20"
-                :rules="[minLength('recipient', 5), maxLength('recipient', 20)]"
                 v-model="paymentLocal.recipient"
               ></v-text-field>
             </v-col>
@@ -48,7 +46,7 @@
                 prepend-icon="description"
                 type="text"
                 :readonly="readonly"
-                :rules="[required('detail')]"
+                :rules="[required('nội dung hóa đơn')]"
                 v-model="paymentLocal.detail"
               ></v-text-field>
             </v-col>
@@ -59,7 +57,7 @@
                 prepend-icon="monetization_on"
                 type="number"
                 :readonly="readonly"
-                :rules="[required('amount')]"
+                :rules="[required('số tiền')]"
                 :hint="currencyFormatter(paymentLocal.amount)"
                 v-model="paymentLocal.amount"
               ></v-text-field>
@@ -72,7 +70,7 @@
                 prepend-icon="money"
                 :readonly="update || readonly"
                 :items="types"
-                :rules="[required('type')]"
+                :rules="[required('loại hóa đơn')]"
                 label="Loại hóa đơn*"
               ></v-select>
             </v-col>
