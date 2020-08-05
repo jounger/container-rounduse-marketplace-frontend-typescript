@@ -35,8 +35,6 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IDiscount } from "@/entity/discount";
 import { removeDiscount } from "@/api/discount";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeleteDiscount extends Vue {
@@ -47,27 +45,15 @@ export default class DeleteDiscount extends Vue {
 
   async removeDiscount() {
     if (this.discount.id) {
-      await removeDiscount(this.discount.id)
-        .then(res => {
-          console.log(res.data);
-          snackbar.setSnackbar({
-            text: "Xóa thành công mã giảm giá: " + this.discount.code,
-            color: "success"
-          });
-          const index = this.discountsSync.findIndex(
-            x => x.id === this.discount.id
-          );
-          this.discountsSync.splice(index, 1);
-          this.totalItemsSync -= 1;
-          this.dialogDelSync = false;
-        })
-        .catch(err => {
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-        });
-      snackbar.setDisplay(true);
+      const _res = await removeDiscount(this.discount.id);
+      if (_res.status == 200) {
+        const index = this.discountsSync.findIndex(
+          x => x.id === this.discount.id
+        );
+        this.discountsSync.splice(index, 1);
+        this.totalItemsSync -= 1;
+        this.dialogDelSync = false;
+      }
     }
   }
 }

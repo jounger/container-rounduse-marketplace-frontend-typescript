@@ -62,7 +62,6 @@
 <script lang="ts">
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { IContainerTractor } from "@/entity/container-tractor";
-import { PaginationResponse } from "@/api/payload";
 import DeleteTractor from "./components/DeleteTractor.vue";
 import CreateTractor from "./components/CreateTractor.vue";
 import { getContainerTractorsByForwarder } from "@/api/container-tractor";
@@ -125,18 +124,10 @@ export default class Tractor extends Vue {
       const _tractors = await getContainerTractorsByForwarder({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
-      })
-        .then(res => {
-          const response: PaginationResponse<IContainerTractor> = res.data;
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_tractors) {
-        this.tractors = _tractors.data;
-        this.serverSideOptions.totalItems = _tractors.totalElements;
+      });
+      if (_tractors.data) {
+        this.tractors = _tractors.data.data;
+        this.serverSideOptions.totalItems = _tractors.data.totalElements;
       }
       this.loading = false;
     }

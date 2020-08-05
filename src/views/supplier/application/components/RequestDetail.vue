@@ -177,35 +177,18 @@
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import { ISupplier } from "@/entity/supplier";
 import { getSupplier } from "@/api/supplier";
-import snackbar from "@/store/modules/snackbar";
-import { getErrorMessage } from "@/utils/tool";
 
-@Component({
-  name: "RequestDetail"
-})
+@Component
 export default class RequestDetail extends Vue {
   @PropSync("dialog", { type: Boolean }) dialogSync!: boolean;
 
   supplier = {} as ISupplier;
   role = "";
   async created() {
-    const _supplier = await getSupplier(this.$auth.user().username)
-      .then(res => {
-        const response: ISupplier = res.data;
-        return response;
-      })
-      .catch(err => {
-        console.log(err);
-        snackbar.setSnackbar({
-          text: getErrorMessage(err),
-          color: "error"
-        });
-        snackbar.setDisplay(true);
-        return null;
-      });
-    if (_supplier) {
-      this.supplier = _supplier;
-      this.role = _supplier.roles[0];
+    const _supplier = await getSupplier(this.$auth.user().username);
+    if (_supplier.data) {
+      this.supplier = _supplier.data;
+      this.role = _supplier.data.roles[0];
     }
   }
 }

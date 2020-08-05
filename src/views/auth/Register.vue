@@ -253,8 +253,7 @@
 import { Component, Vue } from "vue-property-decorator";
 import FormValidate from "@/mixin/form-validate";
 import Snackbar from "@/components/Snackbar.vue";
-import snackbar from "@/store/modules/snackbar";
-import { getErrorMessage } from "@/utils/tool";
+
 import { ISupplier } from "@/entity/supplier";
 @Component({
   mixins: [FormValidate],
@@ -291,27 +290,12 @@ export default class Register extends Vue {
 
   async submit() {
     this.supplier.roles.push(this.role);
-    await this.$http({
+    const _res = await this.$http({
       url: "/auth/signup",
       method: "POST",
       data: this.supplier
-    })
-      .then(response => {
-        console.warn("SUCCESS register", response);
-        snackbar.setSnackbar({
-          text: "Đăng ký thành công người dùng " + response.data.username,
-          color: "success"
-        });
-      })
-      .catch(err => {
-        console.error("ERROR! in register", err);
-        snackbar.setSnackbar({
-          text: getErrorMessage(err),
-          color: "error"
-        });
-      });
-    snackbar.setDisplay(true);
-    this.supplier.roles = [] as Array<string>;
+    });
+    if (_res.status == 200) this.supplier.roles = [] as Array<string>;
   }
 }
 </script>

@@ -64,8 +64,6 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IReport } from "@/entity/report";
 import FormValidate from "@/mixin/form-validate";
 import { editReport } from "@/api/report";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
@@ -82,29 +80,11 @@ export default class CreateReport extends Vue {
   }
   async updateReport() {
     if (this.reportLocal && this.reportLocal.id) {
-      const _report = await editReport(this.reportLocal.id, this.reportLocal)
-        .then(res => {
-          console.log(res.data);
-          const response: IReport = res.data;
-          snackbar.setSnackbar({
-            text: "Cập nhật thành công Report: " + response.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_report) {
-        const index = this.reportsSync.findIndex(x => x.id == _report.id);
-        this.reportsSync.splice(index, 1, _report);
+      const _report = await editReport(this.reportLocal.id, this.reportLocal);
+      if (_report.data) {
+        const index = this.reportsSync.findIndex(x => x.id == _report.data.id);
+        this.reportsSync.splice(index, 1, _report.data);
       }
-      snackbar.setDisplay(true);
     }
   }
 }

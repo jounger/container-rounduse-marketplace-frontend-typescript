@@ -53,8 +53,6 @@ import { IEvidence } from "@/entity/evidence";
 import FormValidate from "@/mixin/form-validate";
 import { createEvidence } from "@/api/evidence";
 import { IContract } from "@/entity/contract";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
@@ -77,32 +75,15 @@ export default class CreateEvidence extends Vue {
       const _evidence = await createEvidence(
         this.contract.id,
         this.evidenceLocal
-      )
-        .then(res => {
-          const response: IEvidence = res.data;
-          snackbar.setSnackbar({
-            text: "Thêm mới thành công Chứng cứ: " + response.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_evidence) {
+      );
+      if (_evidence.data) {
         if (this.evidencesSync) {
-          this.evidencesSync.unshift(_evidence);
+          this.evidencesSync.unshift(_evidence.data);
           this.totalItemsSync += 1;
           this.checkValidSync = false;
         }
         this.dialogAddSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
 }

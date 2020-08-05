@@ -132,11 +132,8 @@ import { IContainerSemiTrailer } from "@/entity/container-semi-trailer";
 import { IContainerTractor } from "@/entity/container-tractor";
 import { getContainerTractorsByForwarder } from "@/api/container-tractor";
 import { getContainerSemiTrailersByForwarder } from "@/api/container-semi-trailer";
-import { PaginationResponse } from "@/api/payload";
 import { getDriversByForwarder } from "@/api/driver";
 import { IDriver } from "@/entity/driver";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
@@ -176,30 +173,21 @@ export default class CreateContainer extends Vue {
     const _drivers = await getDriversByForwarder({
       page: 0,
       limit: 100
-    })
-      .then(res => {
-        const response: PaginationResponse<IDriver> = res.data;
-        console.log("watch", response);
-        return response.data;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    if (_drivers) {
+    });
+    if (_drivers.data) {
       if (!this.update) {
-        _drivers.forEach((x: IDriver, index: number) => {
+        _drivers.data.forEach((x: IDriver, index: number) => {
           if (index != limit) {
             this.drivers.push(x);
           }
         });
       } else {
-        _drivers.forEach((x: IDriver) => {
+        _drivers.data.forEach((x: IDriver) => {
           if (x.username == this.containerLocal.driver) {
             this.drivers.push(x);
           }
         });
-        _drivers.forEach((x: IDriver) => {
+        _drivers.data.forEach((x: IDriver) => {
           let check = false;
           if (x.username == this.containerLocal.driver) {
             check = true;
@@ -211,7 +199,7 @@ export default class CreateContainer extends Vue {
         });
       }
     }
-    if (!_drivers || _drivers.length <= this.limitDrivers) {
+    if (!_drivers.data || _drivers.data.length <= this.limitDrivers) {
       this.seeMoreDrivers = false;
     }
     this.loadingDrivers = false;
@@ -226,30 +214,22 @@ export default class CreateContainer extends Vue {
     const _tractors = await getContainerTractorsByForwarder({
       page: 0,
       limit: limit + 1
-    })
-      .then(res => {
-        const response: PaginationResponse<IContainerTractor> = res.data;
-        return response.data;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    if (_tractors) {
+    });
+    if (_tractors.data) {
       if (!this.update) {
-        _tractors.forEach((x: IContainerTractor, index: number) => {
+        _tractors.data.forEach((x: IContainerTractor, index: number) => {
           if (index != limit) {
             this.tractors.push(x);
           }
         });
       } else {
-        _tractors.forEach((x: IContainerTractor) => {
+        _tractors.data.forEach((x: IContainerTractor) => {
           if (x.licensePlate == this.containerLocal.tractor) {
             this.tractors.push(x);
           }
         });
         if (this.tractors.length < this.limitTractors) {
-          _tractors.forEach((x: IContainerTractor) => {
+          _tractors.data.forEach((x: IContainerTractor) => {
             let check = false;
             if (x.licensePlate == this.containerLocal.tractor) {
               check = true;
@@ -262,7 +242,7 @@ export default class CreateContainer extends Vue {
         }
       }
     }
-    if (!_tractors || _tractors.length <= this.limitTractors) {
+    if (!_tractors.data || _tractors.data.length <= this.limitTractors) {
       this.seeMoreTractors = false;
     }
     this.loadingTractors = false;
@@ -277,30 +257,22 @@ export default class CreateContainer extends Vue {
     const _trailers = await getContainerSemiTrailersByForwarder({
       page: 0,
       limit: 100
-    })
-      .then(res => {
-        const response: PaginationResponse<IContainerSemiTrailer> = res.data;
-        return response.data;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    if (_trailers) {
+    });
+    if (_trailers.data) {
       if (!this.update) {
-        _trailers.forEach((x: IContainerSemiTrailer, index: number) => {
+        _trailers.data.forEach((x: IContainerSemiTrailer, index: number) => {
           if (index != limit) {
             this.trailers.push(x);
           }
         });
       } else {
-        _trailers.forEach((x: IContainerSemiTrailer) => {
+        _trailers.data.forEach((x: IContainerSemiTrailer) => {
           if (x.licensePlate == this.containerLocal.trailer) {
             this.trailers.push(x);
           }
         });
         if (this.trailers.length < this.limitTrailers) {
-          _trailers.forEach((x: IContainerSemiTrailer) => {
+          _trailers.data.forEach((x: IContainerSemiTrailer) => {
             let check = false;
             if (x.licensePlate == this.containerLocal.trailer) {
               check = true;
@@ -313,7 +285,7 @@ export default class CreateContainer extends Vue {
         }
       }
     }
-    if (!_trailers || _trailers.length <= this.limitTrailers) {
+    if (!_trailers.data || _trailers.data.length <= this.limitTrailers) {
       this.seeMoreTrailers = false;
     }
     this.loadingTrailers = false;
@@ -341,60 +313,26 @@ export default class CreateContainer extends Vue {
     }
   }
   async createContainer() {
-    // TODO: API create Container
     if (this.billOfLading.id) {
       const _container = await createContainer(
         this.billOfLading.id,
         this.containerLocal
-      )
-        .then(res => {
-          console.log(res.data);
-          const response: IContainer = res.data;
-          snackbar.setSnackbar({
-            text: "Thêm mới thành công Container: " + response.containerNumber,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_container) {
-        this.containersSync.unshift(_container);
+      );
+      if (_container.data) {
+        this.containersSync.unshift(_container.data);
         this.totalItemsSync += 1;
         this.dialogAddContSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
   async updateContainer() {
-    const _container = await updateContainer(this.containerLocal)
-      .then(res => {
-        const response: IContainer = res.data;
-        snackbar.setSnackbar({
-          text: "Cập nhập thành công Container: " + response.containerNumber,
-          color: "success"
-        });
-        return response;
-      })
-      .catch(err => {
-        console.log(err);
-        snackbar.setSnackbar({
-          text: getErrorMessage(err),
-          color: "error"
-        });
-        return null;
-      });
-    if (_container) {
-      const index = this.containersSync.findIndex(x => x.id === _container.id);
-      this.containersSync.splice(index, 1, _container);
+    const _container = await updateContainer(this.containerLocal);
+    if (_container.data) {
+      const index = this.containersSync.findIndex(
+        x => x.id === _container.data.id
+      );
+      this.containersSync.splice(index, 1, _container.data);
     }
-    snackbar.setDisplay(true);
   }
 
   get trailersToString() {

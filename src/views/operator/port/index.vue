@@ -69,7 +69,6 @@ import CreatePort from "./components/CreatePort.vue";
 import UpdatePort from "./components/UpdatePort.vue";
 import DeletePort from "./components/DeletePort.vue";
 import { getPorts } from "@/api/port";
-import { PaginationResponse } from "@/api/payload";
 import { DataOptions } from "vuetify";
 
 @Component({
@@ -127,19 +126,10 @@ export default class Port extends Vue {
       const _ports = await getPorts({
         page: val.page - 1,
         limit: val.itemsPerPage
-      })
-        .then(res => {
-          const response: PaginationResponse<IPort> = res.data;
-          console.log("watch", response);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_ports) {
-        this.ports = _ports.data;
-        this.serverSideOptions.totalItems = _ports.totalElements;
+      });
+      if (_ports.data) {
+        this.ports = _ports.data.data;
+        this.serverSideOptions.totalItems = _ports.data.totalElements;
       }
       this.loading = false;
     }

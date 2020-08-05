@@ -60,7 +60,6 @@
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { ISupplier } from "@/entity/supplier";
 import { getSuppliersByStatus } from "@/api/supplier";
-import { PaginationResponse } from "@/api/payload";
 import RegisterDetail from "./components/RegisterDetail.vue";
 import { DataOptions } from "vuetify";
 
@@ -111,19 +110,10 @@ export default class Supplier extends Vue {
         page: val.page - 1,
         limit: val.itemsPerPage,
         status: "PENDING"
-      })
-        .then(res => {
-          const response: PaginationResponse<ISupplier> = res.data;
-          console.log(response.data);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_suppliers) {
-        this.suppliers = _suppliers.data;
-        this.serverSideOptions.totalItems = _suppliers.totalElements;
+      });
+      if (_suppliers.data) {
+        this.suppliers = _suppliers.data.data;
+        this.serverSideOptions.totalItems = _suppliers.data.totalElements;
       }
       this.loading = false;
     }

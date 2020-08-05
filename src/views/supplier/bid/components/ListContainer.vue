@@ -137,13 +137,11 @@
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync, Prop, Watch } from "vue-property-decorator";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
+
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { getContainersByInbound } from "@/api/container";
 import { getInboundsByOutboundAndForwarder } from "@/api/inbound";
 import { IContainer } from "@/entity/container";
-import { PaginationResponse } from "@/api/payload";
 import { IInbound } from "@/entity/inbound";
 import { IOutbound } from "@/entity/outbound";
 import { DataOptions } from "vuetify";
@@ -302,31 +300,10 @@ export default class ListContainer extends Vue {
   async createContainerBid(item: IContainer) {
     this.loading = true;
     if (this.bid.id && item.id) {
-      const _bid = await addContainer(this.bid.id, item.id)
-        .then(res => {
-          const response: IBid = res.data;
-          console.log("bid", response);
-          snackbar.setSnackbar({
-            text:
-              "Thêm mới thành công Container " +
-              item.containerNumber +
-              " cho HSDT " +
-              response.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_bid) {
-        console.log(_bid);
-        const _containers: Array<IContainer> = _bid.containers as Array<
+      const _bid = await addContainer(this.bid.id, item.id);
+      if (_bid.data) {
+        console.log(_bid.data);
+        const _containers: Array<IContainer> = _bid.data.containers as Array<
           IContainer
         >;
         _containers.forEach((x: IContainer) => {
@@ -353,7 +330,6 @@ export default class ListContainer extends Vue {
         );
         this.selectedContainers.splice(index, 1);
       }
-      snackbar.setDisplay(true);
     }
     this.loading = false;
   }
@@ -363,31 +339,9 @@ export default class ListContainer extends Vue {
       const _bid = await replaceContainer(this.bid.id, {
         oldContainerId: this.container.id,
         newContainerId: item.id
-      })
-        .then(res => {
-          const response: IBid = res.data;
-          snackbar.setSnackbar({
-            text:
-              "Đổi thành công Container " +
-              this.container.containerNumber +
-              " thành Container " +
-              item.containerNumber +
-              " cho HSDT " +
-              response.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_bid) {
-        const _containers: Array<IContainer> = _bid.containers as Array<
+      });
+      if (_bid.data) {
+        const _containers: Array<IContainer> = _bid.data.containers as Array<
           IContainer
         >;
         const index = this.containersSelectedSync.findIndex(
@@ -404,35 +358,13 @@ export default class ListContainer extends Vue {
         });
         this.dialogContainerSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
   async removeContainer(item: IContainer) {
     this.loading = true;
     if (item.id && this.bid.id) {
-      const _bid = await removeContainer(this.bid.id, item.id)
-        .then(res => {
-          const response: IBid = res.data;
-          snackbar.setSnackbar({
-            text:
-              "Xóa thành công Container " +
-              item.containerNumber +
-              " khỏi HSDT " +
-              this.bid.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      snackbar.setDisplay(true);
-      if (_bid) {
+      const _bid = await removeContainer(this.bid.id, item.id);
+      if (_bid.data) {
         const index = this.containersSelectedSync.findIndex(
           x => x.containerNumber == item.containerNumber
         );
@@ -464,19 +396,12 @@ export default class ListContainer extends Vue {
         const _inbounds = await getInboundsByOutboundAndForwarder(_outboundId, {
           page: val.page - 1,
           limit: val.itemsPerPage
-        })
-          .then(res => {
-            const response: PaginationResponse<IInbound> = res.data;
-            return response;
-          })
-          .catch(err => {
-            console.log(err);
-            return null;
-          });
+        });
         this.loading = false;
-        if (_inbounds) {
-          this.inbounds = _inbounds.data;
-          this.inboundServerSideOptions.totalItems = _inbounds.totalElements;
+        if (_inbounds.data) {
+          this.inbounds = _inbounds.data.data;
+          this.inboundServerSideOptions.totalItems =
+            _inbounds.data.totalElements;
         }
       }
     }
@@ -490,17 +415,9 @@ export default class ListContainer extends Vue {
         const _containers = await getContainersByInbound(this.inbound.id, {
           page: val.page - 1,
           limit: val.itemsPerPage
-        })
-          .then(res => {
-            const response: PaginationResponse<IContainer> = res.data;
-            return response;
-          })
-          .catch(err => {
-            console.log(err);
-            return null;
-          });
-        if (_containers) {
-          _containers.data.forEach((x: IContainer) => {
+        });
+        if (_containers.data) {
+          _containers.data.data.forEach((x: IContainer) => {
             if (x.status == "CREATED") {
               this.containers.push(x);
             } else {
@@ -514,9 +431,6 @@ export default class ListContainer extends Vue {
               });
             }
           });
-          console.log(this.containers);
-          console.log(this.selectedContainers);
-          console.log(this.selectedContainers[0] === this.containers[0]);
           this.serverSideOptions.totalItems = this.containers.length;
         }
       }
@@ -536,7 +450,6 @@ export default class ListContainer extends Vue {
       for (let i = start; i <= end; i++) {
         this.selectedContainersList.push(this.selectedContainers[i]);
       }
-
       this.loading = false;
     }
   }

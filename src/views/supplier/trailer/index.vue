@@ -65,7 +65,6 @@
 <script lang="ts">
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { IContainerSemiTrailer } from "@/entity/container-semi-trailer";
-import { PaginationResponse } from "@/api/payload";
 import DeleteTrailer from "./components/DeleteTrailer.vue";
 import CreateTrailer from "./components/CreateTrailer.vue";
 import { getContainerSemiTrailersByForwarder } from "@/api/container-semi-trailer";
@@ -129,18 +128,10 @@ export default class Trailer extends Vue {
       const _trailers = await getContainerSemiTrailersByForwarder({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
-      })
-        .then(res => {
-          const response: PaginationResponse<IContainerSemiTrailer> = res.data;
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_trailers) {
-        this.trailers = _trailers.data;
-        this.serverSideOptions.totalItems = _trailers.totalElements;
+      });
+      if (_trailers.data) {
+        this.trailers = _trailers.data.data;
+        this.serverSideOptions.totalItems = _trailers.data.totalElements;
       }
       this.loading = false;
     }

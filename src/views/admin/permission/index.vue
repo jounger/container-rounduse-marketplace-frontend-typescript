@@ -63,7 +63,6 @@
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { IPermission } from "@/entity/permission";
 import { getPermissions } from "@/api/permission";
-import { PaginationResponse } from "@/api/payload";
 import DeletePermission from "./components/DeletePermission.vue";
 import CreatePermission from "./components/CreatePermission.vue";
 import { DataOptions } from "vuetify";
@@ -125,19 +124,10 @@ export default class Permission extends Vue {
       const _permissions = await getPermissions({
         page: val.page - 1,
         limit: val.itemsPerPage
-      })
-        .then(res => {
-          const response: PaginationResponse<IPermission> = res.data;
-          console.log("watch", response);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_permissions) {
-        this.permissions = _permissions.data;
-        this.serverSideOptions.totalItems = _permissions.totalElements;
+      });
+      if (_permissions.data) {
+        this.permissions = _permissions.data.data;
+        this.serverSideOptions.totalItems = _permissions.data.totalElements;
       }
       this.loading = false;
     }

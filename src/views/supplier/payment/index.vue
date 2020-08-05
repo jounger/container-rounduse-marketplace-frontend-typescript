@@ -137,8 +137,6 @@ import { Component, Watch, Vue } from "vue-property-decorator";
 import { IPayment } from "@/entity/payment";
 import CreatePayment from "./components/CreatePayment.vue";
 import DeletePayment from "./components/DeletePayment.vue";
-// import { getPayments } from "@/api/payment";
-import { PaginationResponse } from "@/api/payload";
 import Utils from "@/mixin/utils";
 import { getPaymentsByUser } from "@/api/payment";
 import { DataOptions } from "vuetify";
@@ -229,19 +227,10 @@ export default class Payment extends Vue {
       const _payments = await getPaymentsByUser({
         page: val.page - 1,
         limit: val.itemsPerPage
-      })
-        .then(res => {
-          const response: PaginationResponse<IPayment> = res.data;
-          console.log("watch", response);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_payments) {
-        this.payments = _payments.data;
-        this.serverSideOptions.totalItems = _payments.totalElements;
+      });
+      if (_payments.data) {
+        this.payments = _payments.data.data;
+        this.serverSideOptions.totalItems = _payments.data.totalElements;
       }
       this.loading = false;
     }

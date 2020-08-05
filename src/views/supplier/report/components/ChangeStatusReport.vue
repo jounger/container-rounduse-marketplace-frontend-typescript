@@ -41,8 +41,6 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IReport } from "@/entity/report";
 import { editReport } from "@/api/report";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeleteReport extends Vue {
@@ -54,29 +52,11 @@ export default class DeleteReport extends Vue {
     if (this.reportSync.id) {
       const _report = await editReport(this.reportSync.id, {
         status: this.status
-      })
-        .then(res => {
-          console.log(res.data);
-          const response = res.data;
-          snackbar.setSnackbar({
-            text: "Thay đổi trạng thái thành công Report: " + response.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_report) {
-        this.reportSync = _report;
+      });
+      if (_report.data) {
+        this.reportSync = _report.data;
         this.dialogConfirmSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
 }

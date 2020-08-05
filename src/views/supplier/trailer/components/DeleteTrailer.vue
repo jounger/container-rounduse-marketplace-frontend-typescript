@@ -37,8 +37,6 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContainerSemiTrailer } from "@/entity/container-semi-trailer";
 import { removeContainerSemiTrailer } from "@/api/container-semi-trailer";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeleteTrailer extends Vue {
@@ -51,28 +49,15 @@ export default class DeleteTrailer extends Vue {
 
   async removeTrailer() {
     if (this.trailer.id) {
-      await removeContainerSemiTrailer(this.trailer.id)
-        .then(res => {
-          console.log(res.data);
-          snackbar.setSnackbar({
-            text: "Xóa thành công Rơ moóc: " + this.trailer.licensePlate,
-            color: "success"
-          });
-          const index = this.trailersSync.findIndex(
-            x => x.id === this.trailer.id
-          );
-          this.trailersSync.splice(index, 1);
-          this.totalItemsSync -= 1;
-          this.dialogDelSync = false;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-        });
-      snackbar.setDisplay(true);
+      const _res = await removeContainerSemiTrailer(this.trailer.id);
+      if (_res.status == 200) {
+        const index = this.trailersSync.findIndex(
+          x => x.id === this.trailer.id
+        );
+        this.trailersSync.splice(index, 1);
+        this.totalItemsSync -= 1;
+        this.dialogDelSync = false;
+      }
     }
   }
 }

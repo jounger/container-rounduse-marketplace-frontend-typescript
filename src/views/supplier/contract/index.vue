@@ -169,7 +169,6 @@
 <script lang="ts">
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { IContract } from "@/entity/contract";
-import { PaginationResponse } from "@/api/payload";
 import { DataOptions } from "vuetify";
 import { IEvidence } from "@/entity/evidence";
 import { getEvidencesByContract } from "@/api/evidence";
@@ -179,7 +178,6 @@ import DetailEvidence from "../combined/components/DetailEvidence.vue";
 import UpdateContract from "./components/UpdateContract.vue";
 import CreatePayment from "../payment/components/CreatePayment.vue";
 import { getBiddingDocumentByBid } from "@/api/bidding-document";
-import { IBiddingDocument } from "@/entity/bidding-document";
 import { IBid } from "@/entity/bid";
 import CreateEvidence from "../combined/components/CreateEvidence.vue";
 
@@ -304,17 +302,9 @@ export default class Contract extends Vue {
     }));
   }
   async getBiddingDocument(id: number) {
-    const _biddingDocument = await getBiddingDocumentByBid(id)
-      .then(res => {
-        const response: IBiddingDocument = res.data;
-        return response;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    if (_biddingDocument) {
-      this.merchants.push(_biddingDocument.merchant);
+    const _biddingDocument = await getBiddingDocumentByBid(id);
+    if (_biddingDocument.data) {
+      this.merchants.push(_biddingDocument.data.merchant);
     }
     console.log(this.merchant);
   }
@@ -325,25 +315,16 @@ export default class Contract extends Vue {
       const _combineds = await getCombinedsByUser({
         page: val.page - 1,
         limit: val.itemsPerPage
-      })
-        .then(res => {
-          const response: PaginationResponse<ICombined> = res.data;
-          console.log("watch", response);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_combineds) {
-        this.combineds = _combineds.data;
-        _combineds.data.forEach((x: ICombined) => {
+      });
+      if (_combineds.data) {
+        this.combineds = _combineds.data.data;
+        _combineds.data.data.forEach((x: ICombined) => {
           const _bid = x.bid as IBid;
           if (_bid.id) {
             this.getBiddingDocument(_bid.id);
           }
         });
-        this.serverSideOptions.totalItems = _combineds.totalElements;
+        this.serverSideOptions.totalItems = _combineds.data.totalElements;
       }
       this.loading = false;
     }
@@ -356,18 +337,11 @@ export default class Contract extends Vue {
         const _evidences = await getEvidencesByContract(this.contract.id, {
           page: val.page - 1,
           limit: val.itemsPerPage
-        })
-          .then(res => {
-            const response: PaginationResponse<IEvidence> = res.data;
-            return response;
-          })
-          .catch(err => {
-            console.log(err);
-            return null;
-          });
-        if (_evidences) {
-          this.evidences = _evidences.data;
-          this.evidenceServerSideOptions.totalItems = _evidences.totalElements;
+        });
+        if (_evidences.data) {
+          this.evidences = _evidences.data.data;
+          this.evidenceServerSideOptions.totalItems =
+            _evidences.data.totalElements;
         }
       }
       this.loading = false;

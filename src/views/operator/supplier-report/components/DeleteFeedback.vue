@@ -35,8 +35,6 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IFeedback } from "@/entity/feedback";
 import { removeFeedback } from "@/api/feedback";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeleteFeedback extends Vue {
@@ -46,27 +44,14 @@ export default class DeleteFeedback extends Vue {
 
   async removeFeedback() {
     if (this.feedback.id) {
-      await removeFeedback(this.feedback.id)
-        .then(res => {
-          console.log(res.data);
-          snackbar.setSnackbar({
-            text: "Xóa thành công Phản hồi: " + this.feedback.id,
-            color: "success"
-          });
-          const index = this.feedbacksSync.findIndex(
-            x => x.id === this.feedback.id
-          );
-          this.feedbacksSync.splice(index, 1);
-          this.dialogDelSync = false;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-        });
-      snackbar.setDisplay(true);
+      const _res = await removeFeedback(this.feedback.id);
+      if (_res.status == 200) {
+        const index = this.feedbacksSync.findIndex(
+          x => x.id === this.feedback.id
+        );
+        this.feedbacksSync.splice(index, 1);
+        this.dialogDelSync = false;
+      }
     }
   }
 }

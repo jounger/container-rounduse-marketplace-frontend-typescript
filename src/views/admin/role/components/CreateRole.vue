@@ -76,12 +76,9 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IRole } from "@/entity/role";
 import { createRole, updateRole } from "@/api/role";
-import { PaginationResponse } from "@/api/payload";
 import { getPermissions } from "@/api/permission";
 import { IPermission } from "@/entity/permission";
 import FormValidate from "@/mixin/form-validate";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
@@ -108,24 +105,16 @@ export default class CreateRole extends Vue {
     const _permissions = await getPermissions({
       page: 0,
       limit: limit + 1
-    })
-      .then(res => {
-        const response: PaginationResponse<IPermission> = res.data;
-        return response.data;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    if (_permissions) {
+    });
+    if (_permissions.data) {
       if (!this.update) {
-        _permissions.forEach((x: IPermission, index: number) => {
+        _permissions.data.forEach((x: IPermission, index: number) => {
           if (index != limit) {
             this.permissions.push(x);
           }
         });
       } else {
-        _permissions.forEach((x: IPermission) => {
+        _permissions.data.forEach((x: IPermission) => {
           for (let i = 0; i < this.roleLocal.permissions.length; i++) {
             if (x.name == this.roleLocal.permissions[i]) {
               this.permissions.push(x);
@@ -136,7 +125,7 @@ export default class CreateRole extends Vue {
           this.limit = this.permissions.length;
         } else {
           if (this.permissions.length < this.limit) {
-            _permissions.forEach((x: IPermission) => {
+            _permissions.data.forEach((x: IPermission) => {
               let check = false;
               for (let i = 0; i < this.permissions.length; i++) {
                 if (x.name == this.permissions[i].name) {
@@ -151,7 +140,7 @@ export default class CreateRole extends Vue {
         }
       }
     }
-    if (!_permissions || _permissions.length <= this.limit) {
+    if (!_permissions.data || _permissions.data.length <= this.limit) {
       this.seeMore = false;
     }
     this.loading = false;
@@ -177,56 +166,21 @@ export default class CreateRole extends Vue {
   }
   async createRole() {
     if (this.roleLocal) {
-      const _role = await createRole(this.roleLocal)
-        .then(res => {
-          const response: IRole = res.data;
-          snackbar.setSnackbar({
-            text: "Thêm mới thành công quyền: " + response.name,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_role) {
-        this.rolesSync.unshift(_role);
+      const _role = await createRole(this.roleLocal);
+      if (_role.data) {
+        this.rolesSync.unshift(_role.data);
         this.totalItemsSync += 1;
         this.dialogAddSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
   async updateRole() {
     if (this.roleLocal.id) {
-      const _role = await updateRole(this.roleLocal)
-        .then(res => {
-          console.log(res.data);
-          const response: IRole = res.data;
-          snackbar.setSnackbar({
-            text: "Cập nhật thành công quyền: " + response.name,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_role) {
-        const index = this.rolesSync.findIndex(x => x.id == _role.id);
-        this.rolesSync.splice(index, 1, _role);
+      const _role = await updateRole(this.roleLocal);
+      if (_role.data) {
+        const index = this.rolesSync.findIndex(x => x.id == _role.data.id);
+        this.rolesSync.splice(index, 1, _role.data);
       }
-      snackbar.setDisplay(true);
     }
   }
 }

@@ -88,12 +88,6 @@
                 ]"
                 label="Giá gửi thầu"
               ></v-text-field>
-              <!-- <v-text-field
-                label="Label Text"
-                value="12:30:00"
-                type="time"
-                suffix="PST"
-              ></v-text-field> -->
               <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
                 >Tiếp tục</v-btn
               >
@@ -260,28 +254,27 @@ import FormValidate from "@/mixin/form-validate";
 import { IInbound } from "@/entity/inbound";
 import Utils from "@/mixin/utils";
 import { getInboundsByOutboundAndForwarder } from "@/api/inbound";
-import { PaginationResponse } from "@/api/payload";
 import { createBid } from "@/api/bid";
 import { IBiddingDocument } from "@/entity/bidding-document";
-import { isEmptyObject, addTimeToDate, getErrorMessage } from "@/utils/tool";
+import { isEmptyObject, addTimeToDate } from "@/utils/tool";
 import { getBiddingNotificationsByUser } from "@/api/notification";
 import { IBiddingNotification } from "@/entity/bidding-notification";
 import { IOutbound } from "@/entity/outbound";
 import { getContainersByInbound } from "@/api/container";
-import snackbar from "@/store/modules/snackbar";
 import { DataOptions } from "vuetify";
 import { IBillOfLading } from "@/entity/bill-of-lading";
-import { editBiddingNotifications } from "../../../../api/notification";
+import { editBiddingNotifications } from "@/api/notification";
+
 @Component({
   mixins: [FormValidate, Utils]
 })
 export default class CreateBid extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("biddingDocument", { type: Object })
-  biddingDocumentSync?: IBiddingDocument;
   @PropSync("totalItems", { type: Number }) totalItemsSync?: number;
   @PropSync("totalItemsBidNo", { type: Number }) totalItemsBidNoSync?: number;
   @PropSync("bids", { type: Array }) bidsSync?: Array<IBid>;
+  @PropSync("biddingDocument", { type: Object })
+  biddingDocumentSync?: IBiddingDocument;
   @PropSync("biddingNotifications", { type: Array })
   biddingNotificationsSync?: Array<IBiddingNotification>;
   @Prop(Object) biddingNotification?: IBiddingNotification;
@@ -447,27 +440,10 @@ export default class CreateBid extends Vue {
       const _bid = await createBid(
         this.biddingDocumentSelected.id,
         this.bidLocal
-      )
-        .then(res => {
-          const response: IBid = res.data;
-          console.log("response", response);
-          snackbar.setSnackbar({
-            text: "Thêm mới thành công Hồ sơ dự thầu: " + response.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_bid) {
+      );
+      if (_bid.data) {
         if (this.bidsSync) {
-          this.bidsSync.unshift(_bid);
+          this.bidsSync.unshift(_bid.data);
         }
         if (typeof this.totalItemsSync != "undefined") {
           this.totalItemsSync += 1;
@@ -482,20 +458,11 @@ export default class CreateBid extends Vue {
             {
               isHide: true
             }
-          )
-            .then(res => {
-              console.log(res.data);
-              const response = res.data;
-              return response;
-            })
-            .catch(err => {
-              console.log(err);
-              return null;
-            });
-          if (_biddingNotification) {
+          );
+          if (_biddingNotification.data) {
             if (this.biddingNotificationsSync) {
               const index = this.biddingNotificationsSync.findIndex(
-                x => x.id === _biddingNotification.id
+                x => x.id === _biddingNotification.data.id
               );
               this.biddingNotificationsSync.splice(index, 1);
             }
@@ -505,7 +472,6 @@ export default class CreateBid extends Vue {
         }
         this.dialogAddSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
   changeContainerServerSideOptions(item: IContainer) {
@@ -564,24 +530,15 @@ export default class CreateBid extends Vue {
         this.biddingDocumentServerSideOptions.totalItems = 1;
         this.loading = false;
       } else {
-        const _biddingNotificationsByUsers = await getBiddingNotificationsByUser(
-          {
-            page: val.page - 1,
-            limit: val.itemsPerPage
-          }
-        )
-          .then(res => {
-            const response: PaginationResponse<IBiddingNotification> = res.data;
-            console.log("watch", response);
-            return response;
-          })
-          .catch(err => {
-            console.log(err);
-            return null;
-          });
+        const _res = await getBiddingNotificationsByUser({
+          page: val.page - 1,
+          limit: val.itemsPerPage
+        });
         this.loading = false;
-        if (_biddingNotificationsByUsers) {
-          this.biddingDocuments = _biddingNotificationsByUsers.data
+        if (_res.data) {
+          const _biddingNotificationsByUsers = _res.data
+            .data as IBiddingNotification[];
+          this.biddingDocuments = _biddingNotificationsByUsers
             .filter(x => x.action == "ADDED")
             .reduce(function(
               pV: Array<IBiddingDocument>,
@@ -592,7 +549,7 @@ export default class CreateBid extends Vue {
             },
             []);
           this.biddingDocumentServerSideOptions.totalItems =
-            _biddingNotificationsByUsers.totalElements;
+            _res.data.totalElements;
         }
       }
       this.loading = false;
@@ -613,19 +570,12 @@ export default class CreateBid extends Vue {
         const _inbounds = await getInboundsByOutboundAndForwarder(_outboundId, {
           page: val.page - 1,
           limit: val.itemsPerPage
-        })
-          .then(res => {
-            const response: PaginationResponse<IInbound> = res.data;
-            return response;
-          })
-          .catch(err => {
-            console.log(err);
-            return null;
-          });
+        });
         this.loading = false;
-        if (_inbounds) {
-          this.inbounds = _inbounds.data;
-          this.inboundServerSideOptions.totalItems = _inbounds.totalElements;
+        if (_inbounds.data) {
+          this.inbounds = _inbounds.data.data;
+          this.inboundServerSideOptions.totalItems =
+            _inbounds.data.totalElements;
         }
       }
     }
@@ -658,18 +608,10 @@ export default class CreateBid extends Vue {
         const _containers = await getContainersByInbound(this.inbound.id, {
           page: val.page - 1,
           limit: val.itemsPerPage
-        })
-          .then(res => {
-            const response: PaginationResponse<IContainer> = res.data;
-            return response;
-          })
-          .catch(err => {
-            console.log(err);
-            return null;
-          });
-        if (_containers) {
-          this.serverSideOptions.totalItems = _containers.totalElements;
-          this.inbound.billOfLading.containers = _containers.data.filter(
+        });
+        if (_containers.data) {
+          this.serverSideOptions.totalItems = _containers.data.totalElements;
+          this.inbound.billOfLading.containers = _containers.data.data.filter(
             (x: IContainer) => x.status == "CREATED"
           );
         }

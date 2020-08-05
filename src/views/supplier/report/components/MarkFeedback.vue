@@ -36,8 +36,6 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IFeedback } from "@/entity/feedback";
 import FormValidate from "@/mixin/form-validate";
 import { editFeedback } from "@/api/feedback";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
@@ -56,30 +54,14 @@ export default class MarkFeedback extends Vue {
     if (this.feedbackLocal.id) {
       const _feedback = await editFeedback(this.feedbackLocal.id, {
         satisfactionPoints: this.feedbackLocal.satisfactionPoints
-      })
-        .then(res => {
-          console.log(res.data);
-          const response: IFeedback = res.data;
-          snackbar.setSnackbar({
-            text: "Chấm điểm thành công Phản hồi: " + response.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_feedback) {
-        const index = this.feedbacksSync.findIndex(x => x.id == _feedback.id);
-        this.feedbacksSync.splice(index, 1, _feedback);
+      });
+      if (_feedback.data) {
+        const index = this.feedbacksSync.findIndex(
+          x => x.id == _feedback.data.id
+        );
+        this.feedbacksSync.splice(index, 1, _feedback.data);
         this.dialogMarkSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
 }

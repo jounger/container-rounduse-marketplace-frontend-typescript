@@ -134,14 +134,11 @@ import { IBid } from "@/entity/bid";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import CreateBid from "./components/CreateBid.vue";
 import { getBiddingDocuments } from "@/api/bidding-document";
-import { PaginationResponse } from "@/api/payload";
 import { getBidByBiddingDocumentAndForwarder } from "@/api/bid";
 import Utils from "@/mixin/utils";
 import UpdateBid from "./components/UpdateBid.vue";
 import CancelBid from "./components/CancelBid.vue";
 import { DataOptions } from "vuetify";
-import snackbar from "@/store/modules/snackbar";
-import { getErrorMessage } from "@/utils/tool";
 
 @Component({
   mixins: [Utils],
@@ -217,26 +214,12 @@ export default class Bid extends Vue {
   async getBids(item: IBiddingDocument) {
     this.loading = true;
     if (item.id) {
-      const _bid = await getBidByBiddingDocumentAndForwarder(item.id)
-        .then(res => {
-          const response = res.data;
-          console.log(response);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          snackbar.setDisplay(true);
-          return null;
-        });
+      const _bid = await getBidByBiddingDocumentAndForwarder(item.id);
       if (_bid) {
         if (this.bids.length == 0) {
-          this.bids.push(_bid);
+          this.bids.push(_bid.data);
         } else {
-          this.bids.splice(0, 1, _bid);
+          this.bids.splice(0, 1, _bid.data);
         }
       }
     }
@@ -266,12 +249,6 @@ export default class Bid extends Vue {
     if (new Date().getTime() - new Date(item.bidValidityPeriod).getTime() > 0) {
       this.bid = item;
       this.dialogEdit = true;
-    } else {
-      snackbar.setSnackbar({
-        text: "Không thể sửa khi chưa vượt quá thời gian Validity Period",
-        color: "error"
-      });
-      snackbar.setDisplay(true);
     }
   }
 
@@ -279,12 +256,6 @@ export default class Bid extends Vue {
     if (new Date().getTime() - new Date(item.bidValidityPeriod).getTime() > 0) {
       this.bid = item;
       this.dialogCancel = true;
-    } else {
-      snackbar.setSnackbar({
-        text: "Không thể sửa khi chưa vượt quá thời gian Validity Period",
-        color: "error"
-      });
-      snackbar.setDisplay(true);
     }
   }
 
@@ -295,24 +266,11 @@ export default class Bid extends Vue {
       const _biddingDocuments = await getBiddingDocuments({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
-      })
-        .then(res => {
-          const response: PaginationResponse<IBiddingDocument> = res.data;
-          console.log("watch", response.data);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          snackbar.setDisplay(true);
-          return null;
-        });
-      if (_biddingDocuments) {
-        this.biddingDocuments = _biddingDocuments.data;
-        this.serverSideOptions.totalItems = _biddingDocuments.totalElements;
+      });
+      if (_biddingDocuments.data) {
+        this.biddingDocuments = _biddingDocuments.data.data;
+        this.serverSideOptions.totalItems =
+          _biddingDocuments.data.totalElements;
       }
       this.loading = false;
     }

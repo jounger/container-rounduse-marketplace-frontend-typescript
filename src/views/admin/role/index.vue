@@ -63,7 +63,6 @@
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { IRole } from "@/entity/role";
 import { getRoles } from "@/api/role";
-import { PaginationResponse } from "@/api/payload";
 import DeleteRole from "./components/DeleteRole.vue";
 import CreateRole from "./components/CreateRole.vue";
 import { DataOptions } from "vuetify";
@@ -126,19 +125,10 @@ export default class Role extends Vue {
       const _roles = await getRoles({
         page: val.page - 1,
         limit: val.itemsPerPage
-      })
-        .then(res => {
-          const response: PaginationResponse<IRole> = res.data;
-          console.log("watch", response);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_roles) {
-        this.roles = _roles.data;
-        this.serverSideOptions.totalItems = _roles.totalElements;
+      });
+      if (_roles.data) {
+        this.roles = _roles.data.data;
+        this.serverSideOptions.totalItems = _roles.data.totalElements;
       }
       this.loading = false;
     }

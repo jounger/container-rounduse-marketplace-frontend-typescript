@@ -203,7 +203,6 @@ import CreateBiddingDocument from "./components/CreateBiddingDocument.vue";
 import UpdateBiddingDocument from "./components/UpdateBiddingDocument.vue";
 import { IOutbound } from "@/entity/outbound";
 import { getBiddingDocuments } from "@/api/bidding-document";
-import { PaginationResponse } from "@/api/payload";
 import DeleteBiddingDocument from "./components/DeleteBiddingDocument.vue";
 import CancelBiddingDocument from "./components/CancelBiddingDocument.vue";
 import Utils from "@/mixin/utils";
@@ -305,19 +304,11 @@ export default class BiddingDocument extends Vue {
       const _biddingDocuments = await getBiddingDocuments({
         page: val.page - 1,
         limit: val.itemsPerPage
-      })
-        .then(res => {
-          const response: PaginationResponse<IBiddingDocument> = res.data;
-          console.log("watch", response);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_biddingDocuments) {
-        this.biddingDocuments = _biddingDocuments.data;
-        this.serverSideOptions.totalItems = _biddingDocuments.totalElements;
+      });
+      if (_biddingDocuments.data) {
+        this.biddingDocuments = _biddingDocuments.data.data;
+        this.serverSideOptions.totalItems =
+          _biddingDocuments.data.totalElements;
       }
       this.loading = false;
     }
@@ -333,38 +324,20 @@ export default class BiddingDocument extends Vue {
     const _ports = await getPorts({
       page: 0,
       limit: 100
-    })
-      .then(res => {
-        const response: PaginationResponse<IPort> = res.data;
-        return response.data;
-      })
-      .catch(err => console.log(err))
-      .finally();
-    this.ports = _ports || [];
+    });
+    this.ports = _ports.data.data || [];
     // API GET Shipping Line
     const _shippingLines = await getShippingLines({
       page: 0,
       limit: 100
-    })
-      .then(res => {
-        const response: PaginationResponse<IShippingLine> = res.data;
-        return response.data.filter(x => x.roles[0] == "ROLE_SHIPPINGLINE");
-      })
-      .catch(err => console.log(err))
-      .finally();
-    this.shippingLines = _shippingLines || [];
+    });
+    this.shippingLines = _shippingLines.data.data || [];
     // API GET Container Type
     const _containerTypes = await getContainerTypes({
       page: 0,
       limit: 100
-    })
-      .then(res => {
-        const response: PaginationResponse<IContainerType> = res.data;
-        return response.data;
-      })
-      .catch(err => console.log(err))
-      .finally();
-    this.containerTypes = _containerTypes || [];
+    });
+    this.containerTypes = _containerTypes.data.data || [];
   }
   get portsToString() {
     return this.ports.map(x => x.nameCode);

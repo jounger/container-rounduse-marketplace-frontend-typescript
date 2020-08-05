@@ -2,47 +2,30 @@ import Vue from "vue";
 import { PaginationRequest } from "./payload";
 import { IContainerType } from "@/entity/container-type";
 
-const config = {
-  Authorization: "Bearer {auth_token}"
-};
-
 export function getContainerTypes(paging: PaginationRequest) {
   return Vue.axios.get("/container-type", {
-    params: paging,
-    headers: config
+    params: paging
   });
 }
 
 export function getContainerType(id: number) {
-  return Vue.axios.get(`/container-type/${id}`, {
-    headers: config
-  });
+  return Vue.axios.get(`/container-type/${id}`);
 }
 export function getContainerTypeByName(name: string) {
-  return Vue.axios.get(`/container-type/${name}`, {
-    headers: config
-  });
+  return Vue.axios.get(`/container-type/${name}`);
 }
 export function createContainerType(containerType: IContainerType) {
-  return Vue.axios.post("/container-type", containerType, {
-    headers: config
-  });
+  return Vue.axios.post("/container-type", containerType);
 }
 
 export function updateContainerType(containerType: IContainerType) {
-  return Vue.axios.put("/container-type", containerType, {
-    headers: config
-  });
+  return Vue.axios.put("/container-type", containerType);
 }
 
 export function editContainerType(id: number, updates: object) {
-  return Vue.axios.patch(`/container-type/${id}`, updates, {
-    headers: config
-  });
+  return Vue.axios.patch(`/container-type/${id}`, updates);
 }
 
 export function removeContainerType(id: number) {
-  return Vue.axios.delete(`/container-type/${id}`, {
-    headers: config
-  });
+  return Vue.axios.delete(`/container-type/${id}`);
 }

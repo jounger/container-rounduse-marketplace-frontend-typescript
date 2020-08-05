@@ -1,22 +1,16 @@
 import Vue from "vue";
 import { PaginationRequest } from "./payload";
-import { ICombined } from "../entity/combined";
-
-const config = {
-  Authorization: "Bearer {auth_token}"
-};
+import { ICombined } from "@/entity/combined";
 
 export function getCombineds(paging: PaginationRequest) {
   return Vue.axios.get("/combined", {
-    params: paging,
-    headers: config
+    params: paging
   });
 }
 
 export function getCombinedsByUser(paging: PaginationRequest) {
   return Vue.axios.get("/combined/user", {
-    params: paging,
-    headers: config
+    params: paging
   });
 }
 
@@ -25,25 +19,18 @@ export function getCombinedsByBiddingDocument(
   paging: PaginationRequest
 ) {
   return Vue.axios.get(`/combined/bidding-document/${id}`, {
-    params: paging,
-    headers: config
+    params: paging
   });
 }
 
 export function createCombined(id: number, combined: ICombined) {
-  return Vue.axios.post(`/combined/bid/${id}`, combined, {
-    headers: config
-  });
+  return Vue.axios.post(`/combined/bid/${id}`, combined);
 }
 
 export function getCombined(id: number) {
-  return Vue.axios.get(`/combined/${id}`, {
-    headers: config
-  });
+  return Vue.axios.get(`/combined/${id}`);
 }
 
 export function editCombined(id: number, updates: object) {
-  return Vue.axios.patch(`/combined/${id}`, updates, {
-    headers: config
-  });
+  return Vue.axios.patch(`/combined/${id}`, updates);
 }

@@ -230,8 +230,8 @@ import { IContainer } from "@/entity/container";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
 import { IBiddingDocument } from "@/entity/bidding-document";
-import { isEmptyObject, addTimeToDate, getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
+import { isEmptyObject, addTimeToDate } from "@/utils/tool";
+
 import { DataOptions } from "vuetify";
 import ListContainer from "./ListContainer.vue";
 import { editBid } from "@/api/bid";
@@ -382,28 +382,11 @@ export default class Update extends Vue {
       console.log(this.$auth.user().username);
       const _bid = await editBid(this.bidSync.id, {
         bidPrice: this.bidLocal.bidPrice
-      })
-        .then(res => {
-          const response = res.data;
-          snackbar.setSnackbar({
-            text: "Cập nhập thành công HSDT" + response.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_bid) {
-        this.bidSync = _bid;
+      });
+      if (_bid.data) {
+        this.bidSync = _bid.data;
         this.stepper = 3;
       }
-      snackbar.setDisplay(true);
     }
   }
 }

@@ -136,8 +136,7 @@ import GoogleMapMarker from "@/components/googlemaps/GoogleMapMarker.vue";
 import GoogleMapMixins from "@/components/googlemaps/map-mixins";
 import { apiKey } from "@/components/googlemaps/map-constant";
 import Utils from "@/mixin/utils";
-import { getErrorMessage, isEmptyObject } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
+import { isEmptyObject } from "@/utils/tool";
 
 @Component({
   components: {
@@ -171,29 +170,11 @@ export default class UpdatePort extends Vue {
   }
   async updatePort() {
     if (this.portLocal && this.portLocal.id) {
-      const _port = await editPort(this.portLocal.id, this.portLocal)
-        .then(res => {
-          console.log(res.data);
-          const response: IPort = res.data;
-          snackbar.setSnackbar({
-            text: "Cập nhật thành công bến cảng: " + response.nameCode,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_port) {
-        const index = this.portsSync.findIndex(x => x.id == _port.id);
-        this.portsSync.splice(index, 1, _port);
+      const _port = await editPort(this.portLocal.id, this.portLocal);
+      if (_port.data) {
+        const index = this.portsSync.findIndex(x => x.id == _port.data.id);
+        this.portsSync.splice(index, 1, _port.data);
       }
-      snackbar.setDisplay(true);
     }
   }
   get mapConfig() {

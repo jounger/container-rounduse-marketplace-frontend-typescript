@@ -123,8 +123,6 @@ import GoogleMapMarker from "@/components/googlemaps/GoogleMapMarker.vue";
 import GoogleMapMixins from "@/components/googlemaps/map-mixins";
 import { apiKey } from "@/components/googlemaps/map-constant";
 import Utils from "@/mixin/utils";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component({
   components: {
@@ -169,30 +167,12 @@ export default class CreatePort extends Vue {
 
   async createPort() {
     if (this.portLocal) {
-      const _port = await createPort(this.portLocal)
-        .then(res => {
-          console.log(res.data);
-          const response: IPort = res.data;
-          snackbar.setSnackbar({
-            text: "Thêm mới thành công cảng: " + response.nameCode,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
+      const _port = await createPort(this.portLocal);
       if (_port) {
-        this.portsSync.unshift(_port);
+        this.portsSync.unshift(_port.data);
         this.totalItemsSync += 1;
         this.dialogAddSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
 

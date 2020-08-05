@@ -133,8 +133,6 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IOperator } from "@/entity/operator";
 import FormValidate from "@/mixin/form-validate";
 import { createOperator, editOperator } from "@/api/operator";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
@@ -167,29 +165,12 @@ export default class CreateOperator extends Vue {
   }
   async createOperator() {
     if (this.operatorLocal) {
-      const _operator = await createOperator(this.operatorLocal)
-        .then(res => {
-          const response: IOperator = res.data;
-          snackbar.setSnackbar({
-            text: "Thêm mới thành công quản trị viên: " + response.username,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_operator) {
-        this.operatorsSync.unshift(_operator);
+      const _operator = await createOperator(this.operatorLocal);
+      if (_operator.data) {
+        this.operatorsSync.unshift(_operator.data);
         this.totalItemsSync += 1;
         this.dialogAddSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
   async updateOperator() {
@@ -197,29 +178,13 @@ export default class CreateOperator extends Vue {
       const _operator = await editOperator(
         this.operatorLocal.id,
         this.operatorLocal
-      )
-        .then(res => {
-          const response: IOperator = res.data;
-          console.log(response);
-          snackbar.setSnackbar({
-            text: "Cập nhật thành công quản trị viên: " + response.username,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_operator) {
-        const index = this.operatorsSync.findIndex(x => x.id === _operator.id);
-        this.operatorsSync.splice(index, 1, _operator);
+      );
+      if (_operator.data) {
+        const index = this.operatorsSync.findIndex(
+          x => x.id === _operator.data.id
+        );
+        this.operatorsSync.splice(index, 1, _operator.data);
       }
-      snackbar.setDisplay(true);
     }
   }
 }

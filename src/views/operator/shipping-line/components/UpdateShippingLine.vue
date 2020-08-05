@@ -235,17 +235,14 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IShippingLine } from "@/entity/shipping-line";
 import FormValidate from "@/mixin/form-validate";
 import { editShippingLine } from "@/api/shipping-line";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
 })
 export default class UpdateShippingLine extends Vue {
   @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
-  @PropSync("shippingLines", { type: Array }) shippingLinesSync!: Array<
-    IShippingLine
-  >;
+  @PropSync("shippingLines", { type: Array })
+  shippingLinesSync!: IShippingLine[];
   @Prop(Object) shippingLine!: IShippingLine;
 
   // Form validate
@@ -256,46 +253,29 @@ export default class UpdateShippingLine extends Vue {
   valid1 = true;
   allStatus: Array<string> = [];
   shippingLineLocal = null as IShippingLine | null;
+
   created() {
     this.allStatus = ["ACTIVE", "BANNED"];
     this.shippingLineLocal = Object.assign({}, this.shippingLine);
   }
-  // ShippingLine Update
+
   async updateShippingLine() {
     if (this.shippingLineLocal && this.shippingLineLocal.id) {
       const _shippingLine = await editShippingLine(
         this.shippingLineLocal.id,
         this.shippingLineLocal
-      )
-        .then(res => {
-          console.log(res.data);
-          const response: IShippingLine = res.data;
-          snackbar.setSnackbar({
-            text: "Cập nhật thành công hãng tàu: " + response.companyCode,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_shippingLine) {
+      );
+      if (_shippingLine.data) {
         const index = this.shippingLinesSync.findIndex(
-          x => x.id == _shippingLine.id
+          x => x.id == _shippingLine.data.id
         );
-        this.shippingLinesSync.splice(index, 1, _shippingLine);
+        this.shippingLinesSync.splice(index, 1, _shippingLine.data);
         if (this.stepper == 2) {
           this.dialogEditSync = false;
         } else {
           this.stepper = 2;
         }
       }
-      snackbar.setDisplay(true);
     }
   }
 }

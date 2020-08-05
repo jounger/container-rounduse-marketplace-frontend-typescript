@@ -37,8 +37,6 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPayment } from "@/entity/payment";
 import { removePayment } from "@/api/payment";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeletePayment extends Vue {
@@ -49,28 +47,15 @@ export default class DeletePayment extends Vue {
 
   async removePayment() {
     if (this.payment.id) {
-      await removePayment(this.payment.id)
-        .then(res => {
-          console.log(res.data);
-          snackbar.setSnackbar({
-            text: "Xóa thành công Hóa đơn: " + this.payment.id,
-            color: "success"
-          });
-          const index = this.paymentsSync.findIndex(
-            x => x.id === this.payment.id
-          );
-          this.paymentsSync.splice(index, 1);
-          this.totalItemsSync -= 1;
-          this.dialogDelSync = false;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-        });
-      snackbar.setDisplay(true);
+      const _res = await removePayment(this.payment.id);
+      if (_res.status == 200) {
+        const index = this.paymentsSync.findIndex(
+          x => x.id === this.payment.id
+        );
+        this.paymentsSync.splice(index, 1);
+        this.totalItemsSync -= 1;
+        this.dialogDelSync = false;
+      }
     }
   }
 }

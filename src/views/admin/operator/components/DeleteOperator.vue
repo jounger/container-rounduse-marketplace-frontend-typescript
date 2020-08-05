@@ -37,8 +37,6 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IOperator } from "@/entity/operator";
 import { removeOperator } from "@/api/operator";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeleteOperator extends Vue {
@@ -49,28 +47,15 @@ export default class DeleteOperator extends Vue {
 
   async removeOperator() {
     if (this.operator.id) {
-      await removeOperator(this.operator.id)
-        .then(res => {
-          console.log(res);
-          snackbar.setSnackbar({
-            text: "Xóa thành công quản trị viên: " + this.operator.username,
-            color: "success"
-          });
-          const index = this.operatorsSync.findIndex(
-            x => x.id === this.operator.id
-          );
-          this.operatorsSync.splice(index, 1);
-          this.totalItemsSync -= 1;
-          this.dialogDelSync = false;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-        });
-      snackbar.setDisplay(true);
+      const _res = await removeOperator(this.operator.id);
+      if (_res.status == 200) {
+        const index = this.operatorsSync.findIndex(
+          x => x.id === this.operator.id
+        );
+        this.operatorsSync.splice(index, 1);
+        this.totalItemsSync -= 1;
+        this.dialogDelSync = false;
+      }
     }
   }
 }

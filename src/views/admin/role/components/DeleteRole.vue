@@ -35,8 +35,6 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IRole } from "@/entity/role";
 import { removeRole } from "@/api/role";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeleteRole extends Vue {
@@ -47,26 +45,13 @@ export default class DeleteRole extends Vue {
 
   async removeRole() {
     if (this.role.id) {
-      await removeRole(this.role.id)
-        .then(res => {
-          console.log(res.data);
-          snackbar.setSnackbar({
-            text: "Xóa thành công quyền: " + this.role.name,
-            color: "success"
-          });
-          const index = this.rolesSync.findIndex(x => x.id === this.role.id);
-          this.rolesSync.splice(index, 1);
-          this.totalItemsSync -= 1;
-          this.dialogDelSync = false;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-        });
-      snackbar.setDisplay(true);
+      const _res = await removeRole(this.role.id);
+      if (_res) {
+        const index = this.rolesSync.findIndex(x => x.id === this.role.id);
+        this.rolesSync.splice(index, 1);
+        this.totalItemsSync -= 1;
+        this.dialogDelSync = false;
+      }
     }
   }
 }

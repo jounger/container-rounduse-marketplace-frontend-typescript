@@ -35,8 +35,6 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPort } from "@/entity/port";
 import { removePort } from "@/api/port";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeletePort extends Vue {
@@ -47,27 +45,13 @@ export default class DeletePort extends Vue {
 
   async removePort() {
     if (this.port.id) {
-      await removePort(this.port.id)
-        .then(res => {
-          console.log(res.data);
-          console.log(res.data);
-          snackbar.setSnackbar({
-            text: "Xóa thành công bến cảng: " + this.port.fullname,
-            color: "success"
-          });
-          const index = this.portsSync.findIndex(x => x.id === this.port.id);
-          this.portsSync.splice(index, 1);
-          this.totalItemsSync -= 1;
-          this.dialogDelSync = false;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-        });
-      snackbar.setDisplay(true);
+      const _res = await removePort(this.port.id);
+      if (_res.status == 200) {
+        const index = this.portsSync.findIndex(x => x.id === this.port.id);
+        this.portsSync.splice(index, 1);
+        this.totalItemsSync -= 1;
+        this.dialogDelSync = false;
+      }
     }
   }
 }

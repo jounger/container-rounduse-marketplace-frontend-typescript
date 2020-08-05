@@ -103,8 +103,6 @@ import { createDiscount, editDiscount } from "@/api/discount";
 import FormValidate from "@/mixin/form-validate";
 import { addTimeToDate } from "@/utils/tool";
 import DatetimePicker from "@/components/DatetimePicker.vue";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate],
@@ -138,29 +136,13 @@ export default class CreateDiscount extends Vue {
   }
   async createDiscount() {
     if (this.discountLocal) {
-      const _discount = await createDiscount(this.discountLocal)
-        .then(res => {
-          const response: IDiscount = res.data;
-          snackbar.setSnackbar({
-            text: "Thêm mới thành công Mã giảm giá: " + response.code,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_discount) {
-        this.discountsSync.unshift(_discount);
+      const _discount = await createDiscount(this.discountLocal);
+      console.log("_discount", _discount);
+      if (_discount.data) {
+        this.discountsSync.unshift(_discount.data);
         this.totalItemsSync += 1;
         this.dialogAddSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
   async updateDiscount() {
@@ -168,29 +150,13 @@ export default class CreateDiscount extends Vue {
       const _discount = await editDiscount(
         this.discountLocal.id,
         this.discountLocal
-      )
-        .then(res => {
-          console.log(res.data);
-          const response: IDiscount = res.data;
-          snackbar.setSnackbar({
-            text: "Cập nhật thành công Mã giảm giá: " + response.code,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_discount) {
-        const index = this.discountsSync.findIndex(x => x.id == _discount.id);
-        this.discountsSync.splice(index, 1, _discount);
+      );
+      if (_discount.data) {
+        const index = this.discountsSync.findIndex(
+          x => x.id == _discount.data.id
+        );
+        this.discountsSync.splice(index, 1, _discount.data);
       }
-      snackbar.setDisplay(true);
     }
   }
 }

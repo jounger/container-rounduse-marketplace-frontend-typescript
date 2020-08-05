@@ -174,16 +174,16 @@ import { Component, Vue } from "vue-property-decorator";
 import Utils from "@/mixin/utils";
 import { IReport } from "@/entity/report";
 import { IFeedback } from "@/entity/feedback";
+import ChangeStatusReport from "./ChangeStatusReport.vue";
+import { getReport } from "@/api/report";
+import { getSupplier } from "@/api/supplier";
+import UserFeedback from "./UserFeedback.vue";
+import { ISupplier } from "@/entity/supplier";
 import {
   getFeedbacksByReport,
   createFeedbackToModerator,
   createFeedback
 } from "@/api/feedback";
-import { PaginationResponse } from "@/api/payload";
-import ChangeStatusReport from "./ChangeStatusReport.vue";
-import { getReport } from "@/api/report";
-import { getSupplier } from "@/api/supplier";
-import UserFeedback from "./UserFeedback.vue";
 
 @Component({
   mixins: [Utils],
@@ -216,18 +216,12 @@ export default class ReportDetail extends Vue {
     this.feedbackLocal.message = `${this.feedbackLocal.message}`;
   }
   async getFullname(username: string) {
-    const _fullname = await getSupplier(username)
-      .then(res => {
-        const response = res.data;
-        return response.contactPerson;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    if (_fullname) {
-      return _fullname;
+    const _res = await getSupplier(username);
+    if (_res.data) {
+      const _supplier = _res.data as ISupplier;
+      return _supplier.contactPerson;
     }
+    return username;
   }
   async createFeedback() {
     if (
@@ -243,19 +237,11 @@ export default class ReportDetail extends Vue {
         const _feedback = await createFeedback(
           this.report.id,
           this.feedbackLocal
-        )
-          .then(res => {
-            const response: IFeedback = res.data;
-            return response;
-          })
-          .catch(err => {
-            console.log(err);
-            return null;
-          });
-        if (_feedback) {
-          this.feedbacks.push(_feedback);
+        );
+        if (_feedback.data) {
+          this.feedbacks.push(_feedback.data);
           this.recipient = this.forwarderFullname;
-          console.log(_feedback);
+          console.log(_feedback.data);
         }
         this.feedbackLocal = {
           sender: this.$auth.user().username,
@@ -268,18 +254,10 @@ export default class ReportDetail extends Vue {
           this.report.id,
           this.report.sender,
           this.feedbackLocal
-        )
-          .then(res => {
-            const response: IFeedback = res.data;
-            return response;
-          })
-          .catch(err => {
-            console.log(err);
-            return null;
-          });
-        if (_feedback) {
-          this.feedbacks.push(_feedback);
-          console.log(_feedback);
+        );
+        if (_feedback.data) {
+          this.feedbacks.push(_feedback.data);
+          console.log(_feedback.data);
         }
         this.feedbackLocal = {
           sender: this.$auth.user().username,
@@ -294,23 +272,15 @@ export default class ReportDetail extends Vue {
     const _feedbacks = await getFeedbacksByReport(parseInt(this.getRouterId), {
       page: 0,
       limit: limit + 1
-    })
-      .then(res => {
-        const response: PaginationResponse<IFeedback> = res.data;
-        return response.data;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    if (_feedbacks) {
-      _feedbacks.forEach((x: IFeedback, index: number) => {
+    });
+    if (_feedbacks.data) {
+      _feedbacks.data.forEach((x: IFeedback, index: number) => {
         if (index != limit) {
           this.feedbacks.unshift(x);
         }
       });
     }
-    if (!_feedbacks || _feedbacks.length <= limit) {
+    if (!_feedbacks.data || _feedbacks.data.length <= limit) {
       this.seeMore = false;
     }
   }
@@ -322,18 +292,10 @@ export default class ReportDetail extends Vue {
     return this.$route.params.id;
   }
   async created() {
-    const _report = await getReport(parseInt(this.getRouterId))
-      .then(res => {
-        const response = res.data;
-        return response;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    if (_report) {
-      this.report = _report;
-      this.forwarderFullname = await this.getFullname(_report.sender);
+    const _report = await getReport(parseInt(this.getRouterId));
+    if (_report.data) {
+      this.report = _report.data;
+      this.forwarderFullname = await this.getFullname(_report.data.sender);
       this.recipient = this.forwarderFullname;
     }
     await this.getFeedbacks(5);

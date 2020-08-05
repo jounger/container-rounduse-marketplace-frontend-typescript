@@ -35,8 +35,6 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IReport } from "@/entity/report";
 import { removeReport } from "@/api/report";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeleteReport extends Vue {
@@ -47,29 +45,13 @@ export default class DeleteReport extends Vue {
 
   async removeReport() {
     if (this.report.id) {
-      await removeReport(this.report.id)
-        .then(res => {
-          console.log(res.data);
-          snackbar.setSnackbar({
-            text: "Xóa thành công Report: " + this.report.id,
-            color: "success"
-          });
-          const index = this.reportsSync.findIndex(
-            x => x.id === this.report.id
-          );
-          this.reportsSync.splice(index, 1);
-          this.totalItemsSync -= 1;
-          this.dialogDelSync = false;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      snackbar.setDisplay(true);
+      const _res = await removeReport(this.report.id);
+      if (_res.status == 200) {
+        const index = this.reportsSync.findIndex(x => x.id === this.report.id);
+        this.reportsSync.splice(index, 1);
+        this.totalItemsSync -= 1;
+        this.dialogDelSync = false;
+      }
     }
   }
 }

@@ -247,24 +247,21 @@ import { Component, Vue, PropSync } from "vue-property-decorator";
 import { IShippingLine } from "@/entity/shipping-line";
 import { createShippingLine } from "@/api/shipping-line";
 import FormValidate from "@/mixin/form-validate";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
 })
 export default class CreateShippingLine extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("shippingLines", { type: Array }) shippingLinesSync!: Array<
-    IShippingLine
-  >;
+  @PropSync("shippingLines", { type: Array })
+  shippingLinesSync!: IShippingLine[];
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
 
   shippingLineLocal = {
     username: "",
     email: "",
     phone: "",
-    roles: ["ROLE_SHIPPINGLINE"],
+    roles: ["ROLE_shippingLine.data"],
     status: "",
     address: "",
     password: "",
@@ -288,29 +285,12 @@ export default class CreateShippingLine extends Vue {
   async createShippingLine() {
     if (this.shippingLineLocal) {
       console.log(this.shippingLineLocal);
-      const _shippingLine = await createShippingLine(this.shippingLineLocal)
-        .then(res => {
-          const response: IShippingLine = res.data;
-          snackbar.setSnackbar({
-            text: "Thêm mới thành công hãng tàu: " + response.companyCode,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_shippingLine) {
-        this.shippingLinesSync.unshift(_shippingLine);
+      const _shippingLine = await createShippingLine(this.shippingLineLocal);
+      if (_shippingLine.data) {
+        this.shippingLinesSync.unshift(_shippingLine.data);
         this.totalItemsSync += 1;
         this.dialogAddSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
 }

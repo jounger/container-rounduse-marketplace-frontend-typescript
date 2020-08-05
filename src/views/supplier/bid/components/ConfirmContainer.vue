@@ -35,8 +35,6 @@
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 import { IContainer } from "@/entity/container";
 import { IBid } from "@/entity/bid";
 import { removeContainer } from "@/api/bid";
@@ -54,29 +52,8 @@ export default class ConfirmContainer extends Vue {
 
   async confirmContainer() {
     if (this.container.id && this.bid.id) {
-      const _bid = await removeContainer(this.bid.id, this.container.id)
-        .then(res => {
-          const response: IBid = res.data;
-          snackbar.setSnackbar({
-            text:
-              "Xóa thành công Container " +
-              this.container.containerNumber +
-              " khỏi HSDT " +
-              this.bid.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      snackbar.setDisplay(true);
-      if (_bid) {
+      const _bid = await removeContainer(this.bid.id, this.container.id);
+      if (_bid.data) {
         const index = this.containersSelectedSync.findIndex(
           x => x.containerNumber == this.container.containerNumber
         );

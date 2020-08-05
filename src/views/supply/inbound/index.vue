@@ -184,7 +184,6 @@ import UpdateInbound from "./components/UpdateInbound.vue";
 import DeleteInbound from "./components/DeleteInbound.vue";
 import Utils from "@/mixin/utils";
 import { getInboundsByForwarder } from "@/api/inbound";
-import { PaginationResponse } from "@/api/payload";
 import { IContainer } from "@/entity/container";
 import { getContainersByInbound } from "@/api/container";
 import DeleteContainer from "./components/DeleteContainer.vue";
@@ -307,19 +306,11 @@ export default class Inbound extends Vue {
         const _containers = await getContainersByInbound(this.inbound.id, {
           page: val.page - 1,
           limit: val.itemsPerPage
-        })
-          .then(res => {
-            const response = res.data;
-            return response;
-          })
-          .catch(err => {
-            console.log(err);
-            return null;
-          });
-        if (_containers) {
-          this.containers = _containers.data;
+        });
+        if (_containers.data) {
+          this.containers = _containers.data.data;
           this.containerServerSideOptions.totalItems =
-            _containers.totalElements;
+            _containers.data.totalElements;
         }
       }
       this.loading = false;
@@ -332,19 +323,10 @@ export default class Inbound extends Vue {
       const _inbounds = await getInboundsByForwarder({
         page: val.page - 1,
         limit: val.itemsPerPage
-      })
-        .then(res => {
-          const response: PaginationResponse<IInbound> = res.data;
-          console.log("watch", response);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_inbounds) {
-        this.inbounds = _inbounds.data;
-        this.serverSideOptions.totalItems = _inbounds.totalElements;
+      });
+      if (_inbounds.data) {
+        this.inbounds = _inbounds.data.data;
+        this.serverSideOptions.totalItems = _inbounds.data.totalElements;
       }
       this.loading = false;
     }

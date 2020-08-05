@@ -61,7 +61,6 @@ export default class DatetimePicker extends Vue {
   disable = false;
 
   created() {
-    console.log(this.readonly);
     if (this.readonly && typeof this.readonly != "undefined") {
       this.disable = this.readonly;
     }
@@ -88,7 +87,6 @@ export default class DatetimePicker extends Vue {
   @Watch("datetime", { immediate: true })
   onDatetimeChange(val: string, oldVal: string) {
     if (val !== oldVal) {
-      console.log(val);
       this.time = this.datetime.slice(11, 16);
       this.t = this.datetime.slice(10, 11);
       this.date = this.datetime.slice(0, 10);

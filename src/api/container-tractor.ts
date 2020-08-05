@@ -1,51 +1,35 @@
 import Vue from "vue";
 import { PaginationRequest } from "./payload";
-import { IContainerTractor } from "../entity/container-tractor";
-
-const config = {
-  Authorization: "Bearer {auth_token}"
-};
+import { IContainerTractor } from "@/entity/container-tractor";
 
 export function getContainerTractors(paging: PaginationRequest) {
   return Vue.axios.get("/container-tractor", {
-    params: paging,
-    headers: config
+    params: paging
   });
 }
 
 export function getContainerTractorsByForwarder(paging: PaginationRequest) {
   return Vue.axios.get("/container-tractor/forwarder", {
-    params: paging,
-    headers: config
+    params: paging
   });
 }
 
 export function getContainerTractor(id: number) {
-  return Vue.axios.get(`/container-tractor/${id}`, {
-    headers: config
-  });
+  return Vue.axios.get(`/container-tractor/${id}`);
 }
 
 export function createContainerTractor(containerTractor: IContainerTractor) {
-  return Vue.axios.post("/container-tractor", containerTractor, {
-    headers: config
-  });
+  return Vue.axios.post("/container-tractor", containerTractor);
 }
 
 export function updateContainerTractor(containerTractor: IContainerTractor) {
-  return Vue.axios.put("/container-tractor", containerTractor, {
-    headers: config
-  });
+  return Vue.axios.put("/container-tractor", containerTractor);
 }
 
 export function editContainerTractor(id: number, updates: object) {
-  return Vue.axios.patch(`/container-tractor/${id}`, updates, {
-    headers: config
-  });
+  return Vue.axios.patch(`/container-tractor/${id}`, updates);
 }
 
 export function removeContainerTractor(id: number) {
-  return Vue.axios.delete(`/container-tractor/${id}`, {
-    headers: config
-  });
+  return Vue.axios.delete(`/container-tractor/${id}`);
 }

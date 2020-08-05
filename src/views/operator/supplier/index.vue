@@ -80,7 +80,6 @@
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { ISupplier } from "@/entity/supplier";
 import { getSuppliers } from "@/api/supplier";
-import { PaginationResponse } from "@/api/payload";
 import ReviewSupplier from "./components/ReviewSupplier.vue";
 import SupplierDetail from "./components/SupplierDetail.vue";
 import { DataOptions } from "vuetify";
@@ -135,22 +134,14 @@ export default class Supplier extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _suppliers = await getSuppliers({
+      const _res = await getSuppliers({
         page: val.page - 1,
         limit: val.itemsPerPage
-      })
-        .then(res => {
-          const response: PaginationResponse<ISupplier> = res.data;
-          console.log("watch", response);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_suppliers) {
-        this.suppliers = _suppliers.data.filter(x => x.status != "PENDING");
-        this.serverSideOptions.totalItems = _suppliers.totalElements;
+      });
+      if (_res.data) {
+        const _suppliers = _res.data.data as ISupplier[];
+        this.suppliers = _suppliers.filter(x => x.status != "PENDING");
+        this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }

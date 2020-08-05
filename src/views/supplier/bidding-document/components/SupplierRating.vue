@@ -24,17 +24,8 @@ export default class SupplierRating extends Vue {
   supplierLocal = null as ISupplier | null;
 
   async mounted() {
-    const _supplier = await getSupplier(this.supplier)
-      .then(res => {
-        const response = res.data;
-        console.log(response);
-        return response;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    this.supplierLocal = _supplier;
+    const _supplier = await getSupplier(this.supplier);
+    if (_supplier.data) this.supplierLocal = _supplier.data;
   }
 }
 </script>

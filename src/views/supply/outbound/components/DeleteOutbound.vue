@@ -35,8 +35,6 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IOutbound } from "@/entity/outbound";
 import { removeOutbound } from "@/api/outbound";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeleteOutbound extends Vue {
@@ -53,28 +51,15 @@ export default class DeleteOutbound extends Vue {
   }
   async removeOutbound() {
     if (this.outbound.id) {
-      await removeOutbound(this.outbound.id)
-        .then(res => {
-          console.log(res.data);
-          snackbar.setSnackbar({
-            text: "Xóa thành công hàng xuất: " + this.bookNo,
-            color: "success"
-          });
-          const index = this.outboundsSync.findIndex(
-            x => x.id === this.outbound.id
-          );
-          this.outboundsSync.splice(index, 1);
-          this.totalItemsSync -= 1;
-          this.dialogDelSync = false;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-        });
-      snackbar.setDisplay(true);
+      const _res = await removeOutbound(this.outbound.id);
+      if (_res.status == 200) {
+        const index = this.outboundsSync.findIndex(
+          x => x.id === this.outbound.id
+        );
+        this.outboundsSync.splice(index, 1);
+        this.totalItemsSync -= 1;
+        this.dialogDelSync = false;
+      }
     }
   }
 }

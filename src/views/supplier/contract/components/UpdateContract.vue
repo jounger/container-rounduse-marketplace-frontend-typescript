@@ -79,7 +79,6 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContract } from "@/entity/contract";
 import FormValidate from "@/mixin/form-validate";
 import { editContract } from "@/api/contract";
-import { getErrorMessage } from "@/utils/tool";
 import { ICombined } from "@/entity/combined";
 
 @Component({
@@ -102,20 +101,15 @@ export default class UpdateContract extends Vue {
       this.contractLocal = Object.assign({}, this.contractSync);
     }
   }
-  updateContract() {
+  async updateContract() {
     if (this.contractLocal.id) {
-      editContract(this.contractLocal.id, this.contractLocal)
-        .then(res => {
-          console.log(res.data);
-          const response: IContract = res.data;
-          this.messageSync = "Cập nhật thành công Hợp đồng: " + response.id;
-          this.contractSync = response;
-        })
-        .catch(err => {
-          console.log(err);
-          this.messageSync = getErrorMessage(err);
-        })
-        .finally(() => (this.snackbarSync = true));
+      const _contract = await editContract(
+        this.contractLocal.id,
+        this.contractLocal
+      );
+      if (_contract.data) {
+        // TODO
+      }
     }
   }
 }

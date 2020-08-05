@@ -115,12 +115,11 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPayment } from "@/entity/payment";
 import FormValidate from "@/mixin/form-validate";
 import { createPayment, editPayment } from "@/api/payment";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 import { ICombined } from "@/entity/combined";
 import { IBid } from "@/entity/bid";
 import Utils from "@/mixin/utils";
 import DatetimePicker from "@/components/DatetimePicker.vue";
+import { addTimeToDate } from "@/utils/tool";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -138,7 +137,7 @@ export default class CreatePayment extends Vue {
   @Prop(Boolean) update!: boolean;
   @Prop(Boolean) readonly!: boolean;
 
-  dateInit = new Date().toISOString().substr(0, 10);
+  dateInit = addTimeToDate(new Date().toISOString());
   paymentLocal = {
     sender: this.$auth.user().username,
     recipient: "",
@@ -192,27 +191,10 @@ export default class CreatePayment extends Vue {
       const _payment = await createPayment(
         this.combined.contract.id,
         this.paymentLocal
-      )
-        .then(res => {
-          const response: IPayment = res.data;
-          snackbar.setSnackbar({
-            text: "Thêm mới thành công Hóa đơn: " + response.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_payment) {
+      );
+      if (_payment.data) {
         this.dialogAddSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
   async updatePayment() {
@@ -220,31 +202,15 @@ export default class CreatePayment extends Vue {
       const _payment = await editPayment(
         this.paymentLocal.id,
         this.paymentLocal
-      )
-        .then(res => {
-          console.log(res.data);
-          const response: IPayment = res.data;
-          snackbar.setSnackbar({
-            text: "Cập nhật thành công Hóa đơn: " + response.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_payment) {
+      );
+      if (_payment.data) {
         if (this.paymentsSync) {
-          const index = this.paymentsSync.findIndex(x => x.id == _payment.id);
-          this.paymentsSync.splice(index, 1, _payment);
+          const index = this.paymentsSync.findIndex(
+            x => x.id == _payment.data.id
+          );
+          this.paymentsSync.splice(index, 1, _payment.data);
         }
       }
-      snackbar.setDisplay(true);
     }
   }
 }

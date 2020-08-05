@@ -37,8 +37,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
+
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { IBiddingNotification } from "@/entity/notification";
 import { editBiddingNotifications } from "@/api/notification";
@@ -46,11 +45,11 @@ import { editBiddingNotifications } from "@/api/notification";
 @Component
 export default class ConfirmBid extends Vue {
   @PropSync("dialogConfirm", { type: Boolean }) dialogConfirmSync!: boolean;
-  @PropSync("biddingNotifications", { type: Array })
-  biddingNotificationsSync!: Array<IBiddingDocument>;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) biddingDocument!: IBiddingDocument;
   @Prop(Object) biddingNotification!: IBiddingNotification;
+  @PropSync("biddingNotifications", { type: Array })
+  biddingNotificationsSync!: Array<IBiddingDocument>;
 
   async confirmBid() {
     if (this.biddingNotification.id) {
@@ -59,33 +58,15 @@ export default class ConfirmBid extends Vue {
         {
           isHide: true
         }
-      )
-        .then(res => {
-          console.log(res.data);
-          snackbar.setSnackbar({
-            text: "Từ chối thành công HSMT: " + this.biddingDocument.id,
-            color: "success"
-          });
-          const response = res.data;
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_biddingNofitication) {
+      );
+      if (_biddingNofitication.data) {
         const index = this.biddingNotificationsSync.findIndex(
-          x => x.id === _biddingNofitication.id
+          x => x.id === _biddingNofitication.data.id
         );
         this.biddingNotificationsSync.splice(index, 1);
         this.totalItemsSync -= 1;
         this.dialogConfirmSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
 }

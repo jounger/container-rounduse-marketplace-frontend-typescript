@@ -1,13 +1,11 @@
 <template>
   <v-app-bar app clipped-left>
-    <v-app-bar-nav-icon @click.stop="changeDrawer()"></v-app-bar-nav-icon>
     <v-toolbar-title>Container Round-use Marketplace</v-toolbar-title>
     <v-divider class="mx-4" vertical></v-divider>
     <v-btn text to="/">Trang chủ</v-btn>
     <v-btn v-if="$auth.check()" text to="/dashboard">Dashboard</v-btn>
 
     <v-spacer></v-spacer>
-    <Notification />
     <v-menu left bottom>
       <template v-slot:activator="{ on, attrs }">
         <v-btn icon v-bind="attrs" v-on="on">
@@ -29,17 +27,7 @@
   </v-app-bar>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync } from "vue-property-decorator";
-import Notification from "./Notification.vue";
-@Component({
-  components: {
-    Notification
-  }
-})
-export default class Appbar extends Vue {
-  @PropSync("drawer", { type: Boolean, default: true }) drawerSync!: boolean;
-  changeDrawer() {
-    return (this.drawerSync = !this.drawerSync);
-  }
-}
+import { Component, Vue } from "vue-property-decorator";
+@Component
+export default class Menubar extends Vue {}
 </script>

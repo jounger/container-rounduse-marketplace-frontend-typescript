@@ -35,42 +35,17 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPermission } from "@/entity/permission";
 import { removePermission } from "@/api/permission";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeletePermission extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("permissions", { type: Array }) permissionsSync!: Array<
-    IPermission
-  >;
+  @PropSync("permissions", { type: Array }) permissionsSync!: IPermission[];
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) permission!: IPermission;
 
   async removePermission() {
     if (this.permission.id) {
-      await removePermission(this.permission.id)
-        .then(res => {
-          console.log(res.data);
-          snackbar.setSnackbar({
-            text: "Xóa thành công vai trò: " + this.permission.name,
-            color: "success"
-          });
-          const index = this.permissionsSync.findIndex(
-            x => x.id === this.permission.id
-          );
-          this.permissionsSync.splice(index, 1);
-          this.totalItemsSync -= 1;
-          this.dialogDelSync = false;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-        });
-      snackbar.setDisplay(true);
+      await removePermission(this.permission.id);
     }
   }
 }

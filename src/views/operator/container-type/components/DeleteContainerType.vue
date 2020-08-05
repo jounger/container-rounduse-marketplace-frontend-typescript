@@ -37,44 +37,27 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContainerType } from "@/entity/container-type";
 import { removeContainerType } from "@/api/container-type";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeleteContainerType extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("containerTypes", { type: Array }) containerTypesSync!: Array<
-    IContainerType
-  >;
+  @PropSync("containerTypes", { type: Array })
+  containerTypesSync!: IContainerType[];
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
-  @Prop(Object)
-  containerType!: IContainerType;
+  @Prop(Object) containerType!: IContainerType;
 
   async removeContainerType() {
     console.log(this.containerType);
     if (this.containerType.id) {
-      await removeContainerType(this.containerType.id)
-        .then(res => {
-          console.log(res.data);
-          snackbar.setSnackbar({
-            text: "Xóa thành công loại Container: " + this.containerType.name,
-            color: "success"
-          });
-          const index = this.containerTypesSync.findIndex(
-            x => x.id === this.containerType.id
-          );
-          this.containerTypesSync.splice(index, 1);
-          this.totalItemsSync -= 1;
-          this.dialogDelSync = false;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-        });
-      snackbar.setDisplay(true);
+      const _res = await removeContainerType(this.containerType.id);
+      if (_res.status == 200) {
+        const index = this.containerTypesSync.findIndex(
+          x => x.id === this.containerType.id
+        );
+        this.containerTypesSync.splice(index, 1);
+        this.totalItemsSync -= 1;
+        this.dialogDelSync = false;
+      }
     }
   }
 }

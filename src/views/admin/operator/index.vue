@@ -69,7 +69,6 @@ import { IOperator } from "@/entity/operator";
 import CreateOperator from "./components/CreateOperator.vue";
 import DeleteOperator from "./components/DeleteOperator.vue";
 import { getOperators } from "@/api/operator";
-import { PaginationResponse } from "@/api/payload";
 import { DataOptions } from "vuetify";
 
 @Component({
@@ -136,19 +135,10 @@ export default class Operator extends Vue {
       const _operators = await getOperators({
         page: val.page - 1,
         limit: val.itemsPerPage
-      })
-        .then(res => {
-          const response: PaginationResponse<IOperator> = res.data;
-          console.log("watch", response);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_operators) {
-        this.operators = _operators.data;
-        this.serverSideOptions.totalItems = _operators.totalElements;
+      });
+      if (_operators.data) {
+        this.operators = _operators.data.data;
+        this.serverSideOptions.totalItems = _operators.data.totalElements;
       }
       this.loading = false;
     }

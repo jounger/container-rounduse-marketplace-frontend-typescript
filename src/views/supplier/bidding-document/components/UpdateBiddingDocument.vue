@@ -195,9 +195,8 @@ import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
 import { updateBiddingDocument } from "@/api/bidding-document";
 import { IOutbound } from "@/entity/outbound";
-import { addTimeToDate, getErrorMessage } from "@/utils/tool";
+import { addTimeToDate } from "@/utils/tool";
 import DatetimePicker from "@/components/DatetimePicker.vue";
-import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -207,10 +206,9 @@ import snackbar from "@/store/modules/snackbar";
 })
 export default class UpdateBiddingDocument extends Vue {
   @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
+  @Prop(Object) biddingDocument!: IBiddingDocument;
   @PropSync("biddingDocuments", { type: Array })
   biddingDocumentsSync!: Array<IBiddingDocument>;
-  @Prop(Object)
-  biddingDocument!: IBiddingDocument;
 
   dateInit = addTimeToDate(new Date().toString());
   biddingDocumentLocal = {
@@ -268,40 +266,21 @@ export default class UpdateBiddingDocument extends Vue {
   }
   // BiddingDocument
   async updateBiddingDocument() {
-    // TODO: API create biddingDocument
     if (this.biddingDocumentLocal) {
       const _biddingDocument = await updateBiddingDocument(
         this.biddingDocumentLocal
-      )
-        .then(res => {
-          console.log(res.data);
-          const response: IBiddingDocument = res.data;
-          snackbar.setSnackbar({
-            text: "Cập nhật thành công HSMT: " + response.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-        });
-      if (_biddingDocument) {
+      );
+      if (_biddingDocument.data) {
         const index = this.biddingDocumentsSync.findIndex(
-          x => x.id === _biddingDocument.id
+          x => x.id === _biddingDocument.data.id
         );
-        this.biddingDocumentsSync.splice(index, 1, _biddingDocument);
+        this.biddingDocumentsSync.splice(index, 1, _biddingDocument.data);
         this.stepper = 3;
       }
-      snackbar.setDisplay(true);
     }
   }
 
   mounted() {
-    //
     this.currencyOfPayments = ["VND", "USD"];
     this.unitOfMeasurements = ["KG", "Ton"];
   }

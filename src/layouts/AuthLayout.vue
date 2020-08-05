@@ -7,13 +7,9 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import Snackbars from "../components/Snackbars.vue";
 
 @Component({
-  name: "AuthLayout",
-  components: {
-    Snackbars
-  }
+  name: "AuthLayout"
 })
 export default class AuthLayout extends Vue {}
 </script>

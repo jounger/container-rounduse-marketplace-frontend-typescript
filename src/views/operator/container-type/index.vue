@@ -63,7 +63,6 @@
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { IContainerType } from "@/entity/container-type";
 import { getContainerTypes } from "@/api/container-type";
-import { PaginationResponse } from "@/api/payload";
 import CreateContainerType from "./components/CreateContainerType.vue";
 import DeleteContainerType from "./components/DeleteContainerType.vue";
 import { DataOptions } from "vuetify";
@@ -134,19 +133,10 @@ export default class ContainerType extends Vue {
       const _containerTypes = await getContainerTypes({
         page: val.page - 1,
         limit: val.itemsPerPage
-      })
-        .then(res => {
-          const response: PaginationResponse<IContainerType> = res.data;
-          console.log("watch", this.options);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_containerTypes) {
-        this.containerTypes = _containerTypes.data;
-        this.serverSideOptions.totalItems = _containerTypes.totalElements;
+      });
+      if (_containerTypes.data) {
+        this.containerTypes = _containerTypes.data.data;
+        this.serverSideOptions.totalItems = _containerTypes.data.totalElements;
       }
       this.loading = false;
     }

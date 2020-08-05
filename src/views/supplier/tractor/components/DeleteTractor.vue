@@ -37,42 +37,25 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContainerTractor } from "@/entity/container-tractor";
 import { removeContainerTractor } from "@/api/container-tractor";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeleteTractor extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("tractors", { type: Array }) tractorsSync!: Array<
-    IContainerTractor
-  >;
+  @PropSync("tractors", { type: Array }) tractorsSync!: IContainerTractor[];
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) tractor!: IContainerTractor;
 
   async removeTractor() {
     if (this.tractor.id) {
-      await removeContainerTractor(this.tractor.id)
-        .then(res => {
-          console.log(res.data);
-          snackbar.setSnackbar({
-            text: "Xóa thành công Đầu kéo: " + this.tractor.licensePlate,
-            color: "success"
-          });
-          const index = this.tractorsSync.findIndex(
-            x => x.id === this.tractor.id
-          );
-          this.tractorsSync.splice(index, 1);
-          this.totalItemsSync -= 1;
-          this.dialogDelSync = false;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-        });
-      snackbar.setDisplay(true);
+      const _res = await removeContainerTractor(this.tractor.id);
+      if (_res.status == 200) {
+        const index = this.tractorsSync.findIndex(
+          x => x.id === this.tractor.id
+        );
+        this.tractorsSync.splice(index, 1);
+        this.totalItemsSync -= 1;
+        this.dialogDelSync = false;
+      }
     }
   }
 }

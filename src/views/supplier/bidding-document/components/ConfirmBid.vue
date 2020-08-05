@@ -53,8 +53,6 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IBid } from "@/entity/bid";
 import { editBid } from "@/api/bid";
 import CreateCombined from "../../combined/components/CreateCombined.vue";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component({
   components: {
@@ -63,11 +61,11 @@ import snackbar from "@/store/modules/snackbar";
 })
 export default class ConfirmBid extends Vue {
   @PropSync("dialogConfirm", { type: Boolean }) dialogConfirmSync!: boolean;
-  @PropSync("bids", { type: Array })
-  bidsSync!: Array<IBid>;
+  @PropSync("bids", { type: Array }) bidsSync!: Array<IBid>;
   @PropSync("numberWinner", { type: Number }) numberWinnerSync!: number;
   @Prop(Boolean) isAccept!: boolean;
   @Prop(Object) bid!: IBid;
+
   dialogContract = false;
   update = false;
 
@@ -78,30 +76,12 @@ export default class ConfirmBid extends Vue {
       if (this.bid.id) {
         const _bid = await editBid(this.bid.id, {
           status: "REJECTED"
-        })
-          .then(res => {
-            const response = res.data;
-            console.log("respone", response);
-            snackbar.setSnackbar({
-              text: "Từ chối thành công HSDT: " + response.id,
-              color: "success"
-            });
-            return response;
-          })
-          .catch(err => {
-            console.log(err);
-            snackbar.setSnackbar({
-              text: getErrorMessage(err),
-              color: "error"
-            });
-            return null;
-          });
-        if (_bid) {
-          const index = this.bidsSync.findIndex(x => x.id === _bid.id);
-          this.bidsSync.splice(index, 1, _bid);
+        });
+        if (_bid.data) {
+          const index = this.bidsSync.findIndex(x => x.id === _bid.data.id);
+          this.bidsSync.splice(index, 1, _bid.data);
           this.dialogConfirmSync = false;
         }
-        snackbar.setDisplay(true);
       }
     }
   }

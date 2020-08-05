@@ -422,8 +422,7 @@ import { IContainerType } from "@/entity/container-type";
 import { getPorts } from "@/api/port";
 import { getShippingLines } from "@/api/shipping-line";
 import { getContainerTypes } from "@/api/container-type";
-import { PaginationResponse } from "@/api/payload";
-import { addTimeToDate, addMinutesToDate, getErrorMessage } from "@/utils/tool";
+import { addTimeToDate, addMinutesToDate } from "@/utils/tool";
 import { createInbound } from "@/api/inbound";
 import DeleteContainer from "./DeleteContainer.vue";
 import CreateContainer from "./CreateContainer.vue";
@@ -437,7 +436,7 @@ import GoogleMapDistanceMatrix from "@/components/googlemaps/GoogleMapDistanceMa
 import { DistanceMatrix } from "@/components/googlemaps/map-interface";
 import Utils from "@/mixin/utils";
 import DatetimePicker from "@/components/DatetimePicker.vue";
-import snackbar from "@/store/modules/snackbar";
+
 import { DataOptions } from "vuetify";
 import { getContainersByInbound } from "@/api/container";
 import { getSupplier } from "@/api/supplier";
@@ -600,19 +599,10 @@ export default class CreateInbound extends Vue {
         const _inbounds = await getContainersByInbound(this.inboundLocal.id, {
           page: val.page - 1,
           limit: val.itemsPerPage
-        })
-          .then(res => {
-            const response: PaginationResponse<IContainer> = res.data;
-            console.log("watch", response);
-            return response;
-          })
-          .catch(err => {
-            console.log(err);
-            return null;
-          });
-        if (_inbounds) {
-          this.containers = _inbounds.data;
-          this.serverSideOptions.totalItems = _inbounds.totalElements;
+        });
+        if (_inbounds.data) {
+          this.containers = _inbounds.data.data;
+          this.serverSideOptions.totalItems = _inbounds.data.totalElements;
         }
       }
       this.loading = false;
@@ -652,33 +642,13 @@ export default class CreateInbound extends Vue {
     /* TODO: Calculate Empty Time:
      * emptyTime = (duration: portOfDelivery -> returnStation) + pickupTime (+ bias)
      */
-    const _inbound = await createInbound(this.inboundLocal)
-      .then(res => {
-        console.log(res.data);
-        const response: IInbound = res.data;
-        console.log("response", response);
-        snackbar.setSnackbar({
-          text:
-            "Thêm mới thành công hàng nhập: " + response.billOfLading.number,
-          color: "success"
-        });
-        return response;
-      })
-      .catch(err => {
-        console.log(err);
-        snackbar.setSnackbar({
-          text: getErrorMessage(err),
-          color: "error"
-        });
-        return null;
-      });
-    if (_inbound) {
-      this.inboundLocal = _inbound;
-      this.inboundsSync.unshift(_inbound);
+    const _inbound = await createInbound(this.inboundLocal);
+    if (_inbound.data) {
+      this.inboundLocal = _inbound.data;
+      this.inboundsSync.unshift(_inbound.data);
       this.totalItemsSync += 1;
       this.stepper = 4;
     }
-    snackbar.setDisplay(true);
   }
   getPortAddress(portCode: string) {
     if (portCode.length > 0) {
@@ -721,23 +691,15 @@ export default class CreateInbound extends Vue {
     const _shippingLines = await getShippingLines({
       page: 0,
       limit: limit + 1
-    })
-      .then(res => {
-        const response: PaginationResponse<IShippingLine> = res.data;
-        return response.data.filter(x => x.roles[0] == "ROLE_SHIPPINGLINE");
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    if (_shippingLines) {
-      _shippingLines.forEach((x: IShippingLine, index: number) => {
+    });
+    if (_shippingLines.data) {
+      _shippingLines.data.data.forEach((x: IShippingLine, index: number) => {
         if (index != limit) {
           this.shippingLines.push(x);
         }
       });
     }
-    if (!_shippingLines || _shippingLines.length <= limit) {
+    if (!_shippingLines.data || _shippingLines.data.length <= limit) {
       this.seeMoreShippingLines = false;
     }
     this.loadingShippingLines = false;
@@ -752,23 +714,15 @@ export default class CreateInbound extends Vue {
     const _containerTypes = await getContainerTypes({
       page: 0,
       limit: limit + 1
-    })
-      .then(res => {
-        const response: PaginationResponse<IContainerType> = res.data;
-        return response.data;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    if (_containerTypes) {
-      _containerTypes.forEach((x: IContainerType, index: number) => {
+    });
+    if (_containerTypes.data) {
+      _containerTypes.data.data.forEach((x: IContainerType, index: number) => {
         if (index != limit) {
           this.containerTypes.push(x);
         }
       });
     }
-    if (!_containerTypes || _containerTypes.length <= limit) {
+    if (!_containerTypes.data || _containerTypes.data.length <= limit) {
       this.seeMoreContainerTypes = false;
     }
     this.loadingContainerTypes = false;
@@ -783,23 +737,15 @@ export default class CreateInbound extends Vue {
     const _ports = await getPorts({
       page: 0,
       limit: limit + 1
-    })
-      .then(res => {
-        const response: PaginationResponse<IPort> = res.data;
-        return response.data;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    if (_ports) {
-      _ports.forEach((x: IPort, index: number) => {
+    });
+    if (_ports.data) {
+      _ports.data.data.forEach((x: IPort, index: number) => {
         if (index != limit) {
           this.ports.push(x);
         }
       });
     }
-    if (!_ports || _ports.length <= limit) {
+    if (!_ports.data || _ports.data.length <= limit) {
       this.seeMorePorts = false;
     }
     this.loadingPorts = false;
@@ -812,16 +758,8 @@ export default class CreateInbound extends Vue {
     await this.getShippingLines(5);
     await this.getContainerTypes(5);
     await this.getPorts(5);
-    const _supplier = await getSupplier(this.$auth.user().username)
-      .then(res => {
-        const response: ISupplier = res.data;
-        return response;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    this.supplier = _supplier;
+    const _supplier = await getSupplier(this.$auth.user().username);
+    if (_supplier.data) this.supplier = _supplier.data;
   }
 
   beforeDestroy() {

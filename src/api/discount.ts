@@ -1,50 +1,33 @@
 import Vue from "vue";
 import { PaginationRequest } from "./payload";
-import { IDiscount } from "../entity/discount";
-
-const config = {
-  Authorization: "Bearer {auth_token}"
-};
+import { IDiscount } from "@/entity/discount";
 
 export function getDiscounts(paging: PaginationRequest) {
   return Vue.axios.get("/discount", {
-    params: paging,
-    headers: config
+    params: paging
   });
 }
 
 export function getDiscount(id: number) {
-  return Vue.axios.get(`/discount/${id}`, {
-    headers: config
-  });
+  return Vue.axios.get(`/discount/${id}`);
 }
 
 export function getDiscountByCode(code: string) {
-  return Vue.axios.get(`/discount/${code}`, {
-    headers: config
-  });
+  return Vue.axios.get(`/discount/${code}`);
 }
 
 export function createDiscount(discount: IDiscount) {
-  return Vue.axios.post("/discount", discount, {
-    headers: config
-  });
+  return Vue.axios.post("/discount", discount);
 }
 
 export function updateDiscount(discount: IDiscount) {
-  return Vue.axios.put("/discount", discount, {
-    headers: config
-  });
+  return Vue.axios.put("/discount", discount);
 }
 
 export function editDiscount(id: number, updates: object) {
-  return Vue.axios.patch(`/discount/${id}`, updates, {
-    headers: config
-  });
+  return Vue.axios.patch(`/discount/${id}`, updates);
 }
 
 export function removeDiscount(id: number) {
-  return Vue.axios.delete(`/discount/${id}`, {
-    headers: config
-  });
+  return Vue.axios.delete(`/discount/${id}`);
 }

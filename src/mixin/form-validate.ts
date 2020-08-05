@@ -3,49 +3,48 @@ import { formatDatetime } from "@/utils/tool";
 
 @Component
 export default class FormValidate extends Vue {
-  required(propertyType: any) {
+  required(propertyType: unknown) {
     return (v: string) =>
       (v && (!!v || v.length > 0)) || `You must input a ${propertyType}`;
   }
 
   // input length must greater than min length
-  minLength(propertyType: any, minLength: number) {
+  minLength(propertyType: unknown, minLength: number) {
     return (v: string) =>
       (v && v.length >= minLength) ||
       `${propertyType} phải có ít nhất ${minLength} ký tự`;
   }
 
   // input length must less than max length
-  maxLength(propertyType: any, maxLength: number) {
+  maxLength(propertyType: unknown, maxLength: number) {
     return (v: string) =>
       (v && v.length <= maxLength) ||
       `${propertyType} chỉ có nhiều nhất ${maxLength} ký tự`;
   }
 
   // input must be email type
-  email(propertyType: any) {
+  email(propertyType: unknown) {
     return (v: string) =>
       (v && /.+@.+\..+/.test(v)) || ` Email ${propertyType} không hợp lệ`;
   }
 
   // input must greater than min number
-  minNumber(propertyType: any, minNumber: number) {
+  minNumber(propertyType: unknown, minNumber: number) {
     return (v: number) =>
-      (v && v > minNumber) ||
-      `${propertyType} phải lớn hơn ${minNumber}`;
+      (v && v > minNumber) || `${propertyType} phải lớn hơn ${minNumber}`;
   }
 
   // input must less than max number
-  maxNumber(propertyType: any, maxNumber: number) {
+  maxNumber(propertyType: unknown, maxNumber: number) {
     return (v: number) =>
       (v && v < maxNumber) || `${propertyType} phải nhỏ hơn ${maxNumber}`;
   }
-  minTime(propertyType: any, minTime: string) {
+  minTime(propertyType: unknown, minTime: string) {
     return (v: string) =>
       (v && new Date(v).getTime() > new Date(minTime).getTime()) ||
       `${propertyType} cần lớn hơn ngày ${formatDatetime(minTime)}`;
   }
-  maxTime(propertyType: any, maxTime: string) {
+  maxTime(propertyType: unknown, maxTime: string) {
     return (v: string) =>
       (v && new Date(v).getTime() < new Date(maxTime).getTime()) ||
       `${propertyType} cần nhỏ hơn ngày ${formatDatetime(maxTime)}`;

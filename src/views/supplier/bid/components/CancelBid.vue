@@ -37,44 +37,23 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IBid } from "@/entity/bid";
 import { editBid } from "@/api/bid";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class CancelBid extends Vue {
   @PropSync("dialogCancel", { type: Boolean }) dialogCancelSync!: boolean;
-  @Prop(Object)
-  bid!: IBid;
+  @Prop(Object) bid!: IBid;
   @PropSync("bids", { type: Array }) bidsSync!: Array<IBid>;
 
   async cancelBid() {
     if (this.bid.id) {
       const _bid = await editBid(this.bid.id, {
         status: "CANCELED"
-      })
-        .then(res => {
-          console.log(res.data);
-          const response: IBid = res.data;
-          snackbar.setSnackbar({
-            text: "Hủy thầu thành công HSDT: " + response.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_bid) {
-        const index = this.bidsSync.findIndex(x => x.id === _bid.id);
-        this.bidsSync.splice(index, 1, _bid);
+      });
+      if (_bid.data) {
+        const index = this.bidsSync.findIndex(x => x.id === _bid.data.id);
+        this.bidsSync.splice(index, 1, _bid.data);
         this.dialogCancelSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
 }

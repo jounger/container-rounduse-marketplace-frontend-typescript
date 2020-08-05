@@ -153,21 +153,17 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContainerType } from "@/entity/container-type";
 import FormValidate from "@/mixin/form-validate";
 import { createContainerType, editContainerType } from "@/api/container-type";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
 })
 export default class CreateContainerType extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("containerTypes", { type: Array }) containerTypesSync!: Array<
-    IContainerType
-  >;
+  @PropSync("containerTypes", { type: Array })
+  containerTypesSync!: IContainerType[];
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Boolean) update!: boolean;
-  @Prop(Object)
-  containerType!: IContainerType;
+  @Prop(Object) containerType!: IContainerType;
 
   containerTypeLocal = {
     name: "",
@@ -190,30 +186,12 @@ export default class CreateContainerType extends Vue {
   }
   async createContainerType() {
     if (this.containerTypeLocal) {
-      const _containerType = await createContainerType(this.containerTypeLocal)
-        .then(res => {
-          console.log(res.data);
-          const response: IContainerType = res.data;
-          snackbar.setSnackbar({
-            text: "Thêm mới thành công loại Container: " + response.name,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_containerType) {
-        this.containerTypesSync.unshift(_containerType);
+      const _containerType = await createContainerType(this.containerTypeLocal);
+      if (_containerType.data) {
+        this.containerTypesSync.unshift(_containerType.data);
         this.totalItemsSync += 1;
         this.dialogAddSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
   async updateContainerType() {
@@ -221,31 +199,13 @@ export default class CreateContainerType extends Vue {
       const _containerType = await editContainerType(
         this.containerTypeLocal.id,
         this.containerTypeLocal
-      )
-        .then(res => {
-          console.log(res.data);
-          const response: IContainerType = res.data;
-          snackbar.setSnackbar({
-            text: "Cập nhật thành công loại Container: " + response.name,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_containerType) {
+      );
+      if (_containerType.data) {
         const index = this.containerTypesSync.findIndex(
-          x => x.id === _containerType.id
+          x => x.id === _containerType.data.id
         );
-        this.containerTypesSync.splice(index, 1, _containerType);
+        this.containerTypesSync.splice(index, 1, _containerType.data);
       }
-      snackbar.setDisplay(true);
     }
   }
 }

@@ -108,14 +108,9 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class Dashboard extends Vue {
-  showSnackbar() {
-    console.log("shit");
-    snackbar.setDisplay(true);
-  }
   private users = [];
   items = [
     {

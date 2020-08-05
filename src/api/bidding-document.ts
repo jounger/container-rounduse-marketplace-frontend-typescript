@@ -1,57 +1,39 @@
 import Vue from "vue";
 import { PaginationRequest } from "./payload";
-import { IBiddingDocument } from "../entity/bidding-document";
-
-const config = {
-  Authorization: "Bearer {auth_token}"
-};
+import { IBiddingDocument } from "@/entity/bidding-document";
 
 export function getBiddingDocuments(paging: PaginationRequest) {
   return Vue.axios.get("/bidding-document", {
-    params: paging,
-    headers: config
+    params: paging
   });
 }
 
 export function getBiddingDocument(id: number) {
-  return Vue.axios.get(`/bidding-document/${id}`, {
-    headers: config
-  });
+  return Vue.axios.get(`/bidding-document/${id}`);
 }
 
 export function getBiddingDocumentByBid(id: number) {
-  return Vue.axios.get(`/bidding-document/bid/${id}`, {
-    headers: config
-  });
+  return Vue.axios.get(`/bidding-document/bid/${id}`);
 }
 
 export function getBiddingDocumentsByExistCombined(paging: PaginationRequest) {
   return Vue.axios.get("/bidding-document/combined", {
-    params: paging,
-    headers: config
+    params: paging
   });
 }
 
 export function createBiddingDocument(biddingDocument: IBiddingDocument) {
-  return Vue.axios.post("/bidding-document", biddingDocument, {
-    headers: config
-  });
+  return Vue.axios.post("/bidding-document", biddingDocument);
 }
 
 export function updateBiddingDocument(biddingDocument: IBiddingDocument) {
-  return Vue.axios.put("/bidding-document", biddingDocument, {
-    headers: config
-  });
+  return Vue.axios.put("/bidding-document", biddingDocument);
 }
 
 export function editBiddingDocument(id: number, updates: object) {
-  return Vue.axios.patch(`/bidding-document/${id}`, updates, {
-    headers: config
-  });
+  return Vue.axios.patch(`/bidding-document/${id}`, updates);
 }
 
 export function removeBiddingDocument(id: number) {
-  return Vue.axios.delete(`/bidding-document/${id}`, {
-    headers: config
-  });
+  return Vue.axios.delete(`/bidding-document/${id}`);
 }

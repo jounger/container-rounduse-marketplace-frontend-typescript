@@ -140,8 +140,6 @@ import Utils from "@/mixin/utils";
 import { createCombined } from "@/api/combined";
 import { IBid } from "@/entity/bid";
 import { IContract } from "@/entity/contract";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 import { DataOptions } from "vuetify";
 import { IContainer } from "@/entity/container";
 
@@ -153,8 +151,7 @@ export default class CreateCombined extends Vue {
   @PropSync("dialogConfirm", { type: Boolean }) dialogConfirmSync!: boolean;
   @Prop(Object) bid!: IBid;
   @PropSync("numberWinner", { type: Number }) numberWinnerSync!: number;
-  @PropSync("bids", { type: Array })
-  bidsSync!: Array<IBid>;
+  @PropSync("bids", { type: Array }) bidsSync!: Array<IBid>;
 
   dateInit = new Date().toISOString().substr(0, 10);
   bidsSelection: Array<IBid> = [];
@@ -261,26 +258,9 @@ export default class CreateCombined extends Vue {
     //TODO: API create combined
     if (this.bid.id) {
       this.combinedLocal.bid = this.bid.id as number;
-      const _combined = await createCombined(this.bid.id, this.combinedLocal)
-        .then(res => {
-          console.log(res.data);
-          const response: ICombined = res.data;
-          snackbar.setSnackbar({
-            text: "Thêm mới thành công Hàng ghép: " + response.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_combined) {
-        const bidResponse = _combined.bid as IBid;
+      const _combined = await createCombined(this.bid.id, this.combinedLocal);
+      if (_combined.data) {
+        const bidResponse = _combined.data.bid as IBid;
         if (bidResponse && bidResponse.id) {
           const index = this.bidsSync.findIndex(x => x.id == bidResponse.id);
           this.bidsSync.splice(index, 1, bidResponse);
@@ -289,7 +269,6 @@ export default class CreateCombined extends Vue {
         this.dialogAddSync = false;
         this.dialogConfirmSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
   @Watch("containerOptions")

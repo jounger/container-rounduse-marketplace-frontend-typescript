@@ -1,5 +1,6 @@
 <template>
   <v-app>
+    <Snackbars />
     <component :is="layout">
       <transition mode="out-in">
         <router-view></router-view>
@@ -9,7 +10,13 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-@Component
+import Snackbars from "@/components/Snackbars.vue";
+
+@Component({
+  components: {
+    Snackbars
+  }
+})
 export default class App extends Vue {
   get layout() {
     return this.$route.meta.layout || "DefaultLayout";

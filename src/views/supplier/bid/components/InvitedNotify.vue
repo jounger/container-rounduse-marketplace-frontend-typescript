@@ -77,7 +77,6 @@
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import CreateBid from "./CreateBid.vue";
-import { PaginationResponse } from "@/api/payload";
 import { IBiddingNotification } from "@/entity/bidding-notification";
 import { getBiddingNotificationsByUser } from "@/api/notification";
 import Utils from "@/mixin/utils";
@@ -156,27 +155,18 @@ export default class InvitedNotify extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _biddingNotifications = await getBiddingNotificationsByUser({
+      const _res = await getBiddingNotificationsByUser({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
-      })
-        .then(res => {
-          const response: PaginationResponse<IBiddingNotification> = res.data;
-          console.log("watch", response);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_biddingNotifications) {
-        this.biddingNotifications = _biddingNotifications.data.filter(
+      });
+      if (_res.data) {
+        const _biddingNotifications = _res.data.data as IBiddingNotification[];
+        this.biddingNotifications = _biddingNotifications.filter(
           x => x.action == "ADDED" && x.isHide == false
         );
-        this.serverSideOptions.totalItems = _biddingNotifications.data.filter(
+        this.serverSideOptions.totalItems = _biddingNotifications.filter(
           x => x.action == "ADDED" && x.isHide == false
         ).length;
-        console.log(_biddingNotifications.totalElements);
       }
       this.loading = false;
     }

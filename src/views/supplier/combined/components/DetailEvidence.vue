@@ -71,8 +71,6 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IEvidence } from "@/entity/evidence";
 import { editEvidence } from "@/api/evidence";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DetailEvidence extends Vue {
@@ -86,34 +84,17 @@ export default class DetailEvidence extends Vue {
     if (this.evidence.id) {
       const _evidence = await editEvidence(this.evidence.id, {
         isValid: isValid
-      })
-        .then(res => {
-          const response = res.data;
-          snackbar.setSnackbar({
-            text: isValid
-              ? "Đồng ý thành công chứng cứ: " + response.id
-              : "Từ chối thành công chứng cứ: " + response.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_evidence) {
-        const index = this.evidencesSync.findIndex(x => x.id == _evidence.id);
-        this.evidencesSync.splice(index, 1, _evidence);
-        if (this.finalEvidence && _evidence.isValid) {
+      });
+      if (_evidence.data) {
+        const index = this.evidencesSync.findIndex(
+          x => x.id == _evidence.data.id
+        );
+        this.evidencesSync.splice(index, 1, _evidence.data);
+        if (this.finalEvidence && _evidence.data.isValid) {
           this.checkValidSync = true;
         }
         this.dialogDetailSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
 }

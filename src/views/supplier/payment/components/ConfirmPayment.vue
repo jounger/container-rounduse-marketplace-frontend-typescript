@@ -36,9 +36,7 @@
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPayment } from "@/entity/payment";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
-import { editPayment } from "../../../../api/payment";
+import { editPayment } from "@/api/payment";
 
 @Component
 export default class ConfirmPayment extends Vue {
@@ -48,32 +46,14 @@ export default class ConfirmPayment extends Vue {
 
   async confirmPayment() {
     if (this.payment.id) {
-      const _payment = await editPayment(this.payment.id, { isPaid: true })
-        .then(res => {
-          console.log(res.data);
-          const response: IPayment = res.data;
-          snackbar.setSnackbar({
-            text:
-              "Xác nhận đã nhận tiền thành công cho Hóa đơn: " +
-              this.payment.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_payment) {
-        const index = this.paymentsSync.findIndex(x => x.id === _payment.id);
-        this.paymentsSync.splice(index, 1, _payment);
+      const _payment = await editPayment(this.payment.id, { isPaid: true });
+      if (_payment.data) {
+        const index = this.paymentsSync.findIndex(
+          x => x.id === _payment.data.id
+        );
+        this.paymentsSync.splice(index, 1, _payment.data);
         this.dialogConfirmSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
 }

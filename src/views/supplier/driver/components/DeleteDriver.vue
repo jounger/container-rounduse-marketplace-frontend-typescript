@@ -35,8 +35,6 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IDriver } from "@/entity/driver";
 import { removeDriver } from "@/api/driver";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeleteDriver extends Vue {
@@ -47,27 +45,13 @@ export default class DeleteDriver extends Vue {
 
   async removeDriver() {
     if (this.driver.id) {
-      await removeDriver(this.driver.id)
-        .then(res => {
-          console.log(res.data);
-          const response: IDriver = res.data;
-          snackbar.setSnackbar({
-            text: "Xóa thành công mã lái xe: " + this.driver.username,
-            color: "success"
-          });
-          const index = this.driversSync.findIndex(x => x.id === response.id);
-          this.driversSync.splice(index, 1);
-          this.totalItemsSync -= 1;
-          this.dialogDelSync = false;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-        });
-      snackbar.setDisplay(true);
+      const _res = await removeDriver(this.driver.id);
+      if (_res.status == 200) {
+        const index = this.driversSync.findIndex(x => x.id === _res.data.id);
+        this.driversSync.splice(index, 1);
+        this.totalItemsSync -= 1;
+        this.dialogDelSync = false;
+      }
     }
   }
 }

@@ -149,7 +149,6 @@ import CreateOutbound from "./components/CreateOutbound.vue";
 import UpdateOutbound from "./components/UpdateOutbound.vue";
 import DeleteOutbound from "./components/DeleteOutbound.vue";
 import { getOutboundByMerchant } from "@/api/outbound";
-import { PaginationResponse } from "@/api/payload";
 import Utils from "@/mixin/utils";
 import CreateBiddingDocument from "../../supplier/bidding-document/components/CreateBiddingDocument.vue";
 import { DataOptions } from "vuetify";
@@ -231,21 +230,12 @@ export default class Outbound extends Vue {
       const _outbounds = await getOutboundByMerchant({
         page: val.page - 1,
         limit: val.itemsPerPage
-      })
-        .then(res => {
-          const response: PaginationResponse<IOutbound> = res.data;
-          console.log("watch", response);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_outbounds) {
-        this.outbounds = _outbounds.data;
+      });
+      if (_outbounds.data) {
+        this.outbounds = _outbounds.data.data;
 
         console.log(new Date(this.outbounds[0].packingTime).getTime());
-        this.serverSideOptions.totalItems = _outbounds.totalElements;
+        this.serverSideOptions.totalItems = _outbounds.data.totalElements;
       }
       this.loading = false;
     }

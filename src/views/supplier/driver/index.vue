@@ -79,7 +79,6 @@
 <script lang="ts">
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { IDriver } from "@/entity/driver";
-import { PaginationResponse } from "@/api/payload";
 import DeleteDriver from "./components/DeleteDriver.vue";
 import CreateDriver from "./components/CreateDriver.vue";
 import { getDriversByForwarder } from "@/api/driver";
@@ -148,19 +147,10 @@ export default class Driver extends Vue {
       const _drivers = await getDriversByForwarder({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
-      })
-        .then(res => {
-          const response: PaginationResponse<IDriver> = res.data;
-          console.log("watch", response);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_drivers) {
-        this.drivers = _drivers.data;
-        this.serverSideOptions.totalItems = _drivers.totalElements;
+      });
+      if (_drivers.data) {
+        this.drivers = _drivers.data.data;
+        this.serverSideOptions.totalItems = _drivers.data.totalElements;
       }
       this.loading = false;
     }

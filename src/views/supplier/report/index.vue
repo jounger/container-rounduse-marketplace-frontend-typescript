@@ -120,8 +120,6 @@
 <script lang="ts">
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { IReport } from "@/entity/report";
-// import { getReportsByStatus } from "@/api/report";
-import { PaginationResponse } from "@/api/payload";
 import CreateReport from "./components/CreateReport.vue";
 import DeleteReport from "./components/DeleteReport.vue";
 import UpdateReport from "./components/UpdateReport.vue";
@@ -193,19 +191,10 @@ export default class Report extends Vue {
       const _reports = await getReportsByUser({
         page: this.options.page - 1,
         limit: this.options.itemsPerPage
-      })
-        .then(res => {
-          const response: PaginationResponse<IReport> = res.data;
-          console.log("watch", this.options);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_reports) {
-        this.reports = _reports.data;
-        this.serverSideOptions.totalItems = _reports.totalElements;
+      });
+      if (_reports.data) {
+        this.reports = _reports.data.data;
+        this.serverSideOptions.totalItems = _reports.data.totalElements;
       }
       this.loading = false;
     }

@@ -425,7 +425,6 @@ import { getCombinedsByBiddingDocument } from "@/api/combined";
 import { IEvidence } from "@/entity/evidence";
 import { getBiddingDocument } from "@/api/bidding-document";
 import { getEvidencesByContract } from "@/api/evidence";
-import { PaginationResponse } from "@/api/payload";
 import DetailEvidence from "./DetailEvidence.vue";
 import { IContainer } from "@/entity/container";
 import { IInbound } from "@/entity/inbound";
@@ -613,20 +612,11 @@ export default class DetailCombined extends Vue {
           page: val.page - 1,
           limit: val.itemsPerPage
         }
-      )
-        .then(res => {
-          const response: PaginationResponse<ICombined> = res.data;
-          console.log("watch", response);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
+      );
       this.loading = false;
-      if (_combineds) {
-        this.combineds = _combineds.data;
-        this.serverSideOptions.totalItems = _combineds.totalElements;
+      if (_combineds.data) {
+        this.combineds = _combineds.data.data;
+        this.serverSideOptions.totalItems = _combineds.data.totalElements;
         if (this.combineds.length > 0) {
           this.combined = this.combineds[0];
           const _bid = this.combined.bid as IBid;
@@ -651,30 +641,14 @@ export default class DetailCombined extends Vue {
     // TODO: Fake data
     const _biddingDocument = await getBiddingDocument(
       parseInt(this.getRouterId)
-    )
-      .then(res => {
-        const response = res.data;
-        return response;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    this.biddingDocument = _biddingDocument;
+    );
+    if (_biddingDocument.data) this.biddingDocument = _biddingDocument.data;
   }
   async created() {
     const _biddingDocument = await getBiddingDocument(
       parseInt(this.getRouterId)
-    )
-      .then(res => {
-        const response = res.data;
-        return response;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    this.biddingDocument = _biddingDocument;
+    );
+    if (_biddingDocument.data) this.biddingDocument = _biddingDocument.data;
   }
   openDetailEvidence(item: IEvidence) {
     this.finalEvidence = false;
@@ -693,18 +667,11 @@ export default class DetailCombined extends Vue {
         const _evidences = await getEvidencesByContract(this.contract.id, {
           page: val.page - 1,
           limit: val.itemsPerPage
-        })
-          .then(res => {
-            const response: PaginationResponse<IEvidence> = res.data;
-            return response;
-          })
-          .catch(err => {
-            console.log(err);
-            return null;
-          });
-        if (_evidences) {
-          this.evidences = _evidences.data;
-          this.evidenceServerSideOptions.totalItems = _evidences.totalElements;
+        });
+        if (_evidences.data) {
+          this.evidences = _evidences.data.data;
+          this.evidenceServerSideOptions.totalItems =
+            _evidences.data.totalElements;
           if (this.evidences.length > 0 && this.evidences[0].isValid == true) {
             this.checkValid = true;
           }
@@ -730,17 +697,9 @@ export default class DetailCombined extends Vue {
     }
   }
   async viewDetailContainer(item: IContainer) {
-    const _inbound = await getInboundsByContainer(item.id as number)
-      .then(res => {
-        const response: IInbound = res.data;
-        return response;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
     this.selectedContainer = item;
-    this.inbound = _inbound;
+    const _inbound = await getInboundsByContainer(item.id as number);
+    if (_inbound.data) this.inbound = _inbound.data;
   }
 }
 </script>

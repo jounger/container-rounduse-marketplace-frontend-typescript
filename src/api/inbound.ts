@@ -1,40 +1,29 @@
 import Vue from "vue";
 import { PaginationRequest } from "./payload";
-import { IInbound } from "../entity/inbound";
-
-const config = {
-  Authorization: "Bearer {auth_token}"
-};
+import { IInbound } from "@/entity/inbound";
 
 export function getInbounds(paging: PaginationRequest) {
   return Vue.axios.get("/inbound", {
-    params: paging,
-    headers: config
+    params: paging
   });
 }
 
 export function getInbound(id: number) {
-  return Vue.axios.get(`/inbound/${id}`, {
-    headers: config
-  });
+  return Vue.axios.get(`/inbound/${id}`);
 }
 
 export function getInboundsByContainer(id: number) {
-  return Vue.axios.get(`/inbound/container/${id}`, {
-    headers: config
-  });
+  return Vue.axios.get(`/inbound/container/${id}`);
 }
 
 export function getInboundsByForwarder(paging: PaginationRequest) {
   return Vue.axios.get("/inbound/forwarder", {
-    params: paging,
-    headers: config
+    params: paging
   });
 }
 export function getInboundsByOutbound(id: number, paging: PaginationRequest) {
   return Vue.axios.get(`/inbound/outbound/${id}`, {
-    params: paging,
-    headers: config
+    params: paging
   });
 }
 
@@ -43,31 +32,22 @@ export function getInboundsByOutboundAndForwarder(
   paging: PaginationRequest
 ) {
   return Vue.axios.get(`/inbound/outbound-match/${id}`, {
-    params: paging,
-    headers: config
+    params: paging
   });
 }
 
 export function createInbound(inbound: IInbound) {
-  return Vue.axios.post("/inbound", inbound, {
-    headers: config
-  });
+  return Vue.axios.post("/inbound", inbound);
 }
 
 export function updateInbound(inbound: IInbound) {
-  return Vue.axios.put("/inbound", inbound, {
-    headers: config
-  });
+  return Vue.axios.put("/inbound", inbound);
 }
 
 export function editInbound(id: number, updates: object) {
-  return Vue.axios.patch(`/inbound/${id}`, updates, {
-    headers: config
-  });
+  return Vue.axios.patch(`/inbound/${id}`, updates);
 }
 
 export function removeInbound(id: number) {
-  return Vue.axios.delete(`/inbound/${id}`, {
-    headers: config
-  });
+  return Vue.axios.delete(`/inbound/${id}`);
 }

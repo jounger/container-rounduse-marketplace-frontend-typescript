@@ -195,12 +195,11 @@ import { IBiddingDocument } from "@/entity/bidding-document";
 import { IOutbound } from "@/entity/outbound";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
-import { isEmptyObject, addTimeToDate, getErrorMessage } from "@/utils/tool";
+import { isEmptyObject, addTimeToDate } from "@/utils/tool";
 import { createBiddingDocument } from "@/api/bidding-document";
 import { getOutboundByMerchant } from "@/api/outbound";
-import { PaginationResponse } from "@/api/payload";
 import DatetimePicker from "@/components/DatetimePicker.vue";
-import snackbar from "@/store/modules/snackbar";
+
 import { DataOptions } from "vuetify";
 
 @Component({
@@ -278,34 +277,16 @@ export default class CreateBiddingDocument extends Vue {
 
   // BiddingDocument
   async createBiddingDocument() {
-    // TODO: API create biddingDocument
     if (this.selectedOutbound && this.selectedOutbound.id) {
       this.biddingDocumentLocal.outbound = this.selectedOutbound.id as number;
     }
     console.log(this.biddingDocumentLocal);
     const _biddingDocument = await createBiddingDocument(
       this.biddingDocumentLocal
-    )
-      .then(res => {
-        console.log(res.data);
-        const response: IBiddingDocument = res.data;
-        snackbar.setSnackbar({
-          text: "Thêm mới thành công HSMT: " + response.id,
-          color: "success"
-        });
-        return response;
-      })
-      .catch(err => {
-        console.log(err);
-        snackbar.setSnackbar({
-          text: getErrorMessage(err),
-          color: "error"
-        });
-        return null;
-      });
-    if (_biddingDocument) {
+    );
+    if (_biddingDocument.data) {
       if (typeof this.biddingDocumentsSync != "undefined") {
-        this.biddingDocumentsSync.unshift(_biddingDocument);
+        this.biddingDocumentsSync.unshift(_biddingDocument.data);
       }
       if (typeof this.totalItemsSync != "undefined") this.totalItemsSync += 1;
 
@@ -314,7 +295,6 @@ export default class CreateBiddingDocument extends Vue {
       }
       this.dialogAddSync = false;
     }
-    snackbar.setDisplay(true);
   }
   @Watch("options")
   async onOptionsChange(val: DataOptions) {
@@ -330,25 +310,17 @@ export default class CreateBiddingDocument extends Vue {
           page: val.page - 1,
           limit: val.itemsPerPage,
           status: "CREATED"
-        })
-          .then(res => {
-            const response: PaginationResponse<IOutbound> = res.data;
-            console.log("response", response);
-            return response;
-          })
-          .catch(err => console.log(err));
+        });
         this.loading = false;
-        if (_outbound) {
-          this.outbounds = _outbound.data;
-          this.serverSideOptions.totalItems = _outbound.totalElements;
+        if (_outbound.data) {
+          this.outbounds = _outbound.data.data;
+          this.serverSideOptions.totalItems = _outbound.data.totalElements;
         }
       }
       this.loading = false;
     }
   }
   created() {
-    // TODO: API get Outbound\
-    // TODO: API get other info
     this.currencyOfPayments = ["VND", "USD"];
   }
 }

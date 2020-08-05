@@ -137,8 +137,6 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IDriver } from "@/entity/driver";
 import FormValidate from "@/mixin/form-validate";
 import { createDriver, editDriver } from "@/api/driver";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
@@ -175,57 +173,21 @@ export default class CreateDriver extends Vue {
   }
   async createDriver() {
     if (this.driverLocal) {
-      const _driver = await createDriver(this.driverLocal)
-        .then(res => {
-          console.log(res.data);
-          const response: IDriver = res.data;
-          snackbar.setSnackbar({
-            text: "Thêm mới thành công lái xe: " + response.username,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_driver) {
-        this.driversSync.unshift(_driver);
+      const _driver = await createDriver(this.driverLocal);
+      if (_driver.data) {
+        this.driversSync.unshift(_driver.data);
         this.totalItemsSync += 1;
         this.dialogAddSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
   async updateDriver() {
     if (this.driverLocal.id) {
-      const _driver = await editDriver(this.driverLocal.id, this.driverLocal)
-        .then(res => {
-          console.log(res.data);
-          const response: IDriver = res.data;
-          snackbar.setSnackbar({
-            text: "Cập nhật thành công lái xe: " + response.username,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_driver) {
-        const index = this.driversSync.findIndex(x => x.id == _driver.id);
-        this.driversSync.splice(index, 1, _driver);
+      const _driver = await editDriver(this.driverLocal.id, this.driverLocal);
+      if (_driver.data) {
+        const index = this.driversSync.findIndex(x => x.id == _driver.data.id);
+        this.driversSync.splice(index, 1, _driver.data);
       }
-      snackbar.setDisplay(true);
     }
   }
 }

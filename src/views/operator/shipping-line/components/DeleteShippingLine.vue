@@ -37,42 +37,26 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IShippingLine } from "@/entity/shipping-line";
 import { removeShippingLine } from "@/api/shipping-line";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeleteShippingLine extends Vue {
   @PropSync("dialogDel", { type: Boolean }) dialogDelSync!: boolean;
-  @PropSync("shippingLines", { type: Array }) shippingLinesSync!: Array<
-    IShippingLine
-  >;
+  @PropSync("shippingLines", { type: Array })
+  shippingLinesSync!: IShippingLine[];
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) shippingLine!: IShippingLine;
 
   async removeShippingLine() {
     if (this.shippingLine.id) {
-      await removeShippingLine(this.shippingLine.id)
-        .then(res => {
-          console.log(res.data);
-          snackbar.setSnackbar({
-            text: "Xóa thành công hãng tàu: " + this.shippingLine.companyCode,
-            color: "success"
-          });
-          const index = this.shippingLinesSync.findIndex(
-            x => x.id === this.shippingLine.id
-          );
-          this.shippingLinesSync.splice(index, 1);
-          this.totalItemsSync -= 1;
-          this.dialogDelSync = false;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-        });
-      snackbar.setDisplay(true);
+      const _res = await removeShippingLine(this.shippingLine.id);
+      if (_res.status == 200) {
+        const index = this.shippingLinesSync.findIndex(
+          x => x.id === this.shippingLine.id
+        );
+        this.shippingLinesSync.splice(index, 1);
+        this.totalItemsSync -= 1;
+        this.dialogDelSync = false;
+      }
     }
   }
 }

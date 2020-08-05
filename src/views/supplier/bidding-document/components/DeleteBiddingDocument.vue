@@ -39,8 +39,6 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { removeBiddingDocument } from "@/api/bidding-document";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeleteBiddingDocument extends Vue {
@@ -54,28 +52,15 @@ export default class DeleteBiddingDocument extends Vue {
 
   async removeBiddingDocument() {
     if (this.biddingDocument.id) {
-      await removeBiddingDocument(this.biddingDocument.id)
-        .then(res => {
-          console.log(res.data);
-          snackbar.setSnackbar({
-            text: "Xóa thành công HSMT: " + this.biddingDocument.id,
-            color: "success"
-          });
-          const index = this.biddingDocumentsSync.findIndex(
-            x => x.id === this.biddingDocument.id
-          );
-          this.biddingDocumentsSync.splice(index, 1);
-          this.totalItemsSync -= 1;
-          this.dialogDelSync = false;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-        });
-      snackbar.setDisplay(true);
+      const _res = await removeBiddingDocument(this.biddingDocument.id);
+      if (_res.status == 200) {
+        const index = this.biddingDocumentsSync.findIndex(
+          x => x.id === this.biddingDocument.id
+        );
+        this.biddingDocumentsSync.splice(index, 1);
+        this.totalItemsSync -= 1;
+        this.dialogDelSync = false;
+      }
     }
   }
 }

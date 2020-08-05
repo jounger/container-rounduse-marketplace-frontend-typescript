@@ -3,7 +3,9 @@
     <v-container class="fill-height" fluid>
       <v-row align="center" justify="center">
         <v-col class="text-center">
-          <p v-if="$auth.check()">User is logged in</p>
+          <h1>Trang chủ</h1>
+          <p v-if="$auth.check()">Bạn đã đăng nhập</p>
+          <p v-else>Bạn chưa đăng nhập</p>
         </v-col>
       </v-row>
     </v-container>

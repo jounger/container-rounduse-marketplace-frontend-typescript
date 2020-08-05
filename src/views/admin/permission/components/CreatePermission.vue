@@ -69,8 +69,6 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPermission } from "@/entity/permission";
 import FormValidate from "@/mixin/form-validate";
 import { createPermission, updatePermission } from "@/api/permission";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
@@ -96,58 +94,23 @@ export default class CreatePermission extends Vue {
   }
   async createPermission() {
     if (this.permissionLocal) {
-      const _permission = await createPermission(this.permissionLocal)
-        .then(res => {
-          const response: IPermission = res.data;
-          snackbar.setSnackbar({
-            text: "Thêm mới thành công vai trò: " + response.name,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_permission) {
-        this.permissionsSync.unshift(_permission);
+      const _permission = await createPermission(this.permissionLocal);
+      if (_permission.data) {
+        this.permissionsSync.unshift(_permission.data);
         this.totalItemsSync += 1;
         this.dialogAddSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
   async updatePermission() {
     if (this.permissionLocal.id) {
-      const _permission = await updatePermission(this.permissionLocal)
-        .then(res => {
-          console.log(res.data);
-          const response: IPermission = res.data;
-          snackbar.setSnackbar({
-            text: "Cập nhật thành công vai trò: " + response.name,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_permission) {
+      const _permission = await updatePermission(this.permissionLocal);
+      if (_permission.data) {
         const index = this.permissionsSync.findIndex(
-          x => x.id == _permission.id
+          x => x.id == _permission.data.id
         );
-        this.permissionsSync.splice(index, 1, _permission);
+        this.permissionsSync.splice(index, 1, _permission.data);
       }
-      snackbar.setDisplay(true);
     }
   }
 }

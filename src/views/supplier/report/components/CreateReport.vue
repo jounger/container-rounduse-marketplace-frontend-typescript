@@ -127,24 +127,23 @@
 import { Component, Vue, PropSync } from "vue-property-decorator";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
-import { PaginationResponse } from "@/api/payload";
 import { IBiddingDocument } from "@/entity/bidding-document";
-import { isEmptyObject, getErrorMessage } from "@/utils/tool";
+import { isEmptyObject } from "@/utils/tool";
 import { IReport } from "@/entity/report";
 import { IBiddingNotification } from "@/entity/bidding-notification";
 import { getBiddingNotificationsByUser } from "@/api/notification";
 import { createReport } from "@/api/report";
-import snackbar from "@/store/modules/snackbar";
 import { DataOptions } from "vuetify";
+
 @Component({
   mixins: [FormValidate, Utils]
 })
 export default class CreateReport extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("biddingDocument", { type: Object })
-  biddingDocumentSync?: IBiddingDocument;
   @PropSync("reports", { type: Array }) reportsSync?: Array<IReport>;
   @PropSync("totalItems", { type: Number }) totalItemsSync?: number;
+  @PropSync("biddingDocument", { type: Object })
+  biddingDocumentSync?: IBiddingDocument;
 
   biddingDocuments: Array<IBiddingDocument> = [];
   biddingDocumentSelected = null as IBiddingDocument | null;
@@ -192,33 +191,16 @@ export default class CreateReport extends Vue {
     if (this.biddingDocumentSelected && this.biddingDocumentSelected.id) {
       this.reportLocal.report = this.biddingDocumentSelected.id as number;
     }
-    const _report = await createReport(this.reportLocal)
-      .then(res => {
-        const response: IReport = res.data;
-        snackbar.setSnackbar({
-          text: "Thêm mới thành công Report: " + response.id,
-          color: "success"
-        });
-        return response;
-      })
-      .catch(err => {
-        console.log(err);
-        snackbar.setSnackbar({
-          text: getErrorMessage(err),
-          color: "error"
-        });
-        return null;
-      });
-    if (_report) {
+    const _report = await createReport(this.reportLocal);
+    if (_report.data) {
       if (typeof this.reportsSync != "undefined") {
-        this.reportsSync.unshift(_report);
+        this.reportsSync.unshift(_report.data);
       }
       if (typeof this.totalItemsSync != "undefined") {
         this.totalItemsSync += 1;
       }
       this.dialogAddSync = false;
     }
-    snackbar.setDisplay(true);
   }
   async created() {
     if (this.biddingDocumentSync && !isEmptyObject(this.biddingDocumentSync)) {
@@ -227,21 +209,13 @@ export default class CreateReport extends Vue {
       this.serverSideOptions.totalItems = 1;
       this.loading = false;
     } else {
-      const _biddingNotifications = await getBiddingNotificationsByUser({
+      const _res = await getBiddingNotificationsByUser({
         page: 0,
         limit: 100
-      })
-        .then(res => {
-          const response: PaginationResponse<IBiddingNotification> = res.data;
-          console.log("watch", response);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_biddingNotifications) {
-        this.biddingDocuments = _biddingNotifications.data
+      });
+      if (_res.data) {
+        const _biddingNotifications = _res.data.data as IBiddingNotification[];
+        this.biddingDocuments = _biddingNotifications
           .filter(x => x.action == "ADDED")
           .reduce(function(
             pV: Array<IBiddingDocument>,
@@ -251,7 +225,7 @@ export default class CreateReport extends Vue {
             return pV;
           },
           []);
-        this.serverSideOptions.totalItems = _biddingNotifications.totalElements;
+        this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }

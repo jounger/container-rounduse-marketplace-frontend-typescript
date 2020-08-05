@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer v-model="drawerSync" app clipped v-if="$auth.check()">
+  <v-navigation-drawer v-model="drawer" app clipped v-if="$auth.check()">
     <v-list dense nav>
       <v-list-item two-line class="px-0" link to="/profile">
         <v-list-item-avatar>
@@ -41,25 +41,24 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, PropSync } from "vue-property-decorator";
+import { Vue, Component, Prop } from "vue-property-decorator";
 import NavigationOperator from "./NavigationOperator.vue";
 import NavigationSupplier from "./NavigationSupplier.vue";
-import { toCapitalize } from "@/utils/tool";
 import { getOperatorByUsername } from "@/api/operator";
 import { IOperator } from "@/entity/operator";
-import { getDriverById } from "@/api/driver";
-import { getSupplier } from "../api/supplier";
-import { getShippingLine } from "../api/shipping-line";
+import { getSupplier } from "@/api/supplier";
+import { getShippingLine } from "@/api/shipping-line";
+import { ISupplier } from "@/entity/supplier";
+import { IShippingLine } from "@/entity/shipping-line";
 
 @Component({
-  name: "Navigation",
   components: {
     NavigationOperator,
     NavigationSupplier
   }
 })
 export default class Navigation extends Vue {
-  @PropSync("drawer", { type: Boolean }) drawerSync!: boolean;
+  @Prop() drawer!: boolean;
 
   protected navigation: object = NavigationSupplier;
   protected generalNavigation = [
@@ -73,66 +72,25 @@ export default class Navigation extends Vue {
         this.$auth.user().roles[0] == "ROLE_ADMIN" ||
         this.$auth.user().roles[0] == "ROLE_MODERATOR"
       ) {
-        const _fullname = await getOperatorByUsername(
-          this.$auth.user().username
-        )
-          .then(res => {
-            const response: IOperator = res.data;
-            console.log(response.fullname);
-            return toCapitalize(response.fullname);
-          })
-          .catch(err => {
-            console.log(err);
-            return "";
-          });
-        console.log(_fullname);
-        if (_fullname) {
-          this.fullname = _fullname;
-        }
-      } else if (this.$auth.user().roles[0] == "ROLE_DRIVER") {
-        const _fullname = await getDriverById(this.$auth.user().id)
-          .then(res => {
-            const response = res.data;
-            return toCapitalize(response.fullname);
-          })
-          .catch(err => {
-            console.log(err);
-            return "";
-          });
-        console.log(_fullname);
-        if (_fullname) {
-          this.fullname = _fullname;
+        const _res = await getOperatorByUsername(this.$auth.user().username);
+        if (_res.data) {
+          const _operator = _res.data as IOperator;
+          this.fullname = _operator.fullname;
         }
       } else if (
         this.$auth.user().roles[0] == "ROLE_FORWARDER" ||
         this.$auth.user().roles[0] == "ROLE_MERCHANT"
       ) {
-        const _fullname = await getSupplier(this.$auth.user().username)
-          .then(res => {
-            const response = res.data;
-            return toCapitalize(response.contactPerson);
-          })
-          .catch(err => {
-            console.log(err);
-            return "";
-          });
-        console.log(_fullname);
-        if (_fullname) {
-          this.fullname = _fullname;
+        const _res = await getSupplier(this.$auth.user().username);
+        if (_res.data) {
+          const _supplier = _res.data as ISupplier;
+          this.fullname = _supplier.contactPerson;
         }
       } else {
-        const _fullname = await getShippingLine(this.$auth.user().id)
-          .then(res => {
-            const response = res.data;
-            return toCapitalize(response.contactPerson);
-          })
-          .catch(err => {
-            console.log(err);
-            return "";
-          });
-        console.log(_fullname);
-        if (_fullname) {
-          this.fullname = _fullname;
+        const _res = await getShippingLine(this.$auth.user().id);
+        if (_res.data) {
+          const _shippingLine = _res.data as IShippingLine;
+          this.fullname = _shippingLine.contactPerson;
         }
       }
     }

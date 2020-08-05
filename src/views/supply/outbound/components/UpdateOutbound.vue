@@ -378,11 +378,9 @@ import { IShippingLine } from "@/entity/shipping-line";
 import { getContainerTypes } from "@/api/container-type";
 import { getPorts } from "@/api/port";
 import { getShippingLines } from "@/api/shipping-line";
-import { PaginationResponse } from "@/api/payload";
 import { editOutbound } from "@/api/outbound";
 import { editBooking } from "@/api/booking";
-import { IBooking } from "@/entity/booking";
-import { addTimeToDate, isEmptyObject, getErrorMessage } from "@/utils/tool";
+import { addTimeToDate, isEmptyObject } from "@/utils/tool";
 import { addMinutesToDate } from "@/utils/tool";
 import GoogleMapLoader from "@/components/googlemaps/GoogleMapLoader.vue";
 import GoogleMapAutocomplete from "@/components/googlemaps/GoogleMapAutocomplete.vue";
@@ -394,7 +392,6 @@ import GoogleMapDistanceMatrix from "@/components/googlemaps/GoogleMapDistanceMa
 import { DistanceMatrix } from "@/components/googlemaps/map-interface";
 import Utils from "@/mixin/utils";
 import DatetimePicker from "@/components/DatetimePicker.vue";
-import snackbar from "@/store/modules/snackbar";
 
 @Component({
   components: {
@@ -482,36 +479,18 @@ export default class UpdateOutbound extends Vue {
     }
   }
   async updateOutbound() {
-    // TODO: API edit outbound
     if (this.outboundLocal && this.outboundLocal.id) {
-      console.log(this.outboundLocal);
       const _outbound = await editOutbound(
         this.outboundLocal.id,
         this.outboundLocal
-      )
-        .then(res => {
-          console.log(res.data);
-          const response: IOutbound = res.data;
-          snackbar.setSnackbar({
-            text: "Cập nhật thành công hàng xuất: " + response.booking.number,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_outbound) {
-        const index = this.outboundsSync.findIndex(x => x.id == _outbound.id);
-        this.outboundsSync.splice(index, 1, _outbound);
+      );
+      if (_outbound.data) {
+        const index = this.outboundsSync.findIndex(
+          x => x.id == _outbound.data.id
+        );
+        this.outboundsSync.splice(index, 1, _outbound.data);
         this.stepper = 2;
       }
-      snackbar.setDisplay(true);
     }
   }
   async updateBooking() {
@@ -519,33 +498,14 @@ export default class UpdateOutbound extends Vue {
       const _booking = await editBooking(
         this.outboundLocal.booking.id,
         this.outboundLocal.booking
-      )
-        .then(res => {
-          const response: IBooking = res.data;
-          if (this.outboundLocal) {
-            snackbar.setSnackbar({
-              text: "Cập nhật thành công Booking: " + response.number,
-              color: "success"
-            });
-            return response;
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_booking) {
+      );
+      if (_booking.data) {
         const index = this.outboundsSync.findIndex(
           x => x.id === this.outbound.id
         );
-        this.outboundLocal.booking = _booking;
+        this.outboundLocal.booking = _booking.data;
         this.outboundsSync.splice(index, 1, this.outboundLocal);
       }
-      snackbar.setDisplay(true);
     }
   }
   getPortAddress(portCode: string) {
@@ -562,22 +522,14 @@ export default class UpdateOutbound extends Vue {
     const _shippingLines = await getShippingLines({
       page: 0,
       limit: limit + 1
-    })
-      .then(res => {
-        const response: PaginationResponse<IShippingLine> = res.data;
-        return response.data.filter(x => x.roles[0] == "ROLE_SHIPPINGLINE");
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    if (_shippingLines) {
-      _shippingLines.forEach((x: IShippingLine) => {
+    });
+    if (_shippingLines.data) {
+      _shippingLines.data.data.forEach((x: IShippingLine) => {
         if (x.companyCode == this.shippingLine) {
           this.shippingLines.push(x);
         }
       });
-      _shippingLines.forEach((x: IShippingLine) => {
+      _shippingLines.data.data.forEach((x: IShippingLine) => {
         let check = false;
         if (x.companyCode == this.shippingLine) {
           check = true;
@@ -590,7 +542,10 @@ export default class UpdateOutbound extends Vue {
         }
       });
     }
-    if (!_shippingLines || _shippingLines.length <= this.limitShippingLines) {
+    if (
+      !_shippingLines.data ||
+      _shippingLines.data.length <= this.limitShippingLines
+    ) {
       this.seeMoreShippingLines = false;
     }
     this.loadingShippingLines = false;
@@ -605,22 +560,14 @@ export default class UpdateOutbound extends Vue {
     const _containerTypes = await getContainerTypes({
       page: 0,
       limit: limit + 1
-    })
-      .then(res => {
-        const response: PaginationResponse<IContainerType> = res.data;
-        return response.data;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    if (_containerTypes) {
-      _containerTypes.forEach((x: IContainerType) => {
+    });
+    if (_containerTypes.data) {
+      _containerTypes.data.data.forEach((x: IContainerType) => {
         if (x.name == this.containerType) {
           this.containerTypes.push(x);
         }
       });
-      _containerTypes.forEach((x: IContainerType) => {
+      _containerTypes.data.data.forEach((x: IContainerType) => {
         let check = false;
         if (x.name == this.containerType) {
           check = true;
@@ -634,8 +581,8 @@ export default class UpdateOutbound extends Vue {
       });
     }
     if (
-      !_containerTypes ||
-      _containerTypes.length <= this.limitContainerTypes
+      !_containerTypes.data ||
+      _containerTypes.data.length <= this.limitContainerTypes
     ) {
       this.seeMoreContainerTypes = false;
     }
@@ -651,22 +598,14 @@ export default class UpdateOutbound extends Vue {
     const _ports = await getPorts({
       page: 0,
       limit: limit + 1
-    })
-      .then(res => {
-        const response: PaginationResponse<IPort> = res.data;
-        return response.data;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    if (_ports) {
-      _ports.forEach((x: IPort) => {
+    });
+    if (_ports.data) {
+      _ports.data.data.forEach((x: IPort) => {
         if (x.nameCode == this.port) {
           this.ports.push(x);
         }
       });
-      _ports.forEach((x: IPort) => {
+      _ports.data.data.forEach((x: IPort) => {
         let check = false;
         if (x.nameCode == this.port) {
           check = true;
@@ -676,7 +615,7 @@ export default class UpdateOutbound extends Vue {
         }
       });
     }
-    if (!_ports || _ports.length <= this.limitPorts) {
+    if (!_ports.data || _ports.data.length <= this.limitPorts) {
       this.seeMorePorts = false;
     }
     this.loadingPorts = false;

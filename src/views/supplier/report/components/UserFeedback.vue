@@ -134,8 +134,7 @@ import { IReport } from "@/entity/report";
 import MarkFeedback from "./MarkFeedback.vue";
 import DeleteFeedback from "../../../operator/supplier-report/components/DeleteFeedback.vue";
 import { editFeedback } from "@/api/feedback";
-import snackbar from "@/store/modules/snackbar";
-import { getErrorMessage } from "@/utils/tool";
+import { IOperator } from "@/entity/operator";
 
 @Component({
   mixins: [Utils],
@@ -146,16 +145,15 @@ import { getErrorMessage } from "@/utils/tool";
 })
 export default class UserFeedback extends Vue {
   @PropSync("feedbacks", { type: Array }) feedbacksSync!: Array<IFeedback>;
-  @PropSync("feedbackRecipient", { type: String })
-  feedbackRecipientSync!: string;
-  @PropSync("showCreateFeedback", { type: Boolean })
-  showCreateFeedbackSync!: boolean;
-  @PropSync("focus", { type: Boolean })
-  focusSync!: boolean;
+  @PropSync("focus", { type: Boolean }) focusSync!: boolean;
   @PropSync("recipientLabel", { type: String }) recipientLabelSync!: string;
   @Prop(Object) report!: IReport;
   @Prop(String) forwarderFullname!: string;
   @Prop(Object) item!: IFeedback;
+  @PropSync("feedbackRecipient", { type: String })
+  feedbackRecipientSync!: string;
+  @PropSync("showCreateFeedback", { type: Boolean })
+  showCreateFeedbackSync!: boolean;
   message = "";
   fullname = "";
   recipient = "";
@@ -181,59 +179,28 @@ export default class UserFeedback extends Vue {
     if (this.item.id) {
       const _feedback = await editFeedback(this.item.id, {
         message: this.message
-      })
-        .then(res => {
-          const response: IFeedback = res.data;
-          snackbar.setSnackbar({
-            text: "Cập nhật thành công phản hồi " + response.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_feedback) {
-        this.feedbackLocal = _feedback;
+      });
+      if (_feedback.data) {
+        this.feedbackLocal = _feedback.data;
         this.edit = false;
       }
-      snackbar.setDisplay(true);
     }
   }
   async getFullname() {
     if (this.item.sender == this.report.sender) {
       this.fullname = this.forwarderFullname;
     } else {
-      const _fullname = await getOperatorByUsername(this.item.sender)
-        .then(res => {
-          const response = res.data;
-          return response.fullname;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_fullname) {
-        this.fullname = _fullname;
+      const _res = await getOperatorByUsername(this.item.sender);
+      if (_res.data) {
+        const _operator = _res.data as IOperator;
+        this.fullname = _operator.fullname;
       }
     }
     if (this.item.recipient != this.report.sender) {
-      const _fullname = await getOperatorByUsername(this.item.recipient)
-        .then(res => {
-          const response = res.data;
-          return response.fullname;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_fullname) {
-        this.recipient = _fullname;
+      const _res = await getOperatorByUsername(this.item.recipient);
+      if (_res.data) {
+        const _operator = _res.data as IOperator;
+        this.recipient = _operator.fullname;
         this.updateRecipient = this.recipient;
       }
     } else {

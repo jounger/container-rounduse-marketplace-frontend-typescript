@@ -37,17 +37,16 @@
       </v-form>
     </v-card-text>
     <v-card-actions>
+      <v-btn @click.stop="register()" outlined>Đăng ký</v-btn>
       <v-spacer></v-spacer>
-      <v-btn @click.prevent="login()" color="primary">Đăng nhập</v-btn>
-      <v-btn @click.prevent="register()" color="white">Đăng ký</v-btn>
+      <v-btn @click.stop="login()" color="primary">Đăng nhập</v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-// import snackbar from "@/store/modules/snackbar";
-// import { getErrorMessage } from "@/utils/tool";
+
 @Component
 export default class Login extends Vue {
   public username = "admin";
@@ -63,26 +62,10 @@ export default class Login extends Vue {
     this.$router.push("/register");
   }
   async login() {
-    await this.$auth
-      .login({
-        username: this.username,
-        password: this.password
-      })
-      .then(res => {
-        console.warn("SUCCESS login", res);
-        // snackbar.setSnackbar({
-        //   text: "Xin chào, " + this.username,
-        //   color: "success"
-        // });
-      })
-      .catch(err => {
-        console.log(err);
-        // snackbar.setSnackbar({
-        //   text: getErrorMessage(err),
-        //   color: "error"
-        // });
-      });
-    // snackbar.setDisplay(true);
+    await this.$auth.login({
+      username: this.username,
+      password: this.password
+    });
   }
 }
 </script>

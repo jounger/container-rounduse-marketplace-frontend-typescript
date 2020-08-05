@@ -69,8 +69,6 @@ import {
   createFeedbackToModerator
 } from "@/api/feedback";
 import { IReport } from "@/entity/report";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
@@ -102,56 +100,22 @@ export default class CreateFeedback extends Vue {
         const _feedback = await createFeedback(
           this.report.id,
           this.feedbackLocal
-        )
-          .then(res => {
-            const response: IFeedback = res.data;
-            snackbar.setSnackbar({
-              text: "Thêm mới thành công Phản hồi: " + response.id,
-              color: "success"
-            });
-            return response;
-          })
-          .catch(err => {
-            console.log(err);
-            snackbar.setSnackbar({
-              text: getErrorMessage(err),
-              color: "error"
-            });
-            return null;
-          });
-        if (_feedback) {
-          this.feedbacksSync.push(_feedback);
+        );
+        if (_feedback.data) {
+          this.feedbacksSync.push(_feedback.data);
           this.dialogAddSync = false;
         }
-        snackbar.setDisplay(true);
       } else {
         if (this.receiver) {
           const _feedback = await createFeedbackToModerator(
             this.report.id,
             this.receiver,
             this.feedbackLocal
-          )
-            .then(res => {
-              const response: IFeedback = res.data;
-              snackbar.setSnackbar({
-                text: "Thêm mới thành công Phản hồi: " + response.id,
-                color: "success"
-              });
-              return response;
-            })
-            .catch(err => {
-              console.log(err);
-              snackbar.setSnackbar({
-                text: getErrorMessage(err),
-                color: "error"
-              });
-              return null;
-            });
-          if (_feedback) {
-            this.feedbacksSync.push(_feedback);
+          );
+          if (_feedback.data) {
+            this.feedbacksSync.push(_feedback.data);
             this.dialogAddSync = false;
           }
-          snackbar.setDisplay(true);
         }
       }
     }
@@ -161,29 +125,13 @@ export default class CreateFeedback extends Vue {
       const _feedback = await editFeedback(
         this.feedbackLocal.id,
         this.feedbackLocal
-      )
-        .then(res => {
-          console.log(res.data);
-          const response: IFeedback = res.data;
-          snackbar.setSnackbar({
-            text: "Cập nhật thành công Phản hồi: " + response.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_feedback) {
-        const index = this.feedbacksSync.findIndex(x => x.id == _feedback.id);
-        this.feedbacksSync.splice(index, 1, _feedback);
+      );
+      if (_feedback.data) {
+        const index = this.feedbacksSync.findIndex(
+          x => x.id == _feedback.data.id
+        );
+        this.feedbacksSync.splice(index, 1, _feedback.data);
       }
-      snackbar.setDisplay(true);
     }
   }
 }

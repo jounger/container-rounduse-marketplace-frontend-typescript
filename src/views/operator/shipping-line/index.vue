@@ -88,7 +88,6 @@
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { IShippingLine } from "@/entity/shipping-line";
 import { getShippingLines } from "@/api/shipping-line";
-import { PaginationResponse } from "@/api/payload";
 import CreateShippingLine from "./components/CreateShippingLine.vue";
 import DeleteShippingLine from "./components/DeleteShippingLine.vue";
 import UpdateShippingLine from "./components/UpdateShippingLine.vue";
@@ -149,19 +148,10 @@ export default class ShippingLine extends Vue {
       const _shippingLines = await getShippingLines({
         page: val.page - 1,
         limit: val.itemsPerPage
-      })
-        .then(res => {
-          const response: PaginationResponse<IShippingLine> = res.data;
-          console.log("watch", response);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_shippingLines) {
-        this.shippingLines = _shippingLines.data;
-        this.serverSideOptions.totalItems = _shippingLines.totalElements;
+      });
+      if (_shippingLines.data) {
+        this.shippingLines = _shippingLines.data.data;
+        this.serverSideOptions.totalItems = _shippingLines.data.totalElements;
       }
       this.loading = false;
     }

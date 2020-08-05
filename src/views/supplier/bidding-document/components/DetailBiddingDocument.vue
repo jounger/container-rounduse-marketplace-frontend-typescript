@@ -451,11 +451,6 @@ import Utils from "@/mixin/utils";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { IBid } from "@/entity/bid";
 import { getBiddingDocument } from "@/api/bidding-document";
-import {
-  getBidsByBiddingDocument,
-  getBidByBiddingDocumentAndForwarder
-} from "@/api/bid";
-import { PaginationResponse } from "@/api/payload";
 import ConfirmBid from "./ConfirmBid.vue";
 import CreateReport from "../../report/components/CreateReport.vue";
 import CreateBid from "../../bid/components/CreateBid.vue";
@@ -463,6 +458,10 @@ import { DataOptions } from "vuetify";
 import { IContainer } from "@/entity/container";
 import SupplierRating from "./SupplierRating.vue";
 import { getContainersByBid } from "@/api/container";
+import {
+  getBidsByBiddingDocument,
+  getBidByBiddingDocumentAndForwarder
+} from "@/api/bid";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -576,16 +575,8 @@ export default class DetailBiddingDocument extends Vue {
   async onGetRouterIdChange() {
     const _biddingDocument = await getBiddingDocument(
       parseInt(this.getRouterId)
-    )
-      .then(res => {
-        const response = res.data;
-        return response;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    this.biddingDocument = _biddingDocument;
+    );
+    this.biddingDocument = _biddingDocument.data.data;
   }
   @Watch("containerOptions")
   async onContainerOptionsChange(val: DataOptions) {
@@ -595,19 +586,11 @@ export default class DetailBiddingDocument extends Vue {
         const _containers = await getContainersByBid(this.bid.id, {
           page: val.page - 1,
           limit: val.itemsPerPage
-        })
-          .then(res => {
-            const response: PaginationResponse<IContainer> = res.data;
-            return response;
-          })
-          .catch(err => {
-            console.log(err);
-            return null;
-          });
-        if (_containers) {
+        });
+        if (_containers.data) {
           this.containerServerSideOptions.totalItems =
-            _containers.totalElements;
-          this.bid.containers = _containers.data;
+            _containers.data.totalElements;
+          this.bid.containers = _containers.data.data;
         }
       }
       this.loading = false;
@@ -626,38 +609,20 @@ export default class DetailBiddingDocument extends Vue {
               page: this.options.page - 1,
               limit: this.options.itemsPerPage
             }
-          )
-            .then(res => {
-              const response: PaginationResponse<IBid> = res.data;
-              console.log("watch", response);
-              return response;
-            })
-            .catch(err => {
-              console.log(err);
-              return null;
-            });
-          if (_bid) {
-            this.bids = _bid.data;
+          );
+          if (_bid.data) {
+            this.bids = _bid.data.data;
             this.numberWinner = this.bids.filter(
               (x: IBid) => x.status == "ACCEPTED"
             ).length;
-            this.serverSideOptions.totalItems = _bid.totalElements;
+            this.serverSideOptions.totalItems = _bid.data.totalElements;
           }
         } else if (this.$auth.user().roles[0] == "ROLE_FORWARDER") {
           const _bid = await getBidByBiddingDocumentAndForwarder(
             this.biddingDocument.id as number
-          )
-            .then(res => {
-              const response: IBid = res.data;
-              console.log("watch", response);
-              return response;
-            })
-            .catch(err => {
-              console.log(err);
-              return null;
-            });
-          if (_bid) {
-            this.bids.splice(0, this.bids.length, _bid);
+          );
+          if (_bid.data) {
+            this.bids.splice(0, this.bids.length, _bid.data);
             this.serverSideOptions.totalItems = 1;
           }
         }
@@ -673,17 +638,8 @@ export default class DetailBiddingDocument extends Vue {
     // TODO: API get Bidding Document
     const _biddingDocument = await getBiddingDocument(
       parseInt(this.getRouterId)
-    )
-      .then(res => {
-        const response = res.data;
-        return response;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    this.biddingDocument = _biddingDocument;
-    console.log(this.biddingDocument);
+    );
+    if (_biddingDocument.data) this.biddingDocument = _biddingDocument.data;
   }
   openReportDialog() {
     this.dialogReport = true;

@@ -66,7 +66,6 @@
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { IDiscount } from "@/entity/discount";
 import { getDiscounts } from "@/api/discount";
-import { PaginationResponse } from "@/api/payload";
 import DeleteDiscount from "./components/DeleteDiscount.vue";
 import CreateDiscount from "./components/CreateDiscount.vue";
 import Utils from "@/mixin/utils";
@@ -134,19 +133,10 @@ export default class Discount extends Vue {
       const _discounts = await getDiscounts({
         page: val.page - 1,
         limit: val.itemsPerPage
-      })
-        .then(res => {
-          const response: PaginationResponse<IDiscount> = res.data;
-          console.log("watch", response);
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          return null;
-        });
-      if (_discounts) {
-        this.discounts = _discounts.data;
-        this.serverSideOptions.totalItems = _discounts.totalElements;
+      });
+      if (_discounts.data) {
+        this.discounts = _discounts.data.data;
+        this.serverSideOptions.totalItems = _discounts.data.totalElements;
       }
       this.loading = false;
     }

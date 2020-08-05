@@ -18,6 +18,7 @@
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
 import snackbar from "@/store/modules/snackbar";
+
 @Component
 export default class Snackbars extends Vue {
   display = false;

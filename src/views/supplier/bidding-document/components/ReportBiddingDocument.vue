@@ -360,7 +360,6 @@ import Utils from "@/mixin/utils";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { IBid } from "@/entity/bid";
 import { getBidsByBiddingDocument } from "@/api/bid";
-import { PaginationResponse } from "@/api/payload";
 import { DataOptions } from "vuetify";
 import { IContainer } from "@/entity/container";
 import SupplierRating from "./SupplierRating.vue";
@@ -468,19 +467,11 @@ export default class ReportBiddingDocument extends Vue {
         const _containers = await getContainersByBid(this.bid.id, {
           page: val.page - 1,
           limit: val.itemsPerPage
-        })
-          .then(res => {
-            const response: PaginationResponse<IContainer> = res.data;
-            return response;
-          })
-          .catch(err => {
-            console.log(err);
-            return null;
-          });
-        if (_containers) {
+        });
+        if (_containers.data) {
           this.containerServerSideOptions.totalItems =
-            _containers.totalElements;
-          this.bid.containers = _containers.data;
+            _containers.data.totalElements;
+          this.bid.containers = _containers.data.data;
         }
       }
       this.loading = false;
@@ -498,22 +489,13 @@ export default class ReportBiddingDocument extends Vue {
             page: this.options.page - 1,
             limit: this.options.itemsPerPage
           }
-        )
-          .then(res => {
-            const response: PaginationResponse<IBid> = res.data;
-            console.log("watch", response);
-            return response;
-          })
-          .catch(err => {
-            console.log(err);
-            return null;
-          });
-        if (_bid) {
-          this.bids = _bid.data;
+        );
+        if (_bid.data) {
+          this.bids = _bid.data.data;
           this.numberWinner = this.bids.filter(
             (x: IBid) => x.status == "ACCEPTED"
           ).length;
-          this.serverSideOptions.totalItems = _bid.totalElements;
+          this.serverSideOptions.totalItems = _bid.data.totalElements;
         }
         this.loading = false;
       }
@@ -525,34 +507,18 @@ export default class ReportBiddingDocument extends Vue {
 
   @Watch("getRouterId")
   async onRouterIdChange() {
-    const _report = await getReport(parseInt(this.getRouterId))
-      .then(res => {
-        const response = res.data;
-        return response;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    if (_report) {
-      this.report = _report;
-      this.biddingDocument = _report.report as IBiddingDocument;
+    const _report = await getReport(parseInt(this.getRouterId));
+    if (_report.data) {
+      this.report = _report.data;
+      this.biddingDocument = _report.data.report as IBiddingDocument;
     }
   }
   async created() {
     // TODO: API get Bidding Document
-    const _report = await getReport(parseInt(this.getRouterId))
-      .then(res => {
-        const response = res.data;
-        return response;
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
-    if (_report) {
-      this.report = _report;
-      this.biddingDocument = _report.report as IBiddingDocument;
+    const _report = await getReport(parseInt(this.getRouterId));
+    if (_report.data) {
+      this.report = _report.data;
+      this.biddingDocument = _report.data.report as IBiddingDocument;
     }
   }
   openCancelDialog() {

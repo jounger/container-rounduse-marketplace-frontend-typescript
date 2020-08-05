@@ -39,8 +39,6 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IContainer } from "@/entity/container";
 import { removeContainer } from "@/api/container";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class DeleteContainer extends Vue {
@@ -52,28 +50,15 @@ export default class DeleteContainer extends Vue {
   async removeContainer() {
     // TODO
     if (this.container.id) {
-      await removeContainer(this.container.id)
-        .then(res => {
-          console.log(res.data);
-          snackbar.setSnackbar({
-            text: "Xóa thành công Container: " + this.container.containerNumber,
-            color: "success"
-          });
-          const index = this.containersSync.findIndex(
-            x => x.id === this.container.id
-          );
-          this.containersSync.splice(index, 1);
-          this.totalItemsSync -= 1;
-          this.dialogDelContSync = false;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-        });
-      snackbar.setDisplay(true);
+      const _res = await removeContainer(this.container.id);
+      if (_res.status == 200) {
+        const index = this.containersSync.findIndex(
+          x => x.id === this.container.id
+        );
+        this.containersSync.splice(index, 1);
+        this.totalItemsSync -= 1;
+        this.dialogDelContSync = false;
+      }
     }
   }
 }

@@ -39,17 +39,13 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { editBiddingDocument } from "@/api/bidding-document";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component
 export default class CancelBiddingDocument extends Vue {
   @PropSync("dialogCancel", { type: Boolean }) dialogCancelSync!: boolean;
-  @Prop(Object)
-  biddingDocument!: IBiddingDocument;
-  @PropSync("biddingDocuments", { type: Array }) biddingDocumentsSync?: Array<
-    IBiddingDocument
-  >;
+  @Prop(Object) biddingDocument!: IBiddingDocument;
+  @PropSync("biddingDocuments", { type: Array })
+  biddingDocumentsSync?: IBiddingDocument[];
 
   async cancelBiddingDocument() {
     if (this.biddingDocument.id) {
@@ -58,34 +54,16 @@ export default class CancelBiddingDocument extends Vue {
         {
           status: "CANCELED"
         }
-      )
-        .then(res => {
-          console.log(res.data);
-          const response: IBiddingDocument = res.data;
-          snackbar.setSnackbar({
-            text: "Hủy thầu thành công HSMT: " + response.id,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_biddingDocument) {
+      );
+      if (_biddingDocument.data) {
         if (this.biddingDocumentsSync) {
           const index = this.biddingDocumentsSync.findIndex(
-            x => x.id === _biddingDocument.id
+            x => x.id === _biddingDocument.data.id
           );
-          this.biddingDocumentsSync.splice(index, 1, _biddingDocument);
+          this.biddingDocumentsSync.splice(index, 1, _biddingDocument.data);
         }
         this.dialogCancelSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
 }

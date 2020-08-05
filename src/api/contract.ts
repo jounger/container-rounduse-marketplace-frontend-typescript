@@ -1,37 +1,26 @@
 import Vue from "vue";
 import { PaginationRequest } from "./payload";
-import { IContract } from "../entity/contract";
+import { IContract } from "@/entity/contract";
 
-const config = {
-  Authorization: "Bearer {auth_token}"
-};
 export function searchContracts(paging: PaginationRequest, search: string) {
   return Vue.axios.get("/contract/filter", {
-    params: { ...paging, search },
-    headers: config
+    params: { paging, search }
   });
 }
 
 export function getContractsByUser(paging: PaginationRequest) {
   return Vue.axios.get("/contract/user", {
-    params: paging,
-    headers: config
+    params: paging
   });
 }
 export function createContract(contract: IContract) {
-  return Vue.axios.post("/contract", contract, {
-    headers: config
-  });
+  return Vue.axios.post("/contract", contract);
 }
 
 export function editContract(id: number, updates: object) {
-  return Vue.axios.patch(`/contract/${id}`, updates, {
-    headers: config
-  });
+  return Vue.axios.patch(`/contract/${id}`, updates);
 }
 
 export function removeContract(id: number) {
-  return Vue.axios.delete(`/contract/${id}`, {
-    headers: config
-  });
+  return Vue.axios.delete(`/contract/${id}`);
 }

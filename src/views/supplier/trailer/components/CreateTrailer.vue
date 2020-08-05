@@ -97,17 +97,13 @@ import {
   createContainerSemiTrailer,
   updateContainerSemiTrailer
 } from "@/api/container-semi-trailer";
-import { getErrorMessage } from "@/utils/tool";
-import snackbar from "@/store/modules/snackbar";
 
 @Component({
   mixins: [FormValidate]
 })
 export default class CreateTrailer extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("trailers", { type: Array }) trailersSync!: Array<
-    IContainerSemiTrailer
-  >;
+  @PropSync("trailers", { type: Array }) trailersSync!: IContainerSemiTrailer[];
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) trailer!: IContainerSemiTrailer;
   @Prop(Boolean) update!: boolean;
@@ -169,56 +165,23 @@ export default class CreateTrailer extends Vue {
   }
   async createTrailer() {
     if (this.trailerLocal) {
-      const _trailer = await createContainerSemiTrailer(this.trailerLocal)
-        .then(res => {
-          const response: IContainerSemiTrailer = res.data;
-          snackbar.setSnackbar({
-            text: "Thêm mới thành công Rơ moóc: " + response.licensePlate,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_trailer) {
-        this.trailersSync.unshift(_trailer);
+      const _trailer = await createContainerSemiTrailer(this.trailerLocal);
+      if (_trailer.data) {
+        this.trailersSync.unshift(_trailer.data);
         this.totalItemsSync += 1;
         this.dialogAddSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
   async updateTrailer() {
     if (this.trailerLocal.id) {
-      const _trailer = await updateContainerSemiTrailer(this.trailerLocal)
-        .then(res => {
-          console.log(res.data);
-          const response: IContainerSemiTrailer = res.data;
-          snackbar.setSnackbar({
-            text: "Cập nhật thành công Rơ moóc: " + response.licensePlate,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_trailer) {
-        const index = this.trailersSync.findIndex(x => x.id == _trailer.id);
-        this.trailersSync.splice(index, 1, _trailer);
+      const _trailer = await updateContainerSemiTrailer(this.trailerLocal);
+      if (_trailer.data) {
+        const index = this.trailersSync.findIndex(
+          x => x.id == _trailer.data.id
+        );
+        this.trailersSync.splice(index, 1, _trailer.data);
       }
-      snackbar.setDisplay(true);
     }
   }
 }

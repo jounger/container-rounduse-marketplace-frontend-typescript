@@ -46,8 +46,6 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { ISupplier } from "@/entity/supplier";
 import { reviewSupplier } from "@/api/supplier";
-import snackbar from "@/store/modules/snackbar";
-import { getErrorMessage } from "@/utils/tool";
 
 @Component
 export default class ConfirmReviewSupplier extends Vue {
@@ -62,35 +60,16 @@ export default class ConfirmReviewSupplier extends Vue {
     if (this.supplier.id) {
       const _supplier = await reviewSupplier(this.supplier.id, {
         status: status == true ? "ACTIVE" : "BANNED"
-      })
-        .then(res => {
-          console.log(res.data);
-          const response: ISupplier = res.data;
-          snackbar.setSnackbar({
-            text:
-              response.status == "ACTIVE"
-                ? "Kích hoạt thành công tài khoản: " + response.username
-                : "Từ chối thành công tài khoản: " + response.username,
-            color: "success"
-          });
-          return response;
-        })
-        .catch(err => {
-          console.log(err);
-          snackbar.setSnackbar({
-            text: getErrorMessage(err),
-            color: "error"
-          });
-          return null;
-        });
-      if (_supplier) {
-        const index = this.suppliersSync.findIndex(x => x.id == _supplier.id);
+      });
+      if (_supplier.data) {
+        const index = this.suppliersSync.findIndex(
+          x => x.id == _supplier.data.id
+        );
         this.suppliersSync.splice(index, 1);
         this.totalItemsSync -= 1;
         this.dialogConfirmSync = false;
         this.dialogDetailSync = false;
       }
-      snackbar.setDisplay(true);
     }
   }
 }
