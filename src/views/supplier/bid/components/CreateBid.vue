@@ -36,7 +36,7 @@
               :actions-append="biddingDocumentOptions.page"
               no-data-text="Danh sách HSMT nhận được rỗng."
               disable-sort
-              class="elevation-1 my-1"
+              class="elevation-1"
             >
               <template v-slot:top>
                 <v-toolbar flat color="white">
@@ -128,7 +128,7 @@
                     no-data-text="Danh sách hàng nhập rỗng."
                     :actions-append="inboundOptions.page"
                     disable-sort
-                    class="elevation-1 my-1"
+                    class="elevation-1"
                   >
                     <template v-slot:item.pickUpTime="{ item }">
                       {{ formatDatetime(item.pickupTime) }}
@@ -359,7 +359,6 @@ export default class CreateBid extends Vue {
     },
     { text: "Hãng tàu", value: "outbound.shippingLine" },
     { text: "Loại cont", value: "outbound.containerType" },
-    { text: "Mã booking", value: "outbound.booking.number" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
     { text: "Mở thầu", value: "bidOpening" },
     { text: "Đóng thầu", value: "bidClosing" },

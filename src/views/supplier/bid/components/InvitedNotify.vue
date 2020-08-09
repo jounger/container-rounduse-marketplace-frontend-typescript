@@ -23,7 +23,6 @@
         item-key="id"
         :loading="loading"
         :options.sync="options"
-        @click:row="clicked"
         :server-items-length="serverSideOptions.totalItems"
         :footer-props="{
           'items-per-page-options': serverSideOptions.itemsPerPageItems
@@ -47,7 +46,7 @@
             @click.stop="openAddDialog(item)"
             small
           >
-            <v-icon left>mdi-pencil</v-icon> Đồng ý
+            <v-icon left dense>add</v-icon> Đồng ý
           </v-btn>
           <v-btn
             class="ma-1"
@@ -57,7 +56,17 @@
             @click.stop="openConfirmDialog(item)"
             small
           >
-            <v-icon left>mdi-pencil</v-icon> Từ chối
+            <v-icon left dense>clear</v-icon> Từ chối
+          </v-btn>
+          <v-btn
+            class="ma-1"
+            tile
+            outlined
+            color="info"
+            @click.stop="openBiddingDocumentDetail(item)"
+            small
+          >
+            <v-icon left dense>details</v-icon> Chi tiết
           </v-btn>
         </template>
         <template v-slot:item.bidOpening="{ item }">
@@ -114,15 +123,11 @@ export default class InvitedNotify extends Vue {
     },
     { text: "Hãng tàu", value: "relatedResource.outbound.shippingLine" },
     { text: "Loại cont", value: "relatedResource.outbound.containerType" },
-    {
-      text: "Mã booking",
-      value: "relatedResource.outbound.booking.number"
-    },
     { text: "Giá gói thầu", value: "relatedResource.bidPackagePrice" },
     { text: "Mở thầu", value: "bidOpening" },
     { text: "Đóng thầu", value: "bidClosing" },
     { text: "Nhiều thầu win", value: "isMultipleAward" },
-    { text: "Actions", value: "actions", sortable: false }
+    { text: "Hành động", value: "actions", sortable: false }
   ];
 
   bidHeaders = [
@@ -136,7 +141,7 @@ export default class InvitedNotify extends Vue {
     { text: "Giá thầu", value: "bidPrice" },
     { text: "Ngày thầu", value: "bidDate" },
     { text: "Hiệu lực", value: "bidValidityPeriod" },
-    { text: "Actions", value: "actions", sortable: false }
+    { text: "Hành động", value: "actions", sortable: false }
   ];
 
   openAddDialog(item: IBiddingNotification) {
@@ -171,7 +176,7 @@ export default class InvitedNotify extends Vue {
       this.loading = false;
     }
   }
-  clicked(value: IBiddingNotification) {
+  openBiddingDocumentDetail(value: IBiddingNotification) {
     this.$router.push({
       path: `/bidding-document/${value.relatedResource.id}`
     });

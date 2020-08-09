@@ -1,25 +1,25 @@
 <template>
   <v-content>
+    <v-row justify="center">
+      <DeleteOperator
+        v-if="dialogDel"
+        :dialogDel.sync="dialogDel"
+        :operator="operator"
+        :operators.sync="operators"
+        :totalItems.sync="serverSideOptions.totalItems"
+      />
+    </v-row>
+    <v-row justify="center">
+      <CreateOperator
+        v-if="dialogAdd"
+        :operator="operator"
+        :operators.sync="operators"
+        :dialogAdd.sync="dialogAdd"
+        :totalItems.sync="serverSideOptions.totalItems"
+        :update="update"
+      />
+    </v-row>
     <v-card class="ma-5">
-      <v-row justify="center">
-        <DeleteOperator
-          v-if="dialogDel"
-          :dialogDel.sync="dialogDel"
-          :operator="operator"
-          :operators.sync="operators"
-          :totalItems.sync="serverSideOptions.totalItems"
-        />
-      </v-row>
-      <v-row justify="center">
-        <CreateOperator
-          v-if="dialogAdd"
-          :operator="operator"
-          :operators.sync="operators"
-          :dialogAdd.sync="dialogAdd"
-          :totalItems.sync="serverSideOptions.totalItems"
-          :update="update"
-        />
-      </v-row>
       <v-data-table
         :headers="headers"
         :items="operators"
@@ -94,6 +94,12 @@ export default class Operator extends Vue {
   };
   headers = [
     {
+      text: "Mã",
+      align: "start",
+      sortable: false,
+      value: "id"
+    },
+    {
       text: "Tên đăng nhập",
       align: "start",
       value: "username"
@@ -101,7 +107,7 @@ export default class Operator extends Vue {
     { text: "Email", value: "email" },
     { text: "Số điện thoại", value: "phone" },
     {
-      text: "Phân quyền",
+      text: "Vai trò",
       value: "roles"
     },
     { text: "Trạng thái", value: "status" },

@@ -180,8 +180,7 @@
                         </v-list-item-icon>
                         <v-list-item-content>
                           <v-list-item-title>{{
-                            "Mã Booking: " +
-                              biddingDocument.outbound.booking.number
+                            "Mã hàng xuất: " + biddingDocument.outbound.code
                           }}</v-list-item-title>
                           <v-list-item-subtitle>
                             {{
@@ -237,14 +236,14 @@
                         </v-list-item-icon>
                         <v-list-item-content>
                           <v-list-item-title>{{
-                            "Mô tả: " +
-                              biddingDocument.outbound.goodsDescription
+                            "Khối lượng: " +
+                              biddingDocument.outbound.grossWeight +
+                              biddingDocument.outbound.unitOfMeasurement
                           }}</v-list-item-title>
                           <v-list-item-subtitle>
                             {{
-                              "Khối lượng: " +
-                                biddingDocument.outbound.grossWeight +
-                                biddingDocument.outbound.unitOfMeasurement
+                              "Mô tả: " +
+                                biddingDocument.outbound.goodsDescription
                             }}
                           </v-list-item-subtitle>
                         </v-list-item-content>
@@ -538,7 +537,7 @@ export default class DetailCombinedForwarder extends Vue {
     { text: "Rơ mọt", value: "trailer.licensePlate" },
     { text: "Đầu kéo", value: "tractor.licensePlate" },
     {
-      text: "Actions",
+      text: "Hành động",
       value: "actions",
       sortable: false
     }
@@ -553,7 +552,7 @@ export default class DetailCombinedForwarder extends Vue {
     { text: "Người gửi", value: "sender" },
     { text: "Hợp lệ", value: "isValid" },
     {
-      text: "Actions",
+      text: "Hành động",
       value: "actions",
       sortable: false
     }
@@ -575,24 +574,24 @@ export default class DetailCombinedForwarder extends Vue {
     return total;
   }
 
-  async viewDetailCombined(item: ICombined) {
-    switch (item.status) {
-      case "INFO_RECEIVED":
-        this.stepper = 1;
-        break;
-      case "SHIPPING":
-        this.stepper = 2;
-        break;
-      case "DELIVERED":
-        this.stepper = 3;
-        break;
-      case "PAID":
-        this.stepper = 4;
-        break;
-    }
-    this.combined = item;
-    this.onEvidenceOptionsChange(this.evidenceOptions);
-  }
+  // async viewDetailCombined(item: ICombined) {
+  //   switch (item.status) {
+  //     case "INFO_RECEIVED":
+  //       this.stepper = 1;
+  //       break;
+  //     case "SHIPPING":
+  //       this.stepper = 2;
+  //       break;
+  //     case "DELIVERED":
+  //       this.stepper = 3;
+  //       break;
+  //     case "PAID":
+  //       this.stepper = 4;
+  //       break;
+  //   }
+  //   this.combined = item;
+  //   this.onEvidenceOptionsChange(this.evidenceOptions);
+  // }
 
   @Watch("options")
   onOptionsChange(val: DataOptions) {
@@ -643,7 +642,7 @@ export default class DetailCombinedForwarder extends Vue {
       if (this.combineds.length > 0) {
         this.combined = this.combineds[0];
         const _bid = this.combined.bid as IBid;
-        this.viewDetailCombined(this.combined);
+        // this.viewDetailCombined(this.combined);
         if (_bid.containers.length > 0) {
           this.viewDetailContainer(_bid.containers[0] as IContainer);
         }
@@ -668,7 +667,7 @@ export default class DetailCombinedForwarder extends Vue {
       if (this.combineds.length > 0) {
         this.combined = this.combineds[0];
         const _bid = this.combined.bid as IBid;
-        this.viewDetailCombined(this.combined);
+        // this.viewDetailCombined(this.combined);
         if (_bid.containers.length > 0) {
           this.viewDetailContainer(_bid.containers[0] as IContainer);
         }

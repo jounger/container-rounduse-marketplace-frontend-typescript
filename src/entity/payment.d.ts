@@ -8,4 +8,5 @@ export interface IPayment {
   isPaid: boolean;
   type: string;
   paymentDate: string;
+  isSelected?: boolean;
 }

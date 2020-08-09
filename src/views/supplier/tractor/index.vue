@@ -90,9 +90,13 @@ export default class Tractor extends Vue {
   };
   headers = [
     {
-      text: "Biển số",
+      text: "Mã",
       align: "start",
       sortable: true,
+      value: "id"
+    },
+    {
+      text: "Biển số",
       value: "licensePlate"
     },
     { text: "Số lượng trục", value: "numberOfAxles" },

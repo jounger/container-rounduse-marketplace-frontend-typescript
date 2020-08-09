@@ -6,4 +6,5 @@ export interface IBillOfLading {
   containers: Array<IContainer>;
   portOfDelivery: string; // nameCode
   freeTime: string;
+  isSelected?: boolean;
 }

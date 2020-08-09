@@ -1,7 +1,12 @@
 <template>
-  <v-menu offset-y>
+  <v-menu
+    offset-y
+    :close-on-click="true"
+    :close-on-content-click="false"
+    max-height="500"
+  >
     <template v-slot:activator="{ on, attrs }">
-      <v-btn icon v-bind="attrs" v-on="on" @click="seenNotification()">
+      <v-btn icon v-bind="attrs" v-on="on">
         <v-badge
           :value="messageCount"
           :content="messageCount"
@@ -13,48 +18,75 @@
       </v-btn>
     </template>
     <v-card max-width="450" class="mx-auto" v-if="$auth.check()">
-      <v-toolbar color="cyan" dark>
-        <v-toolbar-title>Notification</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-btn icon>
-          <v-icon>mdi-dots-vertical</v-icon>
-        </v-btn>
-      </v-toolbar>
-
-      <v-list two-line v-if="notifications && notifications.length > 0">
-        <v-list-item
-          v-for="item in notifications"
-          :key="item.id"
-          @click="gotoNotification(item)"
+      <v-list three-line avatar v-if="notifications.length > 0">
+        <v-subheader
+          >THÔNG BÁO<v-spacer></v-spacer>
+          <v-menu left bottom :offset-y="true">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn icon v-bind="attrs" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item-group>
+                <v-list-item>
+                  <v-list-item-icon>
+                    <v-icon dense>done_all</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-title @click="seenAllNotification()"
+                    >Đánh dấu là đã đọc</v-list-item-title
+                  >
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
+          </v-menu></v-subheader
         >
-          <v-list-item-avatar color="green">
-            <!-- <v-img :src="item.avatar"></v-img> -->
-            {{ item.id }}
-          </v-list-item-avatar>
+        <v-list-item-group>
+          <v-list-item
+            v-for="item in notifications"
+            :key="item.id"
+            @click="
+              seenNotification(item);
+              gotoNotification(item);
+            "
+          >
+            <v-list-item-avatar color="green">
+              <!-- <v-img :src="item.avatar"></v-img> -->
+              {{ item.id }}
+            </v-list-item-avatar>
 
-          <v-list-item-content>
-            <v-list-item-title v-html="item.message"></v-list-item-title>
-            <v-list-item-subtitle>{{
-              item.type + " " + item.sendDate
-            }}</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
+            <v-list-item-content>
+              <v-list-item-title v-html="item.message"></v-list-item-title>
+              <v-list-item-subtitle v-html="item.type"></v-list-item-subtitle
+              ><small>{{ formatDatetime(item.sendDate) }}</small>
+            </v-list-item-content>
+
+            <v-list-item-icon v-if="item.isRead == false">
+              <v-icon color="blue" dense>brightness_1</v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-list-item-group>
       </v-list>
       <v-list two-line v-else>
+        <v-subheader>THÔNG BÁO</v-subheader>
         <v-list-item>
           <v-list-item-content>
             {{ "Không có thông báo mới!" }}
           </v-list-item-content>
         </v-list-item>
       </v-list>
-      <div class="text-center">
+      <div
+        class="text-center"
+        v-if="options.page < serverSideOptions.totalPages"
+      >
         <v-btn
           class="ma-2"
           :loading="loading"
           :disabled="loading"
-          @click="loadNotification()"
+          @click.stop="seeMore()"
           outlined
           color="indigo"
+          small
           >Xem thêm...</v-btn
         >
       </div>
@@ -76,22 +108,26 @@ import {
   getNotificationsByUser,
   getDriverNotification,
   getReportNotification,
-  getShippingLineNotification
+  getShippingLineNotification,
+  editNotifications
 } from "@/api/notification";
 import { INotification } from "@/entity/notification";
+import Utils from "@/mixin/utils";
 
-@Component
+@Component({
+  mixins: [Utils]
+})
 export default class Notification extends Vue {
   notifications: Array<INotification> = [];
-  notification = {} as INotification;
+  notification = null as INotification | null;
   notificationSubscribe: Array<string> = [];
   options = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 2
   } as DataOptions;
   serverSideOptions = {
     totalItems: 0,
-    totalPages: 1,
+    totalPages: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
   loading = false;
@@ -130,17 +166,34 @@ export default class Notification extends Vue {
     this.$router.push(ROUTER);
   }
 
-  seenNotification() {
+  seenAllNotification() {
+    this.notifications.filter(x => {
+      if (x.isRead == false) {
+        this.seenNotification(x);
+      }
+    });
     this.messageCount = 0;
   }
 
-  loadNotification() {
-    if (this.options.page < this.serverSideOptions.totalPages)
-      this.options.page += 1;
-    else console.log(this.options);
+  async seenNotification(item: INotification) {
+    if (item.isRead == false) {
+      const _res = await editNotifications(item.id as number, {
+        isRead: true
+      });
+      console.log();
+      if (_res.data) {
+        const _notification = _res.data as INotification;
+        item.isRead = _notification.isRead;
+      }
+    }
   }
 
-  @Watch("options", { immediate: true })
+  seeMore() {
+    if (this.options.page < this.serverSideOptions.totalPages)
+      this.options.page++;
+  }
+
+  @Watch("options", { immediate: true, deep: true })
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined" && this.$auth.check()) {
       this.loading = true;
@@ -150,7 +203,7 @@ export default class Notification extends Vue {
       });
       this.loading = false;
       if (_notification.data) {
-        this.notifications.concat(_notification.data.data);
+        this.notifications = this.notifications.concat(_notification.data.data);
         this.serverSideOptions.totalPages = _notification.data.totalPages;
         if (this.notifications.length > 0)
           this.messageCount = this.notifications.filter(x => !x.isRead).length;
@@ -171,10 +224,12 @@ export default class Notification extends Vue {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onConnected(frame: any) {
     this.connected = true;
     console.log("onConnected", frame);
     this.notificationSubscribe.forEach(x => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.stompClient.subscribe(`/user${x}`, (tick: any) => {
         console.log(tick);
         this.notifications.unshift(JSON.parse(tick.body));
@@ -183,6 +238,7 @@ export default class Notification extends Vue {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onDisconnected(err: any) {
     console.log(err);
     this.connected = false;

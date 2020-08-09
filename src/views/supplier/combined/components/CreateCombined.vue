@@ -18,54 +18,29 @@
       <v-list three-line subheader>
         <v-stepper v-model="stepper" vertical>
           <v-stepper-step :complete="stepper > 1" step="1" :editable="editable">
-            Chọn HSDT
+            Cont đã chọn
             <small>Thông tin bắt buộc</small>
           </v-stepper-step>
 
           <v-stepper-content step="1">
             <v-data-table
-              :headers="bidHeaders"
-              :items="bidsSelection"
-              :single-expand="singleExpand"
-              :expanded.sync="expanded"
-              show-expand
-              @click:row="clicked"
+              :headers="containerHeaders"
+              :items="containersSelected"
               item-key="id"
               :loading="loading"
-              :options.sync="options"
-              :server-items-length="serverSideOptions.totalItems"
+              :options.sync="containerOptions"
+              :server-items-length="containerServerSideOptions.totalItems"
               :footer-props="{
-                'items-per-page-options': serverSideOptions.itemsPerPageItems
+                'items-per-page-options':
+                  containerServerSideOptions.itemsPerPageItems
               }"
-              :actions-append="options.page"
-              no-data-text="Danh sách HSDT rỗng."
+              :actions-append="containerOptions.page"
+              no-data-text="Danh sách Container đã chọn"
               disable-sort
               class="elevation-0"
             >
-              <template v-slot:item.bidDate="{ item }">
-                {{ formatDatetime(item.bidDate) }}
-              </template>
-
-              <template v-slot:expanded-item="{ headers, item }">
-                <td :colspan="headers.length" class="px-0">
-                  <v-data-table
-                    :headers="containerHeaders"
-                    :items="item.containers"
-                    :loading="loading"
-                    :options.sync="containerOptions"
-                    :server-items-length="containerServerSideOptions.totalItems"
-                    :footer-props="{
-                      'items-per-page-options':
-                        containerServerSideOptions.itemsPerPageItems
-                    }"
-                    :actions-append="containerOptions.page"
-                    no-data-text="Danh sách Container đã chọn rỗng."
-                    disable-sort
-                    dark
-                    dense
-                  >
-                  </v-data-table>
-                </td>
+              <template v-slot:item.bid="{ item }">
+                {{ getBidFromContainer(item).id }}
               </template>
             </v-data-table>
             <v-btn color="primary" @click="stepper = 2">Tiếp tục</v-btn>
@@ -148,18 +123,15 @@ import { IContainer } from "@/entity/container";
 })
 export default class CreateCombined extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("dialogConfirm", { type: Boolean }) dialogConfirmSync!: boolean;
-  @Prop(Object) bid!: IBid;
   @PropSync("numberWinner", { type: Number }) numberWinnerSync!: number;
-  @PropSync("bids", { type: Array }) bidsSync!: Array<IBid>;
+  @Prop() isMultipleAward!: boolean;
+  @Prop(Object) bid!: IBid;
 
   dateInit = new Date().toISOString().substr(0, 10);
-  bidsSelection: Array<IBid> = [];
-  bidSelect = {} as IBid;
   containersSelected: Array<IContainer> = [];
   combinedLocal = {
-    bid: this.bid,
-    status: "INFO_RECEIVED",
+    bid: this.bid.id,
+    containers: [],
     contract: {
       finesAgainstContractViolation: 0,
       required: false
@@ -168,8 +140,6 @@ export default class CreateCombined extends Vue {
   // Form validate
   checkbox = false;
   editable = false;
-  expanded: Array<IBid> = [];
-  singleExpand = true;
   stepper = 1;
   merchant = "";
   forwarder = "";
@@ -177,14 +147,6 @@ export default class CreateCombined extends Vue {
 
   // Outbound form
   loading = false;
-  options = {
-    page: 1,
-    itemsPerPage: 5
-  } as DataOptions;
-  serverSideOptions = {
-    totalItems: 0,
-    itemsPerPageItems: [5, 10, 20, 50]
-  };
   containerOptions = {
     page: 1,
     itemsPerPage: 5
@@ -193,110 +155,82 @@ export default class CreateCombined extends Vue {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
-  bidHeaders = [
-    {
-      text: "Mã",
-      align: "start",
-      sortable: false,
-      value: "id"
-    },
-    { text: "Người gửi Bid", value: "bidder" },
-    { text: "Số Cont", value: "containers.length" },
-    { text: "Giá thầu", value: "bidPrice" },
-    { text: "Ngày thầu", value: "bidDate" },
-    { text: "", value: "actions", sortable: false }
-  ];
+
   containerHeaders = [
     {
       text: "Container No.",
       align: "start",
       sortable: false,
-      value: "containerNumber",
-      class: "elevation-1 primary"
+      value: "containerNumber"
     },
-    { text: "Tài xế", value: "driver", class: "elevation-1 primary" },
+    { text: "HSDT", value: "bid" },
+    { text: "Tài xế", value: "driver" },
     {
       text: "Rơ moóc",
-      value: "trailer.licensePlate",
-      class: "elevation-1 primary"
+      value: "trailer.licensePlate"
     },
     {
       text: "Đầu kéo",
-      value: "tractor.licensePlate",
-      class: "elevation-1 primary"
+      value: "tractor.licensePlate"
+    },
+    {
+      text: "Trạng thái",
+      value: "status"
     }
   ];
 
-  clicked(value: IBid) {
-    console.log(value);
-    if (this.singleExpand) {
-      if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
-        this.expanded.splice(0, this.expanded.length);
-        this.bidSelect = {} as IBid;
-      } else {
-        if (this.expanded.length > 0) {
-          this.expanded.splice(0, this.expanded.length);
-          this.expanded.push(value);
-          this.bidSelect = value;
-          this.onContainerOptionsChange(this.containerOptions);
-        } else {
-          this.expanded.push(value);
-          this.bidSelect = value;
-        }
-      }
-    } else {
-      const index = this.expanded.findIndex(x => x.id === value.id);
-      if (index === -1) {
-        this.expanded.push(value);
-      } else {
-        this.expanded.splice(index, 1);
-      }
-    }
-  }
   // Combined
   async createCombined() {
-    //TODO: API create combined
     if (this.bid.id) {
-      this.combinedLocal.bid = this.bid.id as number;
+      this.combinedLocal.containers = this.getSelectedContainer.map(
+        x => x.id
+      ) as number[];
+      console.log("combinedLocal", this.combinedLocal);
       const _combined = await createCombined(this.bid.id, this.combinedLocal);
       if (_combined.data) {
-        const bidResponse = _combined.data.bid as IBid;
-        if (bidResponse && bidResponse.id) {
-          const index = this.bidsSync.findIndex(x => x.id == bidResponse.id);
-          this.bidsSync.splice(index, 1, bidResponse);
-        }
         this.numberWinnerSync += 1;
         this.dialogAddSync = false;
-        this.dialogConfirmSync = false;
       }
     }
   }
-  @Watch("containerOptions")
+  @Watch("containerOptions", { immediate: true })
   async onContainerOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
-      this.containersSelected = [] as Array<IContainer>;
-      this.loading = true;
-      const start = (val.page - 1) * val.itemsPerPage;
-      let end = start + val.itemsPerPage - 1;
-      if (end > this.bidSelect.containers.length - 1) {
-        end = this.bidSelect.containers.length - 1;
-      }
-      for (let i = start; i <= end; i++) {
-        this.containersSelected.push(
-          this.bidSelect.containers[i] as IContainer
-        );
-      }
-
-      this.loading = false;
+      const _containers = this.getDataFromApi();
+      this.containersSelected = _containers;
     }
   }
+  getBidFromContainer(item: IContainer) {
+    // TODO: use
+    console.log(item);
+    return this.bid;
+  }
+  get getSelectedContainer() {
+    const containers = this.bid.containers as IContainer[];
+    if (this.isMultipleAward) {
+      return containers.filter(x => x.isSelected);
+    } else {
+      return containers;
+    }
+  }
+  getDataFromApi() {
+    this.loading = true;
+    const { page, itemsPerPage } = this.containerOptions;
+
+    let items = this.getSelectedContainer;
+    this.containerServerSideOptions.totalItems = items.length;
+
+    if (itemsPerPage > 0) {
+      items = items.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+    }
+    this.loading = false;
+    return items;
+  }
+
   created() {
     // TODO: API get Outbound
-    this.containerServerSideOptions.totalItems = this.bid.containers.length;
-    this.bidsSelection.push(this.bid);
     this.merchant = this.$auth.user().username;
     this.forwarder = this.bid.bidder;
-    this.serverSideOptions.totalItems = 1;
   }
 }
 </script>

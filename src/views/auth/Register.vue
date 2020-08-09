@@ -261,14 +261,10 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import FormValidate from "@/mixin/form-validate";
-import Snackbar from "@/components/Snackbar.vue";
 
 import { ISupplier } from "@/entity/supplier";
 @Component({
-  mixins: [FormValidate],
-  components: {
-    Snackbar
-  }
+  mixins: [FormValidate]
 })
 export default class Register extends Vue {
   supplier = {
@@ -289,8 +285,6 @@ export default class Register extends Vue {
     roles: [] as Array<string>
   } as ISupplier;
   role = "forwarder";
-  message = "";
-  snackbar = false;
   editable = false;
   stepper = 1;
   valid = false;

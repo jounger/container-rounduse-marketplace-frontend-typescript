@@ -3,3 +3,8 @@ export interface ISnackbar {
   color?: string;
   timeout?: number;
 }
+
+export interface ILoading {
+  text: string;
+  color?: string;
+}

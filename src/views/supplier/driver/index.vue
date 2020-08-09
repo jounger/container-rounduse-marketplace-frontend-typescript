@@ -107,17 +107,17 @@ export default class Driver extends Vue {
   };
   headers = [
     {
-      text: "Tên đăng nhập",
+      text: "Mã",
       align: "start",
       sortable: true,
-      value: "username"
+      value: "id"
     },
-    { text: "Trạng thái", value: "status" },
+    { text: "Tên đăng nhập", value: "username" },
+    { text: "Tên đầy đủ", value: "fullname" },
     { text: "Email", value: "email" },
     { text: "Số điện thoại", value: "phone" },
-    { text: "Tên đầy đủ", value: "fullname" },
     { text: "Số bằng lái", value: "driverLicense" },
-    { text: "Vị trí", value: "geolocation" },
+    { text: "Trạng thái", value: "status" },
     {
       text: "Hành động",
       value: "actions"

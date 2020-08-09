@@ -1,31 +1,31 @@
 <template>
   <v-content>
-    <v-card class="ma-5">
-      <CreateOutbound
-        :dialogAdd.sync="dialogAdd"
+    <CreateOutbound
+      :dialogAdd.sync="dialogAdd"
+      :outbounds.sync="outbounds"
+      :totalItems.sync="serverSideOptions.totalItems"
+    />
+    <UpdateOutbound
+      :outbound="outbound"
+      :dialogEdit.sync="dialogEdit"
+      :outbounds.sync="outbounds"
+      :readonly="readonly"
+    />
+    <CreateBiddingDocument
+      v-if="dialogCreateBiddingDocument"
+      :outbound.sync="outbound"
+      :dialogAdd.sync="dialogCreateBiddingDocument"
+    />
+    <v-row justify="center">
+      <DeleteOutbound
+        v-if="dialogDel"
+        :dialogDel.sync="dialogDel"
+        :outbound="outbound"
         :outbounds.sync="outbounds"
         :totalItems.sync="serverSideOptions.totalItems"
       />
-      <UpdateOutbound
-        :outbound="outbound"
-        :dialogEdit.sync="dialogEdit"
-        :outbounds.sync="outbounds"
-        :readonly="readonly"
-      />
-      <CreateBiddingDocument
-        v-if="dialogCreateBiddingDocument"
-        :outbound.sync="outbound"
-        :dialogAdd.sync="dialogCreateBiddingDocument"
-      />
-      <v-row justify="center">
-        <DeleteOutbound
-          v-if="dialogDel"
-          :dialogDel.sync="dialogDel"
-          :outbound="outbound"
-          :outbounds.sync="outbounds"
-          :totalItems.sync="serverSideOptions.totalItems"
-        />
-      </v-row>
+    </v-row>
+    <v-card class="ma-5">
       <v-data-table
         :headers="headers"
         :items="outbounds"
@@ -188,14 +188,13 @@ export default class Outbound extends Vue {
     },
     { text: "Booking No.", value: "booking.number" },
     { text: "Hãng tàu", value: "shippingLine" },
-    { text: "Trạng thái", value: "status" },
+    { text: "Số cont", value: "unit" },
+    { text: "Khối lượng hàng", value: "grossWeight" },
     { text: "Thời gian đóng hàng", value: "packingTime" },
     { text: "Thời gian tàu chạy", value: "cutOffTime" },
-    { text: "Nơi đóng hàng", value: "packingStation" },
     { text: "Cảng đóng hàng", value: "booking.portOfLoading" },
-    { text: "Khối lượng hàng", value: "grossWeight" },
-    { text: "Số cont", value: "unit" },
     { text: "FCL", value: "fcl" },
+    { text: "Trạng thái", value: "status" },
     {
       text: "Hành động",
       value: "actions"

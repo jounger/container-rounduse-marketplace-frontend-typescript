@@ -5,4 +5,5 @@ export interface IBooking {
   cutOffTime: string;
   isFcl: boolean;
   portOfLoading: string; // nameCode
+  isSelected?: boolean;
 }

@@ -46,11 +46,11 @@
             class="ma-1"
             tile
             outlined
-            color="success"
+            color="info"
             @click="gotoDetail(item)"
             small
           >
-            <v-icon left>mdi-pencil</v-icon> Xem chi tiết
+            <v-icon left dense>details</v-icon> Chi tiết
           </v-btn>
         </template>
       </v-data-table>
@@ -86,16 +86,13 @@ export default class Combined extends Vue {
       sortable: false,
       value: "id"
     },
-    { text: "Booking No.", value: "outbound.booking.number" },
     { text: "Hãng tàu", value: "outbound.shippingLine" },
-    { text: "Trạng thái", value: "status" },
+    { text: "Số cont", value: "unit" },
+    { text: "Khối lượng hàng", value: "grossWeight" },
     { text: "Thời gian đóng hàng", value: "packingTime" },
     { text: "Thời gian tàu chạy", value: "cutOffTime" },
-    { text: "Nơi đóng hàng", value: "outbound.packingStation" },
     { text: "Cảng đóng hàng", value: "outbound.booking.portOfLoading" },
-    { text: "Khối lượng hàng", value: "grossWeight" },
-    { text: "Số cont", value: "unit" },
-    { text: "FCL", value: "fcl" },
+    { text: "Trạng thái", value: "status" },
     {
       text: "Hành động",
       value: "actions"

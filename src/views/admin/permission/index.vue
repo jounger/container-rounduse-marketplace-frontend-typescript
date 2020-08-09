@@ -1,25 +1,25 @@
 <template>
   <v-content>
+    <v-row justify="center">
+      <DeletePermission
+        v-if="dialogDel"
+        :dialogDel.sync="dialogDel"
+        :permission="permission"
+        :totalItems.sync="serverSideOptions.totalItems"
+        :permissions.sync="permissions"
+      />
+    </v-row>
+    <v-row justify="center">
+      <CreatePermission
+        v-if="dialogAdd"
+        :permission="permission"
+        :permissions.sync="permissions"
+        :dialogAdd.sync="dialogAdd"
+        :totalItems.sync="serverSideOptions.totalItems"
+        :update="update"
+      />
+    </v-row>
     <v-card class="ma-5">
-      <v-row justify="center">
-        <DeletePermission
-          v-if="dialogDel"
-          :dialogDel.sync="dialogDel"
-          :permission="permission"
-          :totalItems.sync="serverSideOptions.totalItems"
-          :permissions.sync="permissions"
-        />
-      </v-row>
-      <v-row justify="center">
-        <CreatePermission
-          v-if="dialogAdd"
-          :permission="permission"
-          :permissions.sync="permissions"
-          :dialogAdd.sync="dialogAdd"
-          :totalItems.sync="serverSideOptions.totalItems"
-          :update="update"
-        />
-      </v-row>
       <v-data-table
         :headers="headers"
         :items="permissions"
@@ -90,9 +90,13 @@ export default class Permission extends Vue {
   };
   headers = [
     {
-      text: "Tên vai trò",
+      text: "Mã",
       align: "start",
-      sortable: true,
+      sortable: false,
+      value: "id"
+    },
+    {
+      text: "Tên vai trò",
       value: "name"
     },
     { text: "Mô tả", value: "description" },

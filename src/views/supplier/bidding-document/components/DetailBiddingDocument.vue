@@ -1,20 +1,19 @@
 <template>
   <v-content>
     <v-row justify="center">
-      <ConfirmBid
-        v-if="dialogConfirm"
-        :dialogConfirm.sync="dialogConfirm"
-        :bids.sync="bids"
-        :isAccept="isAccept"
-        :bid="bid"
-        :numberWinner.sync="numberWinner"
-      />
       <CreateReport
         v-if="dialogReport"
         :dialogAdd.sync="dialogReport"
         :biddingDocument.sync="biddingDocument"
       />
     </v-row>
+    <CreateCombined
+      v-if="bid"
+      :dialogAdd.sync="dialogAddCombined"
+      :numberWinner.sync="numberWinner"
+      :isMultipleAward="biddingDocument.isMultipleAward"
+      :bid="bid"
+    />
     <CreateBid
       v-if="dialogBid"
       :biddingDocument.sync="biddingDocument"
@@ -329,7 +328,7 @@
           :items="bids"
           :single-expand="singleExpand"
           :expanded.sync="expanded"
-          show-expand
+          :show-expand="biddingDocument.isMultipleAward ? true : false"
           @click:row="clicked"
           item-key="id"
           :loading="loading"
@@ -399,10 +398,13 @@
             >
           </template>
 
-          <template v-slot:expanded-item="{ headers }">
+          <template
+            v-slot:expanded-item="{ headers }"
+            v-if="biddingDocument.isMultipleAward"
+          >
             <td :colspan="headers.length" class="px-0">
               <v-data-table
-                v-if="bid && biddingDocument.isMultipleAward"
+                v-if="bid"
                 :headers="containerHeaders"
                 :items="bid.containers"
                 :loading="loading"
@@ -451,13 +453,13 @@ import Utils from "@/mixin/utils";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { IBid } from "@/entity/bid";
 import { getBiddingDocument } from "@/api/bidding-document";
-import ConfirmBid from "./ConfirmBid.vue";
 import CreateReport from "../../report/components/CreateReport.vue";
 import CreateBid from "../../bid/components/CreateBid.vue";
 import { DataOptions } from "vuetify";
 import { IContainer } from "@/entity/container";
 import SupplierRating from "./SupplierRating.vue";
 import { getContainersByBid } from "@/api/container";
+import CreateCombined from "../../combined/components/CreateCombined.vue";
 import {
   getBidsByBiddingDocument,
   getBidByBiddingDocumentAndForwarder
@@ -466,7 +468,7 @@ import {
 @Component({
   mixins: [FormValidate, Utils],
   components: {
-    ConfirmBid,
+    CreateCombined,
     CreateBid,
     CreateReport,
     SupplierRating
@@ -477,7 +479,7 @@ export default class DetailBiddingDocument extends Vue {
   loading = false;
   containerSelected = [] as Array<IContainer>;
   isAccept = false;
-  dialogConfirm = false;
+  dialogAddCombined = false;
   dialogReport = false;
   dialogBid = false;
   bid = null as IBid | null;
@@ -539,7 +541,7 @@ export default class DetailBiddingDocument extends Vue {
   openConfirmBid(item: IBid, accept: boolean) {
     this.bid = item;
     this.isAccept = accept;
-    this.dialogConfirm = true;
+    this.dialogAddCombined = true;
   }
 
   clicked(value: IBid) {

@@ -31,10 +31,15 @@ export function getShippingLineNotification(id: number) {
 }
 
 // Edit notification
+export function editNotifications(id: number, updates: object) {
+  return Vue.axios.patch(`/notification/${id}`, updates);
+}
+
 export function editBiddingNotifications(id: number, updates: object) {
   return Vue.axios.patch(`/bidding-notification/${id}`, updates);
 }
 
+// Remove notification
 export function removeBiddingNotifications(id: number) {
   return Vue.axios.delete(`/bidding-notification/${id}`);
 }

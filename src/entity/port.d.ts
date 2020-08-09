@@ -3,4 +3,5 @@ export interface IPort {
   fullname: string;
   nameCode: string;
   address: string;
+  isSelected?: boolean;
 }

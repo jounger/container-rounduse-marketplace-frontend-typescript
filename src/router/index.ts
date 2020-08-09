@@ -15,6 +15,14 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/auth/Login.vue")
   },
   {
+    path: "/logout",
+    name: "Logout",
+    meta: {
+      auth: true
+    },
+    component: () => import("@/views/auth/Logout.vue")
+  },
+  {
     path: "/register",
     name: "Register",
     meta: {
@@ -246,7 +254,6 @@ const routes: Array<RouteConfig> = [
       layout: "NavLayout"
     }
   },
-  // DRIVER
   {
     path: "/driver",
     name: "Driver",
@@ -318,6 +325,16 @@ const routes: Array<RouteConfig> = [
       auth: ["ROLE_FORWARDER"],
       layout: "NavLayout"
     }
+  },
+  // shipping line
+  {
+    path: "/borrow-notify",
+    name: "Borrow Notify",
+    component: () => import("@/views/supplier/borrow-notify/index.vue"),
+    meta: {
+      auth: ["ROLE_SHIPPINGLINE"],
+      layout: "NavLayout"
+    }
   }
 ];
 
@@ -327,6 +344,7 @@ const router = new VueRouter({
   routes
 });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (Vue as any).router = router;
 
 export default router;

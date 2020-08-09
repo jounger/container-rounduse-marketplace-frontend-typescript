@@ -65,19 +65,16 @@ export function isEmptyString(input: string) {
 }
 
 export function currencyFormatter(num: number, cur?: string) {
-  let currency = "VND";
-  if (cur && !isEmptyString(cur)) {
-    currency = cur;
-  }
   return new Intl.NumberFormat("vi-VI", {
     style: "currency",
-    currency: "VND"
+    currency: cur ? cur : "VND"
   }).format(num);
 }
 
 export function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
 export function convertTime(input: string) {
   const minute = Math.floor(
     (new Date().getTime() - new Date(input).getTime()) / 60000
@@ -103,6 +100,7 @@ export function convertTime(input: string) {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getErrorMessage(error: any) {
   // Error 😨
   console.log("Error", error);

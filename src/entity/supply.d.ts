@@ -4,4 +4,5 @@ export interface ISupply {
   shippingLine: string; // companyCode
   containerType: string; // name
   status: string;
+  isSelected?: boolean;
 }

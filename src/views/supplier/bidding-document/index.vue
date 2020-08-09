@@ -30,170 +30,112 @@
       :biddingDocuments.sync="biddingDocuments"
       :dialogEdit.sync="dialogEdit"
     />
-    <v-container
-      class="d-flex justify-space-around align-start mb-6 mx-1"
-      style="max-width: 1510px!important"
-    >
-      <v-card class="order-0 flex-grow-0 mx-auto mr-5 my-5" width="260">
-        <v-card-title>BỘ LỌC</v-card-title>
-        <v-card-subtitle
-          >Tùy chỉnh các bộ lọc bên dưới theo kết quả bên phải</v-card-subtitle
-        >
-        <v-divider></v-divider>
-        <v-card-text>
-          <v-row
-            ><v-col cols="12">
-              <v-select
-                outlined
-                dense
-                hide-details
-                v-model="shippingLineSearch"
-                prepend-icon="directions_boat"
-                :items="shippingLinesToString"
-                label="Hãng tàu"
-              ></v-select> </v-col
-          ></v-row>
-          <v-row
-            ><v-col cols="12">
-              <v-select
-                outlined
-                dense
-                hide-details
-                v-model="containerTypeSearch"
-                prepend-icon="directions_bus"
-                :items="containerTypesToString"
-                label="Loại cont"
-              ></v-select> </v-col
-          ></v-row>
-          <v-row
-            ><v-col cols="12">
-              <v-select
-                outlined
-                dense
-                hide-details
-                v-model="statusSearch"
-                prepend-icon="strikethrough_s"
-                :items="status"
-                label="Trạng thái"
-              ></v-select> </v-col
-          ></v-row>
-          <v-row justify="center">
-            <v-btn class="primary" @click="searchBiddingDocument()"
-              >Áp dụng</v-btn
-            >
-          </v-row>
-        </v-card-text>
-      </v-card>
-      <v-card class="order-1 flex-grow-1 mx-auto my-5">
-        <v-data-table
-          :headers="headers"
-          :items="biddingDocuments"
-          item-key="id"
-          :loading="loading"
-          :options.sync="options"
-          :server-items-length="serverSideOptions.totalItems"
-          :footer-props="{
-            'items-per-page-options': serverSideOptions.itemsPerPageItems
-          }"
-          :actions-append="options.page"
-          no-data-text="Danh sách HSMT rỗng."
-          disable-sort
-          class="elevation-1"
-        >
-          <!--  -->
-          <template v-slot:top>
-            <v-toolbar flat color="white">
-              <v-toolbar-title>Danh sách đấu thầu</v-toolbar-title>
-              <v-divider class="mx-4" inset vertical></v-divider>
-              <v-spacer></v-spacer>
-              <v-btn
-                color="primary"
-                dark
-                class="mb-2"
-                @click="dialogAdd = true"
-              >
-                Thêm mới
+
+    <v-card class="ma-5">
+      <v-data-table
+        :headers="headers"
+        :items="biddingDocuments"
+        item-key="id"
+        :loading="loading"
+        :options.sync="options"
+        :server-items-length="serverSideOptions.totalItems"
+        :footer-props="{
+          'items-per-page-options': serverSideOptions.itemsPerPageItems
+        }"
+        :actions-append="options.page"
+        no-data-text="Danh sách HSMT rỗng."
+        disable-sort
+        class="elevation-1"
+      >
+        <template v-slot:top>
+          <v-toolbar flat color="white">
+            <v-toolbar-title>Danh sách đấu thầu</v-toolbar-title>
+            <v-divider class="mx-4" inset vertical></v-divider>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" dark class="mb-2" @click="dialogAdd = true">
+              Thêm mới
+            </v-btn>
+          </v-toolbar>
+        </template>
+        <template v-slot:item.unit="{ item }">
+          {{ item.outbound.booking.unit + " x " + item.outbound.containerType }}
+        </template>
+        <template v-slot:item.status="{ item }">
+          <v-chip
+            :style="
+              item.status == 'BIDDING'
+                ? 'background-color:cornflowerblue'
+                : item.status == 'COMBINED'
+                ? 'background-color:blueviolet'
+                : 'background-color:red'
+            "
+            dark
+            >{{ item.status }}</v-chip
+          >
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <v-menu :close-on-click="true">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="pink" icon outlined v-bind="attrs" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
               </v-btn>
-            </v-toolbar>
-          </template>
-          <!--  -->
-          <template v-slot:item.status="{ item }">
-            <v-chip
-              :style="
-                item.status == 'BIDDING'
-                  ? 'background-color:cornflowerblue'
-                  : item.status == 'COMBINED'
-                  ? 'background-color:blueviolet'
-                  : 'background-color:red'
-              "
-              dark
-              >{{ item.status }}</v-chip
-            >
-          </template>
-          <template v-slot:item.actions="{ item }">
-            <v-menu :close-on-click="true">
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn color="pink" icon outlined v-bind="attrs" v-on="on">
-                  <v-icon>mdi-dots-vertical</v-icon>
-                </v-btn>
-              </template>
-              <v-list>
-                <v-list-item
-                  @click.stop="openEditDialog(item)"
-                  v-if="item.status == 'BIDDING'"
-                >
-                  <v-list-item-icon>
-                    <v-icon small>edit</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>Chỉnh sửa</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item @click.stop="openDetailDialog(item)">
-                  <v-list-item-icon>
-                    <v-icon small>details</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>Chi tiết</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item
-                  @click.stop="openCancelDialog(item)"
-                  v-if="item.status == 'BIDDING'"
-                >
-                  <v-list-item-icon>
-                    <v-icon small>cancel_presentation</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>Hủy thầu</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item
-                  @click.stop="openDeleteDialog(item)"
-                  v-if="item.status != 'COMBINED'"
-                >
-                  <v-list-item-icon>
-                    <v-icon small>delete</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>Xóa</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </template>
-          <template v-slot:item.bidOpeningText="{ item }">
-            {{ formatDatetime(item.bidOpening) }}
-          </template>
-          <template v-slot:item.bidClosingText="{ item }">
-            {{ formatDatetime(item.bidClosing) }}
-          </template>
-          <template v-slot:item.bidPackagePrice="{ item }">
-            {{ currencyFormatter(item.bidPackagePrice) }}
-          </template>
-        </v-data-table>
-      </v-card>
-    </v-container>
+            </template>
+            <v-list>
+              <v-list-item
+                @click.stop="openEditDialog(item)"
+                v-if="item.status == 'BIDDING'"
+              >
+                <v-list-item-icon>
+                  <v-icon small>edit</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Chỉnh sửa</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item @click.stop="openDetailDialog(item)">
+                <v-list-item-icon>
+                  <v-icon small>details</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Chi tiết</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item
+                @click.stop="openCancelDialog(item)"
+                v-if="item.status == 'BIDDING'"
+              >
+                <v-list-item-icon>
+                  <v-icon small>cancel_presentation</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Hủy thầu</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item
+                @click.stop="openDeleteDialog(item)"
+                v-if="item.status != 'COMBINED'"
+              >
+                <v-list-item-icon>
+                  <v-icon small>delete</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Xóa</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </template>
+        <template v-slot:item.bidOpening="{ item }">
+          {{ formatDatetime(item.bidOpening) }}
+        </template>
+        <template v-slot:item.bidClosing="{ item }">
+          {{ formatDatetime(item.bidClosing) }}
+        </template>
+        <template v-slot:item.bidPackagePrice="{ item }">
+          {{ currencyFormatter(item.bidPackagePrice) }}
+        </template>
+      </v-data-table>
+    </v-card>
   </v-content>
 </template>
 <script lang="ts">
@@ -267,12 +209,12 @@ export default class BiddingDocument extends Vue {
       sortable: false,
       value: "id"
     },
-    { text: "Hãng tàu", value: "outbound.shippingLine" },
-    { text: "Loại cont", value: "outbound.containerType" },
     { text: "Mã booking", value: "outbound.booking.number" },
-    { text: "Trạng thái", value: "status" },
+    { text: "Hãng tàu", value: "outbound.shippingLine" },
+    { text: "Số cont", value: "unit" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
-    { text: "Đóng thầu", value: "bidClosingText" },
+    { text: "Đóng thầu", value: "bidClosing" },
+    { text: "Trạng thái", value: "status" },
     {
       text: "Hành động",
       value: "actions"
