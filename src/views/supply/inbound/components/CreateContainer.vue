@@ -170,10 +170,11 @@ export default class CreateContainer extends Vue {
   async getDrivers(limit: number) {
     this.loadingDrivers = true;
     this.drivers = [] as Array<IDriver>;
-    const _drivers = await getDriversByForwarder({
+    const _res = await getDriversByForwarder({
       page: 0,
       limit: 100
     });
+    const _drivers = _res.data;
     if (_drivers.data) {
       if (!this.update) {
         _drivers.data.forEach((x: IDriver, index: number) => {
@@ -199,7 +200,7 @@ export default class CreateContainer extends Vue {
         });
       }
     }
-    if (!_drivers.data || _drivers.data.length <= this.limitDrivers) {
+    if (!_res.data || _drivers.data.length <= this.limitDrivers) {
       this.seeMoreDrivers = false;
     }
     this.loadingDrivers = false;
@@ -211,10 +212,11 @@ export default class CreateContainer extends Vue {
   async getTractors(limit: number) {
     this.loadingTractors = true;
     this.tractors = [] as Array<IContainerTractor>;
-    const _tractors = await getContainerTractorsByForwarder({
+    const _res = await getContainerTractorsByForwarder({
       page: 0,
       limit: limit + 1
     });
+    const _tractors = _res.data;
     if (_tractors.data) {
       if (!this.update) {
         _tractors.data.forEach((x: IContainerTractor, index: number) => {
@@ -254,10 +256,11 @@ export default class CreateContainer extends Vue {
   async getTrailers(limit: number) {
     this.loadingTrailers = true;
     this.trailers = [] as Array<IContainerSemiTrailer>;
-    const _trailers = await getContainerSemiTrailersByForwarder({
+    const _res = await getContainerSemiTrailersByForwarder({
       page: 0,
       limit: 100
     });
+    const _trailers = _res.data;
     if (_trailers.data) {
       if (!this.update) {
         _trailers.data.forEach((x: IContainerSemiTrailer, index: number) => {

@@ -19,6 +19,7 @@ const options = {
     redirect: "/",
     headerToken: "Authorization",
     fetchUser: true,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     fetchData: (response: any) => response.data.userInfo
     // customToken: (response: any) => response.data['token'],
   },

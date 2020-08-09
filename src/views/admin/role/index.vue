@@ -1,25 +1,25 @@
 <template>
   <v-content>
+    <v-row justify="center">
+      <DeleteRole
+        v-if="dialogDel"
+        :dialogDel.sync="dialogDel"
+        :role="role"
+        :roles.sync="roles"
+        :totalItems.sync="serverSideOptions.totalItems"
+      />
+    </v-row>
+    <v-row justify="center">
+      <CreateRole
+        v-if="dialogAdd"
+        :role="role"
+        :roles.sync="roles"
+        :totalItems.sync="serverSideOptions.totalItems"
+        :dialogAdd.sync="dialogAdd"
+        :update="update"
+      />
+    </v-row>
     <v-card class="ma-5">
-      <v-row justify="center">
-        <DeleteRole
-          v-if="dialogDel"
-          :dialogDel.sync="dialogDel"
-          :role="role"
-          :roles.sync="roles"
-          :totalItems.sync="serverSideOptions.totalItems"
-        />
-      </v-row>
-      <v-row justify="center">
-        <CreateRole
-          v-if="dialogAdd"
-          :role="role"
-          :roles.sync="roles"
-          :totalItems.sync="serverSideOptions.totalItems"
-          :dialogAdd.sync="dialogAdd"
-          :update="update"
-        />
-      </v-row>
       <v-data-table
         :headers="headers"
         :items="roles"
@@ -90,12 +90,15 @@ export default class Role extends Vue {
   };
   headers = [
     {
-      text: "Tên quyền",
+      text: "Mã",
       align: "start",
-      sortable: true,
+      sortable: false,
+      value: "id"
+    },
+    {
+      text: "Tên quyền",
       value: "name"
     },
-    { text: "Vai trò", value: "permissions" },
     {
       text: "Hành động",
       value: "actions"

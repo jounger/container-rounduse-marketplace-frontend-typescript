@@ -11,6 +11,7 @@ export interface INotification {
   sendDate: string;
   isRead: boolean;
   isHide?: boolean;
+  isSelected?: boolean;
 }
 
 export interface IBiddingNotification extends INotification {

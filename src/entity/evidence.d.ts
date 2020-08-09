@@ -3,4 +3,5 @@ export interface IEvidence {
   sender: string;
   evidence: string;
   isValid: boolean;
+  isSelected?: boolean;
 }

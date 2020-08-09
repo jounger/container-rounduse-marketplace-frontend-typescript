@@ -58,15 +58,27 @@
             </v-btn>
           </v-toolbar>
         </template>
-        <template v-slot:item.bidOpeningText="{ item }">
+        <template v-slot:item.bidOpening="{ item }">
           {{ formatDatetime(item.bidOpening) }}
         </template>
-        <template v-slot:item.bidClosingText="{ item }">
+        <template v-slot:item.bidClosing="{ item }">
           {{ formatDatetime(item.bidClosing) }}
         </template>
 
         <template v-slot:item.bidPackagePrice="{ item }">
           {{ currencyFormatter(item.bidPackagePrice) }}
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <v-btn
+            class="ma-1"
+            tile
+            outlined
+            color="info"
+            @click.stop="openBiddingDocumentDetail(item)"
+            small
+          >
+            <v-icon left dense>details</v-icon> Chi tiết
+          </v-btn>
         </template>
         <!-- Show Bids expened -->
         <template v-slot:expanded-item="{ headers }">
@@ -80,10 +92,10 @@
               dense
               dark
             >
-              <template v-slot:item.bidDateText="{ item }">
+              <template v-slot:item.bidDate="{ item }">
                 {{ formatDatetime(item.bidDate) }}
               </template>
-              <template v-slot:item.bidValidityPeriodText="{ item }">
+              <template v-slot:item.bidValidityPeriod="{ item }">
                 {{ formatDatetime(item.bidValidityPeriod) }}
               </template>
               <template v-slot:item.status="{ item }">
@@ -98,6 +110,7 @@
                       : 'background-color:darkgoldenrod'
                   "
                   dark
+                  x-small
                   >{{ item.status }}</v-chip
                 >
               </template>
@@ -176,11 +189,14 @@ export default class Bid extends Vue {
     },
     { text: "Hãng tàu", value: "outbound.shippingLine" },
     { text: "Loại cont", value: "outbound.containerType" },
-    { text: "Mã booking", value: "outbound.booking.number" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
-    { text: "Mở thầu", value: "bidOpeningText" },
-    { text: "Đóng thầu", value: "bidClosingText" },
-    { text: "Nhiều thầu win", value: "isMultipleAward" }
+    { text: "Mở thầu", value: "bidOpening" },
+    { text: "Đóng thầu", value: "bidClosing" },
+    { text: "Nhiều thầu win", value: "isMultipleAward" },
+    {
+      text: "Hành động",
+      value: "actions"
+    }
   ];
 
   bidHeaders = [
@@ -196,21 +212,26 @@ export default class Bid extends Vue {
       value: "containers.length",
       class: "elevation-1 primary"
     },
-    { text: "Trạng thái", value: "status", class: "elevation-1 primary" },
     { text: "Giá thầu", value: "bidPrice", class: "elevation-1 primary" },
-    { text: "Ngày thầu", value: "bidDateText", class: "elevation-1 primary" },
+    { text: "Ngày thầu", value: "bidDate", class: "elevation-1 primary" },
     {
       text: "Hiệu lực",
-      value: "bidValidityPeriodText",
+      value: "bidValidityPeriod",
       class: "elevation-1 primary"
     },
+    { text: "Trạng thái", value: "status", class: "elevation-1 primary" },
     {
-      text: "",
+      text: "Hành động",
       value: "actions",
       sortable: false,
       class: "elevation-1 primary"
     }
   ];
+  openBiddingDocumentDetail(value: IBiddingDocument) {
+    this.$router.push({
+      path: `/bidding-document/${value.id}`
+    });
+  }
   async getBids(item: IBiddingDocument) {
     this.loading = true;
     if (item.id) {

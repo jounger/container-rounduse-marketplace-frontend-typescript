@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Navigation :drawer="drawer" />
+    <Navigation :drawer.sync="drawer" />
     <Appbar :drawer.sync="drawer" />
     <slot />
     <div style="margin-top:30px;">

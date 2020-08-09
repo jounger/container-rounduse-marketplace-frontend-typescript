@@ -5,4 +5,5 @@ export interface IFeedback {
   message: string;
   satisfactionPoints: number;
   sendDate: string;
+  isSelected?: boolean;
 }

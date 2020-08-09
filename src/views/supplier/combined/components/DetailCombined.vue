@@ -170,8 +170,7 @@
                         </v-list-item-icon>
                         <v-list-item-content>
                           <v-list-item-title>{{
-                            "Mã Booking: " +
-                              biddingDocument.outbound.booking.number
+                            "Mã hàng xuất: " + biddingDocument.outbound.code
                           }}</v-list-item-title>
                           <v-list-item-subtitle>
                             {{
@@ -227,14 +226,14 @@
                         </v-list-item-icon>
                         <v-list-item-content>
                           <v-list-item-title>{{
-                            "Mô tả: " +
-                              biddingDocument.outbound.goodsDescription
+                            "Khối lượng: " +
+                              biddingDocument.outbound.grossWeight +
+                              biddingDocument.outbound.unitOfMeasurement
                           }}</v-list-item-title>
                           <v-list-item-subtitle>
                             {{
-                              "Khối lượng: " +
-                                biddingDocument.outbound.grossWeight +
-                                biddingDocument.outbound.unitOfMeasurement
+                              "Mô tả: " +
+                                biddingDocument.outbound.goodsDescription
                             }}
                           </v-list-item-subtitle>
                         </v-list-item-content>
@@ -516,7 +515,7 @@ export default class DetailCombined extends Vue {
       class: "elevation-1 primary"
     },
     {
-      text: "Actions",
+      text: "Hành động",
       value: "actions",
       sortable: false,
       class: "elevation-1 primary"
@@ -532,7 +531,7 @@ export default class DetailCombined extends Vue {
     { text: "Người gửi", value: "sender" },
     { text: "Hợp lệ", value: "isValid" },
     {
-      text: "Actions",
+      text: "Hành động",
       value: "actions",
       sortable: false
     }
@@ -577,30 +576,30 @@ export default class DetailCombined extends Vue {
         }
       }
     }
-    this.viewDetailCombined(value);
+    // this.viewDetailCombined(value);
   }
 
-  async viewDetailCombined(item: ICombined) {
-    switch (item.status) {
-      case "INFO_RECEIVED":
-        this.stepper = 1;
-        break;
-      case "SHIPPING":
-        this.stepper = 2;
-        break;
-      case "DELIVERED":
-        this.stepper = 3;
-        break;
-      case "PAID":
-        this.stepper = 4;
-        break;
-    }
-    this.combined = item;
-    if (this.combined.contract) {
-      this.contract = this.combined.contract;
-    }
-    this.onEvidenceOptionsChange(this.evidenceOptions);
-  }
+  // async viewDetailCombined(item: ICombined) {
+  //   switch (item.status) {
+  //     case "INFO_RECEIVED":
+  //       this.stepper = 1;
+  //       break;
+  //     case "SHIPPING":
+  //       this.stepper = 2;
+  //       break;
+  //     case "DELIVERED":
+  //       this.stepper = 3;
+  //       break;
+  //     case "PAID":
+  //       this.stepper = 4;
+  //       break;
+  //   }
+  //   this.combined = item;
+  //   if (this.combined.contract) {
+  //     this.contract = this.combined.contract;
+  //   }
+  //   this.onEvidenceOptionsChange(this.evidenceOptions);
+  // }
 
   @Watch("options")
   async onOptionsChange(val: DataOptions) {
@@ -621,7 +620,7 @@ export default class DetailCombined extends Vue {
           this.combined = this.combineds[0];
           const _bid = this.combined.bid as IBid;
           this.containerServerSideOptions.totalItems = _bid.containers.length;
-          this.viewDetailCombined(this.combined);
+          // this.viewDetailCombined(this.combined);
           if (_bid.containers.length > 0) {
             this.viewDetailContainer(_bid.containers[0] as IContainer);
           }

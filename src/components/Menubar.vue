@@ -6,7 +6,7 @@
     <v-btn v-if="$auth.check()" text to="/dashboard">Dashboard</v-btn>
 
     <v-spacer></v-spacer>
-    <v-menu left bottom>
+    <v-menu left bottom :offset-x="true">
       <template v-slot:activator="{ on, attrs }">
         <v-btn icon v-bind="attrs" v-on="on">
           <v-icon>mdi-dots-vertical</v-icon>

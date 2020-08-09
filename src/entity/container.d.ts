@@ -7,4 +7,5 @@ export interface IContainer {
   tractor: IContainerTractor | string;
   driver: string; // driver username
   status: string;
+  isSelected?: boolean;
 }

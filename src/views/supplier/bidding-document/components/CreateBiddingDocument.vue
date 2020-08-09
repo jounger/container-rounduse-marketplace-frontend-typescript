@@ -128,7 +128,6 @@
                     "
                     prepend-icon="local_atm"
                     :rules="[
-                      required('giá sàn'),
                       maxNumber(
                         'Giá sàn',
                         parseInt(biddingDocumentLocal.bidPackagePrice)

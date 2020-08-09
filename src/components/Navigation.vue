@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer v-model="drawer" app clipped v-if="$auth.check()">
+  <v-navigation-drawer v-model="drawerSync" app clipped v-if="$auth.check()">
     <v-list dense nav>
       <v-list-item two-line class="px-0" link to="/profile">
         <v-list-item-avatar>
@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from "vue-property-decorator";
+import { Vue, Component, PropSync } from "vue-property-decorator";
 import NavigationOperator from "./NavigationOperator.vue";
 import NavigationSupplier from "./NavigationSupplier.vue";
 import { getOperatorByUsername } from "@/api/operator";
@@ -58,7 +58,7 @@ import { IShippingLine } from "@/entity/shipping-line";
   }
 })
 export default class Navigation extends Vue {
-  @Prop() drawer!: boolean;
+  @PropSync("drawer", { type: Boolean, default: true }) drawerSync!: boolean;
 
   protected navigation: object = NavigationSupplier;
   protected generalNavigation = [

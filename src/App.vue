@@ -1,5 +1,6 @@
 <template>
   <v-app>
+    <Loading />
     <Snackbars />
     <component :is="layout">
       <transition mode="out-in">
@@ -11,10 +12,12 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import Snackbars from "@/components/Snackbars.vue";
+import Loading from "@/components/Loading.vue";
 
 @Component({
   components: {
-    Snackbars
+    Snackbars,
+    Loading
   }
 })
 export default class App extends Vue {

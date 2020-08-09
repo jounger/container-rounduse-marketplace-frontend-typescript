@@ -1,43 +1,43 @@
 <template>
   <v-content>
-    <v-card class="ma-5">
-      <CreateInbound
-        :dialogAdd.sync="dialogAdd"
+    <CreateInbound
+      :dialogAdd.sync="dialogAdd"
+      :inbounds.sync="inbounds"
+      :totalItems.sync="serverSideOptions.totalItems"
+    />
+    <UpdateInbound
+      :inbound="inbound"
+      :dialogEdit.sync="dialogEdit"
+      :inbounds.sync="inbounds"
+    />
+    <v-row justify="center">
+      <DeleteInbound
+        v-if="dialogDel"
+        :dialogDel.sync="dialogDel"
+        :inbound="inbound"
         :inbounds.sync="inbounds"
         :totalItems.sync="serverSideOptions.totalItems"
       />
-      <UpdateInbound
-        :inbound="inbound"
-        :dialogEdit.sync="dialogEdit"
-        :inbounds.sync="inbounds"
+    </v-row>
+    <v-row justify="center">
+      <CreateContainer
+        v-if="dialogAddCont && inbound"
+        :container="container"
+        :containers.sync="containers"
+        :dialogAddCont.sync="dialogAddCont"
+        :billOfLading="inbound.billOfLading"
+        :totalItems.sync="containerServerSideOptions.totalItems"
+        :update="update"
       />
-      <v-row justify="center">
-        <DeleteInbound
-          v-if="dialogDel"
-          :dialogDel.sync="dialogDel"
-          :inbound="inbound"
-          :inbounds.sync="inbounds"
-          :totalItems.sync="serverSideOptions.totalItems"
-        />
-      </v-row>
-      <v-row justify="center">
-        <CreateContainer
-          v-if="dialogAddCont"
-          :container="container"
-          :containers.sync="containers"
-          :dialogAddCont.sync="dialogAddCont"
-          :billOfLading="inbound.billOfLading"
-          :totalItems.sync="containerServerSideOptions.totalItems"
-          :update="update"
-        />
-        <DeleteContainer
-          v-if="dialogDelCont"
-          :dialogDelCont.sync="dialogDelCont"
-          :container="container"
-          :containers.sync="containers"
-          :totalItems.sync="containerServerSideOptions.totalItems"
-        />
-      </v-row>
+      <DeleteContainer
+        v-if="dialogDelCont && container"
+        :dialogDelCont.sync="dialogDelCont"
+        :container="container"
+        :containers.sync="containers"
+        :totalItems.sync="containerServerSideOptions.totalItems"
+      />
+    </v-row>
+    <v-card class="ma-5">
       <v-data-table
         :headers="headers"
         :items="inbounds"
@@ -57,7 +57,6 @@
         disable-sort
         class="elevation-1"
       >
-        <!--  -->
         <template v-slot:top>
           <v-toolbar flat color="white">
             <v-toolbar-title>Danh sách hàng nhập</v-toolbar-title>
@@ -68,7 +67,9 @@
             </v-btn>
           </v-toolbar>
         </template>
-        <!--  -->
+        <template v-slot:item.unit="{ item }">
+          {{ item.billOfLading.unit + " x " + item.containerType }}
+        </template>
         <template v-slot:item.pickUpTime="{ item }">
           {{ formatDatetime(item.pickupTime) }}
         </template>
@@ -98,6 +99,21 @@
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>Xóa</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item
+                v-if="
+                  inbound &&
+                    containerServerSideOptions.totalItems <
+                      inbound.billOfLading.unit
+                "
+                @click="openCreateContainer(item)"
+              >
+                <v-list-item-icon>
+                  <v-icon small>add</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Khai báo container</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -132,6 +148,7 @@
                       : 'background-color:green'
                   "
                   dark
+                  x-small
                   >{{ item.status }}</v-chip
                 >
               </template>
@@ -151,23 +168,6 @@
                 >
                   delete
                 </v-icon>
-              </template>
-              <template v-slot:footer>
-                <v-row justify="center">
-                  <v-btn
-                    class="ma-1"
-                    tile
-                    color="success"
-                    @click.stop="openCreateContainer()"
-                    small
-                    v-if="
-                      containerServerSideOptions.totalItems <
-                        inbound.billOfLading.unit
-                    "
-                  >
-                    <span style="color:white;">Thêm Container</span>
-                  </v-btn>
-                </v-row>
               </template>
             </v-data-table>
           </td>
@@ -202,7 +202,7 @@ import { DataOptions } from "vuetify";
 })
 export default class Inbound extends Vue {
   inbounds: Array<IInbound> = [];
-  inbound = {} as IInbound;
+  inbound = null as IInbound | null;
   containers: Array<IContainer> = [];
   container = null as IContainer | null;
   dialogAddCont = false;
@@ -226,7 +226,7 @@ export default class Inbound extends Vue {
     itemsPerPageItems: [5, 10, 20, 50]
   };
   containerOptions = {
-    page: 1,
+    page: 0,
     itemsPerPage: 5
   } as DataOptions;
   containerServerSideOptions = {
@@ -240,13 +240,12 @@ export default class Inbound extends Vue {
       sortable: false,
       value: "id"
     },
+    { text: "B/L No.", value: "billOfLading.number" },
     { text: "Hãng tàu", value: "shippingLine" },
-    { text: "Loại cont", value: "containerType" },
+    { text: "Số cont đăng ký", value: "unit" },
     { text: "Thời gian lấy cont", value: "pickUpTime" },
     { text: "Thời gian được thuê cont", value: "freetime" },
-    { text: "B/L No.", value: "billOfLading.number" },
     { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery" },
-    { text: "Số cont đăng ký", value: "billOfLading.unit" },
     {
       text: "Hành động",
       value: "actions"
@@ -261,7 +260,6 @@ export default class Inbound extends Vue {
       class: "elevation-1 primary"
     },
     { text: "Tài xế", value: "driver", class: "elevation-1 primary" },
-    { text: "Trạng thái", value: "status", class: "elevation-1 primary" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate",
@@ -272,7 +270,8 @@ export default class Inbound extends Vue {
       value: "tractor.licensePlate",
       class: "elevation-1 primary"
     },
-    { text: "", value: "actions", class: "elevation-1 primary" }
+    { text: "Trạng thái", value: "status", class: "elevation-1 primary" },
+    { text: "Hành động", value: "actions", class: "elevation-1 primary" }
   ];
 
   openUpdateDialog(item: IInbound) {
@@ -284,7 +283,8 @@ export default class Inbound extends Vue {
     this.inbound = item;
     this.dialogDel = true;
   }
-  openCreateContainer() {
+  openCreateContainer(item: IInbound) {
+    this.inbound = item;
     this.update = false;
     this.dialogAddCont = true;
   }
@@ -298,25 +298,28 @@ export default class Inbound extends Vue {
     this.container = item;
     this.dialogDelCont = true;
   }
-  @Watch("containerOptions")
+  async loadContainer(option: DataOptions) {
+    if (this.inbound && this.inbound.id) {
+      const _containers = await getContainersByInbound(this.inbound.id, {
+        page: option.page - 1,
+        limit: option.itemsPerPage
+      });
+      if (_containers.data) {
+        this.containers = _containers.data.data;
+        this.containerServerSideOptions.totalItems =
+          _containers.data.totalElements;
+      }
+    }
+  }
+  @Watch("containerOptions", { deep: true })
   async onContainerOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      if (this.inbound && this.inbound.id) {
-        const _containers = await getContainersByInbound(this.inbound.id, {
-          page: val.page - 1,
-          limit: val.itemsPerPage
-        });
-        if (_containers.data) {
-          this.containers = _containers.data.data;
-          this.containerServerSideOptions.totalItems =
-            _containers.data.totalElements;
-        }
-      }
+      await this.loadContainer(val);
       this.loading = false;
     }
   }
-  @Watch("options")
+  @Watch("options", { immediate: true })
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
@@ -335,19 +338,20 @@ export default class Inbound extends Vue {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
-        this.inbound = {} as IInbound;
+        this.inbound = null;
       } else {
         if (this.expanded.length > 0) {
           this.expanded.splice(0, this.expanded.length);
           this.expanded.push(value);
           this.inbound = value;
-          this.onContainerOptionsChange(this.containerOptions);
         } else {
           this.expanded.push(value);
           this.inbound = value;
         }
       }
     }
+    this.containerOptions.page = 1;
+    await this.loadContainer(this.containerOptions);
   }
 }
 </script>

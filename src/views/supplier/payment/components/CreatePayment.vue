@@ -40,15 +40,14 @@
           </v-row>
           <v-row>
             <v-col cols="12" md="6">
-              <v-text-field
-                label="Nội dung*"
-                name="detail"
-                prepend-icon="description"
-                type="text"
-                :readonly="readonly"
-                :rules="[required('nội dung hóa đơn')]"
-                v-model="paymentLocal.detail"
-              ></v-text-field>
+              <v-select
+                v-model="paymentLocal.type"
+                prepend-icon="money"
+                :readonly="update || readonly"
+                :items="types"
+                :rules="[required('loại hóa đơn')]"
+                label="Loại hóa đơn*"
+              ></v-select>
             </v-col>
             <v-col cols="12" md="6">
               <v-text-field
@@ -64,17 +63,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" md="6">
-              <v-select
-                v-model="paymentLocal.type"
-                prepend-icon="money"
-                :readonly="update || readonly"
-                :items="types"
-                :rules="[required('loại hóa đơn')]"
-                label="Loại hóa đơn*"
-              ></v-select>
-            </v-col>
-            <v-col cols="12" md="5" style="margin-top:-12px;">
+            <v-col cols="12" md="12">
               <DatetimePicker
                 :datetime="paymentLocal.paymentDate"
                 :return-value.sync="paymentLocal.paymentDate"
@@ -83,6 +72,19 @@
                 timelabel="Giờ thanh toán"
                 :readonly="readonly"
               />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="12">
+              <v-textarea
+                label="Nội dung*"
+                name="detail"
+                prepend-icon="description"
+                outlined
+                :readonly="readonly"
+                :rules="[required('nội dung hóa đơn')]"
+                v-model="paymentLocal.detail"
+              ></v-textarea>
             </v-col>
           </v-row>
         </v-form>
@@ -143,7 +145,7 @@ export default class CreatePayment extends Vue {
     amount: 0,
     isPaid: false,
     type: "",
-    paymentDate: ""
+    paymentDate: this.dateInit
   } as IPayment;
   valid = false;
   types: Array<string> = [];

@@ -108,13 +108,13 @@ export default class CreateRole extends Vue {
     });
     if (_permissions.data) {
       if (!this.update) {
-        _permissions.data.forEach((x: IPermission, index: number) => {
+        _permissions.data.data.forEach((x: IPermission, index: number) => {
           if (index != limit) {
             this.permissions.push(x);
           }
         });
       } else {
-        _permissions.data.forEach((x: IPermission) => {
+        _permissions.data.data.forEach((x: IPermission) => {
           for (let i = 0; i < this.roleLocal.permissions.length; i++) {
             if (x.name == this.roleLocal.permissions[i]) {
               this.permissions.push(x);
@@ -125,7 +125,7 @@ export default class CreateRole extends Vue {
           this.limit = this.permissions.length;
         } else {
           if (this.permissions.length < this.limit) {
-            _permissions.data.forEach((x: IPermission) => {
+            _permissions.data.data.forEach((x: IPermission) => {
               let check = false;
               for (let i = 0; i < this.permissions.length; i++) {
                 if (x.name == this.permissions[i].name) {

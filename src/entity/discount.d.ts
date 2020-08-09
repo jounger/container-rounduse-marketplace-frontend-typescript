@@ -6,4 +6,5 @@ export interface IDiscount {
   percent: number;
   maximumDiscount: number;
   expiredDate: string;
+  isSelected?: boolean;
 }

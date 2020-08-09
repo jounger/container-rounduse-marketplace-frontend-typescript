@@ -101,6 +101,18 @@
                   <v-list-item-title>Xem chi tiết</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
+              <!--  -->
+              <v-list-item
+                @click="openCreateEvidence()"
+                v-if="$auth.user().roles[0] == 'ROLE_FORWARDER'"
+              >
+                <v-list-item-icon>
+                  <v-icon small>edit</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Thêm chứng cứ</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
             </v-list>
           </v-menu>
         </template>
@@ -144,20 +156,6 @@
               </template>
               <template v-slot:item.isValid="{ item }">
                 {{ item.isValid ? "Đã xác nhận" : "Chưa xác nhận" }}
-              </template>
-              <template v-slot:footer>
-                <v-row justify="center">
-                  <v-btn
-                    class="ma-1"
-                    tile
-                    color="success"
-                    @click.stop="openCreateEvidence()"
-                    small
-                    v-if="$auth.user().roles[0] == 'ROLE_FORWARDER'"
-                  >
-                    <span style="color:white;">Thêm Chứng cứ</span>
-                  </v-btn>
-                </v-row>
               </template>
             </v-data-table>
           </td>
@@ -252,7 +250,7 @@ export default class Contract extends Vue {
     { text: "Chứng cớ", value: "evidence", class: "elevation-1 primary" },
     { text: "Hợp lệ", value: "isValid", class: "elevation-1 primary" },
     {
-      text: "Actions",
+      text: "Hành động",
       value: "actions",
       sortable: false,
       class: "elevation-1 primary"

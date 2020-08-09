@@ -7,4 +7,5 @@ export interface IReport {
   detail: string;
   status: string;
   sendDate: string;
+  isSelected?: boolean;
 }

@@ -118,9 +118,15 @@ export default class NavigationSupplier extends Vue {
     }
   ];
 
+  private shippingLineNavigation = [
+    { title: "Thông báo mượn", icon: "tram", link: "/borrow-notify" }
+  ];
+
   private supplierRegisterNavigation = [
     { title: "Đơn đăng ký", icon: "dashboard", link: "/application" }
   ];
+
+  private defaultNavigation = [{ title: "Empty", icon: "dashboard", link: "" }];
 
   get getNavigation() {
     if (this.$auth.check() && this.$auth.user().status === "PENDING") {
@@ -128,8 +134,12 @@ export default class NavigationSupplier extends Vue {
     } else {
       if (this.$auth.check("ROLE_FORWARDER")) {
         return this.forwarderNavigation;
-      } else {
+      } else if (this.$auth.check("ROLE_MERCHANT")) {
         return this.merchantNavigation;
+      } else if (this.$auth.check("ROLE_SHIPPINGLINE")) {
+        return this.shippingLineNavigation;
+      } else {
+        return this.defaultNavigation;
       }
     }
   }

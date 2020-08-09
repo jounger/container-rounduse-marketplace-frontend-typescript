@@ -12,4 +12,5 @@ export interface IContainerType {
   doorOpeningWidth: number;
   doorOpeningHeight: number;
   unitOfMeasurement: string;
+  isSelected?: boolean;
 }

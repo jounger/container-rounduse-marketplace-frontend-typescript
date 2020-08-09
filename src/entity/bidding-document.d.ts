@@ -16,4 +16,5 @@ export interface IBiddingDocument {
   bidFloorPrice: number;
   priceLeadership: number;
   status: string;
+  isSelected?: boolean;
 }

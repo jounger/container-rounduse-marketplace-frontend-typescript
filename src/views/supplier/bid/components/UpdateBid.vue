@@ -97,12 +97,6 @@
                 ]"
                 label="Giá gửi thầu"
               ></v-text-field>
-              <!-- <v-text-field
-                label="Label Text"
-                value="12:30:00"
-                type="time"
-                suffix="PST"
-              ></v-text-field> -->
               <v-btn color="primary" @click="updateBid()" :disabled="!valid"
                 >Lưu và Tiếp tục</v-btn
               >
@@ -297,7 +291,6 @@ export default class Update extends Vue {
     },
     { text: "Hãng tàu", value: "outbound.shippingLine" },
     { text: "Loại cont", value: "outbound.containerType" },
-    { text: "Mã booking", value: "outbound.booking.number" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
     { text: "Mở thầu", value: "bidOpening" },
     { text: "Đóng thầu", value: "bidClosing" },

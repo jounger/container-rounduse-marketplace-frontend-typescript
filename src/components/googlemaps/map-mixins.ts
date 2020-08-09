@@ -3,6 +3,7 @@ import { DistanceMatrix } from "./map-interface";
 
 @Component
 export default class GoogleMapMixins extends Vue {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rejectEmptyElement(list: Array<any>) {
     return list.filter(x => x && x.length >= 5);
   }

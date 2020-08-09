@@ -8,4 +8,5 @@ export interface IBid {
   bidValidityPeriod: string;
   dateOfDecision?: string;
   status: string;
+  isSelected?: boolean;
 }

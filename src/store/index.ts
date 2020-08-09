@@ -8,6 +8,7 @@ const store = new Vuex.Store({
   modules: {}
 });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (Vue as any).store = store;
 
 export default store;
