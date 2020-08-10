@@ -4,7 +4,7 @@
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
-            update ? "Cập nhập Đầu kéo" : "Thêm mới Đầu kéo"
+            update ? "Cập nhật Đầu kéo" : "Thêm mới Đầu kéo"
           }}</span></v-toolbar-title
         >
       </v-toolbar>
@@ -50,7 +50,7 @@
           color="primary"
           v-if="update"
           :disabled="!valid"
-          >Cập nhập</v-btn
+          >Cập nhật</v-btn
         >
         <v-btn
           @click="createTractor()"

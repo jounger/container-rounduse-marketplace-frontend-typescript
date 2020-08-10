@@ -4,7 +4,7 @@
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
-            update ? "Cập nhập Lái xe" : "Thêm mới Lái xe"
+            update ? "Cập nhật Lái xe" : "Thêm mới Lái xe"
           }}</span></v-toolbar-title
         >
       </v-toolbar>
@@ -135,7 +135,7 @@
           color="primary"
           v-if="update"
           :disabled="!valid"
-          >Cập nhập</v-btn
+          >Cập nhật</v-btn
         >
         <v-btn @click="createDriver()" color="primary" v-else :disabled="!valid"
           >Thêm mới</v-btn

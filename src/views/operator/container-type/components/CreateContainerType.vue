@@ -14,7 +14,7 @@
           </v-btn>
           <v-toolbar-title
             >{{
-              update ? "Cập nhập Loại Container" : "Thêm mới Loại Container"
+              update ? "Cập nhật Loại Container" : "Thêm mới Loại Container"
             }}
           </v-toolbar-title>
 
@@ -27,7 +27,7 @@
               @click="updateContainerType()"
               v-if="update"
               :disabled="!valid"
-              >Cập nhập</v-btn
+              >Cập nhật</v-btn
             >
             <v-btn
               dark

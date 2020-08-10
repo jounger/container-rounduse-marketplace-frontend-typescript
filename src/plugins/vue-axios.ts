@@ -35,6 +35,8 @@ instance.interceptors.request.use(
   error => {
     // do something with request error
     console.log(error); // for debug
+
+    setTimeout(() => (loading.setLoading(false)), 200);
     return error;
   }
 );

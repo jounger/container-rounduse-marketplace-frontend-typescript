@@ -4,7 +4,7 @@
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
-            update ? "Cập nhập Container" : "Thêm mới Container"
+            update ? "Cập nhật Container" : "Thêm mới Container"
           }}</span></v-toolbar-title
         >
       </v-toolbar>
@@ -21,7 +21,6 @@
                     prepend-icon="directions_bus"
                     :rules="[required('mã Container')]"
                     label="Container No.*"
-                    :readonly="update"
                   ></v-text-field>
                 </v-flex>
               </v-layout>
@@ -116,7 +115,7 @@
           v-else
           :disabled="!valid"
           @click="updateContainer()"
-          >Cập nhập</v-btn
+          >Cập nhật</v-btn
         >
       </v-card-actions>
     </v-card>

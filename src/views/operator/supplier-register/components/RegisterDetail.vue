@@ -6,19 +6,8 @@
     hide-overlay
     transition="dialog-bottom-transition"
   >
-    <v-card>
-      <v-row justify="center">
-        <ConfirmReviewSupplier
-          v-if="dialogConfirm"
-          :dialogConfirm.sync="dialogConfirm"
-          :supplier="supplier"
-          :suppliers.sync="suppliersSync"
-          :totalItems.sync="totalItemsSync"
-          :dialogDetail.sync="dialogDetailSync"
-          :status="status"
-        />
-      </v-row>
-      <v-toolbar color="primary" light flat>
+    <v-card tile>
+      <v-toolbar dark color="primary">
         <v-btn icon dark @click="dialogDetailSync = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
@@ -30,10 +19,6 @@
         <v-spacer></v-spacer>
         <v-toolbar-items>
           <v-btn dark text @click="dialogDetailSync = false">Trở về</v-btn>
-          <v-btn dark color="error" @click="openRejectConfirm()">Từ chối</v-btn>
-          <v-btn @click="openAcceptConfirm()" color="green"
-            ><span style="color:white;">Cho phép</span></v-btn
-          >
         </v-toolbar-items>
       </v-toolbar>
       <v-card-text>
@@ -191,29 +176,10 @@
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { ISupplier } from "@/entity/supplier";
-import ConfirmReviewSupplier from "./ConfirmReviewSupplier.vue";
 
-@Component({
-  components: {
-    ConfirmReviewSupplier
-  }
-})
+@Component
 export default class RegisterDetail extends Vue {
   @PropSync("dialogDetail", { type: Boolean }) dialogDetailSync!: boolean;
-  @PropSync("suppliers", { type: Array }) suppliersSync!: Array<ISupplier>;
-  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) supplier!: ISupplier;
-
-  finish = false;
-  status = false;
-  dialogConfirm = false;
-  openAcceptConfirm() {
-    this.status = true;
-    this.dialogConfirm = true;
-  }
-  openRejectConfirm() {
-    this.status = false;
-    this.dialogConfirm = true;
-  }
 }
 </script>

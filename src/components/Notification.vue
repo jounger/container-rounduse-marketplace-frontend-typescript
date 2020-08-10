@@ -161,6 +161,10 @@ export default class Notification extends Vue {
       } else {
         ROUTER = "/bidding-document";
       }
+      if (location.pathname == ROUTER) {
+        location.reload();
+        return;
+      }
     }
     console.log(ROUTER);
     this.$router.push(ROUTER);
@@ -172,7 +176,6 @@ export default class Notification extends Vue {
         this.seenNotification(x);
       }
     });
-    this.messageCount = 0;
   }
 
   async seenNotification(item: INotification) {
@@ -184,6 +187,7 @@ export default class Notification extends Vue {
       if (_res.data) {
         const _notification = _res.data as INotification;
         item.isRead = _notification.isRead;
+        if (this.messageCount > 0) this.messageCount -= 1;
       }
     }
   }

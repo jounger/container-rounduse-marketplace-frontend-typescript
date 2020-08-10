@@ -60,7 +60,7 @@
             <v-icon left>business_center</v-icon> Xem HSMT
           </v-btn>
         </template>
-        <template v-slot:item.action="{ item }">
+        <template v-slot:item.actions="{ item }">
           <v-btn
             class="ma-1"
             tile
@@ -118,7 +118,7 @@ export default class Report extends Vue {
     { text: "Trạng thái", value: "status" },
     {
       text: "Hành động",
-      value: "action",
+      value: "actions",
       sortable: false,
       align: "center"
     }

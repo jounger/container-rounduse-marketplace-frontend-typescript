@@ -36,7 +36,7 @@
               :actions-append="biddingDocumentOptions.page"
               no-data-text="Danh sách HSMT nhận được rỗng."
               disable-sort
-              class="elevation-1"
+              class="elevation-1 mb-1"
             >
               <template v-slot:top>
                 <v-toolbar flat color="white">
@@ -50,11 +50,21 @@
                   :value="item"
                 ></v-switch>
               </template>
+              <template v-slot:item.unit="{ item }">
+                {{
+                  item.outbound.booking.unit +
+                    " x " +
+                    item.outbound.containerType
+                }}
+              </template>
               <template v-slot:item.bidOpening="{ item }">
                 {{ formatDatetime(item.bidOpening) }}
               </template>
               <template v-slot:item.bidClosing="{ item }">
                 {{ formatDatetime(item.bidClosing) }}
+              </template>
+              <template v-slot:item.bidPackagePrice="{ item }">
+                {{ currencyFormatter(item.bidPackagePrice) }}
               </template>
             </v-data-table>
             <v-btn
@@ -105,7 +115,9 @@
             <v-tabs background-color="white" color="deep-purple accent-4" left>
               <v-tab>Danh sách Inbound</v-tab>
               <v-tab
-                >Danh sách Containers đã chọn ({{ containers.length }})</v-tab
+                >Danh sách Containers đã chọn ({{
+                  containersSelected.length
+                }})</v-tab
               >
 
               <v-tab-item>
@@ -138,37 +150,25 @@
                       <td :colspan="headers.length" class="px-0">
                         <v-data-table
                           :headers="containerHeaders"
-                          :items="inbound.billOfLading.containers"
+                          :items="containers"
                           item-key="id"
                           :loading="loading"
-                          :options.sync="options"
-                          :server-items-length="serverSideOptions.totalItems"
+                          :options.sync="containerOptions"
+                          :server-items-length="
+                            containerServerSideOptions.totalItems
+                          "
                           :footer-props="{
                             'items-per-page-options':
-                              serverSideOptions.itemsPerPageItems
+                              containerServerSideOptions.itemsPerPageItems
                           }"
-                          :actions-append="options.page"
+                          :actions-append="containerOptions.page"
                           disable-sort
                           no-data-text="Danh sách Container rỗng."
+                          v-model="containersSelected"
+                          show-select
                           dark
                           dense
                         >
-                          <template v-slot:item.actions="{ item }">
-                            <v-checkbox
-                              v-model="containers"
-                              :value="item"
-                              @change="changeContainerServerSideOptions(item)"
-                              :disabled="
-                                containers.length == unit &&
-                                  containers.findIndex(
-                                    x =>
-                                      x.containerNumber == item.containerNumber
-                                  ) == -1
-                              "
-                              style="margin:0px;padding:0px"
-                              hide-details
-                            ></v-checkbox>
-                          </template>
                         </v-data-table>
                       </td>
                     </template>
@@ -181,29 +181,12 @@
                     :headers="containerSelectedHeaders"
                     :items="containersSelected"
                     item-key="id"
-                    :loading="loading"
-                    :options.sync="containerOptions"
-                    :server-items-length="containerServerSideOptions.totalItems"
-                    :footer-props="{
-                      'items-per-page-options':
-                        containerServerSideOptions.itemsPerPageItems
-                    }"
+                    hide-default-footer
                     no-data-text="Danh sách Container đã chọn rỗng."
-                    :actions-append="containerOptions.page"
                     disable-sort
+                    v-model="containersSelected"
+                    show-select
                   >
-                    <template v-slot:item.actions="{ item }">
-                      <v-checkbox
-                        v-model="containers"
-                        :value="item"
-                        @change="
-                          containerServerSideOptions.totalItems -= 1;
-                          onContainerOptionsChange(containerOptions);
-                        "
-                        style="margin:0px;padding:0px"
-                        hide-details
-                      ></v-checkbox>
-                    </template>
                   </v-data-table>
                 </v-container>
               </v-tab-item>
@@ -215,17 +198,17 @@
               "
               color="primary"
               @click="stepper = 4"
-              :disabled="containers.length == 0"
+              :disabled="containersSelected.length == 0"
               >Tiếp tục</v-btn
             >
             <v-btn
               v-if="
                 biddingDocumentSelected &&
-                  !biddingDocumentSelected.isMultipleAward
+                  biddingDocumentSelected.isMultipleAward == false
               "
               color="primary"
               @click="stepper = 4"
-              :disabled="containers.length < unit"
+              :disabled="containersSelected.length < unit"
               >Tiếp tục</v-btn
             >
             <v-btn text @click="stepper = 2">Quay lại</v-btn>
@@ -308,14 +291,7 @@ export default class CreateBid extends Vue {
     returnStation: ""
   } as IInbound;
   loading = true;
-  options = {
-    page: 1,
-    itemsPerPage: 5
-  } as DataOptions;
-  serverSideOptions = {
-    totalItems: 0,
-    itemsPerPageItems: [5, 10, 20, 50]
-  };
+
   biddingDocumentOptions = {
     page: 1,
     itemsPerPage: 5
@@ -358,12 +334,11 @@ export default class CreateBid extends Vue {
       value: "id"
     },
     { text: "Hãng tàu", value: "outbound.shippingLine" },
-    { text: "Loại cont", value: "outbound.containerType" },
+    { text: "Số cont", value: "unit" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
     { text: "Mở thầu", value: "bidOpening" },
     { text: "Đóng thầu", value: "bidClosing" },
-    { text: "Nhiều thầu win", value: "isMultipleAward" },
-    { text: "Chọn HSMT", value: "actions", sortable: false }
+    { text: "Nhiều thầu win", value: "isMultipleAward" }
   ];
   inboundHeaders = [
     {
@@ -399,7 +374,7 @@ export default class CreateBid extends Vue {
       value: "tractor.licensePlate",
       class: "elevation-1 primary"
     },
-    { text: "Chọn Cont", value: "actions", class: "elevation-1 primary" }
+    { text: "Trạng thái", value: "status", class: "elevation-1 primary" }
   ];
   containerSelectedHeaders = [
     {
@@ -417,7 +392,7 @@ export default class CreateBid extends Vue {
       text: "Đầu kéo",
       value: "tractor.licensePlate"
     },
-    { text: "Chọn Cont", value: "actions" }
+    { text: "Trạng thái", value: "status" }
   ];
   // Bid
   getInbound() {
@@ -429,7 +404,7 @@ export default class CreateBid extends Vue {
   async createBid() {
     // TODO: API create bid
     if (this.biddingDocumentSelected && this.biddingDocumentSelected.id) {
-      this.bidLocal.containers = this.containers.reduce(function(
+      this.bidLocal.containers = this.containersSelected.reduce(function(
         pV: Array<number>,
         cV: IContainer
       ) {
@@ -476,27 +451,7 @@ export default class CreateBid extends Vue {
       }
     }
   }
-  changeContainerServerSideOptions(item: IContainer) {
-    if (this.containers.length > 0) {
-      let check = false;
-      this.containers.forEach((x: IContainer) => {
-        console.log(x);
-        console.log(item);
-        if (x === item) {
-          console.log(1);
-          check = true;
-        }
-      });
-      if (check === false) {
-        this.containerServerSideOptions.totalItems -= 1;
-      } else {
-        this.containerServerSideOptions.totalItems += 1;
-      }
-    } else {
-      this.containerServerSideOptions.totalItems -= 1;
-    }
-    this.onContainerOptionsChange(this.containerOptions);
-  }
+
   async clicked(value: IInbound) {
     console.log("value", value);
     if (this.singleExpand) {
@@ -504,20 +459,21 @@ export default class CreateBid extends Vue {
         this.expanded.splice(0, this.expanded.length);
         this.inbound.billOfLading.containers = [] as Array<IContainer>;
       } else {
-        console.log(0);
         if (this.expanded.length > 0) {
           this.expanded.splice(0, this.expanded.length);
           this.expanded.push(value);
           this.inbound = value;
           this.inbound.billOfLading.containers = [] as Array<IContainer>;
-          this.onOptionsChange(this.options);
         } else {
           this.expanded.push(value);
           this.inbound = value;
         }
       }
     }
+    this.containerOptions.page = 1;
+    this.loadContainersByInbound(value.id as number, this.containerOptions);
   }
+
   @Watch("biddingDocumentOptions")
   async onBiddingDocumentOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
@@ -582,44 +538,29 @@ export default class CreateBid extends Vue {
       }
     }
   }
+
+  async loadContainersByInbound(inboundId: number, option: DataOptions) {
+    const _containers = await getContainersByInbound(inboundId, {
+      page: option.page - 1,
+      limit: option.itemsPerPage
+    });
+    if (_containers.data) {
+      this.containerServerSideOptions.totalItems =
+        _containers.data.totalElements;
+      this.containers = _containers.data.data.filter(
+        (x: IContainer) => x.status == "CREATED"
+      );
+    }
+  }
+
   @Watch("containerOptions")
   async onContainerOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
-      this.containersSelected = [] as Array<IContainer>;
       this.loading = true;
-      const start = (val.page - 1) * val.itemsPerPage;
-      let end = start + val.itemsPerPage - 1;
-      if (end > this.containers.length - 1) {
-        end = this.containers.length - 1;
-      }
-      console.log(start);
-      console.log(end);
-      console.log(this.containers);
-      for (let i = start; i <= end; i++) {
-        this.containersSelected.push(this.containers[i]);
-      }
-
-      this.loading = false;
+      if (this.inbound)
+        await this.loadContainersByInbound(this.inbound.id as number, val);
     }
-  }
-  @Watch("options")
-  async onOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined") {
-      this.loading = true;
-      if (this.inbound && this.inbound.id) {
-        const _containers = await getContainersByInbound(this.inbound.id, {
-          page: val.page - 1,
-          limit: val.itemsPerPage
-        });
-        if (_containers.data) {
-          this.serverSideOptions.totalItems = _containers.data.totalElements;
-          this.inbound.billOfLading.containers = _containers.data.data.filter(
-            (x: IContainer) => x.status == "CREATED"
-          );
-        }
-      }
-      this.loading = false;
-    }
+    this.loading = false;
   }
 }
 </script>

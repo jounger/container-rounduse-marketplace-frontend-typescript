@@ -158,9 +158,13 @@ export default class CreateCombined extends Vue {
 
   containerHeaders = [
     {
-      text: "Container No.",
+      text: "Mã",
       align: "start",
       sortable: false,
+      value: "id"
+    },
+    {
+      text: "Container No.",
       value: "containerNumber"
     },
     { text: "HSDT", value: "bid" },
@@ -200,15 +204,15 @@ export default class CreateCombined extends Vue {
       this.containersSelected = _containers;
     }
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getBidFromContainer(item: IContainer) {
     // TODO: use
-    console.log(item);
     return this.bid;
   }
   get getSelectedContainer() {
     const containers = this.bid.containers as IContainer[];
     if (this.isMultipleAward) {
-      return containers.filter(x => x.isSelected);
+      return containers.filter(x => x.isSelected == true);
     } else {
       return containers;
     }

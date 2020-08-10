@@ -6,7 +6,7 @@ const options = {
   rolesVar: "roles",
   tokenDefaultName: "default_auth_token",
   userDefaultName: "default_auth_user",
-  tokenStore: ["vuex", "localStorage", "cookie"],
+  tokenStore: ["vuex", "localStorage"],
   headerTokenReplace: "{auth_token}",
   tokenType: "Bearer",
   vuexStoreSpace: "vue-auth",

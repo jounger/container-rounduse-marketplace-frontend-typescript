@@ -78,7 +78,7 @@
             >{{ item.status }}</v-chip
           >
         </template>
-        <template v-slot:item.action="{ item }">
+        <template v-slot:item.actions="{ item }">
           <v-menu :close-on-click="true">
             <template v-slot:activator="{ on, attrs }">
               <v-btn color="pink" icon outlined v-bind="attrs" v-on="on">
@@ -162,7 +162,7 @@ export default class Report extends Vue {
     { text: "Trạng thái", value: "status" },
     {
       text: "Hành động",
-      value: "action",
+      value: "actions",
       sortable: false,
       align: "center"
     }

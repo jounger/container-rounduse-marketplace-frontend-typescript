@@ -4,7 +4,7 @@
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
-            update ? "Cập nhập Mã giảm giá" : "Thêm mới Mã giảm giá"
+            update ? "Cập nhật Mã giảm giá" : "Thêm mới Mã giảm giá"
           }}</span></v-toolbar-title
         >
       </v-toolbar>
@@ -12,7 +12,7 @@
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
           <v-row>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="5">
               <v-text-field
                 label="Mã giảm giá*"
                 name="code"
@@ -24,17 +24,35 @@
               ></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
-              <v-text-field
-                label="Chi tiết"
-                name="detail"
-                prepend-icon="description"
-                type="text"
-                v-model="discountLocal.detail"
-              ></v-text-field>
+              <DatetimePicker
+                :datetime="discountLocal.expiredDate"
+                :return-value.sync="discountLocal.expiredDate"
+                dateicon="remove_shopping_cart"
+                datelabel="Ngày hết hạn"
+                timelabel="Giờ hết hạn"
+              />
             </v-col>
           </v-row>
           <v-row>
+            <v-col cols="12" md="3">
+              <v-text-field
+                label="Giảm (%)"
+                name="percent"
+                prepend-icon="shopping_cart"
+                type="number"
+                v-model="discountLocal.percent"
+              ></v-text-field>
+            </v-col>
             <v-col cols="12" md="6">
+              <v-text-field
+                label="Giảm nhiều nhất (money)"
+                name="maximumDiscount"
+                prepend-icon="swap_vert"
+                type="number"
+                v-model="discountLocal.maximumDiscount"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="3">
               <v-select
                 prepend-icon="monetization_on"
                 :items="currencies"
@@ -43,34 +61,16 @@
                 v-model="discountLocal.currency"
               ></v-select>
             </v-col>
-            <v-col cols="12" md="6">
-              <v-text-field
-                label="Phần trăm (%)"
-                name="percent"
-                prepend-icon="shopping_cart"
-                type="number"
-                v-model="discountLocal.percent"
-              ></v-text-field>
-            </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" md="6">
-              <v-text-field
-                label="Giảm giá nhiều nhất (%)"
-                name="maximumDiscount"
-                prepend-icon="swap_vert"
-                type="number"
-                v-model="discountLocal.maximumDiscount"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" md="5" style="margin-top: -12px;">
-              <DatetimePicker
-                :datetime="discountLocal.expiredDate"
-                :return-value.sync="discountLocal.expiredDate"
-                dateicon="remove_shopping_cart"
-                datelabel="Ngày hết hạn"
-                timelabel="Giờ hết hạn"
-              />
+            <v-col cols="12" md="12">
+              <v-textarea
+                label="Chi tiết"
+                name="detail"
+                prepend-icon="description"
+                outlined
+                v-model="discountLocal.detail"
+              ></v-textarea>
             </v-col>
           </v-row>
         </v-form>
@@ -83,7 +83,7 @@
           color="primary"
           v-if="update"
           :disabled="!valid"
-          >Cập nhập</v-btn
+          >Cập nhật</v-btn
         >
         <v-btn
           @click="createDiscount()"

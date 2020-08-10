@@ -70,6 +70,9 @@
               <template v-slot:item.bidClosing="{ item }">
                 {{ formatDatetime(item.bidClosing) }}
               </template>
+              <template v-slot:item.bidPackagePrice="{ item }">
+                {{ currencyFormatter(item.bidPackagePrice) }}
+              </template>
             </v-data-table>
             <v-btn color="primary" @click="stepper = 2">Tiếp tục</v-btn>
           </v-stepper-content>

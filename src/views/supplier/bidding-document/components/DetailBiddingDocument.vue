@@ -8,7 +8,7 @@
       />
     </v-row>
     <CreateCombined
-      v-if="bid"
+      v-if="bid && dialogAddCombined"
       :dialogAdd.sync="dialogAddCombined"
       :numberWinner.sync="numberWinner"
       :isMultipleAward="biddingDocument.isMultipleAward"
@@ -365,7 +365,7 @@
                   $auth.user().roles[0] == 'ROLE_MERCHANT'
               "
             >
-              <v-icon left>library_add_check </v-icon>Đồng ý
+              <v-icon left dense>library_add_check </v-icon>Đồng ý
             </v-btn>
             <v-btn
               class="ma-1"
@@ -380,7 +380,7 @@
                   $auth.user().roles[0] == 'ROLE_MERCHANT'
               "
             >
-              <v-icon left>remove_circle</v-icon>Từ chối
+              <v-icon left dense>remove_circle</v-icon>Từ chối
             </v-btn>
             <span style="color: red;" v-if="item.status == 'REJECTED'">{{
               item.status
@@ -404,9 +404,9 @@
           >
             <td :colspan="headers.length" class="px-0">
               <v-data-table
-                v-if="bid"
                 :headers="containerHeaders"
-                :items="bid.containers"
+                :items="containers"
+                item-key="id"
                 :loading="loading"
                 :options.sync="containerOptions"
                 :server-items-length="containerServerSideOptions.totalItems"
@@ -417,27 +417,19 @@
                 :actions-append="containerOptions.page"
                 v-model="containerSelected"
                 show-select
+                @item-selected="selectContainer"
                 disable-sort
                 dark
                 dense
               >
-              </v-data-table>
-              <v-data-table
-                v-if="bid && !biddingDocument.isMultipleAward"
-                :headers="containerHeaders"
-                :items="bid.containers"
-                :loading="loading"
-                :options.sync="containerOptions"
-                :server-items-length="containerServerSideOptions.totalItems"
-                :footer-props="{
-                  'items-per-page-options':
-                    containerServerSideOptions.itemsPerPageItems
-                }"
-                :actions-append="containerOptions.page"
-                disable-sort
-                dark
-                dense
-              >
+                <template v-slot:item.status="{ item }">
+                  <v-chip
+                    :color="item.status == 'COMBINED' ? 'success' : 'info'"
+                    dark
+                    x-small
+                    >{{ item.status }}</v-chip
+                  >
+                </template>
               </v-data-table>
             </td>
           </template>
@@ -477,8 +469,8 @@ import {
 export default class DetailBiddingDocument extends Vue {
   biddingDocument = null as IBiddingDocument | null;
   loading = false;
+  containers = [] as Array<IContainer>;
   containerSelected = [] as Array<IContainer>;
-  isAccept = false;
   dialogAddCombined = false;
   dialogReport = false;
   dialogBid = false;
@@ -535,31 +527,51 @@ export default class DetailBiddingDocument extends Vue {
       text: "Đầu kéo",
       value: "tractor.licensePlate",
       class: "primary"
-    }
+    },
+    { text: "Trạng thái", value: "status", class: "primary" }
   ];
 
   openConfirmBid(item: IBid, accept: boolean) {
     this.bid = item;
-    this.isAccept = accept;
     this.dialogAddCombined = true;
   }
 
-  clicked(value: IBid) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  selectContainer(select: any) {
+    console.log(select);
+    select.item.isSelected = select.value;
+    if (this.bid) {
+      const _container = this.bid.containers as IContainer[];
+      const index = _container.findIndex(
+        (x: IContainer) => x.id === select.item.id
+      );
+      if (select.value == false && index != -1) {
+        this.bid.containers.splice(index, 1);
+      } else if (select.value && index == -1) {
+        this.bid.containers.push(select.item);
+      } else if (select.value && index != -1) {
+        this.bid.containers.splice(index, 1, select.item);
+      }
+    }
+  }
+
+  async clicked(value: IBid) {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
-        this.containerSelected = [];
-        this.bid = {} as IBid;
+        this.bid = null;
       } else {
         if (this.expanded.length > 0) {
           this.expanded.splice(0, this.expanded.length);
           this.expanded.push(value);
-          this.containerSelected = value.containers as Array<IContainer>;
           this.bid = value;
-          this.onContainerOptionsChange(this.containerOptions);
+          this.containerOptions.page = 1;
+          await this.loadContainersByBid(
+            value.id as number,
+            this.containerOptions
+          );
         } else {
           this.expanded.push(value);
-          this.containerSelected = value.containers as Array<IContainer>;
           this.bid = value;
         }
       }
@@ -567,12 +579,12 @@ export default class DetailBiddingDocument extends Vue {
       const index = this.expanded.findIndex(x => x.id === value.id);
       if (index === -1) {
         this.expanded.push(value);
-        // this.containerSelected.concat(value.containers as Array<IContainer>);
       } else {
         this.expanded.splice(index, 1);
       }
     }
   }
+
   @Watch("getRouterId")
   async onGetRouterIdChange() {
     const _biddingDocument = await getBiddingDocument(
@@ -580,20 +592,25 @@ export default class DetailBiddingDocument extends Vue {
     );
     this.biddingDocument = _biddingDocument.data.data;
   }
+
+  async loadContainersByBid(bidId: number, option: DataOptions) {
+    const _containers = await getContainersByBid(bidId, {
+      page: option.page - 1,
+      limit: option.itemsPerPage
+    });
+    if (_containers.data) {
+      this.containerServerSideOptions.totalItems =
+        _containers.data.totalElements;
+      this.containers = _containers.data.data;
+    }
+  }
+
   @Watch("containerOptions")
   async onContainerOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      if (this.bid && this.bid.id) {
-        const _containers = await getContainersByBid(this.bid.id, {
-          page: val.page - 1,
-          limit: val.itemsPerPage
-        });
-        if (_containers.data) {
-          this.containerServerSideOptions.totalItems =
-            _containers.data.totalElements;
-          this.bid.containers = _containers.data.data;
-        }
+      if (this.bid) {
+        await this.loadContainersByBid(this.bid.id as number, val);
       }
       this.loading = false;
     }
@@ -632,6 +649,7 @@ export default class DetailBiddingDocument extends Vue {
       this.loading = false;
     }
   }
+
   get getRouterId() {
     return this.$route.params.id;
   }
@@ -643,9 +661,11 @@ export default class DetailBiddingDocument extends Vue {
     );
     if (_biddingDocument.data) this.biddingDocument = _biddingDocument.data;
   }
+
   openReportDialog() {
     this.dialogReport = true;
   }
+
   openCreateBidDialog() {
     this.dialogBid = true;
   }

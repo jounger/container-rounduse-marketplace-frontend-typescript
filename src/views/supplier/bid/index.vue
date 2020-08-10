@@ -247,14 +247,14 @@ export default class Bid extends Vue {
     this.loading = false;
     return this.bids;
   }
-  clicked(value: IBiddingDocument) {
+  async clicked(value: IBiddingDocument) {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
         this.biddingDocument = {} as IBiddingDocument;
       } else {
         this.expanded.splice(0, this.expanded.length);
-        this.getBids(value);
+        await this.getBids(value);
         this.expanded.push(value);
         this.biddingDocument = value;
       }

@@ -5,7 +5,7 @@
         <v-toolbar-title
           ><span class="headline" style="color:white;"
             >{{
-              update ? (readonly ? "Thông tin" : "Cập nhập") : "Thêm mới"
+              update ? (readonly ? "Thông tin" : "Cập nhật") : "Thêm mới"
             }}
             Hóa đơn</span
           ></v-toolbar-title
@@ -97,7 +97,7 @@
           color="primary"
           v-if="update && !readonly"
           :disabled="!valid"
-          >Cập nhập</v-btn
+          >Cập nhật</v-btn
         >
         <v-btn
           @click="createPayment()"

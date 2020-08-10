@@ -4,7 +4,7 @@
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
-            update ? "Cập nhập Phản hồi" : "Thêm mới Phản hồi"
+            update ? "Cập nhật Phản hồi" : "Thêm mới Phản hồi"
           }}</span></v-toolbar-title
         >
       </v-toolbar>
@@ -49,7 +49,7 @@
           color="primary"
           v-if="update"
           :disabled="!valid"
-          >Cập nhập</v-btn
+          >Cập nhật</v-btn
         >
         <v-btn
           @click="createFeedback()"

@@ -6,8 +6,8 @@
     hide-overlay
     transition="dialog-bottom-transition"
   >
-    <v-card>
-      <v-toolbar color="primary" light flat>
+    <v-card tile>
+      <v-toolbar dark color="primary">
         <v-btn icon dark @click="dialogSync = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>

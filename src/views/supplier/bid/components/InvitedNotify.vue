@@ -78,6 +78,9 @@
         <template v-slot:item.bidClosing="{ item }">
           {{ formatDatetime(item.relatedResource.bidClosing) }}
         </template>
+        <template v-slot:item.relatedResource.bidPackagePrice="{ item }">
+          {{ currencyFormatter(item.relatedResource.bidPackagePrice) }}
+        </template>
       </v-data-table>
     </v-card>
   </v-content>
