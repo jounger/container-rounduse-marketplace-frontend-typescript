@@ -17,7 +17,7 @@
               <v-layout col>
                 <v-flex xs10>
                   <v-text-field
-                    v-model="containerLocal.containerNumber"
+                    v-model="containerLocal.number"
                     prepend-icon="directions_bus"
                     :rules="[required('mã Container')]"
                     label="Container No.*"
@@ -147,7 +147,7 @@ export default class CreateContainer extends Vue {
 
   valid = false;
   containerLocal = {
-    containerNumber: "",
+    number: "",
     trailer: "",
     tractor: "",
     driver: "",
@@ -193,7 +193,6 @@ export default class CreateContainer extends Vue {
             check = true;
           }
           if (check == false && this.drivers.length < this.limitDrivers) {
-            console.log(this.limitDrivers);
             this.drivers.push(x);
           }
         });
@@ -204,10 +203,12 @@ export default class CreateContainer extends Vue {
     }
     this.loadingDrivers = false;
   }
+
   async loadMoreDrivers() {
     this.limitDrivers += 5;
     await this.getDrivers(this.limitDrivers);
   }
+
   async getTractors(limit: number) {
     this.loadingTractors = true;
     this.tractors = [] as Array<IContainerTractor>;
@@ -236,7 +237,6 @@ export default class CreateContainer extends Vue {
               check = true;
             }
             if (check == false && this.tractors.length < this.limitTractors) {
-              console.log(this.limitTractors);
               this.tractors.push(x);
             }
           });
@@ -248,10 +248,12 @@ export default class CreateContainer extends Vue {
     }
     this.loadingTractors = false;
   }
+
   async loadMoreTractors() {
     this.limitTractors += 5;
     await this.getTractors(this.limitTractors);
   }
+
   async getTrailers(limit: number) {
     this.loadingTrailers = true;
     this.trailers = [] as Array<IContainerSemiTrailer>;
@@ -280,7 +282,6 @@ export default class CreateContainer extends Vue {
               check = true;
             }
             if (check == false && this.trailers.length < this.limitTrailers) {
-              console.log(this.limitTrailers);
               this.trailers.push(x);
             }
           });
@@ -292,10 +293,12 @@ export default class CreateContainer extends Vue {
     }
     this.loadingTrailers = false;
   }
+
   async loadMoreTrailers() {
     this.limitTrailers += 5;
     await this.getTrailers(this.limitTrailers);
   }
+
   async created() {
     if (this.update) {
       this.containerLocal = Object.assign({}, this.container);
@@ -314,6 +317,7 @@ export default class CreateContainer extends Vue {
       await this.getTrailers(5);
     }
   }
+
   async createContainer() {
     if (this.billOfLading.id) {
       const _container = await createContainer(
@@ -327,6 +331,7 @@ export default class CreateContainer extends Vue {
       }
     }
   }
+
   async updateContainer() {
     const _container = await updateContainer(this.containerLocal);
     if (_container.data) {

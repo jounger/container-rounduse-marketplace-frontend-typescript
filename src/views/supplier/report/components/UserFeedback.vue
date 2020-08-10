@@ -154,6 +154,7 @@ export default class UserFeedback extends Vue {
   feedbackRecipientSync!: string;
   @PropSync("showCreateFeedback", { type: Boolean })
   showCreateFeedbackSync!: boolean;
+
   message = "";
   fullname = "";
   recipient = "";
@@ -175,6 +176,7 @@ export default class UserFeedback extends Vue {
     this.feedbackLocal = Object.assign({}, this.item);
     await this.getFullname();
   }
+
   async updateFeedback() {
     if (this.item.id) {
       const _feedback = await editFeedback(this.item.id, {
@@ -186,6 +188,7 @@ export default class UserFeedback extends Vue {
       }
     }
   }
+
   async getFullname() {
     if (this.item.sender == this.report.sender) {
       this.fullname = this.forwarderFullname;
@@ -207,8 +210,8 @@ export default class UserFeedback extends Vue {
       this.updateRecipient = this.forwarderFullname;
     }
   }
+
   replyFeedback() {
-    console.log(1);
     this.feedbackRecipientSync = this.item.sender;
     this.recipientLabelSync = this.fullname;
     if (this.$auth.user().roles[0] == "ROLE_FORWARDER") {
@@ -216,6 +219,7 @@ export default class UserFeedback extends Vue {
     }
     this.focusSync = true;
   }
+
   editFeedback() {
     this.edit = true;
     this.message = this.item.message;
@@ -225,6 +229,7 @@ export default class UserFeedback extends Vue {
     this.feedback = this.item;
     this.dialogDel = true;
   }
+
   openMarkDialog() {
     this.feedback = this.item;
     this.dialogMark = true;

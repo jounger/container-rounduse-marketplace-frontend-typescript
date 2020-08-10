@@ -55,11 +55,11 @@ export default class ConfirmContainer extends Vue {
       const _bid = await removeContainer(this.bid.id, this.container.id);
       if (_bid.data) {
         const index = this.containersSelectedSync.findIndex(
-          x => x.containerNumber == this.container.containerNumber
+          x => x.number == this.container.number
         );
         this.containersSelectedSync.splice(index, 1);
         const indexList = this.listContainersSelectedSync.findIndex(
-          x => x.containerNumber == this.container.containerNumber
+          x => x.number == this.container.number
         );
         this.listContainersSelectedSync.splice(indexList, 1);
         this.totalItemsSync -= 1;

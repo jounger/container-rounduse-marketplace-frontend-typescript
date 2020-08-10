@@ -256,7 +256,7 @@ export default class Inbound extends Vue {
       text: "Container No.",
       align: "start",
       sortable: false,
-      value: "containerNumber",
+      value: "number",
       class: "elevation-1 primary"
     },
     { text: "Tài xế", value: "driver", class: "elevation-1 primary" },

@@ -282,7 +282,6 @@ export default class CreateBiddingDocument extends Vue {
     if (this.selectedOutbound && this.selectedOutbound.id) {
       this.biddingDocumentLocal.outbound = this.selectedOutbound.id as number;
     }
-    console.log(this.biddingDocumentLocal);
     const _biddingDocument = await createBiddingDocument(
       this.biddingDocumentLocal
     );
@@ -298,6 +297,7 @@ export default class CreateBiddingDocument extends Vue {
       this.dialogAddSync = false;
     }
   }
+
   @Watch("options")
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
@@ -322,6 +322,7 @@ export default class CreateBiddingDocument extends Vue {
       this.loading = false;
     }
   }
+
   created() {
     this.currencyOfPayments = ["VND", "USD"];
   }

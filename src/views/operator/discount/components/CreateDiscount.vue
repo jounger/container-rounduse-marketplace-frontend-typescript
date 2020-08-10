@@ -128,16 +128,17 @@ export default class CreateDiscount extends Vue {
     maximumDiscount: 0,
     expiredDate: this.dateInit
   } as IDiscount;
+
   created() {
     this.currencies = ["USD", "VND"];
     if (this.update) {
       this.discountLocal = Object.assign({}, this.discount);
     }
   }
+
   async createDiscount() {
     if (this.discountLocal) {
       const _discount = await createDiscount(this.discountLocal);
-      console.log("_discount", _discount);
       if (_discount.data) {
         this.discountsSync.unshift(_discount.data);
         this.totalItemsSync += 1;
@@ -145,6 +146,7 @@ export default class CreateDiscount extends Vue {
       }
     }
   }
+
   async updateDiscount() {
     if (this.discountLocal.id) {
       const _discount = await editDiscount(

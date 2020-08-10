@@ -235,6 +235,7 @@ export default class BiddingDocument extends Vue {
     this.biddingDocument = item;
     this.dialogDel = true;
   }
+
   openDetailDialog(item: IBiddingDocument) {
     this.$router.push({ path: `/bidding-document/${item.id}` });
   }
@@ -254,10 +255,6 @@ export default class BiddingDocument extends Vue {
       }
       this.loading = false;
     }
-  }
-
-  searchBiddingDocument() {
-    console.log(1);
   }
 
   async created() {
@@ -281,6 +278,7 @@ export default class BiddingDocument extends Vue {
     });
     this.containerTypes = _containerTypes.data.data || [];
   }
+
   get portsToString() {
     return this.ports.map(x => x.nameCode);
   }

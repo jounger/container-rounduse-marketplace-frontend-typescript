@@ -142,7 +142,6 @@ export default class ShippingLine extends Vue {
     }
   ];
   openUpdateDialog(item: IShippingLine) {
-    console.log(item);
     this.shippingLine = item;
     this.dialogEdit = true;
   }

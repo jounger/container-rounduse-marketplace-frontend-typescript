@@ -360,7 +360,7 @@ export default class CreateBid extends Vue {
       text: "Container No.",
       align: "start",
       sortable: false,
-      value: "containerNumber",
+      value: "number",
       class: "elevation-1 primary"
     },
     { text: "Tài xế", value: "driver", class: "elevation-1 primary" },
@@ -381,7 +381,7 @@ export default class CreateBid extends Vue {
       text: "Container No.",
       align: "start",
       sortable: false,
-      value: "containerNumber"
+      value: "number"
     },
     { text: "Tài xế", value: "driver" },
     {
@@ -453,7 +453,6 @@ export default class CreateBid extends Vue {
   }
 
   async clicked(value: IInbound) {
-    console.log("value", value);
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
@@ -513,10 +512,10 @@ export default class CreateBid extends Vue {
       this.loading = false;
     }
   }
+
   @Watch("inboundOptions")
   async onInboundOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
-      console.log(1);
       this.loading = true;
       if (
         this.biddingDocumentSelected &&

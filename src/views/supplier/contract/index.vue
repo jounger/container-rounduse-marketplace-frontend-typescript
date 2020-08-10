@@ -256,12 +256,14 @@ export default class Contract extends Vue {
       class: "elevation-1 primary"
     }
   ];
+
   openCreatePayment(item: ICombined) {
     this.combined = item;
     const index = this.combineds.findIndex((x: ICombined) => x.id == item.id);
     this.merchant = this.merchants[index];
     this.dialogAddPayment = true;
   }
+
   openDetailEvidence(item: IEvidence) {
     this.finalEvidence = false;
     this.evidence = item;
@@ -271,12 +273,12 @@ export default class Contract extends Vue {
     }
     this.dialogDetail = true;
   }
+
   openCreateEvidence() {
     this.dialogAddEvidence = true;
   }
 
   openUpdateDialog(item: ICombined) {
-    console.log(item);
     this.contract = item.contract as IContract;
     this.combined = item;
     const index = this.combineds.findIndex((x: ICombined) => x.id == item.id);
@@ -284,8 +286,8 @@ export default class Contract extends Vue {
     this.readonly = false;
     this.dialogAdd = true;
   }
+
   openDetailDialog(item: ICombined) {
-    console.log(item);
     this.contract = item.contract as IContract;
     this.combined = item;
     const index = this.combineds.findIndex((x: ICombined) => x.id == item.id);
@@ -293,19 +295,21 @@ export default class Contract extends Vue {
     this.readonly = true;
     this.dialogAdd = true;
   }
+
   get combinedsWithIndex() {
     return this.combineds.map((combineds, index) => ({
       ...combineds,
       index: index
     }));
   }
+
   async getBiddingDocument(id: number) {
     const _biddingDocument = await getBiddingDocumentByBid(id);
     if (_biddingDocument.data) {
       this.merchants.push(_biddingDocument.data.merchant);
     }
-    console.log(this.merchant);
   }
+
   @Watch("options")
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
@@ -327,6 +331,7 @@ export default class Contract extends Vue {
       this.loading = false;
     }
   }
+
   @Watch("evidenceOptions")
   async onEvidenceOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
@@ -345,6 +350,7 @@ export default class Contract extends Vue {
       this.loading = false;
     }
   }
+
   async clicked(value: ICombined) {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {

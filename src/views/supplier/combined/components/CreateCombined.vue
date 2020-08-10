@@ -125,12 +125,12 @@ export default class CreateCombined extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("numberWinner", { type: Number }) numberWinnerSync!: number;
   @Prop() isMultipleAward!: boolean;
-  @Prop(Object) bid!: IBid;
+  @PropSync("bid", { type: Object }) bidSync!: IBid;
 
   dateInit = new Date().toISOString().substr(0, 10);
   containersSelected: Array<IContainer> = [];
   combinedLocal = {
-    bid: this.bid.id,
+    bid: this.bidSync ? this.bidSync.id : -1,
     containers: [],
     contract: {
       finesAgainstContractViolation: 0,
@@ -165,7 +165,7 @@ export default class CreateCombined extends Vue {
     },
     {
       text: "Container No.",
-      value: "containerNumber"
+      value: "number"
     },
     { text: "HSDT", value: "bid" },
     { text: "Tài xế", value: "driver" },
@@ -183,20 +183,25 @@ export default class CreateCombined extends Vue {
     }
   ];
 
-  // Combined
+  // Create combined
   async createCombined() {
-    if (this.bid.id) {
+    if (this.bidSync.id) {
       this.combinedLocal.containers = this.getSelectedContainer.map(
         x => x.id
       ) as number[];
-      console.log("combinedLocal", this.combinedLocal);
-      const _combined = await createCombined(this.bid.id, this.combinedLocal);
+      const _combined = await createCombined(
+        this.bidSync.id,
+        this.combinedLocal
+      );
       if (_combined.data) {
+        this.getSelectedContainer.forEach(x => (x.status = "COMBINED"));
+        this.bidSync.status = _combined.data.bid.status;
         this.numberWinnerSync += 1;
         this.dialogAddSync = false;
       }
     }
   }
+
   @Watch("containerOptions", { immediate: true })
   async onContainerOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
@@ -204,19 +209,22 @@ export default class CreateCombined extends Vue {
       this.containersSelected = _containers;
     }
   }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getBidFromContainer(item: IContainer) {
     // TODO: use
-    return this.bid;
+    return this.bidSync;
   }
+
   get getSelectedContainer() {
-    const containers = this.bid.containers as IContainer[];
+    const containers = this.bidSync.containers as IContainer[];
     if (this.isMultipleAward) {
       return containers.filter(x => x.isSelected == true);
     } else {
       return containers;
     }
   }
+
   getDataFromApi() {
     this.loading = true;
     const { page, itemsPerPage } = this.containerOptions;
@@ -234,7 +242,7 @@ export default class CreateCombined extends Vue {
   created() {
     // TODO: API get Outbound
     this.merchant = this.$auth.user().username;
-    this.forwarder = this.bid.bidder;
+    this.forwarder = this.bidSync.bidder;
   }
 }
 </script>

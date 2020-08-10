@@ -84,19 +84,19 @@ export default class CreateFeedback extends Vue {
   @Prop(Boolean) update!: boolean;
   @Prop(String) receiver?: string;
 
+  valid = false;
   feedbackLocal = {
     sender: this.$auth.user().username,
     message: "",
     satisfactionPoints: 0
   } as IFeedback;
-  valid = false;
+
   created() {
-    console.log(this.report);
-    console.log(this.receiver);
     if (this.update) {
       this.feedbackLocal = Object.assign({}, this.feedback);
     }
   }
+
   async createFeedback() {
     if (this.feedbackLocal && this.report.id) {
       if (this.$auth.user().roles[0] == "ROLE_MODERATOR") {
@@ -123,6 +123,7 @@ export default class CreateFeedback extends Vue {
       }
     }
   }
+
   async updateFeedback() {
     if (this.feedbackLocal.id) {
       const _feedback = await editFeedback(

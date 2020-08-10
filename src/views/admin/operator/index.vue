@@ -117,13 +117,13 @@ export default class Operator extends Vue {
       sortable: false
     }
   ];
+
   openCreateDialog() {
     this.update = false;
     this.dialogAdd = true;
   }
 
   openUpdateDialog(item: IOperator) {
-    console.log(item);
     this.operator = item;
     this.update = true;
     this.dialogAdd = true;

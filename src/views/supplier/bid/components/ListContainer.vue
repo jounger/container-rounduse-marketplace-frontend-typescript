@@ -217,7 +217,7 @@ export default class ListContainer extends Vue {
       text: "Container No.",
       align: "start",
       sortable: false,
-      value: "containerNumber",
+      value: "number",
       class: "elevation-1 primary"
     },
     { text: "Tài xế", value: "driver", class: "elevation-1 primary" },
@@ -238,7 +238,7 @@ export default class ListContainer extends Vue {
       text: "Container No.",
       align: "start",
       sortable: false,
-      value: "containerNumber"
+      value: "number"
     },
     { text: "Tài xế", value: "driver" },
     {
@@ -251,19 +251,19 @@ export default class ListContainer extends Vue {
     },
     { text: "Chọn Cont", value: "actions" }
   ];
+
   created() {
     this.selectedContainers = this.listContainersSelectedSync;
     this.selectedNumber = this.listContainersSelectedSync.length;
     this.containerServerSideOptions.totalItems = this.listContainersSelectedSync.length;
   }
+
   async clicked(value: IInbound) {
-    console.log("value", value);
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
         this.containers = [] as Array<IContainer>;
       } else {
-        console.log(0);
         if (this.expanded.length > 0) {
           this.expanded.splice(0, this.expanded.length);
           this.containers = [] as Array<IContainer>;
@@ -277,11 +277,10 @@ export default class ListContainer extends Vue {
       }
     }
   }
+
   async changeContainerServerSideOptions(item: IContainer) {
     if (this.selectedContainers.length > this.selectedNumber) {
       let check = false;
-      console.log(this.selectedContainers);
-      console.log(item);
       this.selectedContainers.forEach((x: IContainer) => {
         if (x === item) {
           check = true;
@@ -297,28 +296,28 @@ export default class ListContainer extends Vue {
     }
     this.onContainerOptionsChange(this.containerOptions);
   }
+
   async createContainerBid(item: IContainer) {
     this.loading = true;
     if (this.bid.id && item.id) {
       const _bid = await addContainer(this.bid.id, item.id);
       if (_bid.data) {
-        console.log(_bid.data);
         const _containers: Array<IContainer> = _bid.data.containers as Array<
           IContainer
         >;
         _containers.forEach((x: IContainer) => {
-          if (x.containerNumber == item.containerNumber) {
+          if (x.number == item.number) {
             this.containersSelectedSync.unshift(x);
             this.listContainersSelectedSync.unshift(x);
           }
         });
         this.selectedContainers.forEach((x: IContainer) => {
-          if (x.containerNumber == item.containerNumber) {
+          if (x.number == item.number) {
             x.status = "BIDDING";
           }
         });
         this.containers.forEach((x: IContainer) => {
-          if (x.containerNumber == item.containerNumber) {
+          if (x.number == item.number) {
             x.status = "BIDDING";
           }
         });
@@ -326,7 +325,7 @@ export default class ListContainer extends Vue {
         this.totalItemsSync += 1;
       } else {
         const index = this.selectedContainers.findIndex(
-          x => x.containerNumber == item.containerNumber
+          x => x.number == item.number
         );
         this.selectedContainers.splice(index, 1);
       }
@@ -345,13 +344,13 @@ export default class ListContainer extends Vue {
           IContainer
         >;
         const index = this.containersSelectedSync.findIndex(
-          x => x.containerNumber == this.container.containerNumber
+          x => x.number == this.container.number
         );
         const indexList = this.listContainersSelectedSync.findIndex(
-          x => x.containerNumber == this.container.containerNumber
+          x => x.number == this.container.number
         );
         _containers.forEach((x: IContainer) => {
-          if (x.containerNumber == item.containerNumber) {
+          if (x.number == item.number) {
             this.containersSelectedSync.splice(index, 1, x);
             this.listContainersSelectedSync.splice(indexList, 1, x);
           }
@@ -360,17 +359,18 @@ export default class ListContainer extends Vue {
       }
     }
   }
+
   async removeContainer(item: IContainer) {
     this.loading = true;
     if (item.id && this.bid.id) {
       const _bid = await removeContainer(this.bid.id, item.id);
       if (_bid.data) {
         const index = this.containersSelectedSync.findIndex(
-          x => x.containerNumber == item.containerNumber
+          x => x.number == item.number
         );
         this.containersSelectedSync.splice(index, 1);
         const indexList = this.listContainersSelectedSync.findIndex(
-          x => x.containerNumber == item.containerNumber
+          x => x.number == item.number
         );
         this.listContainersSelectedSync.splice(indexList, 1);
         this.totalItemsSync -= 1;
@@ -381,10 +381,10 @@ export default class ListContainer extends Vue {
     }
     this.loading = false;
   }
+
   @Watch("inboundOptions")
   async onInboundOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
-      console.log(1);
       this.loading = true;
       if (
         this.biddingDocumentSelected &&
@@ -406,6 +406,7 @@ export default class ListContainer extends Vue {
       }
     }
   }
+
   @Watch("options")
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
@@ -422,10 +423,7 @@ export default class ListContainer extends Vue {
               this.containers.push(x);
             } else {
               this.selectedContainers.forEach((item: IContainer) => {
-                if (
-                  item.containerNumber &&
-                  item.containerNumber == x.containerNumber
-                ) {
+                if (item.number && item.number == x.number) {
                   this.containers.push(x);
                 }
               });
@@ -437,6 +435,7 @@ export default class ListContainer extends Vue {
       this.loading = false;
     }
   }
+
   @Watch("containerOptions")
   async onContainerOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {

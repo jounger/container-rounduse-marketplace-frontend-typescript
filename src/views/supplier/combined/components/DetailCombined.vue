@@ -55,7 +55,7 @@
 
                 <v-card-title
                   >Lịch trình container
-                  {{ selectedContainer.containerNumber }}:</v-card-title
+                  {{ selectedContainer.number }}:</v-card-title
                 >
                 <v-card-text>
                   <SupplierRating :supplier="combined.bid.bidder" />
@@ -500,7 +500,7 @@ export default class DetailCombined extends Vue {
       text: "Container No.",
       align: "start",
       sortable: false,
-      value: "containerNumber",
+      value: "number",
       class: "elevation-1 primary"
     },
     { text: "Tài xế", value: "driver", class: "elevation-1 primary" },

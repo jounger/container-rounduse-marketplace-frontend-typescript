@@ -63,7 +63,7 @@
 
                 <v-card-title
                   >Lịch trình container
-                  {{ selectedContainer.containerNumber }}:</v-card-title
+                  {{ selectedContainer.number }}:</v-card-title
                 >
 
                 <v-card-text>
@@ -531,7 +531,7 @@ export default class DetailCombinedForwarder extends Vue {
       text: "Container No.",
       align: "start",
       sortable: false,
-      value: "containerNumber"
+      value: "number"
     },
     { text: "Tài xế", value: "driver" },
     { text: "Rơ mọt", value: "trailer.licensePlate" },

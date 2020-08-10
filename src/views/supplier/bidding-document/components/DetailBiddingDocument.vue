@@ -12,7 +12,7 @@
       :dialogAdd.sync="dialogAddCombined"
       :numberWinner.sync="numberWinner"
       :isMultipleAward="biddingDocument.isMultipleAward"
-      :bid="bid"
+      :bid.sync="bid"
     />
     <CreateBid
       v-if="dialogBid"
@@ -328,7 +328,7 @@
           :items="bids"
           :single-expand="singleExpand"
           :expanded.sync="expanded"
-          :show-expand="biddingDocument.isMultipleAward ? true : false"
+          :show-expand="true"
           @click:row="clicked"
           item-key="id"
           :loading="loading"
@@ -364,6 +364,12 @@
                   $auth.user().roles &&
                   $auth.user().roles[0] == 'ROLE_MERCHANT'
               "
+              :disabled="
+                bid == null ||
+                  (bid &&
+                    (bid.containers.filter(x => x.isSelected).length <= 0 ||
+                      bid.id != item.id))
+              "
             >
               <v-icon left dense>library_add_check </v-icon>Đồng ý
             </v-btn>
@@ -398,12 +404,10 @@
             >
           </template>
 
-          <template
-            v-slot:expanded-item="{ headers }"
-            v-if="biddingDocument.isMultipleAward"
-          >
+          <template v-slot:expanded-item="{ headers }">
             <td :colspan="headers.length" class="px-0">
               <v-data-table
+                v-if="biddingDocument.isMultipleAward"
                 :headers="containerHeaders"
                 :items="containers"
                 item-key="id"
@@ -418,6 +422,33 @@
                 v-model="containerSelected"
                 show-select
                 @item-selected="selectContainer"
+                @toggle-select-all="selectAllContainer"
+                disable-sort
+                dark
+                dense
+              >
+                <template v-slot:item.status="{ item }">
+                  <v-chip
+                    :color="item.status == 'COMBINED' ? 'success' : 'info'"
+                    dark
+                    x-small
+                    >{{ item.status }}</v-chip
+                  >
+                </template>
+              </v-data-table>
+              <v-data-table
+                v-else
+                :headers="containerHeaders"
+                :items="containers"
+                item-key="id"
+                :loading="loading"
+                :options.sync="containerOptions"
+                :server-items-length="containerServerSideOptions.totalItems"
+                :footer-props="{
+                  'items-per-page-options':
+                    containerServerSideOptions.itemsPerPageItems
+                }"
+                :actions-append="containerOptions.page"
                 disable-sort
                 dark
                 dense
@@ -514,7 +545,7 @@ export default class DetailBiddingDocument extends Vue {
       text: "Container No.",
       align: "start",
       sortable: false,
-      value: "containerNumber",
+      value: "number",
       class: "primary"
     },
     { text: "Tài xế", value: "driver", class: "primary" },
@@ -538,7 +569,6 @@ export default class DetailBiddingDocument extends Vue {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   selectContainer(select: any) {
-    console.log(select);
     select.item.isSelected = select.value;
     if (this.bid) {
       const _container = this.bid.containers as IContainer[];
@@ -552,6 +582,15 @@ export default class DetailBiddingDocument extends Vue {
       } else if (select.value && index != -1) {
         this.bid.containers.splice(index, 1, select.item);
       }
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  selectAllContainer(select: any) {
+    const _items = select.items as IContainer[];
+    _items.forEach(x => (x.isSelected = select.value));
+    if (this.bid) {
+      this.bid.containers.splice(0, this.bid.containers.length, ..._items);
     }
   }
 
