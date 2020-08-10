@@ -267,7 +267,7 @@ export default class CreateShippingLine extends Vue {
     username: "",
     email: "",
     phone: "",
-    roles: ["ROLE_shippingLine.data"],
+    roles: ["ROLE_SHIPPINGLINE"],
     status: "",
     address: "",
     password: "",
@@ -290,7 +290,6 @@ export default class CreateShippingLine extends Vue {
 
   async createShippingLine() {
     if (this.shippingLineLocal) {
-      console.log(this.shippingLineLocal);
       const _shippingLine = await createShippingLine(this.shippingLineLocal);
       if (_shippingLine.data) {
         this.shippingLinesSync.unshift(_shippingLine.data);

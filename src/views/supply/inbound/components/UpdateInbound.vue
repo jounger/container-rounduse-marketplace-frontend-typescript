@@ -361,6 +361,7 @@ export default class UpdateInbound extends Vue {
   @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
   @Prop(Object) inbound!: IInbound;
   @PropSync("inbounds", { type: Array }) inboundsSync!: Array<IInbound>;
+
   // Form validate
   distanceMatrixResult = null as DistanceMatrix | null;
   style = { width: "600px", height: "500px" };
@@ -407,6 +408,7 @@ export default class UpdateInbound extends Vue {
       return time;
     }
   }
+
   @Watch("dialogEditSync")
   async onDialogEditSyncChange(val: boolean) {
     if (val == true) {
@@ -427,9 +429,9 @@ export default class UpdateInbound extends Vue {
       this.stepper = 1;
     }
   }
+
   async updateInbound() {
     if (this.inboundLocal && this.inboundLocal.id) {
-      console.log(this.inboundLocal);
       const _inbound = await editInbound(
         this.inboundLocal.id,
         this.inboundLocal
@@ -460,6 +462,7 @@ export default class UpdateInbound extends Vue {
     }
     return undefined;
   }
+
   getPortAddress(portCode: string) {
     if (portCode.length > 0) {
       const list = this.ports.filter(x => x.nameCode == portCode);
@@ -468,6 +471,7 @@ export default class UpdateInbound extends Vue {
     }
     return undefined;
   }
+
   async getShippingLines(limit: number) {
     this.loadingShippingLines = true;
     this.shippingLines = [] as Array<IShippingLine>;
@@ -502,10 +506,12 @@ export default class UpdateInbound extends Vue {
     }
     this.loadingShippingLines = false;
   }
+
   async loadMoreShippingLines() {
     this.limitShippingLines += 5;
     await this.getShippingLines(this.limitShippingLines);
   }
+
   async getContainerTypes(limit: number) {
     this.loadingContainerTypes = true;
     this.containerTypes = [] as Array<IContainerType>;
@@ -540,10 +546,12 @@ export default class UpdateInbound extends Vue {
     }
     this.loadingContainerTypes = false;
   }
+
   async loadMoreContainerTypes() {
     this.limitContainerTypes += 5;
     await this.getContainerTypes(this.limitContainerTypes);
   }
+
   async getPorts(limit: number) {
     this.loadingPorts = true;
     this.ports = [] as Array<IPort>;
@@ -576,18 +584,19 @@ export default class UpdateInbound extends Vue {
     this.limitPorts += 5;
     await this.getPorts(this.limitPorts);
   }
-  updated() {
-    console.log(1);
-  }
+
   get portsToString() {
     return this.ports.map(x => x.nameCode);
   }
+
   get shippingLinesToString() {
     return this.shippingLines.map(x => x.companyCode);
   }
+
   get containerTypesToString() {
     return this.containerTypes.map(x => x.name);
   }
+
   get mapConfig() {
     return {
       loaderOptions: {
@@ -603,12 +612,15 @@ export default class UpdateInbound extends Vue {
       }
     };
   }
+
   get apiKey() {
     return apiKey;
   }
+
   mounted() {
     console.log("UpdateInbound");
   }
+
   beforeDestroy() {
     console.log("DESTROY > UpdateInbound");
     this.stepper = 1;

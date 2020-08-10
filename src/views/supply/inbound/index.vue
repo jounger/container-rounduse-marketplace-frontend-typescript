@@ -256,7 +256,7 @@ export default class Inbound extends Vue {
       text: "Container No.",
       align: "start",
       sortable: false,
-      value: "containerNumber",
+      value: "number",
       class: "elevation-1 primary"
     },
     { text: "Tài xế", value: "driver", class: "elevation-1 primary" },
@@ -298,24 +298,24 @@ export default class Inbound extends Vue {
     this.container = item;
     this.dialogDelCont = true;
   }
-  async loadContainer(option: DataOptions) {
-    if (this.inbound && this.inbound.id) {
-      const _containers = await getContainersByInbound(this.inbound.id, {
-        page: option.page - 1,
-        limit: option.itemsPerPage
-      });
-      if (_containers.data) {
-        this.containers = _containers.data.data;
-        this.containerServerSideOptions.totalItems =
-          _containers.data.totalElements;
-      }
+  async loadContainer(inboundId: number, option: DataOptions) {
+    const _containers = await getContainersByInbound(inboundId, {
+      page: option.page - 1,
+      limit: option.itemsPerPage
+    });
+    if (_containers.data) {
+      this.containers = _containers.data.data;
+      this.containerServerSideOptions.totalItems =
+        _containers.data.totalElements;
     }
   }
   @Watch("containerOptions", { deep: true })
   async onContainerOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      await this.loadContainer(val);
+      if (this.inbound && this.inbound.id) {
+        await this.loadContainer(this.inbound.id, val);
+      }
       this.loading = false;
     }
   }
@@ -351,7 +351,7 @@ export default class Inbound extends Vue {
       }
     }
     this.containerOptions.page = 1;
-    await this.loadContainer(this.containerOptions);
+    await this.loadContainer(value.id as number, this.containerOptions);
   }
 }
 </script>

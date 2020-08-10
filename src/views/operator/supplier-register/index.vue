@@ -1,15 +1,18 @@
 <template>
   <v-content>
+    <ConfirmReviewSupplier
+      v-if="dialogConfirm"
+      :dialogConfirm.sync="dialogConfirm"
+      :supplier.sync="supplier"
+    />
+    <v-row justify="center">
+      <RegisterDetail
+        v-if="dialogDetail"
+        :dialogDetail.sync="dialogDetail"
+        :supplier="supplier"
+      />
+    </v-row>
     <v-card class="ma-5">
-      <v-row justify="center">
-        <RegisterDetail
-          v-if="dialogDetail"
-          :dialogDetail.sync="dialogDetail"
-          :supplier="supplier"
-          :suppliers.sync="suppliers"
-          :totalItems.sync="serverSideOptions.totalItems"
-        />
-      </v-row>
       <v-card-title>
         Danh sách đơn đăng ký
       </v-card-title>
@@ -31,7 +34,7 @@
         <template v-slot:item.status="{ item }">
           <v-chip color="orange" dark>{{ item.status }}</v-chip>
         </template>
-        <template v-slot:item.action="{ item }">
+        <template v-slot:item.actions="{ item }">
           <v-menu :loading="item.createloading" :disabled="item.createloading">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
@@ -49,6 +52,12 @@
               <v-list-item @click="openDetailDialog(item)">
                 <v-list-item-title>Xem chi tiết</v-list-item-title>
               </v-list-item>
+              <v-list-item @click="openConfirmDialog(item, true)">
+                <v-list-item-title>Đồng ý đơn</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="openConfirmDialog(item, false)">
+                <v-list-item-title>Từ chối đơn</v-list-item-title>
+              </v-list-item>
             </v-list>
           </v-menu>
         </template>
@@ -62,16 +71,19 @@ import { ISupplier } from "@/entity/supplier";
 import { getSuppliersByStatus } from "@/api/supplier";
 import RegisterDetail from "./components/RegisterDetail.vue";
 import { DataOptions } from "vuetify";
+import ConfirmReviewSupplier from "./components/ConfirmReviewSupplier.vue";
 
 @Component({
   components: {
-    RegisterDetail
+    RegisterDetail,
+    ConfirmReviewSupplier
   }
 })
 export default class Supplier extends Vue {
   suppliers: Array<ISupplier> = [];
   supplier = null as ISupplier | null;
   dialogDetail = false;
+  dialogConfirm = false;
   loading = true;
   options = {
     page: 1,
@@ -83,15 +95,25 @@ export default class Supplier extends Vue {
   };
   headers = [
     {
+      text: "Mã",
+      align: "start",
+      sortable: false,
+      value: "id"
+    },
+    {
       text: "Tên đăng nhập",
       value: "username"
     },
     { text: "Email", value: "email" },
+    { text: "Người liên hệ", value: "contactPerson" },
+    { text: "Tên công ty", value: "companyName" },
+    { text: "Mã số thuế", value: "tin" },
+    { text: "Trang web", value: "website" },
+    { text: "Vai trò", value: "roles" },
     { text: "Trạng thái", value: "status" },
-    { text: "Phân quyền", value: "roles" },
     {
       text: "Hành động",
-      value: "action",
+      value: "actions",
       sortable: false,
       align: "center"
     }
@@ -100,6 +122,12 @@ export default class Supplier extends Vue {
   openDetailDialog(item: ISupplier) {
     this.supplier = item;
     this.dialogDetail = true;
+  }
+
+  openConfirmDialog(item: ISupplier, status: boolean) {
+    this.supplier = item;
+    this.supplier.status = status ? "ACTIVE" : "BANNED";
+    this.dialogConfirm = true;
   }
 
   @Watch("options")

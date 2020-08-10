@@ -4,7 +4,7 @@
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
           ><span class="headline" style="color:white;"
-            >{{ readonly ? "Thông tin" : "Cập nhập" }} Hợp đồng</span
+            >{{ readonly ? "Thông tin" : "Cập nhật" }} Hợp đồng</span
           ></v-toolbar-title
         >
       </v-toolbar>
@@ -68,7 +68,7 @@
           color="primary"
           :disabled="!valid"
           v-if="!readonly"
-          >Cập nhập</v-btn
+          >Cập nhật</v-btn
         >
       </v-card-actions>
     </v-card>

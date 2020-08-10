@@ -212,9 +212,9 @@ export default class ReportDetail extends Vue {
   } as IFeedback;
 
   newline() {
-    console.log(0);
     this.feedbackLocal.message = `${this.feedbackLocal.message}`;
   }
+
   async getFullname(username: string) {
     const _res = await getSupplier(username);
     if (_res.data) {
@@ -223,6 +223,7 @@ export default class ReportDetail extends Vue {
     }
     return username;
   }
+
   async createFeedback() {
     if (
       this.feedbackLocal &&
@@ -241,7 +242,6 @@ export default class ReportDetail extends Vue {
         if (_feedback.data) {
           this.feedbacks.push(_feedback.data);
           this.recipient = this.forwarderFullname;
-          console.log(_feedback.data);
         }
         this.feedbackLocal = {
           sender: this.$auth.user().username,
@@ -249,7 +249,6 @@ export default class ReportDetail extends Vue {
           satisfactionPoints: 0
         } as IFeedback;
       } else {
-        console.log(this.feedbackLocal);
         const _feedback = await createFeedbackToModerator(
           this.report.id,
           this.report.sender,
@@ -257,7 +256,6 @@ export default class ReportDetail extends Vue {
         );
         if (_feedback.data) {
           this.feedbacks.push(_feedback.data);
-          console.log(_feedback.data);
         }
         this.feedbackLocal = {
           sender: this.$auth.user().username,
@@ -267,6 +265,7 @@ export default class ReportDetail extends Vue {
       }
     }
   }
+
   async getFeedbacks(limit: number) {
     this.feedbacks = [] as Array<IFeedback>;
     const _feedbacks = await getFeedbacksByReport(parseInt(this.getRouterId), {
@@ -284,13 +283,16 @@ export default class ReportDetail extends Vue {
       this.seeMore = false;
     }
   }
+
   async loadMoreFeedbacks() {
     this.limit += 5;
     await this.getFeedbacks(this.limit);
   }
+
   get getRouterId() {
     return this.$route.params.id;
   }
+
   async created() {
     const _report = await getReport(parseInt(this.getRouterId));
     if (_report.data) {
@@ -305,11 +307,13 @@ export default class ReportDetail extends Vue {
     this.status = status;
     this.dialogConfirm = true;
   }
+
   viewDetailBiddingDocument() {
     if (this.report && this.report.id) {
       this.$router.push({ path: `/report-bidding-document/${this.report.id}` });
     }
   }
+
   setDefault() {
     this.recipient = this.forwarderFullname;
     this.feedbackLocal.recipient = "";

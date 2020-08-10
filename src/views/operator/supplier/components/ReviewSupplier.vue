@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialogReviewSync" max-width="600px">
-    <v-card>
-      <v-toolbar color="primary" light flat>
+    <v-card tile>
+      <v-toolbar dark color="primary">
         <v-toolbar-title
           ><span class="headline" style="color:white;">{{
             supplier.status == "ACTIVE" ? "Khóa tài khoản" : "Mở khóa tài khoản"

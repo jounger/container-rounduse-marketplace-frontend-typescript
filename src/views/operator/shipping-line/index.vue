@@ -118,12 +118,22 @@ export default class ShippingLine extends Vue {
   };
   headers = [
     {
+      text: "Mã",
+      align: "start",
+      sortable: false,
+      value: "id"
+    },
+    {
       text: "Tên đăng nhập",
       value: "username"
     },
     { text: "Email", value: "email" },
+    { text: "Người liên hệ", value: "contactPerson" },
+    { text: "Tên công ty", value: "companyName" },
+    { text: "Mã số thuế", value: "tin" },
+    { text: "Trang web", value: "website" },
+    { text: "Vai trò", value: "roles" },
     { text: "Trạng thái", value: "status" },
-    { text: "Phân quyền", value: "roles" },
     {
       text: "Hành động",
       value: "actions",
@@ -132,7 +142,6 @@ export default class ShippingLine extends Vue {
     }
   ];
   openUpdateDialog(item: IShippingLine) {
-    console.log(item);
     this.shippingLine = item;
     this.dialogEdit = true;
   }

@@ -19,7 +19,7 @@
                 <v-list-item>
                   <v-list-item-content>
                     <v-list-item-title>{{
-                      container.containerNumber
+                      container.number
                     }}</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>

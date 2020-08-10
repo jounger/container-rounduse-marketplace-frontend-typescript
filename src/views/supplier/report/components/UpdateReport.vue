@@ -3,7 +3,7 @@
     <v-card>
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
-          ><span class="headline" style="color:white;">Cập nhập Report</span>
+          ><span class="headline" style="color:white;">Cập nhật Report</span>
         </v-toolbar-title>
       </v-toolbar>
       <v-card-text>
@@ -59,7 +59,7 @@
         <v-spacer></v-spacer>
         <v-btn @click="dialogEditSync = false">Trở về</v-btn>
         <v-btn @click="updateReport()" color="primary" :disabled="!valid"
-          >Cập nhập</v-btn
+          >Cập nhật</v-btn
         >
       </v-card-actions>
     </v-card>

@@ -20,7 +20,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
   config => {
     // do something before request is sent
-    console.log("BEFORE REQUEST", config);
+    console.log("REQUEST", config);
     const method = config.method?.toUpperCase();
     if (
       method == "POST" ||
@@ -35,6 +35,8 @@ instance.interceptors.request.use(
   error => {
     // do something with request error
     console.log(error); // for debug
+
+    setTimeout(() => (loading.setLoading(false)), 200);
     return error;
   }
 );
@@ -42,7 +44,7 @@ instance.interceptors.request.use(
 // response interceptor
 instance.interceptors.response.use(
   response => {
-    console.log(`request: ${response.config.url}`, response);
+    console.log(`RESPONSE: ${response.config.url}`, response);
     if (
       response.config.url != "/auth/signin" &&
       (response.status == 200 || response.status == 201)

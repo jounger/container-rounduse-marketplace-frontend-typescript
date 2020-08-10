@@ -70,6 +70,9 @@
               <template v-slot:item.bidClosing="{ item }">
                 {{ formatDatetime(item.bidClosing) }}
               </template>
+              <template v-slot:item.bidPackagePrice="{ item }">
+                {{ currencyFormatter(item.bidPackagePrice) }}
+              </template>
             </v-data-table>
             <v-btn color="primary" @click="stepper = 2">Tiếp tục</v-btn>
           </v-stepper-content>
@@ -301,7 +304,7 @@ export default class Update extends Vue {
       text: "Container No.",
       align: "start",
       sortable: false,
-      value: "containerNumber"
+      value: "number"
     },
     { text: "Tài xế", value: "driver" },
     {
@@ -314,20 +317,23 @@ export default class Update extends Vue {
     },
     { text: "Hành động", value: "actions" }
   ];
-  // Bid
+
   openCreateContainerBid() {
     this.action = "ADD";
     this.dialogContainer = true;
   }
+
   openChangeDialog(item: IContainer) {
     this.container = item;
     this.action = "CHANGE";
     this.dialogContainer = true;
   }
+
   openDeleteDialog(item: IContainer) {
     this.container = item;
     this.dialogConfirm = true;
   }
+
   @Watch("biddingDocumentOptions")
   async onBiddingDocumentOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
@@ -347,6 +353,7 @@ export default class Update extends Vue {
       this.loading = false;
     }
   }
+
   @Watch("containerOptions")
   async onContainerOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
@@ -357,9 +364,6 @@ export default class Update extends Vue {
       if (end > this.containers.length - 1) {
         end = this.containers.length - 1;
       }
-      console.log(start);
-      console.log(end);
-      console.log(this.containers);
       for (let i = start; i <= end; i++) {
         this.containersSelected.push(this.containers[i]);
       }
@@ -367,15 +371,15 @@ export default class Update extends Vue {
       this.loading = false;
     }
   }
+
   created() {
     this.bidLocal = Object.assign({}, this.bidSync);
     this.containers = this.bidLocal.containers as Array<IContainer>;
     this.containerServerSideOptions.totalItems = this.bidLocal.containers.length;
   }
+
   async updateBid() {
     if (this.bidSync.id) {
-      console.log(this.bidSync.bidder);
-      console.log(this.$auth.user().username);
       const _bid = await editBid(this.bidSync.id, {
         bidPrice: this.bidLocal.bidPrice
       });

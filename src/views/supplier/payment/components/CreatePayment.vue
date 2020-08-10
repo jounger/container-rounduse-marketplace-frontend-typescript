@@ -5,7 +5,7 @@
         <v-toolbar-title
           ><span class="headline" style="color:white;"
             >{{
-              update ? (readonly ? "Thông tin" : "Cập nhập") : "Thêm mới"
+              update ? (readonly ? "Thông tin" : "Cập nhật") : "Thêm mới"
             }}
             Hóa đơn</span
           ></v-toolbar-title
@@ -97,7 +97,7 @@
           color="primary"
           v-if="update && !readonly"
           :disabled="!valid"
-          >Cập nhập</v-btn
+          >Cập nhật</v-btn
         >
         <v-btn
           @click="createPayment()"
@@ -149,10 +149,9 @@ export default class CreatePayment extends Vue {
   } as IPayment;
   valid = false;
   types: Array<string> = [];
+
   created() {
-    console.log(this.readonly);
     if (this.$auth.user().roles[0] == "ROLE_MERCHANT") {
-      console.log(1);
       this.types = ["Tiền phạt", "Tiền phí"];
       if (this.combined) {
         const _bid = this.combined.bid as IBid;
@@ -173,9 +172,9 @@ export default class CreatePayment extends Vue {
           this.paymentLocal.type = "Tiền phí";
         }
       }
-      console.log(this.paymentLocal);
     }
   }
+
   async createPayment() {
     if (
       this.paymentLocal &&
@@ -197,6 +196,7 @@ export default class CreatePayment extends Vue {
       }
     }
   }
+
   async updatePayment() {
     if (this.paymentLocal.id) {
       const _payment = await editPayment(

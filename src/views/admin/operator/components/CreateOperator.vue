@@ -13,7 +13,7 @@
             <v-icon>mdi-close</v-icon>
           </v-btn>
           <v-toolbar-title>{{
-            update ? "Cập nhập Quản trị viên" : "Thêm mới Quản trị viên"
+            update ? "Cập nhật Quản trị viên" : "Thêm mới Quản trị viên"
           }}</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-items>
@@ -24,7 +24,7 @@
               @click="updateOperator()"
               v-if="update"
               :disabled="!valid"
-              >Cập nhập</v-btn
+              >Cập nhật</v-btn
             >
             <v-btn dark text @click="createOperator()" v-else :disabled="!valid"
               >Thêm mới</v-btn

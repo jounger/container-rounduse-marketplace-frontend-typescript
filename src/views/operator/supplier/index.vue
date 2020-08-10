@@ -39,7 +39,7 @@
             item.status
           }}</v-chip>
         </template>
-        <template v-slot:item.action="{ item }">
+        <template v-slot:item.actions="{ item }">
           <v-menu :loading="item.createloading" :disabled="item.createloading">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
@@ -107,15 +107,25 @@ export default class Supplier extends Vue {
   };
   headers = [
     {
+      text: "Mã",
+      align: "start",
+      sortable: false,
+      value: "id"
+    },
+    {
       text: "Tên đăng nhập",
       value: "username"
     },
     { text: "Email", value: "email" },
+    { text: "Người liên hệ", value: "contactPerson" },
+    { text: "Tên công ty", value: "companyName" },
+    { text: "Mã số thuế", value: "tin" },
+    { text: "Trang web", value: "website" },
+    { text: "Vai trò", value: "roles" },
     { text: "Trạng thái", value: "status" },
-    { text: "Phân quyền", value: "roles" },
     {
       text: "Hành động",
-      value: "action",
+      value: "actions",
       sortable: false,
       align: "center"
     }

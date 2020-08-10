@@ -50,6 +50,9 @@
         <template v-slot:item.expired="{ item }">
           {{ formatDatetime(item.expiredDate) }}
         </template>
+        <template v-slot:item.maximumDiscount="{ item }">
+          {{ item.maximumDiscount + " " + item.currency }}
+        </template>
         <template v-slot:item.actions="{ item }">
           <v-icon small class="mr-2" @click="openUpdateDialog(item)">
             mdi-pencil
@@ -100,10 +103,9 @@ export default class Discount extends Vue {
       sortable: true,
       value: "code"
     },
+    { text: "Giảm (%)", value: "percent" },
+    { text: "Giảm nhiều nhất", value: "maximumDiscount" },
     { text: "Chi tiết", value: "detail" },
-    { text: "Loại tiền tệ", value: "currency" },
-    { text: "Phần trăm", value: "percent" },
-    { text: "Giảm giá nhiều nhất", value: "maximumDiscount" },
     { text: "Ngày hết hạn", value: "expired" },
     {
       text: "Hành động",

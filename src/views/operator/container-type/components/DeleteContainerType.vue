@@ -47,7 +47,6 @@ export default class DeleteContainerType extends Vue {
   @Prop(Object) containerType!: IContainerType;
 
   async removeContainerType() {
-    console.log(this.containerType);
     if (this.containerType.id) {
       const _res = await removeContainerType(this.containerType.id);
       if (_res.status == 200) {

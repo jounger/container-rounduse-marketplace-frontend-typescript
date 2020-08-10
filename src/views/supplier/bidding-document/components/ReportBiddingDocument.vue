@@ -422,7 +422,7 @@ export default class ReportBiddingDocument extends Vue {
       text: "Container No.",
       align: "start",
       sortable: false,
-      value: "containerNumber",
+      value: "number",
       class: "primary"
     },
     { text: "Tài xế", value: "driver", class: "primary" },

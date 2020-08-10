@@ -232,8 +232,6 @@ export default class Outbound extends Vue {
       });
       if (_outbounds.data) {
         this.outbounds = _outbounds.data.data;
-
-        console.log(new Date(this.outbounds[0].packingTime).getTime());
         this.serverSideOptions.totalItems = _outbounds.data.totalElements;
       }
       this.loading = false;

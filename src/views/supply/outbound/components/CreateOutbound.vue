@@ -527,7 +527,6 @@ export default class CreateOutbound extends Vue {
     /* TODO: Calculate Delivery Time:
      * deliveryTime = (duration: packingStation -> portOfLoading) + packingTime (+ bias)
      */
-    console.log(this.outboundLocal);
     const _outbound = await createOutbound(this.outboundLocal);
     if (_outbound.data) {
       this.outboundsSync.unshift(_outbound.data);
@@ -535,6 +534,7 @@ export default class CreateOutbound extends Vue {
       this.dialogAddSync = false;
     }
   }
+
   getPortAddress(portCode: string) {
     if (portCode.length > 0) {
       const list = this.ports.filter(x => x.nameCode == portCode);
@@ -543,6 +543,7 @@ export default class CreateOutbound extends Vue {
     }
     return undefined;
   }
+
   async getShippingLines(limit: number) {
     this.loadingShippingLines = true;
     this.shippingLines = [] as Array<IShippingLine>;
@@ -562,10 +563,12 @@ export default class CreateOutbound extends Vue {
     }
     this.loadingShippingLines = false;
   }
+
   async loadMoreShippingLines() {
     this.limitShippingLines += 5;
     await this.getShippingLines(this.limitShippingLines);
   }
+
   async getContainerTypes(limit: number) {
     this.loadingContainerTypes = true;
     this.containerTypes = [] as Array<IContainerType>;
@@ -585,10 +588,12 @@ export default class CreateOutbound extends Vue {
     }
     this.loadingContainerTypes = false;
   }
+
   async loadMoreContainerTypes() {
     this.limitContainerTypes += 5;
     await this.getContainerTypes(this.limitContainerTypes);
   }
+
   async getPorts(limit: number) {
     this.loadingPorts = true;
     this.ports = [] as Array<IPort>;
@@ -608,10 +613,12 @@ export default class CreateOutbound extends Vue {
     }
     this.loadingPorts = false;
   }
+
   async loadMorePorts() {
     this.limitPorts += 5;
     await this.getPorts(this.limitPorts);
   }
+
   async created() {
     // API GET Ports
     await this.getShippingLines(5);
@@ -620,15 +627,19 @@ export default class CreateOutbound extends Vue {
     const _supplier = await getSupplier(this.$auth.user().username);
     if (_supplier.data) this.supplier = _supplier.data;
   }
+
   get portsToString() {
     return this.ports.map(x => x.nameCode);
   }
+
   get shippingLinesToString() {
     return this.shippingLines.map(x => x.companyCode);
   }
+
   get containerTypesToString() {
     return this.containerTypes.map(x => x.name);
   }
+
   get mapConfig() {
     return {
       loaderOptions: {
@@ -644,13 +655,16 @@ export default class CreateOutbound extends Vue {
       }
     };
   }
+
   get apiKey() {
     return apiKey;
   }
+
   mounted() {
     console.log("CreateOutbound");
     this.unitOfMeasurements = ["KG"];
   }
+
   beforeDestroy() {
     console.log("DESTROY > CreateOutbound");
     this.stepper = 1;

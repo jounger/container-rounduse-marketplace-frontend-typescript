@@ -161,6 +161,10 @@ export default class Notification extends Vue {
       } else {
         ROUTER = "/bidding-document";
       }
+      if (location.pathname == ROUTER) {
+        location.reload();
+        return;
+      }
     }
     console.log(ROUTER);
     this.$router.push(ROUTER);
@@ -172,7 +176,6 @@ export default class Notification extends Vue {
         this.seenNotification(x);
       }
     });
-    this.messageCount = 0;
   }
 
   async seenNotification(item: INotification) {
@@ -180,10 +183,10 @@ export default class Notification extends Vue {
       const _res = await editNotifications(item.id as number, {
         isRead: true
       });
-      console.log();
       if (_res.data) {
         const _notification = _res.data as INotification;
         item.isRead = _notification.isRead;
+        if (this.messageCount > 0) this.messageCount -= 1;
       }
     }
   }
@@ -231,7 +234,6 @@ export default class Notification extends Vue {
     this.notificationSubscribe.forEach(x => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.stompClient.subscribe(`/user${x}`, (tick: any) => {
-        console.log(tick);
         this.notifications.unshift(JSON.parse(tick.body));
         this.messageCount += 1;
       });

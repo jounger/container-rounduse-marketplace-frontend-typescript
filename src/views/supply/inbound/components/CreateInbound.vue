@@ -509,7 +509,7 @@ export default class CreateInbound extends Vue {
       text: "Container No.",
       align: "start",
       sortable: false,
-      value: "containerNumber"
+      value: "number"
     },
     { text: "Tài xế", value: "driver" },
     { text: "Rơ mọt", value: "trailer" },
@@ -531,17 +531,20 @@ export default class CreateInbound extends Vue {
   container = {} as IContainer;
   dialogAddCont = false;
   dialogDelCont = false;
+
   openCreateContainer() {
     this.update = false;
     this.container = {} as IContainer;
     this.dialogAddCont = true;
   }
+
   openUpdateContainer(item: IContainer) {
     // TODO
     this.update = true;
     this.container = item;
     this.dialogAddCont = true;
   }
+
   openRemoveContainer(item: IContainer) {
     this.container = item;
     this.dialogDelCont = true;
@@ -589,6 +592,7 @@ export default class CreateInbound extends Vue {
       this.clearForm();
     }
   }
+
   @Watch("options")
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
@@ -633,10 +637,9 @@ export default class CreateInbound extends Vue {
       }
     } as IInbound;
   }
+
   async createInbound() {
     this.inboundLocal.billOfLading.containers = this.containers;
-    console.log(this.inboundLocal);
-    console.log(this.containers);
     /* TODO: Calculate Empty Time:
      * emptyTime = (duration: portOfDelivery -> returnStation) + pickupTime (+ bias)
      */
@@ -648,6 +651,7 @@ export default class CreateInbound extends Vue {
       this.stepper = 4;
     }
   }
+
   getPortAddress(portCode: string) {
     if (portCode.length > 0) {
       const list = this.ports.filter(x => x.nameCode == portCode);
@@ -656,15 +660,19 @@ export default class CreateInbound extends Vue {
     }
     return undefined;
   }
+
   get portsToString() {
     return this.ports.map(x => x.nameCode);
   }
+
   get shippingLinesToString() {
     return this.shippingLines.map(x => x.companyCode);
   }
+
   get containerTypesToString() {
     return this.containerTypes.map(x => x.name);
   }
+
   get mapConfig() {
     return {
       loaderOptions: {
@@ -680,9 +688,11 @@ export default class CreateInbound extends Vue {
       }
     };
   }
+
   get apiKey() {
     return apiKey;
   }
+
   async getShippingLines(limit: number) {
     this.loadingShippingLines = true;
     this.shippingLines = [] as Array<IShippingLine>;
@@ -702,10 +712,12 @@ export default class CreateInbound extends Vue {
     }
     this.loadingShippingLines = false;
   }
+
   async loadMoreShippingLines() {
     this.limitShippingLines += 5;
     await this.getShippingLines(this.limitShippingLines);
   }
+
   async getContainerTypes(limit: number) {
     this.loadingContainerTypes = true;
     this.containerTypes = [] as Array<IContainerType>;
@@ -725,10 +737,12 @@ export default class CreateInbound extends Vue {
     }
     this.loadingContainerTypes = false;
   }
+
   async loadMoreContainerTypes() {
     this.limitContainerTypes += 5;
     await this.getContainerTypes(this.limitContainerTypes);
   }
+
   async getPorts(limit: number) {
     this.loadingPorts = true;
     this.ports = [] as Array<IPort>;
@@ -748,10 +762,12 @@ export default class CreateInbound extends Vue {
     }
     this.loadingPorts = false;
   }
+
   async loadMorePorts() {
     this.limitPorts += 5;
     await this.getPorts(this.limitPorts);
   }
+
   async created() {
     await this.getShippingLines(5);
     await this.getContainerTypes(5);
