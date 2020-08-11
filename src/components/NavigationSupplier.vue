@@ -62,27 +62,33 @@ import { Component, Vue } from "vue-property-decorator";
 export default class NavigationSupplier extends Vue {
   private merchantNavigation = [
     { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
-    { title: "Quản lý hàng xuất", icon: "flight_takeoff", link: "/outbound" },
+    { title: "Quản lý Hàng xuất", icon: "flight_takeoff", link: "/outbound" },
     { title: "Quản lý Hàng ghép", icon: "table_chart", link: "/combined" },
-    { title: "Quản lý Hợp đồng", icon: "folder", link: "/contract" },
-    { title: "Quản lý Hóa đơn", icon: "store", link: "/payment" },
-    {
-      title: "Quản lý HSMT",
-      icon: "business_center",
-      link: "/bidding-document"
-    }
-  ];
-  private forwarderNavigation = [
-    { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
-    { title: "Quản lý hàng nhập", icon: "flight_land", link: "/inbound" },
-    { title: "Quản lý Hàng ghép", icon: "table_chart", link: "/combined" },
-    { title: "Quản lý Hợp đồng", icon: "folder", link: "/contract" },
-    { title: "Quản lý Hóa đơn", icon: "store", link: "/payment" },
     {
       title: "Quản lý đấu thầu",
       icon: "mdi-chevron-up",
       "icon-alt": "mdi-chevron-down",
-      model: false,
+      model: true,
+      children: [
+        {
+          title: "Quản lý HSMT",
+          icon: "business_center",
+          link: "/bidding-document"
+        },
+        { title: "Quản lý Hợp đồng", icon: "folder", link: "/contract" },
+        { title: "Quản lý Hóa đơn", icon: "store", link: "/payment" }
+      ]
+    }
+  ];
+  private forwarderNavigation = [
+    { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
+    { title: "Quản lý Hàng nhập", icon: "flight_land", link: "/inbound" },
+    { title: "Quản lý Hàng ghép", icon: "table_chart", link: "/combined" },
+    {
+      title: "Quản lý đấu thầu",
+      icon: "mdi-chevron-up",
+      "icon-alt": "mdi-chevron-down",
+      model: true,
       children: [
         {
           title: "HSMT Nhận được",
@@ -90,7 +96,9 @@ export default class NavigationSupplier extends Vue {
           link: "/invited-bidding"
         },
         { title: "Quản lý HSDT", icon: "business_center", link: "/bid" },
-        { title: "Quản lý Report", icon: "report_problem", link: "/report" }
+        { title: "Quản lý Report", icon: "report_problem", link: "/report" },
+        { title: "Quản lý Hợp đồng", icon: "folder", link: "/contract" },
+        { title: "Quản lý Hóa đơn", icon: "store", link: "/payment" }
       ]
     },
     {
@@ -100,7 +108,7 @@ export default class NavigationSupplier extends Vue {
       model: false,
       children: [
         {
-          title: "Quản lý Driver",
+          title: "Quản lý Lái xe",
           icon: "airline_seat_recline_normal",
           link: "/driver"
         },

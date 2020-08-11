@@ -168,7 +168,7 @@ export default class CreatePort extends Vue {
   async createPort() {
     if (this.portLocal) {
       const _port = await createPort(this.portLocal);
-      if (_port) {
+      if (_port.data) {
         this.portsSync.unshift(_port.data);
         this.totalItemsSync += 1;
         this.dialogAddSync = false;
@@ -191,9 +191,11 @@ export default class CreatePort extends Vue {
       }
     };
   }
+
   get apiKey() {
     return apiKey;
   }
+
   beforeDestroy() {
     console.log("DESTROY > CreatePort");
     this.origin = null;

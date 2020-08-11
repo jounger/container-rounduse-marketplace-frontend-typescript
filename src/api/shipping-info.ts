@@ -16,13 +16,21 @@ export function getShippingInfosByDriver(id: number, paging: PaginationRequest) 
     params: paging
   });
 }
+
 export function getShippingInfosByOutbound(id: number, paging: PaginationRequest) {
   return Vue.axios.get(`/shipping-info/outbound/${id}`, {
     params: paging
   });
 }
+
 export function getShippingInfosByBid(id: number, paging: PaginationRequest) {
   return Vue.axios.get(`/shipping-info/bid/${id}`, {
+    params: paging
+  });
+}
+
+export function getShippingInfosByCombined(id: number, paging: PaginationRequest) {
+  return Vue.axios.get(`/shipping-info/combined/${id}`, {
     params: paging
   });
 }

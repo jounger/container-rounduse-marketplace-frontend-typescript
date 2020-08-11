@@ -4,6 +4,10 @@
       <v-data-table
         :headers="headers"
         :items="biddingDocuments"
+        :single-expand="singleExpand"
+        :expanded.sync="expanded"
+        show-expand
+        @click:row="clicked"
         item-key="id"
         :loading="loading"
         :options.sync="options"
@@ -41,17 +45,53 @@
         <template v-slot:item.unit="{ item }">
           {{ item.outbound.booking.unit + " x " + item.outbound.containerType }}
         </template>
-        <template v-slot:item.actions="{ item }">
-          <v-btn
-            class="ma-1"
-            tile
-            outlined
-            color="info"
-            @click="gotoDetail(item)"
-            small
-          >
-            <v-icon left dense>details</v-icon> Chi tiết
-          </v-btn>
+        <!-- EDITING -->
+        <template v-slot:expanded-item="{ headers }">
+          <td :colspan="headers.length" class="px-0">
+            <v-data-table
+              :headers="combinedHeaders"
+              :items="combineds"
+              :loading="loading"
+              :options.sync="combinedOptions"
+              :server-items-length="combinedServerSideOptions.totalItems"
+              :footer-props="{
+                'items-per-page-options':
+                  combinedServerSideOptions.itemsPerPageItems
+              }"
+              :actions-append="combinedOptions.page"
+              disable-sort
+              dense
+              dark
+            >
+              <template v-slot:item.bid.bidPrice="{ item }">
+                {{ currencyFormatter(item.bid.bidPrice) }}
+              </template>
+              <template v-slot:item.isCanceled="{ item }">
+                <v-chip
+                  :style="
+                    item.isCanceled == true
+                      ? 'background-color:orange'
+                      : 'background-color:green'
+                  "
+                  dark
+                  x-small
+                  >{{ item.isCanceled ? "CANCELED" : "COMBINED" }}</v-chip
+                >
+              </template>
+              <template v-slot:item.actions="{ item }">
+                <v-btn
+                  class="ma-1"
+                  tile
+                  outlined
+                  color="info"
+                  x-small
+                  :to="`/combined/${item.id}`"
+                >
+                  <v-icon left dense>details</v-icon> Chi tiết
+                </v-btn>
+              </template>
+            </v-data-table>
+          </td>
         </template>
       </v-data-table>
     </v-card>
@@ -64,18 +104,31 @@ import { IBiddingDocument } from "@/entity/bidding-document";
 import Utils from "@/mixin/utils";
 import { getBiddingDocumentsByExistCombined } from "@/api/bidding-document";
 import { DataOptions } from "vuetify";
+import { getCombinedsByBiddingDocument } from "@/api/combined";
 
 @Component({
   mixins: [Utils]
 })
 export default class Combined extends Vue {
   biddingDocuments: Array<IBiddingDocument> = [];
+  biddingDocument = null as IBiddingDocument | null;
+  combineds: Array<ICombined> = [];
   loading = true;
+  expanded: Array<IBiddingDocument> = [];
+  singleExpand = true;
   options = {
     page: 1,
     itemsPerPage: 5
   } as DataOptions;
   serverSideOptions = {
+    totalItems: 0,
+    itemsPerPageItems: [5, 10, 20, 50]
+  };
+  combinedOptions = {
+    page: 1,
+    itemsPerPage: 5
+  } as DataOptions;
+  combinedServerSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -92,20 +145,54 @@ export default class Combined extends Vue {
     { text: "Thời gian đóng hàng", value: "packingTime" },
     { text: "Thời gian tàu chạy", value: "cutOffTime" },
     { text: "Cảng đóng hàng", value: "outbound.booking.portOfLoading" },
-    { text: "Trạng thái", value: "status" },
+    { text: "Trạng thái", value: "status" }
+  ];
+  combinedHeaders = [
+    {
+      text: "Mã",
+      align: "start",
+      sortable: false,
+      value: "id"
+    },
+    { text: "Nhà thầu", value: "bid.bidder" },
+    { text: "Ngày trúng thầu", value: "bid.dateOfDecision" },
+    { text: "Giá trúng thầu", value: "bid.bidPrice" },
+    { text: "Trạng thái", value: "isCanceled" },
     {
       text: "Hành động",
       value: "actions"
     }
   ];
 
-  gotoDetail(item: ICombined) {
-    const id = item.id;
-    if (this.$auth.user().roles[0] == "ROLE_MERCHANT") {
-      this.$router.push({ path: `/combined/${id}` });
-    } else if (this.$auth.user().roles[0] == "ROLE_FORWARDER") {
-      this.$router.push({ path: `/combined-forwarder/${id}` });
+  async loadCombineds(biddingDocumentId: number, option: DataOptions) {
+    const _combineds = await getCombinedsByBiddingDocument(biddingDocumentId, {
+      page: option.page - 1,
+      limit: option.itemsPerPage
+    });
+    if (_combineds.data) {
+      this.combineds = _combineds.data.data;
+      this.combinedServerSideOptions.totalItems = _combineds.data.totalElements;
     }
+  }
+
+  async clicked(value: IBiddingDocument) {
+    if (this.singleExpand) {
+      if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
+        this.expanded.splice(0, this.expanded.length);
+        this.biddingDocument = null;
+      } else {
+        if (this.expanded.length > 0) {
+          this.expanded.splice(0, this.expanded.length);
+          this.expanded.push(value);
+          this.biddingDocument = value;
+        } else {
+          this.expanded.push(value);
+          this.biddingDocument = value;
+        }
+      }
+    }
+    this.combinedOptions.page = 1;
+    await this.loadCombineds(value.id as number, this.combinedOptions);
   }
 
   @Watch("options")
@@ -120,6 +207,26 @@ export default class Combined extends Vue {
         this.biddingDocuments = _biddingDocuments.data.data;
         this.serverSideOptions.totalItems =
           _biddingDocuments.data.totalElements;
+      }
+      this.loading = false;
+    }
+  }
+
+  @Watch("combinedOptions")
+  async onCombinedOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined" && this.biddingDocument) {
+      this.loading = true;
+      const _combineds = await getCombinedsByBiddingDocument(
+        this.biddingDocument.id as number,
+        {
+          page: val.page - 1,
+          limit: val.itemsPerPage
+        }
+      );
+      if (_combineds.data) {
+        this.combineds = _combineds.data.data;
+        this.combinedServerSideOptions.totalItems =
+          _combineds.data.totalElements;
       }
       this.loading = false;
     }

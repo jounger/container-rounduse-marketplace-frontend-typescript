@@ -481,7 +481,7 @@ import { getBiddingDocument } from "@/api/bidding-document";
 import CreateEvidence from "./CreateEvidence.vue";
 import DetailEvidence from "./DetailEvidence.vue";
 import { IInbound } from "@/entity/inbound";
-import { getInboundsByContainer } from "@/api/inbound";
+import { getInboundByContainer } from "@/api/inbound";
 import { DataOptions } from "vuetify";
 import SupplierRating from "../../bidding-document/components/SupplierRating.vue";
 
@@ -714,7 +714,7 @@ export default class DetailCombinedForwarder extends Vue {
   }
   async viewDetailContainer(item: IContainer) {
     this.selectedContainer = item;
-    const _inbound = await getInboundsByContainer(item.id as number);
+    const _inbound = await getInboundByContainer(item.id as number);
     if (_inbound.data) this.inbound = _inbound.data;
   }
 }

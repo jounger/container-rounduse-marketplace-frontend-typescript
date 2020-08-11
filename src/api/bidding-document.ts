@@ -22,6 +22,10 @@ export function getBiddingDocumentsByExistCombined(paging: PaginationRequest) {
   });
 }
 
+export function getBiddingDocumentByCombined(id: number) {
+  return Vue.axios.get(`/bidding-document/combined/${id}`);
+}
+
 export function createBiddingDocument(biddingDocument: IBiddingDocument) {
   return Vue.axios.post("/bidding-document", biddingDocument);
 }

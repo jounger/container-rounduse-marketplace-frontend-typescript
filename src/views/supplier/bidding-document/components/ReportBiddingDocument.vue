@@ -17,127 +17,122 @@
           <SupplierRating :supplier="biddingDocument.merchant" />
 
           <v-list dense>
-            <v-subheader>Thong tin HSMT</v-subheader>
-            <v-list-item-group color="primary">
-              <v-list-item>
-                <v-list-item-icon>
-                  <v-icon>monetization_on</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>{{
-                    "Giá gói thầu: " +
+            <v-subheader>Thông tin HSMT</v-subheader>
+            <v-list-item>
+              <v-list-item-icon>
+                <v-icon>monetization_on</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>{{
+                  "Giá gói thầu: " +
+                    currencyFormatter(
+                      biddingDocument.bidPackagePrice,
+                      biddingDocument.currencyOfPayment
+                    )
+                }}</v-list-item-title>
+                <v-list-item-subtitle>
+                  {{
+                    "Giá sàn: " +
                       currencyFormatter(
-                        biddingDocument.bidPackagePrice,
+                        biddingDocument.bidFloorPrice,
                         biddingDocument.currencyOfPayment
                       )
-                  }}</v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{
-                      "Giá sàn: " +
-                        currencyFormatter(
-                          biddingDocument.bidFloorPrice,
-                          biddingDocument.currencyOfPayment
-                        )
-                    }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-              <v-list-item>
-                <v-list-item-icon>
-                  <v-icon>date_range</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>{{
-                    "Mở thầu: " + formatDatetime(biddingDocument.bidOpening)
-                  }}</v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{
-                      "Đóng thầu: " + formatDatetime(biddingDocument.bidClosing)
-                    }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
+                  }}
+                </v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-icon>
+                <v-icon>date_range</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>{{
+                  "Mở thầu: " + formatDatetime(biddingDocument.bidOpening)
+                }}</v-list-item-title>
+                <v-list-item-subtitle>
+                  {{
+                    "Đóng thầu: " + formatDatetime(biddingDocument.bidClosing)
+                  }}
+                </v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
           </v-list>
 
           <v-list dense>
-            <v-subheader>Thong tin Hàng Xuất</v-subheader>
-            <v-list-item-group color="primary">
-              <v-list-item>
-                <v-list-item-icon>
-                  <v-icon>child_friendly</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>{{
-                    "Mã Booking: " + biddingDocument.outbound.booking.number
-                  }}</v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{
-                      "Cảng bốc hàng: " +
-                        biddingDocument.outbound.booking.portOfLoading
-                    }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
+            <v-subheader>Thông tin Hàng Xuất</v-subheader>
+            <v-list-item>
+              <v-list-item-icon>
+                <v-icon>child_friendly</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>{{
+                  "Mã Booking: " + biddingDocument.outbound.booking.number
+                }}</v-list-item-title>
+                <v-list-item-subtitle>
+                  {{
+                    "Cảng bốc hàng: " +
+                      biddingDocument.outbound.booking.portOfLoading
+                  }}
+                </v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
 
-              <v-list-item>
-                <v-list-item-icon>
-                  <v-icon>directions_boat</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>{{
-                    "Hãng tàu: " + biddingDocument.outbound.shippingLine
-                  }}</v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{
-                      "Số lượng: " +
-                        biddingDocument.outbound.booking.unit +
-                        " x " +
-                        biddingDocument.outbound.containerType
-                    }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
+            <v-list-item>
+              <v-list-item-icon>
+                <v-icon>directions_boat</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>{{
+                  "Hãng tàu: " + biddingDocument.outbound.shippingLine
+                }}</v-list-item-title>
+                <v-list-item-subtitle>
+                  {{
+                    "Số lượng: " +
+                      biddingDocument.outbound.booking.unit +
+                      " x " +
+                      biddingDocument.outbound.containerType
+                  }}
+                </v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
 
-              <v-list-item>
-                <v-list-item-icon>
-                  <v-icon>location_on</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>{{
-                    "Đóng tại: " + biddingDocument.outbound.packingStation
-                  }}</v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{
-                      "Thời gian: " +
-                        formatDatetime(biddingDocument.outbound.packingTime)
-                    }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
+            <v-list-item>
+              <v-list-item-icon>
+                <v-icon>location_on</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>{{
+                  "Đóng tại: " + biddingDocument.outbound.packingStation
+                }}</v-list-item-title>
+                <v-list-item-subtitle>
+                  {{
+                    "Thời gian: " +
+                      formatDatetime(biddingDocument.outbound.packingTime)
+                  }}
+                </v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
 
-              <v-list-item>
-                <v-list-item-icon>
-                  <v-icon>description</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>{{
-                    "Mô tả: " + biddingDocument.outbound.goodsDescription
-                  }}</v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{
-                      "Khối lượng: " +
-                        biddingDocument.outbound.grossWeight +
-                        biddingDocument.outbound.unitOfMeasurement
-                    }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
+            <v-list-item>
+              <v-list-item-icon>
+                <v-icon>description</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>{{
+                  "Mô tả: " + biddingDocument.outbound.goodsDescription
+                }}</v-list-item-title>
+                <v-list-item-subtitle>
+                  {{
+                    "Khối lượng: " +
+                      biddingDocument.outbound.grossWeight +
+                      biddingDocument.outbound.unitOfMeasurement
+                  }}
+                </v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
           </v-list>
         </v-card-text>
       </v-card>
-      <!-- BIDDING -->
       <v-card class="order-1 flex-grow-1 mx-auto my-5">
         <v-card-title
           >Thông tin đấu thầu

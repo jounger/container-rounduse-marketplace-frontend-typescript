@@ -12,7 +12,8 @@ export function getInbound(id: number) {
   return Vue.axios.get(`/inbound/${id}`);
 }
 
-export function getInboundsByContainer(id: number) {
+
+export function getInboundByContainer(id: number) {
   return Vue.axios.get(`/inbound/container/${id}`);
 }
 
