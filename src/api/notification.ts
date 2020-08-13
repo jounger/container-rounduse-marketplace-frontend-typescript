@@ -37,7 +37,7 @@ export function getShippingLineNotification(id: number) {
 }
 
 // Edit notification
-export function editNotifications(id: number, updates: object) {
+export function editNotification(id: number, updates: object) {
   return Vue.axios.patch(`/notification/${id}`, updates);
 }
 

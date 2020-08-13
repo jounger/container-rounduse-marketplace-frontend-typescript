@@ -431,12 +431,16 @@ export default class UpdateInbound extends Vue {
   }
 
   async updateInbound() {
-    if (this.inboundLocal && this.inboundLocal.id) {
-      const _res = await editInbound(this.inboundLocal.id, this.inboundLocal);
+    if (this.inboundLocal) {
+      const _res = await editInbound(
+        this.inbound.id as number,
+        this.inboundLocal
+      );
       if (_res.data) {
-        const _inbound = _res.data;
+        const _inbound = _res.data.data;
         const index = this.inboundsSync.findIndex(x => x.id == _inbound.id);
         this.inboundsSync.splice(index, 1, _inbound);
+        this.inboundLocal = _inbound;
         this.stepper = 2;
       }
     }
@@ -449,7 +453,7 @@ export default class UpdateInbound extends Vue {
         this.inboundLocal.billOfLading
       );
       if (_res.data) {
-        const _billOfLading = _res.data;
+        const _billOfLading = _res.data.data;
         const index = this.inboundsSync.findIndex(
           x => x.id === this.inbound.id
         );

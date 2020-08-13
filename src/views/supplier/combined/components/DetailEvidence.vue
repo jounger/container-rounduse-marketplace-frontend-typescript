@@ -86,7 +86,7 @@ export default class DetailEvidence extends Vue {
         isValid: isValid
       });
       if (_res.data) {
-        const _evidence = _res.data;
+        const _evidence = _res.data.data;
         const index = this.evidencesSync.findIndex(x => x.id == _evidence.id);
         this.evidencesSync.splice(index, 1, _evidence);
         if (this.finalEvidence && _evidence.isValid) {

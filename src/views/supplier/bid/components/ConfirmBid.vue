@@ -57,7 +57,7 @@ export default class ConfirmBid extends Vue {
         isHide: true
       });
       if (_res.data) {
-        const _biddingNofitication = _res.data;
+        const _biddingNofitication = _res.data.data;
         const index = this.biddingNotificationsSync.findIndex(
           x => x.id === _biddingNofitication.id
         );

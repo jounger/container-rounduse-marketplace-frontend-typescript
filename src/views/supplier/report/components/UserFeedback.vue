@@ -183,7 +183,7 @@ export default class UserFeedback extends Vue {
         message: this.message
       });
       if (_res.data) {
-        const _feedback = _res.data;
+        const _feedback = _res.data.data;
         this.feedbackLocal = _feedback;
         this.edit = false;
       }

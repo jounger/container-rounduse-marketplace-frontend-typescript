@@ -53,7 +53,7 @@ export default class CancelBiddingDocument extends Vue {
         status: "CANCELED"
       });
       if (_res.data) {
-        const _biddingDocument = _res.data;
+        const _biddingDocument = _res.data.data;
         if (this.biddingDocumentsSync) {
           const index = this.biddingDocumentsSync.findIndex(
             x => x.id === _biddingDocument.id

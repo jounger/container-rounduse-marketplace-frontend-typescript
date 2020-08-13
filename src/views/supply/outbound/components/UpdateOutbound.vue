@@ -485,7 +485,7 @@ export default class UpdateOutbound extends Vue {
         this.outboundLocal
       );
       if (_res.data) {
-        const _outbound = _res.data;
+        const _outbound = _res.data.data;
         const index = this.outboundsSync.findIndex(x => x.id == _outbound.id);
         this.outboundsSync.splice(index, 1, _outbound);
         this.stepper = 2;
@@ -499,7 +499,7 @@ export default class UpdateOutbound extends Vue {
         this.outboundLocal.booking
       );
       if (_res.data) {
-        const _booking = _res.data;
+        const _booking = _res.data.data;
         const index = this.outboundsSync.findIndex(
           x => x.id === this.outbound.id
         );

@@ -107,7 +107,7 @@ import {
   getBiddingNotification,
   getNotificationsByUser,
   getReportNotification,
-  editNotifications
+  editNotification
 } from "@/api/notification";
 import { INotification } from "@/entity/notification";
 import Utils from "@/mixin/utils";
@@ -166,11 +166,11 @@ export default class Notification extends Vue {
 
   async seenNotification(item: INotification) {
     if (item.isRead == false) {
-      const _res = await editNotifications(item.id as number, {
+      const _res = await editNotification(item.id as number, {
         isRead: true
       });
       if (_res.data) {
-        const _notification = _res.data as INotification;
+        const _notification = _res.data.data as INotification;
         item.isRead = _notification.isRead;
         if (this.messageCount > 0) this.messageCount -= 1;
       }

@@ -15,7 +15,7 @@
       :src="
         fileResponse
           ? fileResponse.fileDownloadUri
-          : 'http://localhost:8085/api/file/download/ana.png'
+          : 'http://localhost:8085/api/file/download/1597328561643-ana.png'
       "
     ></v-img> -->
   </v-container>

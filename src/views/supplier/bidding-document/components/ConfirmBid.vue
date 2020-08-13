@@ -78,7 +78,7 @@ export default class ConfirmBid extends Vue {
           status: "REJECTED"
         });
         if (_res.data) {
-          const _bid = _res.data;
+          const _bid = _res.data.data;
           const index = this.bidsSync.findIndex(x => x.id === _bid.id);
           this.bidsSync.splice(index, 1, _bid);
           this.dialogConfirmSync = false;

@@ -47,7 +47,7 @@ export default class DeleteDriver extends Vue {
     if (this.driver.id) {
       const _res = await removeDriver(this.driver.id);
       if (_res.status == 200) {
-        const index = this.driversSync.findIndex(x => x.id === _res.data.id);
+        const index = this.driversSync.findIndex(x => x.id === this.driver.id);
         this.driversSync.splice(index, 1);
         this.totalItemsSync -= 1;
         this.dialogDelSync = false;

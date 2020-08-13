@@ -89,7 +89,7 @@ export default class CreateReport extends Vue {
     if (this.reportLocal && this.reportLocal.id) {
       const _res = await editReport(this.reportLocal.id, this.reportLocal);
       if (_res.data) {
-        const _report = _res.data;
+        const _report = _res.data.data;
         const index = this.reportsSync.findIndex(x => x.id == _report.id);
         this.reportsSync.splice(index, 1, _report);
       }

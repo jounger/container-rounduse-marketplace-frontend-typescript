@@ -1,29 +1,58 @@
 <template>
-  <v-card class="order-0 flex-grow-0 mx-auto mr-5 my-12" max-width="300">
-    <v-img
-      height="100%"
-      src="https://cdn.vuetifyjs.com/images/cards/server-room.jpg"
-    >
-      <v-row align="end" class="fill-height">
-        <v-col align-self="start" class="pa-0" cols="12">
-          <v-avatar class="profile" color="grey" size="164" tile>
-            <v-img src="@/assets/images/ava.jpg"></v-img>
-          </v-avatar>
-        </v-col>
-        <v-col class="py-0">
-          <v-list-item color="rgba(0, 0, 0, .4)" dark>
-            <v-list-item-content>
-              <v-list-item-title class="title">{{
-                $auth.user() ? $auth.user().username : ""
-              }}</v-list-item-title>
-              <v-list-item-subtitle>{{
-                $auth.user() ? $auth.user().roles[0] : ""
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </v-col>
-      </v-row>
-    </v-img>
+  <v-card
+    class="order-0 flex-grow-0 mx-auto mr-5 my-12"
+    max-width="300"
+    v-if="$auth.user()"
+  >
+    <v-row align="start" class="fill-height">
+      <v-col align-self="start" class="pa-0" cols="12">
+        <v-avatar class="profile" color="grey" size="164" tile>
+          <v-img
+            v-if="$auth.user().profileImagePath"
+            :src="profileImagePath"
+            max-width="400px"
+          ></v-img>
+          <v-img v-else src="@/assets/images/ava.jpg" max-width="400px"></v-img>
+        </v-avatar>
+      </v-col>
+      <v-col class="py-0">
+        <v-list-item color="rgba(0, 0, 0, .4)" dark>
+          <v-list-item-content>
+            <v-list-item-title class="title">{{
+              $auth.user().username
+            }}</v-list-item-title>
+            <v-list-item-subtitle>{{
+              $auth.user().roles ? $auth.user().roles[0] : ""
+            }}</v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12" md="9">
+        <v-file-input
+          v-model="fileInput"
+          counter
+          chips
+          :show-size="1024"
+          accept="image/png, image/jpeg, image/bmp"
+          placeholder="Pick an avatar"
+          prepend-icon="mdi-camera"
+          label="Avatar"
+        ></v-file-input>
+      </v-col>
+      <v-col cols="12" md="3">
+        <v-btn
+          :disabled="fileInput == null"
+          outlined
+          color="primary"
+          @click.stop="onUpload"
+          fab
+          small
+          ><v-icon>mdi-pencil</v-icon></v-btn
+        >
+      </v-col>
+    </v-row>
 
     <v-card-title>Thông tin cá nhân</v-card-title>
     <v-list two-line>
@@ -76,9 +105,33 @@
     </v-list>
   </v-card>
 </template>
-
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import { uploadProfileImage } from "@/api/user";
+
 @Component
-export default class CardProfile extends Vue {}
+export default class CardProfile extends Vue {
+  fileInput = null as Blob | null;
+
+  profileImagePath = "";
+
+  async onUpload() {
+    if (this.fileInput) {
+      const formData = new FormData();
+      formData.append("file", this.fileInput);
+      const _res = await uploadProfileImage(formData);
+      if (_res.data) {
+        const _user = _res.data.data;
+        this.profileImagePath =
+          "http://localhost:8085" + _user.profileImagePath;
+        // await this.$auth.fetchUser();
+      }
+    }
+  }
+
+  mounted() {
+    this.profileImagePath =
+      "http://localhost:8085" + this.$auth.user().profileImagePath;
+  }
+}
 </script>

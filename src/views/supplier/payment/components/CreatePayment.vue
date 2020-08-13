@@ -204,10 +204,8 @@ export default class CreatePayment extends Vue {
       const _res = await editPayment(this.paymentLocal.id, this.paymentLocal);
       if (_res.data && this.paymentsSync) {
         const _payment = _res.data.data;
-        const index = this.paymentsSync.findIndex(
-          x => x.id == _payment.data.id
-        );
-        this.paymentsSync.splice(index, 1, _payment.data);
+        const index = this.paymentsSync.findIndex(x => x.id == _payment.id);
+        this.paymentsSync.splice(index, 1, _payment);
       }
     }
   }

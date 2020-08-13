@@ -7,6 +7,7 @@ export interface IUser {
   status: string;
   address: string;
   password: string;
+  profileImagePath: string;
   isSelected?: boolean;
 }
 

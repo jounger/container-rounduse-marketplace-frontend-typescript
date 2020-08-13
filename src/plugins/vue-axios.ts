@@ -48,7 +48,6 @@ instance.interceptors.response.use(
     if (
       response.config.method?.toUpperCase() != "GET" &&
       response.config.url?.includes("/notification") == false &&
-      response.data.message.length > 0 &&
       (response.status == 200 ||
         response.status == 201 ||
         response.status == 204)

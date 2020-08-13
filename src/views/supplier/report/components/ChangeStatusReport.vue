@@ -54,7 +54,7 @@ export default class DeleteReport extends Vue {
         status: this.status
       });
       if (_res.data) {
-        const _report = _res.data;
+        const _report = _res.data.data;
         this.reportSync = _report;
         this.dialogConfirmSync = false;
       }

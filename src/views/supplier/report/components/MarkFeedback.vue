@@ -56,7 +56,7 @@ export default class MarkFeedback extends Vue {
         satisfactionPoints: this.feedbackLocal.satisfactionPoints
       });
       if (_res.data) {
-        const _feedback = _res.data;
+        const _feedback = _res.data.data;
         const index = this.feedbacksSync.findIndex(x => x.id == _feedback.id);
         this.feedbacksSync.splice(index, 1, _feedback);
         this.dialogMarkSync = false;

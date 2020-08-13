@@ -110,7 +110,7 @@ export default class UpdateContract extends Vue {
         this.contractLocal
       );
       if (_res.data) {
-        const _contract = _res.data;
+        const _contract = _res.data.data;
         this.contractSync = _contract;
       }
     }
