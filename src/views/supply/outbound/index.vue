@@ -226,13 +226,14 @@ export default class Outbound extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _outbounds = await getOutboundByMerchant({
+      const _res = await getOutboundByMerchant({
         page: val.page - 1,
         limit: val.itemsPerPage
       });
-      if (_outbounds.data) {
-        this.outbounds = _outbounds.data.data;
-        this.serverSideOptions.totalItems = _outbounds.data.totalElements;
+      if (_res.data) {
+        const _outbounds = _res.data.data;
+        this.outbounds = _outbounds;
+        this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }

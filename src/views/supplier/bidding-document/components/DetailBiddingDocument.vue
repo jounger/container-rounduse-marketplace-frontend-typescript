@@ -26,12 +26,12 @@
       v-if="biddingDocument"
     >
       <!-- OUTOUNBD -->
-      <v-card class="order-0 flex-grow-0 mx-auto mr-5 my-5" max-width="330">
+      <v-card class="order-0 flex-grow-0 mx-auto mr-5 my-5" max-width="400">
         <v-img height="100" src="@/assets/images/biddingdocument.jpg"></v-img>
         <v-card-title>Hồ sơ Mời thầu</v-card-title>
         <v-card-text>
           Chủ hàng xuất:
-          <SupplierRating :supplier="biddingDocument.merchant" />
+          <SupplierRating :supplier="biddingDocument.offeree" />
 
           <v-list dense>
             <v-subheader>Thông tin HSMT</v-subheader>
@@ -83,7 +83,7 @@
               </v-list-item-icon>
               <v-list-item-content>
                 <v-list-item-title>{{
-                  "Mã Booking: " + biddingDocument.outbound.booking.number
+                  "Mã hàng xuất: " + biddingDocument.outbound.code
                 }}</v-list-item-title>
                 <v-list-item-subtitle>
                   {{
@@ -119,7 +119,7 @@
               </v-list-item-icon>
               <v-list-item-content>
                 <v-list-item-title>{{
-                  "Đóng tại: " + biddingDocument.outbound.packingStation
+                  "Đóng hàng tại: " + biddingDocument.outbound.packingStation
                 }}</v-list-item-title>
                 <v-list-item-subtitle>
                   {{
@@ -136,14 +136,12 @@
               </v-list-item-icon>
               <v-list-item-content>
                 <v-list-item-title>{{
-                  "Mô tả: " + biddingDocument.outbound.goodsDescription
+                  "Khối lượng: " +
+                    biddingDocument.outbound.grossWeight +
+                    biddingDocument.outbound.unitOfMeasurement
                 }}</v-list-item-title>
                 <v-list-item-subtitle>
-                  {{
-                    "Khối lượng: " +
-                      biddingDocument.outbound.grossWeight +
-                      biddingDocument.outbound.unitOfMeasurement
-                  }}
+                  {{ "Mô tả: " + biddingDocument.outbound.goodsDescription }}
                 </v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
@@ -560,7 +558,7 @@ export default class DetailBiddingDocument extends Vue {
 
   openConfirmBid(item: IBid, accept: boolean) {
     this.bid = item;
-    this.dialogAddCombined = true;
+    if (accept) this.dialogAddCombined = true;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -620,23 +618,24 @@ export default class DetailBiddingDocument extends Vue {
     }
   }
 
-  @Watch("getRouterId")
+  @Watch("getRouterId", { immediate: true })
   async onGetRouterIdChange() {
-    const _biddingDocument = await getBiddingDocument(
-      parseInt(this.getRouterId)
-    );
-    this.biddingDocument = _biddingDocument.data.data;
+    const _res = await getBiddingDocument(this.getRouterId);
+    if (_res.data) {
+      const _biddingDocument = _res.data;
+      this.biddingDocument = _biddingDocument;
+    }
   }
 
   async loadContainersByBid(bidId: number, option: DataOptions) {
-    const _containers = await getContainersByBid(bidId, {
+    const _res = await getContainersByBid(bidId, {
       page: option.page - 1,
       limit: option.itemsPerPage
     });
-    if (_containers.data) {
-      this.containerServerSideOptions.totalItems =
-        _containers.data.totalElements;
-      this.containers = _containers.data.data;
+    if (_res.data) {
+      const _containers = _res.data.data;
+      this.containers = _containers;
+      this.containerServerSideOptions.totalItems = _res.data.totalElements;
     }
   }
 
@@ -657,26 +656,28 @@ export default class DetailBiddingDocument extends Vue {
       this.loading = true;
       if (this.biddingDocument && this.$auth.user().roles) {
         if (this.$auth.user().roles[0] == "ROLE_MERCHANT") {
-          const _bid = await getBidsByBiddingDocument(
+          const _res = await getBidsByBiddingDocument(
             this.biddingDocument.id as number,
             {
-              page: this.options.page - 1,
-              limit: this.options.itemsPerPage
+              page: val.page - 1,
+              limit: val.itemsPerPage
             }
           );
-          if (_bid.data) {
-            this.bids = _bid.data.data;
+          if (_res.data) {
+            const _bids = _res.data.data;
+            this.bids = _bids;
             this.numberWinner = this.bids.filter(
               (x: IBid) => x.status == "ACCEPTED"
             ).length;
-            this.serverSideOptions.totalItems = _bid.data.totalElements;
+            this.serverSideOptions.totalItems = _res.data.totalElements;
           }
         } else if (this.$auth.user().roles[0] == "ROLE_FORWARDER") {
-          const _bid = await getBidByBiddingDocumentAndForwarder(
+          const _res = await getBidByBiddingDocumentAndForwarder(
             this.biddingDocument.id as number
           );
-          if (_bid.data) {
-            this.bids.splice(0, this.bids.length, _bid.data);
+          if (_res.data) {
+            const _bids = _res.data;
+            this.bids.splice(0, this.bids.length, _bids);
             this.serverSideOptions.totalItems = 1;
           }
         }
@@ -686,15 +687,9 @@ export default class DetailBiddingDocument extends Vue {
   }
 
   get getRouterId() {
-    return this.$route.params.id;
-  }
-
-  async created() {
-    // TODO: API get Bidding Document
-    const _biddingDocument = await getBiddingDocument(
-      parseInt(this.getRouterId)
-    );
-    if (_biddingDocument.data) this.biddingDocument = _biddingDocument.data;
+    const biddingDocumentId = this.$route.params.id;
+    if (biddingDocumentId) return parseInt(biddingDocumentId);
+    return -1;
   }
 
   openReportDialog() {

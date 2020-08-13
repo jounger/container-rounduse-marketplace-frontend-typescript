@@ -97,9 +97,10 @@ export default class CreatePermission extends Vue {
   }
   async createPermission() {
     if (this.permissionLocal) {
-      const _permission = await createPermission(this.permissionLocal);
-      if (_permission.data) {
-        this.permissionsSync.unshift(_permission.data);
+      const _res = await createPermission(this.permissionLocal);
+      if (_res.data) {
+        const _permission = _res.data.data;
+        this.permissionsSync.unshift(_permission);
         this.totalItemsSync += 1;
         this.dialogAddSync = false;
       }
@@ -107,12 +108,13 @@ export default class CreatePermission extends Vue {
   }
   async updatePermission() {
     if (this.permissionLocal.id) {
-      const _permission = await updatePermission(this.permissionLocal);
-      if (_permission.data) {
+      const _res = await updatePermission(this.permissionLocal);
+      if (_res.data) {
+        const _permission = _res.data.data;
         const index = this.permissionsSync.findIndex(
-          x => x.id == _permission.data.id
+          x => x.id == _permission.id
         );
-        this.permissionsSync.splice(index, 1, _permission.data);
+        this.permissionsSync.splice(index, 1, _permission);
       }
     }
   }

@@ -154,13 +154,14 @@ export default class ShippingLine extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _shippingLines = await getShippingLines({
+      const _res = await getShippingLines({
         page: val.page - 1,
         limit: val.itemsPerPage
       });
-      if (_shippingLines.data) {
-        this.shippingLines = _shippingLines.data.data;
-        this.serverSideOptions.totalItems = _shippingLines.data.totalElements;
+      if (_res.data) {
+        const _shippingLines = _res.data.data;
+        this.shippingLines = _shippingLines;
+        this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }

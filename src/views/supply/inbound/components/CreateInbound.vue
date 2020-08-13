@@ -598,13 +598,14 @@ export default class CreateInbound extends Vue {
     if (typeof val != "undefined") {
       this.loading = true;
       if (this.inboundLocal.id) {
-        const _inbounds = await getContainersByInbound(this.inboundLocal.id, {
+        const _res = await getContainersByInbound(this.inboundLocal.id, {
           page: val.page - 1,
           limit: val.itemsPerPage
         });
-        if (_inbounds.data) {
-          this.containers = _inbounds.data.data;
-          this.serverSideOptions.totalItems = _inbounds.data.totalElements;
+        if (_res.data) {
+          const _inbounds = _res.data.data;
+          this.containers = _inbounds;
+          this.serverSideOptions.totalItems = _res.data.totalElements;
         }
       }
       this.loading = false;
@@ -643,10 +644,11 @@ export default class CreateInbound extends Vue {
     /* TODO: Calculate Empty Time:
      * emptyTime = (duration: portOfDelivery -> returnStation) + pickupTime (+ bias)
      */
-    const _inbound = await createInbound(this.inboundLocal);
-    if (_inbound.data) {
-      this.inboundLocal = _inbound.data;
-      this.inboundsSync.unshift(_inbound.data);
+    const _res = await createInbound(this.inboundLocal);
+    if (_res.data) {
+      const _inbound = _res.data.data;
+      this.inboundLocal = _inbound;
+      this.inboundsSync.unshift(_inbound);
       this.totalItemsSync += 1;
       this.stepper = 4;
     }
@@ -696,19 +698,20 @@ export default class CreateInbound extends Vue {
   async getShippingLines(limit: number) {
     this.loadingShippingLines = true;
     this.shippingLines = [] as Array<IShippingLine>;
-    const _shippingLines = await getShippingLines({
+    const _res = await getShippingLines({
       page: 0,
       limit: limit + 1
     });
-    if (_shippingLines.data) {
-      _shippingLines.data.data.forEach((x: IShippingLine, index: number) => {
+    if (_res.data) {
+      const _shippingLines = _res.data.data;
+      _shippingLines.forEach((x: IShippingLine, index: number) => {
         if (index != limit) {
           this.shippingLines.push(x);
         }
       });
-    }
-    if (!_shippingLines.data || _shippingLines.data.length <= limit) {
-      this.seeMoreShippingLines = false;
+      if (!_shippingLines || _shippingLines.length <= limit) {
+        this.seeMoreShippingLines = false;
+      }
     }
     this.loadingShippingLines = false;
   }
@@ -721,19 +724,20 @@ export default class CreateInbound extends Vue {
   async getContainerTypes(limit: number) {
     this.loadingContainerTypes = true;
     this.containerTypes = [] as Array<IContainerType>;
-    const _containerTypes = await getContainerTypes({
+    const _res = await getContainerTypes({
       page: 0,
       limit: limit + 1
     });
-    if (_containerTypes.data) {
-      _containerTypes.data.data.forEach((x: IContainerType, index: number) => {
+    if (_res.data) {
+      const _containerTypes = _res.data.data;
+      _containerTypes.forEach((x: IContainerType, index: number) => {
         if (index != limit) {
           this.containerTypes.push(x);
         }
       });
-    }
-    if (!_containerTypes.data || _containerTypes.data.length <= limit) {
-      this.seeMoreContainerTypes = false;
+      if (!_containerTypes || _containerTypes.length <= limit) {
+        this.seeMoreContainerTypes = false;
+      }
     }
     this.loadingContainerTypes = false;
   }
@@ -746,19 +750,20 @@ export default class CreateInbound extends Vue {
   async getPorts(limit: number) {
     this.loadingPorts = true;
     this.ports = [] as Array<IPort>;
-    const _ports = await getPorts({
+    const _res = await getPorts({
       page: 0,
       limit: limit + 1
     });
-    if (_ports.data) {
-      _ports.data.data.forEach((x: IPort, index: number) => {
+    if (_res.data) {
+      const _ports = _res.data.data;
+      _ports.forEach((x: IPort, index: number) => {
         if (index != limit) {
           this.ports.push(x);
         }
       });
-    }
-    if (!_ports.data || _ports.data.length <= limit) {
-      this.seeMorePorts = false;
+      if (!_ports || _ports.length <= limit) {
+        this.seeMorePorts = false;
+      }
     }
     this.loadingPorts = false;
   }
@@ -772,8 +777,11 @@ export default class CreateInbound extends Vue {
     await this.getShippingLines(5);
     await this.getContainerTypes(5);
     await this.getPorts(5);
-    const _supplier = await getSupplier(this.$auth.user().username);
-    if (_supplier.data) this.supplier = _supplier.data;
+    const _res = await getSupplier(this.$auth.user().username);
+    if (_res.data) {
+      const _supplier = _res.data;
+      this.supplier = _supplier;
+    }
   }
 
   beforeDestroy() {

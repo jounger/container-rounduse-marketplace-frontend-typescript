@@ -224,13 +224,14 @@ export default class Payment extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _payments = await getPaymentsByUser({
+      const _res = await getPaymentsByUser({
         page: val.page - 1,
         limit: val.itemsPerPage
       });
-      if (_payments.data) {
-        this.payments = _payments.data.data;
-        this.serverSideOptions.totalItems = _payments.data.totalElements;
+      if (_res.data) {
+        const _payments = _res.data.data;
+        this.payments = _payments;
+        this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }

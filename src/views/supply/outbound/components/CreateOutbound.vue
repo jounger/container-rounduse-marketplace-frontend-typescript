@@ -527,9 +527,10 @@ export default class CreateOutbound extends Vue {
     /* TODO: Calculate Delivery Time:
      * deliveryTime = (duration: packingStation -> portOfLoading) + packingTime (+ bias)
      */
-    const _outbound = await createOutbound(this.outboundLocal);
-    if (_outbound.data) {
-      this.outboundsSync.unshift(_outbound.data);
+    const _res = await createOutbound(this.outboundLocal);
+    if (_res.data) {
+      const _outbound = _res.data.data;
+      this.outboundsSync.unshift(_outbound);
       this.totalItemsSync += 1;
       this.dialogAddSync = false;
     }
@@ -547,19 +548,20 @@ export default class CreateOutbound extends Vue {
   async getShippingLines(limit: number) {
     this.loadingShippingLines = true;
     this.shippingLines = [] as Array<IShippingLine>;
-    const _shippingLines = await getShippingLines({
+    const _res = await getShippingLines({
       page: 0,
       limit: limit + 1
     });
-    if (_shippingLines.data) {
-      _shippingLines.data.data.forEach((x: IShippingLine, index: number) => {
+    if (_res.data) {
+      const _shippingLines = _res.data.data;
+      _shippingLines.forEach((x: IShippingLine, index: number) => {
         if (index != limit) {
           this.shippingLines.push(x);
         }
       });
-    }
-    if (!_shippingLines.data || _shippingLines.data.length <= limit) {
-      this.seeMoreShippingLines = false;
+      if (!_shippingLines || _shippingLines.length <= limit) {
+        this.seeMoreShippingLines = false;
+      }
     }
     this.loadingShippingLines = false;
   }
@@ -572,19 +574,20 @@ export default class CreateOutbound extends Vue {
   async getContainerTypes(limit: number) {
     this.loadingContainerTypes = true;
     this.containerTypes = [] as Array<IContainerType>;
-    const _containerTypes = await getContainerTypes({
+    const _res = await getContainerTypes({
       page: 0,
       limit: limit + 1
     });
-    if (_containerTypes.data) {
-      _containerTypes.data.data.forEach((x: IContainerType, index: number) => {
+    if (_res.data) {
+      const _containerTypes = _res.data.data;
+      _containerTypes.forEach((x: IContainerType, index: number) => {
         if (index != limit) {
           this.containerTypes.push(x);
         }
       });
-    }
-    if (!_containerTypes.data || _containerTypes.data.length <= limit) {
-      this.seeMoreContainerTypes = false;
+      if (!_containerTypes || _containerTypes.length <= limit) {
+        this.seeMoreContainerTypes = false;
+      }
     }
     this.loadingContainerTypes = false;
   }
@@ -597,19 +600,20 @@ export default class CreateOutbound extends Vue {
   async getPorts(limit: number) {
     this.loadingPorts = true;
     this.ports = [] as Array<IPort>;
-    const _ports = await getPorts({
+    const _res = await getPorts({
       page: 0,
       limit: limit + 1
     });
-    if (_ports.data) {
-      _ports.data.data.forEach((x: IPort, index: number) => {
+    if (_res.data) {
+      const _ports = _res.data.data;
+      _ports.forEach((x: IPort, index: number) => {
         if (index != limit) {
           this.ports.push(x);
         }
       });
-    }
-    if (!_ports.data || _ports.data.length <= limit) {
-      this.seeMorePorts = false;
+      if (!_ports || _ports.length <= limit) {
+        this.seeMorePorts = false;
+      }
     }
     this.loadingPorts = false;
   }
@@ -624,8 +628,11 @@ export default class CreateOutbound extends Vue {
     await this.getShippingLines(5);
     await this.getContainerTypes(5);
     await this.getPorts(5);
-    const _supplier = await getSupplier(this.$auth.user().username);
-    if (_supplier.data) this.supplier = _supplier.data;
+    const _res = await getSupplier(this.$auth.user().username);
+    if (_res.data) {
+      const _supplier = _res.data;
+      this.supplier = _supplier;
+    }
   }
 
   get portsToString() {

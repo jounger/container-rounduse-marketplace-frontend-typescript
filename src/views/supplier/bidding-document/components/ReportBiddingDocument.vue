@@ -14,7 +14,7 @@
         <v-img height="100" src="@/assets/images/biddingdocument.jpg"></v-img>
         <v-card-title>Hồ sơ Mời thầu</v-card-title>
         <v-card-text>
-          <SupplierRating :supplier="biddingDocument.merchant" />
+          <SupplierRating :supplier="biddingDocument.offeree" />
 
           <v-list dense>
             <v-subheader>Thông tin HSMT</v-subheader>
@@ -102,7 +102,7 @@
               </v-list-item-icon>
               <v-list-item-content>
                 <v-list-item-title>{{
-                  "Đóng tại: " + biddingDocument.outbound.packingStation
+                  "Đóng hàng tại: " + biddingDocument.outbound.packingStation
                 }}</v-list-item-title>
                 <v-list-item-subtitle>
                   {{
@@ -459,14 +459,14 @@ export default class ReportBiddingDocument extends Vue {
     if (typeof val != "undefined") {
       this.loading = true;
       if (this.bid && this.bid.id) {
-        const _containers = await getContainersByBid(this.bid.id, {
+        const _res = await getContainersByBid(this.bid.id, {
           page: val.page - 1,
           limit: val.itemsPerPage
         });
-        if (_containers.data) {
-          this.containerServerSideOptions.totalItems =
-            _containers.data.totalElements;
-          this.bid.containers = _containers.data.data;
+        if (_res.data) {
+          const _containers = _res.data.data;
+          this.bid.containers = _containers;
+          this.containerServerSideOptions.totalItems = _res.data.totalElements;
         }
       }
       this.loading = false;
@@ -475,47 +475,40 @@ export default class ReportBiddingDocument extends Vue {
 
   @Watch("options")
   async onOptionsChange(val: DataOptions) {
-    if (typeof val !== "undefined") {
+    if (typeof val !== "undefined" && this.biddingDocument) {
       this.loading = true;
-      if (this.biddingDocument) {
-        const _bid = await getBidsByBiddingDocument(
-          this.biddingDocument.id as number,
-          {
-            page: this.options.page - 1,
-            limit: this.options.itemsPerPage
-          }
-        );
-        if (_bid.data) {
-          this.bids = _bid.data.data;
-          this.numberWinner = this.bids.filter(
-            (x: IBid) => x.status == "ACCEPTED"
-          ).length;
-          this.serverSideOptions.totalItems = _bid.data.totalElements;
+      const _res = await getBidsByBiddingDocument(
+        this.biddingDocument.id as number,
+        {
+          page: this.options.page - 1,
+          limit: this.options.itemsPerPage
         }
-        this.loading = false;
+      );
+      if (_res.data) {
+        const _bids = _res.data.data;
+        this.bids = _bids;
+        this.numberWinner = this.bids.filter(
+          (x: IBid) => x.status == "ACCEPTED"
+        ).length;
+        this.serverSideOptions.totalItems = _res.data.totalElements;
       }
+      this.loading = false;
     }
   }
   get getRouterId() {
     return this.$route.params.id;
   }
 
-  @Watch("getRouterId")
+  @Watch("getRouterId", { immediate: true })
   async onRouterIdChange() {
-    const _report = await getReport(parseInt(this.getRouterId));
-    if (_report.data) {
-      this.report = _report.data;
-      this.biddingDocument = _report.data.report as IBiddingDocument;
+    const _res = await getReport(parseInt(this.getRouterId));
+    if (_res.data) {
+      const _report = _res.data;
+      this.report = _report;
+      this.biddingDocument = _report.report as IBiddingDocument;
     }
   }
-  async created() {
-    // TODO: API get Bidding Document
-    const _report = await getReport(parseInt(this.getRouterId));
-    if (_report.data) {
-      this.report = _report.data;
-      this.biddingDocument = _report.data.report as IBiddingDocument;
-    }
-  }
+
   openCancelDialog() {
     this.dialogCancel = true;
   }

@@ -142,15 +142,17 @@ import { ISupplier } from "@/entity/supplier";
 @Component
 export default class CardCompany extends Vue {
   public profile: IUser | IOperator | ISupplier | null = null;
+
   async created() {
     if (
       this.$auth.user().roles[0] == "ROLE_MERCHANT" ||
       this.$auth.user().roles[0] == "ROLE_FORWARDER" ||
-      this.$auth.user().roles == "ROLE_SHIPPINGLINE"
+      this.$auth.user().roles[0] == "ROLE_SHIPPINGLINE"
     ) {
-      const _supplier = await getSupplier(this.$auth.user().username);
-      if (_supplier.data) {
-        this.profile = _supplier.data;
+      const _res = await getSupplier(this.$auth.user().username);
+      if (_res.data) {
+        const _supplier = _res.data;
+        this.profile = _supplier;
       }
     }
   }

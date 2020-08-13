@@ -380,11 +380,12 @@ export default class Update extends Vue {
 
   async updateBid() {
     if (this.bidSync.id) {
-      const _bid = await editBid(this.bidSync.id, {
+      const _res = await editBid(this.bidSync.id, {
         bidPrice: this.bidLocal.bidPrice
       });
-      if (_bid.data) {
-        this.bidSync = _bid.data;
+      if (_res.data) {
+        const _bid = _res.data.data;
+        this.bidSync = _bid;
         this.stepper = 3;
       }
     }

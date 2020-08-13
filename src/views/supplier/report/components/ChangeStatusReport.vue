@@ -50,11 +50,12 @@ export default class DeleteReport extends Vue {
 
   async changeStatusReport() {
     if (this.reportSync.id) {
-      const _report = await editReport(this.reportSync.id, {
+      const _res = await editReport(this.reportSync.id, {
         status: this.status
       });
-      if (_report.data) {
-        this.reportSync = _report.data;
+      if (_res.data) {
+        const _report = _res.data;
+        this.reportSync = _report;
         this.dialogConfirmSync = false;
       }
     }

@@ -320,12 +320,13 @@ export default class CreateContainer extends Vue {
 
   async createContainer() {
     if (this.billOfLading.id) {
-      const _container = await createContainer(
+      const _res = await createContainer(
         this.billOfLading.id,
         this.containerLocal
       );
-      if (_container.data) {
-        this.containersSync.unshift(_container.data);
+      if (_res.data) {
+        const _container = _res.data.data;
+        this.containersSync.unshift(_container);
         this.totalItemsSync += 1;
         this.dialogAddContSync = false;
       }
@@ -333,12 +334,11 @@ export default class CreateContainer extends Vue {
   }
 
   async updateContainer() {
-    const _container = await updateContainer(this.containerLocal);
-    if (_container.data) {
-      const index = this.containersSync.findIndex(
-        x => x.id === _container.data.id
-      );
-      this.containersSync.splice(index, 1, _container.data);
+    const _res = await updateContainer(this.containerLocal);
+    if (_res.data) {
+      const _container = _res.data.data;
+      const index = this.containersSync.findIndex(x => x.id === _container.id);
+      this.containersSync.splice(index, 1, _container);
     }
   }
 

@@ -17,6 +17,7 @@ export function getBidsByForwarder(id: number, paging: PaginationRequest) {
     params: paging
   });
 }
+
 export function getBidsByBiddingDocument(
   id: number,
   paging: PaginationRequest
@@ -25,6 +26,7 @@ export function getBidsByBiddingDocument(
     params: paging
   });
 }
+
 export function getBidByBiddingDocumentAndForwarder(id: number) {
   return Vue.axios.get(`/bid/bidding-document/${id}`);
 }
@@ -32,12 +34,15 @@ export function getBidByBiddingDocumentAndForwarder(id: number) {
 export function createBid(id: number, bid: IBid) {
   return Vue.axios.post(`/bid/bidding-document/${id}`, bid);
 }
+
 export function addContainer(id: number, contId: number) {
   return Vue.axios.post(`/bid/${id}/container/${contId}`);
 }
+
 export function removeContainer(id: number, contId: number) {
   return Vue.axios.delete(`/bid/${id}/container/${contId}`);
 }
+
 export function replaceContainer(id: number, updates: object) {
   return Vue.axios.patch(`/bid/${id}/container`, updates);
 }

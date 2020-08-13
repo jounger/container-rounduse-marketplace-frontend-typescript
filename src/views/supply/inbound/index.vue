@@ -299,14 +299,14 @@ export default class Inbound extends Vue {
     this.dialogDelCont = true;
   }
   async loadContainer(inboundId: number, option: DataOptions) {
-    const _containers = await getContainersByInbound(inboundId, {
+    const _res = await getContainersByInbound(inboundId, {
       page: option.page - 1,
       limit: option.itemsPerPage
     });
-    if (_containers.data) {
-      this.containers = _containers.data.data;
-      this.containerServerSideOptions.totalItems =
-        _containers.data.totalElements;
+    if (_res.data) {
+      const _containers = _res.data.data;
+      this.containers = _containers;
+      this.containerServerSideOptions.totalItems = _res.data.totalElements;
     }
   }
   @Watch("containerOptions", { deep: true })
@@ -323,13 +323,14 @@ export default class Inbound extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _inbounds = await getInboundsByForwarder({
+      const _res = await getInboundsByForwarder({
         page: val.page - 1,
         limit: val.itemsPerPage
       });
-      if (_inbounds.data) {
-        this.inbounds = _inbounds.data.data;
-        this.serverSideOptions.totalItems = _inbounds.data.totalElements;
+      if (_res.data) {
+        const _inbounds = _res.data.data;
+        this.inbounds = _inbounds;
+        this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }

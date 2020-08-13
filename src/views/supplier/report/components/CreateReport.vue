@@ -191,15 +191,16 @@ export default class CreateReport extends Vue {
     { text: "Nhiều thầu win", value: "isMultipleAward" },
     { text: "Hành động", value: "actions", sortable: false }
   ];
+
   async createReport() {
-    // TODO: API create bid
     if (this.biddingDocumentSelected && this.biddingDocumentSelected.id) {
       this.reportLocal.report = this.biddingDocumentSelected.id as number;
     }
-    const _report = await createReport(this.reportLocal);
-    if (_report.data) {
+    const _res = await createReport(this.reportLocal);
+    if (_res.data) {
+      const _report = _res.data.data;
       if (typeof this.reportsSync != "undefined") {
-        this.reportsSync.unshift(_report.data);
+        this.reportsSync.unshift(_report);
       }
       if (typeof this.totalItemsSync != "undefined") {
         this.totalItemsSync += 1;

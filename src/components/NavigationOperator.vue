@@ -67,9 +67,13 @@ export default class NavigationOperator extends Vue {
       icon: "verified_user",
       link: "/operator"
     },
-    { title: "Quản lý Quyền", icon: "security", link: "/role" },
     {
       title: "Quản lý Vai trò",
+      icon: "security",
+      link: "/role"
+    },
+    {
+      title: "Quản lý Đặc quyền",
       icon: "enhanced_encryption",
       link: "/permission"
     }
@@ -82,14 +86,9 @@ export default class NavigationOperator extends Vue {
       link: "/supplier-register"
     },
     {
-      title: "Quản lý Người dùng",
+      title: "Quản lý Thành viên",
       icon: "people_alt",
       link: "/supplier"
-    },
-    {
-      title: "Quản lý Report",
-      icon: "report_problem",
-      link: "/supplier-report"
     },
     {
       title: "Quản lý Hãng tàu",
@@ -102,7 +101,12 @@ export default class NavigationOperator extends Vue {
       icon: "directions_bus",
       link: "/container-type"
     },
-    { title: "Quản lý Mã giảm giá", icon: "loyalty", link: "/discount" }
+    { title: "Quản lý Mã giảm giá", icon: "loyalty", link: "/discount" },
+    {
+      title: "Quản lý Report",
+      icon: "report_problem",
+      link: "/supplier-report"
+    }
   ];
 
   get getNavigation() {

@@ -8,6 +8,11 @@ export default class FormValidate extends Vue {
       (v && (!!v || v.length > 0)) || `Bạn bắt buộc phải nhập ${propertyType}.`;
   }
 
+  equals(propertyType: unknown, newPropertyType: unknown, oldVal: string) {
+    return (v: string) =>
+      (v && (v == oldVal)) || `${propertyType} phải giống với ${newPropertyType}.`;
+  }
+
   // input length must greater than min length
   minLength(propertyType: unknown, minLength: number) {
     return (v: string) =>

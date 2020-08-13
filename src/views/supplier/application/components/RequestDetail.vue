@@ -185,10 +185,11 @@ export default class RequestDetail extends Vue {
   supplier = {} as ISupplier;
   role = "";
   async created() {
-    const _supplier = await getSupplier(this.$auth.user().username);
-    if (_supplier.data) {
-      this.supplier = _supplier.data;
-      this.role = _supplier.data.roles[0];
+    const _res = await getSupplier(this.$auth.user().username);
+    if (_res.data) {
+      const _supplier = _res.data;
+      this.supplier = _supplier;
+      this.role = _supplier.roles[0];
     }
   }
 }

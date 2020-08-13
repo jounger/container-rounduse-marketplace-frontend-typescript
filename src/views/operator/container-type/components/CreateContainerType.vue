@@ -186,9 +186,10 @@ export default class CreateContainerType extends Vue {
   }
   async createContainerType() {
     if (this.containerTypeLocal) {
-      const _containerType = await createContainerType(this.containerTypeLocal);
-      if (_containerType.data) {
-        this.containerTypesSync.unshift(_containerType.data);
+      const _res = await createContainerType(this.containerTypeLocal);
+      if (_res.data) {
+        const _containerType = _res.data.data;
+        this.containerTypesSync.unshift(_containerType);
         this.totalItemsSync += 1;
         this.dialogAddSync = false;
       }
@@ -196,15 +197,16 @@ export default class CreateContainerType extends Vue {
   }
   async updateContainerType() {
     if (this.containerTypeLocal.id) {
-      const _containerType = await editContainerType(
+      const _res = await editContainerType(
         this.containerTypeLocal.id,
         this.containerTypeLocal
       );
-      if (_containerType.data) {
+      if (_res.data) {
+        const _containerType = _res.data.data;
         const index = this.containerTypesSync.findIndex(
-          x => x.id === _containerType.data.id
+          x => x.id === _containerType.id
         );
-        this.containerTypesSync.splice(index, 1, _containerType.data);
+        this.containerTypesSync.splice(index, 1, _containerType);
       }
     }
   }

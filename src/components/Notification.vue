@@ -106,9 +106,7 @@ import {
 import {
   getBiddingNotification,
   getNotificationsByUser,
-  getDriverNotification,
   getReportNotification,
-  getShippingLineNotification,
   editNotifications
 } from "@/api/notification";
 import { INotification } from "@/entity/notification";
@@ -138,42 +136,30 @@ export default class Notification extends Vue {
   stompClient = {} as Client;
 
   async gotoNotification(item: INotification) {
-    let ROUTER = "#";
-    if (item && item.id) {
-      if (item.type == "BIDDING") {
-        const _biddingNotification = await getBiddingNotification(item.id);
-        if (_biddingNotification)
-          ROUTER = `/bidding-document/${_biddingNotification.data.relatedResource.id}`;
-      } else if (item.type == "DRIVER") {
-        const _driverNotification = await getDriverNotification(item.id);
-        if (_driverNotification)
-          ROUTER = `/outbound/${_driverNotification.data.relatedResource.id}`;
-      } else if (item.type == "REPORT") {
-        const _reportNotification = await getReportNotification(item.id);
-        if (_reportNotification)
-          ROUTER = `/report/${_reportNotification.data.relatedResource.id}`;
-      } else if (item.type == "SHIPPING_LINE") {
-        const _shippingLineNotification = await getShippingLineNotification(
-          item.id
-        );
-        if (_shippingLineNotification)
-          ROUTER = `/combined/${_shippingLineNotification.data.relatedResource.id}`;
-      } else {
-        ROUTER = "/bidding-document";
-      }
-      if (location.pathname == ROUTER) {
-        location.reload();
-        return;
-      }
+    let ROUTER = "";
+    if (item.type == "BIDDING") {
+      const _res = await getBiddingNotification(item.id as number);
+      if (_res.data)
+        ROUTER = `/bidding-document/${_res.data.relatedResource.id}`;
+    } else if (item.type == "REPORT") {
+      const _res = await getReportNotification(item.id as number);
+      if (_res.data) ROUTER = `/report/${_res.data.relatedResource.id}`;
+    } else if (item.type == "SHIPPING_LINE") {
+      ROUTER = "/borrow-notify";
     }
-    console.log(ROUTER);
-    this.$router.push(ROUTER);
+    if (location.pathname == ROUTER) {
+      location.reload();
+      return;
+    } else {
+      console.log(ROUTER);
+      this.$router.push(ROUTER);
+    }
   }
 
   seenAllNotification() {
-    this.notifications.filter(x => {
+    this.notifications.filter(async x => {
       if (x.isRead == false) {
-        this.seenNotification(x);
+        await this.seenNotification(x);
       }
     });
   }
@@ -200,17 +186,18 @@ export default class Notification extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined" && this.$auth.check()) {
       this.loading = true;
-      const _notification = await getNotificationsByUser({
+      const _res = await getNotificationsByUser({
         page: val.page - 1,
         limit: val.itemsPerPage
       });
-      this.loading = false;
-      if (_notification.data) {
-        this.notifications = this.notifications.concat(_notification.data.data);
-        this.serverSideOptions.totalPages = _notification.data.totalPages;
+      if (_res.data) {
+        const _notifications = _res.data.data as INotification[];
+        this.notifications = this.notifications.concat(_notifications);
+        this.serverSideOptions.totalPages = _res.data.totalPages;
         if (this.notifications.length > 0)
           this.messageCount = this.notifications.filter(x => !x.isRead).length;
       }
+      this.loading = false;
     }
   }
 

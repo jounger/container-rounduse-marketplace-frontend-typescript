@@ -97,9 +97,10 @@ export default class CreateTractor extends Vue {
   }
   async createTractor() {
     if (this.tractorLocal) {
-      const _tractor = await createContainerTractor(this.tractorLocal);
-      if (_tractor.data) {
-        this.tractorsSync.unshift(_tractor.data);
+      const _res = await createContainerTractor(this.tractorLocal);
+      if (_res.data) {
+        const _tractor = _res.data.data;
+        this.tractorsSync.unshift(_tractor);
         this.totalItemsSync += 1;
         this.dialogAddSync = false;
       }
@@ -107,12 +108,11 @@ export default class CreateTractor extends Vue {
   }
   async updateTractor() {
     if (this.tractorLocal.id) {
-      const _tractor = await updateContainerTractor(this.tractorLocal);
-      if (_tractor.data) {
-        const index = this.tractorsSync.findIndex(
-          x => x.id == _tractor.data.id
-        );
-        this.tractorsSync.splice(index, 1, _tractor.data);
+      const _res = await updateContainerTractor(this.tractorLocal);
+      if (_res.data) {
+        const _tractor = _res.data.data;
+        const index = this.tractorsSync.findIndex(x => x.id == _tractor.id);
+        this.tractorsSync.splice(index, 1, _tractor);
       }
     }
   }

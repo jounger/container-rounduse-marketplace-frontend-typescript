@@ -167,9 +167,10 @@ export default class CreatePort extends Vue {
 
   async createPort() {
     if (this.portLocal) {
-      const _port = await createPort(this.portLocal);
-      if (_port.data) {
-        this.portsSync.unshift(_port.data);
+      const _res = await createPort(this.portLocal);
+      if (_res.data) {
+        const _port = _res.data.data;
+        this.portsSync.unshift(_port);
         this.totalItemsSync += 1;
         this.dialogAddSync = false;
       }

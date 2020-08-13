@@ -235,12 +235,10 @@ export default class ReportDetail extends Vue {
         if (this.feedbackLocal.recipient == "") {
           this.feedbackLocal.recipient = this.report.sender;
         }
-        const _feedback = await createFeedback(
-          this.report.id,
-          this.feedbackLocal
-        );
-        if (_feedback.data) {
-          this.feedbacks.push(_feedback.data);
+        const _res = await createFeedback(this.report.id, this.feedbackLocal);
+        if (_res.data) {
+          const _feedback = _res.data.data;
+          this.feedbacks.push(_feedback);
           this.recipient = this.forwarderFullname;
         }
         this.feedbackLocal = {
@@ -249,13 +247,14 @@ export default class ReportDetail extends Vue {
           satisfactionPoints: 0
         } as IFeedback;
       } else {
-        const _feedback = await createFeedbackToModerator(
+        const _res = await createFeedbackToModerator(
           this.report.id,
           this.report.sender,
           this.feedbackLocal
         );
-        if (_feedback.data) {
-          this.feedbacks.push(_feedback.data);
+        if (_res.data) {
+          const _feedback = _res.data.data;
+          this.feedbacks.push(_feedback);
         }
         this.feedbackLocal = {
           sender: this.$auth.user().username,
@@ -268,19 +267,20 @@ export default class ReportDetail extends Vue {
 
   async getFeedbacks(limit: number) {
     this.feedbacks = [] as Array<IFeedback>;
-    const _feedbacks = await getFeedbacksByReport(parseInt(this.getRouterId), {
+    const _res = await getFeedbacksByReport(parseInt(this.getRouterId), {
       page: 0,
       limit: limit + 1
     });
-    if (_feedbacks.data) {
-      _feedbacks.data.forEach((x: IFeedback, index: number) => {
+    if (_res.data) {
+      const _feedbacks = _res.data.data;
+      _feedbacks.forEach((x: IFeedback, index: number) => {
         if (index != limit) {
           this.feedbacks.unshift(x);
         }
       });
-    }
-    if (!_feedbacks.data || _feedbacks.data.length <= limit) {
-      this.seeMore = false;
+      if (!_feedbacks || _feedbacks.length <= limit) {
+        this.seeMore = false;
+      }
     }
   }
 
@@ -294,10 +294,11 @@ export default class ReportDetail extends Vue {
   }
 
   async created() {
-    const _report = await getReport(parseInt(this.getRouterId));
-    if (_report.data) {
-      this.report = _report.data;
-      this.forwarderFullname = await this.getFullname(_report.data.sender);
+    const _res = await getReport(parseInt(this.getRouterId));
+    if (_res.data) {
+      const _report = _res.data;
+      this.report = _report;
+      this.forwarderFullname = await this.getFullname(_report.sender);
       this.recipient = this.forwarderFullname;
     }
     await this.getFeedbacks(5);

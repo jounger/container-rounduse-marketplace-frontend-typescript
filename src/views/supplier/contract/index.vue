@@ -304,9 +304,10 @@ export default class Contract extends Vue {
   }
 
   async getBiddingDocument(id: number) {
-    const _biddingDocument = await getBiddingDocumentByBid(id);
-    if (_biddingDocument.data) {
-      this.merchants.push(_biddingDocument.data.merchant);
+    const _res = await getBiddingDocumentByBid(id);
+    if (_res.data) {
+      const _biddingDocument = _res.data;
+      this.merchants.push(_biddingDocument.offeree);
     }
   }
 
@@ -314,19 +315,20 @@ export default class Contract extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _combineds = await getCombinedsByUser({
+      const _res = await getCombinedsByUser({
         page: val.page - 1,
         limit: val.itemsPerPage
       });
-      if (_combineds.data) {
-        this.combineds = _combineds.data.data;
-        _combineds.data.data.forEach((x: ICombined) => {
+      if (_res.data) {
+        const _combineds = _res.data.data;
+        this.combineds = _combineds;
+        _combineds.forEach((x: ICombined) => {
           const _bid = x.bid as IBid;
           if (_bid.id) {
             this.getBiddingDocument(_bid.id);
           }
         });
-        this.serverSideOptions.totalItems = _combineds.data.totalElements;
+        this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }
@@ -337,14 +339,14 @@ export default class Contract extends Vue {
     if (typeof val != "undefined") {
       this.loading = true;
       if (this.contract && this.contract.id) {
-        const _evidences = await getEvidencesByContract(this.contract.id, {
+        const _res = await getEvidencesByContract(this.contract.id, {
           page: val.page - 1,
           limit: val.itemsPerPage
         });
-        if (_evidences.data) {
-          this.evidences = _evidences.data.data;
-          this.evidenceServerSideOptions.totalItems =
-            _evidences.data.totalElements;
+        if (_res.data) {
+          const _evidences = _res.data.data;
+          this.evidences = _evidences;
+          this.evidenceServerSideOptions.totalItems = _res.data.totalElements;
         }
       }
       this.loading = false;

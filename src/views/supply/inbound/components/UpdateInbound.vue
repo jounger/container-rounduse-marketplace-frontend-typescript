@@ -432,15 +432,11 @@ export default class UpdateInbound extends Vue {
 
   async updateInbound() {
     if (this.inboundLocal && this.inboundLocal.id) {
-      const _inbound = await editInbound(
-        this.inboundLocal.id,
-        this.inboundLocal
-      );
-      if (_inbound.data) {
-        const index = this.inboundsSync.findIndex(
-          x => x.id == _inbound.data.id
-        );
-        this.inboundsSync.splice(index, 1, _inbound.data);
+      const _res = await editInbound(this.inboundLocal.id, this.inboundLocal);
+      if (_res.data) {
+        const _inbound = _res.data;
+        const index = this.inboundsSync.findIndex(x => x.id == _inbound.id);
+        this.inboundsSync.splice(index, 1, _inbound);
         this.stepper = 2;
       }
     }
@@ -448,15 +444,16 @@ export default class UpdateInbound extends Vue {
 
   async updateBillOfLading() {
     if (this.inboundLocal && this.inboundLocal.billOfLading.id) {
-      const _billOfLading = await editBillOfLading(
+      const _res = await editBillOfLading(
         this.inboundLocal.billOfLading.id,
         this.inboundLocal.billOfLading
       );
-      if (_billOfLading.data) {
+      if (_res.data) {
+        const _billOfLading = _res.data;
         const index = this.inboundsSync.findIndex(
           x => x.id === this.inbound.id
         );
-        this.inboundLocal.billOfLading = _billOfLading.data;
+        this.inboundLocal.billOfLading = _billOfLading;
         this.inboundsSync.splice(index, 1, this.inboundLocal);
       }
     }
@@ -475,17 +472,18 @@ export default class UpdateInbound extends Vue {
   async getShippingLines(limit: number) {
     this.loadingShippingLines = true;
     this.shippingLines = [] as Array<IShippingLine>;
-    const _shippingLines = await getShippingLines({
+    const _res = await getShippingLines({
       page: 0,
       limit: limit + 1
     });
-    if (_shippingLines.data) {
-      _shippingLines.data.data.forEach((x: IShippingLine) => {
+    if (_res.data) {
+      const _shippingLines = _res.data.data;
+      _shippingLines.forEach((x: IShippingLine) => {
         if (x.companyCode == this.shippingLine) {
           this.shippingLines.push(x);
         }
       });
-      _shippingLines.data.data.forEach((x: IShippingLine) => {
+      _shippingLines.forEach((x: IShippingLine) => {
         let check = false;
         if (x.companyCode == this.shippingLine) {
           check = true;
@@ -497,12 +495,9 @@ export default class UpdateInbound extends Vue {
           this.shippingLines.push(x);
         }
       });
-    }
-    if (
-      !_shippingLines.data ||
-      _shippingLines.data.length <= this.limitShippingLines
-    ) {
-      this.seeMoreShippingLines = false;
+      if (!_shippingLines || _shippingLines.length <= this.limitShippingLines) {
+        this.seeMoreShippingLines = false;
+      }
     }
     this.loadingShippingLines = false;
   }
@@ -515,17 +510,18 @@ export default class UpdateInbound extends Vue {
   async getContainerTypes(limit: number) {
     this.loadingContainerTypes = true;
     this.containerTypes = [] as Array<IContainerType>;
-    const _containerTypes = await getContainerTypes({
+    const _res = await getContainerTypes({
       page: 0,
       limit: limit + 1
     });
-    if (_containerTypes.data) {
-      _containerTypes.data.data.forEach((x: IContainerType) => {
+    if (_res.data) {
+      const _containerTypes = _res.data.data;
+      _containerTypes.forEach((x: IContainerType) => {
         if (x.name == this.containerType) {
           this.containerTypes.push(x);
         }
       });
-      _containerTypes.data.data.forEach((x: IContainerType) => {
+      _containerTypes.forEach((x: IContainerType) => {
         let check = false;
         if (x.name == this.containerType) {
           check = true;
@@ -537,12 +533,12 @@ export default class UpdateInbound extends Vue {
           this.containerTypes.push(x);
         }
       });
-    }
-    if (
-      !_containerTypes.data ||
-      _containerTypes.data.length <= this.limitContainerTypes
-    ) {
-      this.seeMoreContainerTypes = false;
+      if (
+        !_containerTypes ||
+        _containerTypes.length <= this.limitContainerTypes
+      ) {
+        this.seeMoreContainerTypes = false;
+      }
     }
     this.loadingContainerTypes = false;
   }
@@ -555,17 +551,18 @@ export default class UpdateInbound extends Vue {
   async getPorts(limit: number) {
     this.loadingPorts = true;
     this.ports = [] as Array<IPort>;
-    const _ports = await getPorts({
+    const _res = await getPorts({
       page: 0,
       limit: limit + 1
     });
-    if (_ports.data) {
-      _ports.data.data.forEach((x: IPort) => {
+    if (_res.data) {
+      const _ports = _res.data.data;
+      _ports.forEach((x: IPort) => {
         if (x.nameCode == this.port) {
           this.ports.push(x);
         }
       });
-      _ports.data.data.forEach((x: IPort) => {
+      _ports.forEach((x: IPort) => {
         let check = false;
         if (x.nameCode == this.port) {
           check = true;
@@ -574,9 +571,9 @@ export default class UpdateInbound extends Vue {
           this.ports.push(x);
         }
       });
-    }
-    if (!_ports.data || _ports.data.length <= this.limitPorts) {
-      this.seeMorePorts = false;
+      if (!_ports || _ports.length <= this.limitPorts) {
+        this.seeMorePorts = false;
+      }
     }
     this.loadingPorts = false;
   }

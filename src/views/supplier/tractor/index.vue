@@ -125,13 +125,14 @@ export default class Tractor extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _tractors = await getContainerTractorsByForwarder({
-        page: this.options.page - 1,
-        limit: this.options.itemsPerPage
+      const _res = await getContainerTractorsByForwarder({
+        page: val.page - 1,
+        limit: val.itemsPerPage
       });
-      if (_tractors.data) {
-        this.tractors = _tractors.data.data;
-        this.serverSideOptions.totalItems = _tractors.data.totalElements;
+      if (_res.data) {
+        const _tractors = _res.data.data;
+        this.tractors = _tractors;
+        this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }

@@ -125,13 +125,14 @@ export default class Permission extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _permissions = await getPermissions({
+      const _res = await getPermissions({
         page: val.page - 1,
         limit: val.itemsPerPage
       });
-      if (_permissions.data) {
-        this.permissions = _permissions.data.data;
-        this.serverSideOptions.totalItems = _permissions.data.totalElements;
+      if (_res.data) {
+        const _permissions = _res.data.data;
+        this.permissions = _permissions;
+        this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }

@@ -162,9 +162,10 @@ export default class CreateTrailer extends Vue {
   }
   async createTrailer() {
     if (this.trailerLocal) {
-      const _trailer = await createContainerSemiTrailer(this.trailerLocal);
-      if (_trailer.data) {
-        this.trailersSync.unshift(_trailer.data);
+      const _res = await createContainerSemiTrailer(this.trailerLocal);
+      if (_res.data) {
+        const _trailer = _res.data.data;
+        this.trailersSync.unshift(_trailer);
         this.totalItemsSync += 1;
         this.dialogAddSync = false;
       }
@@ -172,12 +173,11 @@ export default class CreateTrailer extends Vue {
   }
   async updateTrailer() {
     if (this.trailerLocal.id) {
-      const _trailer = await updateContainerSemiTrailer(this.trailerLocal);
-      if (_trailer.data) {
-        const index = this.trailersSync.findIndex(
-          x => x.id == _trailer.data.id
-        );
-        this.trailersSync.splice(index, 1, _trailer.data);
+      const _res = await updateContainerSemiTrailer(this.trailerLocal);
+      if (_res.data) {
+        const _trailer = _res.data.data;
+        const index = this.trailersSync.findIndex(x => x.id == _trailer.id);
+        this.trailersSync.splice(index, 1, _trailer);
       }
     }
   }

@@ -36,7 +36,7 @@ instance.interceptors.request.use(
     // do something with request error
     console.log(error); // for debug
 
-    setTimeout(() => (loading.setLoading(false)), 200);
+    setTimeout(() => loading.setLoading(false), 200);
     return error;
   }
 );
@@ -46,35 +46,22 @@ instance.interceptors.response.use(
   response => {
     console.log(`RESPONSE: ${response.config.url}`, response);
     if (
-      response.config.url != "/auth/signin" &&
-      (response.status == 200 || response.status == 201)
+      response.config.method?.toUpperCase() != "GET" &&
+      response.config.url?.includes("/notification") == false &&
+      response.data.message.length > 0 &&
+      (response.status == 200 ||
+        response.status == 201 ||
+        response.status == 204)
     ) {
-      let method = null;
-      switch (response.config.method?.toUpperCase()) {
-        case "POST":
-          method = "Thêm mới";
-          break;
-        case "PUT":
-          method = "Cập nhật";
-          break;
-        case "PATCH":
-          method = "Chỉnh sửa";
-          break;
-        case "DELETE":
-          method = "Xóa";
-          break;
-      }
-      if (method) {
-        snackbar.setSnackbar({
-          text: `${method} thành công`,
-          color: "success",
-          timeout: 5 * 1000
-        });
-        snackbar.setDisplay(true);
-      }
+      snackbar.setSnackbar({
+        text: response.data.message,
+        color: "success",
+        timeout: 5 * 1000
+      });
+      snackbar.setDisplay(true);
     }
 
-    setTimeout(() => (loading.setLoading(false)), 200);
+    setTimeout(() => loading.setLoading(false), 200);
     return response;
   },
   error => {
@@ -86,7 +73,7 @@ instance.interceptors.response.use(
     });
     snackbar.setDisplay(true);
 
-    setTimeout(() => (loading.setLoading(false)), 200);
+    setTimeout(() => loading.setLoading(false), 200);
     return error;
   }
 );

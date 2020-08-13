@@ -49,18 +49,16 @@ export default class CancelBiddingDocument extends Vue {
 
   async cancelBiddingDocument() {
     if (this.biddingDocument.id) {
-      const _biddingDocument = await editBiddingDocument(
-        this.biddingDocument.id,
-        {
-          status: "CANCELED"
-        }
-      );
-      if (_biddingDocument.data) {
+      const _res = await editBiddingDocument(this.biddingDocument.id, {
+        status: "CANCELED"
+      });
+      if (_res.data) {
+        const _biddingDocument = _res.data;
         if (this.biddingDocumentsSync) {
           const index = this.biddingDocumentsSync.findIndex(
-            x => x.id === _biddingDocument.data.id
+            x => x.id === _biddingDocument.id
           );
-          this.biddingDocumentsSync.splice(index, 1, _biddingDocument.data);
+          this.biddingDocumentsSync.splice(index, 1, _biddingDocument);
         }
         this.dialogCancelSync = false;
       }

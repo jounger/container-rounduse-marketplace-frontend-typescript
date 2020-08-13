@@ -179,11 +179,12 @@ export default class UserFeedback extends Vue {
 
   async updateFeedback() {
     if (this.item.id) {
-      const _feedback = await editFeedback(this.item.id, {
+      const _res = await editFeedback(this.item.id, {
         message: this.message
       });
-      if (_feedback.data) {
-        this.feedbackLocal = _feedback.data;
+      if (_res.data) {
+        const _feedback = _res.data;
+        this.feedbackLocal = _feedback;
         this.edit = false;
       }
     }

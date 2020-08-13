@@ -170,10 +170,11 @@ export default class UpdatePort extends Vue {
   }
   async updatePort() {
     if (this.portLocal && this.portLocal.id) {
-      const _port = await editPort(this.portLocal.id, this.portLocal);
-      if (_port.data) {
-        const index = this.portsSync.findIndex(x => x.id == _port.data.id);
-        this.portsSync.splice(index, 1, _port.data);
+      const _res = await editPort(this.portLocal.id, this.portLocal);
+      if (_res.data) {
+        const _port = _res.data.data;
+        const index = this.portsSync.findIndex(x => x.id == _port.id);
+        this.portsSync.splice(index, 1, _port);
       }
     }
   }

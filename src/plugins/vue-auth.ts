@@ -20,7 +20,7 @@ const options = {
     headerToken: "Authorization",
     fetchUser: true,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    fetchData: (response: any) => response.data.userInfo
+    fetchData: (response: any) => response.data.data.userInfo
     // customToken: (response: any) => response.data['token'],
   },
   logoutData: {

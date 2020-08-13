@@ -138,9 +138,10 @@ export default class CreateDiscount extends Vue {
 
   async createDiscount() {
     if (this.discountLocal) {
-      const _discount = await createDiscount(this.discountLocal);
-      if (_discount.data) {
-        this.discountsSync.unshift(_discount.data);
+      const _res = await createDiscount(this.discountLocal);
+      if (_res.data) {
+        const _discount = _res.data.data;
+        this.discountsSync.unshift(_discount);
         this.totalItemsSync += 1;
         this.dialogAddSync = false;
       }
@@ -149,15 +150,14 @@ export default class CreateDiscount extends Vue {
 
   async updateDiscount() {
     if (this.discountLocal.id) {
-      const _discount = await editDiscount(
+      const _res = await editDiscount(
         this.discountLocal.id,
         this.discountLocal
       );
-      if (_discount.data) {
-        const index = this.discountsSync.findIndex(
-          x => x.id == _discount.data.id
-        );
-        this.discountsSync.splice(index, 1, _discount.data);
+      if (_res.data) {
+        const _discount = _res.data.data;
+        const index = this.discountsSync.findIndex(x => x.id == _discount.id);
+        this.discountsSync.splice(index, 1, _discount);
       }
     }
   }

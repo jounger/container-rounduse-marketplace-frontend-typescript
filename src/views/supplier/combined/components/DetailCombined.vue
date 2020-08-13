@@ -10,7 +10,7 @@
     />
     <v-container
       class="d-flex justify-space-around align-start"
-      v-if="shippingInfo"
+      v-if="combined"
     >
       <!-- OUTOUNBD -->
       <v-card class="order-0 flex-grow-0 mx-auto mr-5 my-5" max-width="500">
@@ -55,7 +55,7 @@
                 </GoogleMapLoader>
                 <v-card-title
                   >Lịch trình container:
-                  {{ shippingInfo.container.number }}</v-card-title
+                  {{ "#" + shippingInfo.container.number }}</v-card-title
                 >
                 <v-card-text>
                   <v-stepper value="2" vertical class="elevation-0 pb-0">
@@ -107,7 +107,7 @@
           </v-tab-item>
 
           <v-tab-item>
-            <v-container fluid>
+            <v-container fluid v-if="shippingInfo">
               <v-card class="elevation-0">
                 <v-img
                   height="100"
@@ -161,7 +161,8 @@
                       </v-list-item-icon>
                       <v-list-item-content>
                         <v-list-item-title>{{
-                          "Đóng tại: " + shippingInfo.outbound.packingStation
+                          "Đóng hàng tại: " +
+                            shippingInfo.outbound.packingStation
                         }}</v-list-item-title>
                         <v-list-item-subtitle>
                           {{
@@ -216,8 +217,8 @@
                       <v-icon>monetization_on</v-icon>
                     </v-list-item-icon>
                     <v-list-item-content>
-                      <v-list-item-title>{{
-                        "Bên chủ hàng: " + $auth.user().username
+                      <v-list-item-title v-if="biddingDocument">{{
+                        "Bên chủ hàng: " + biddingDocument.offeree
                       }}</v-list-item-title>
                       <v-list-item-subtitle>
                         {{ "Bên chủ xe: " + combined.bid.bidder }}
@@ -301,7 +302,7 @@
         </v-tabs>
       </v-card>
       <v-card class="order-1 flex-grow-1 mx-auto my-5">
-        <v-card-title>
+        <v-card-title v-if="shippingInfo">
           Thông tin vận chuyển: {{ "#" + shippingInfo.id }}
         </v-card-title>
         <v-card-text>
@@ -374,6 +375,8 @@ import { IPort } from "@/entity/port";
 import { apiKey } from "@/components/googlemaps/map-constant";
 import GoogleMapLoader from "@/components/googlemaps/GoogleMapLoader.vue";
 import GoogleMapDirection from "@/components/googlemaps/GoogleMapDirection.vue";
+import { IBiddingDocument } from "@/entity/bidding-document";
+import { getBiddingDocumentByCombined } from "@/api/bidding-document";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -393,6 +396,7 @@ export default class DetailCombined extends Vue {
   evidences: Array<IEvidence> = [];
   inbound = null as IInbound | null;
   contract = null as IContract | null;
+  biddingDocument = null as IBiddingDocument | null;
   ports: Array<IPort> = [];
   loading = false;
   stepper = 1;
@@ -463,9 +467,10 @@ export default class DetailCombined extends Vue {
   ];
 
   async loadInboundByContainer(containerId: number) {
-    const _inbound = await getInboundByContainer(containerId);
-    if (_inbound.data) {
-      this.inbound = _inbound.data;
+    const _res = await getInboundByContainer(containerId);
+    if (_res.data) {
+      const _inbound = _res.data;
+      this.inbound = _inbound;
     }
   }
 
@@ -493,18 +498,15 @@ export default class DetailCombined extends Vue {
   async onShippingInfoOptionsChange(val: DataOptions) {
     if (typeof val !== "undefined") {
       this.loading = true;
-      const _shippingInfos = await getShippingInfosByCombined(
-        this.getRouterId,
-        {
-          page: val.page - 1,
-          limit: val.itemsPerPage
-        }
-      );
+      const _res = await getShippingInfosByCombined(this.getRouterId, {
+        page: val.page - 1,
+        limit: val.itemsPerPage
+      });
       this.loading = false;
-      if (_shippingInfos.data) {
-        this.shippingInfos = _shippingInfos.data.data;
-        this.shippingInfoServerSideOptions.totalItems =
-          _shippingInfos.data.totalElements;
+      if (_res.data) {
+        const _shippingInfos = _res.data.data;
+        this.shippingInfos = _shippingInfos;
+        this.shippingInfoServerSideOptions.totalItems = _res.data.totalElements;
         if (this.shippingInfos.length > 0) {
           this.shippingInfo = this.shippingInfos[0];
           // TODO: view detail first shippingInfo
@@ -524,8 +526,16 @@ export default class DetailCombined extends Vue {
 
   @Watch("getRouterId", { immediate: true })
   async onGetRouterIdChange() {
-    const _combined = await getCombined(this.getRouterId);
-    if (_combined.data) this.combined = _combined.data;
+    const _res = await getCombined(this.getRouterId);
+    if (_res.data) {
+      const _combined = _res.data;
+      this.combined = _combined;
+      const _res_ = await getBiddingDocumentByCombined(_combined.id);
+      if (_res_.data) {
+        const _biddingDocument = _res_.data;
+        this.biddingDocument = _biddingDocument;
+      }
+    }
   }
 
   async openDetailRouter(item: IShippingInfo) {
@@ -548,14 +558,14 @@ export default class DetailCombined extends Vue {
   async onEvidenceOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       if (this.contract && this.contract.id) {
-        const _evidences = await getEvidencesByContract(this.contract.id, {
+        const _res = await getEvidencesByContract(this.contract.id, {
           page: val.page - 1,
           limit: val.itemsPerPage
         });
-        if (_evidences.data) {
-          this.evidences = _evidences.data.data;
-          this.evidenceServerSideOptions.totalItems =
-            _evidences.data.totalElements;
+        if (_res.data) {
+          const _evidences = _res.data.data;
+          this.evidences = _evidences;
+          this.evidenceServerSideOptions.totalItems = _res.data.totalElements;
           if (this.evidences.length > 0 && this.evidences[0].isValid == true) {
             this.checkValid = true;
           }
@@ -594,12 +604,13 @@ export default class DetailCombined extends Vue {
   }
 
   async created() {
-    const _ports = await getPorts({
+    const _res = await getPorts({
       page: 0,
       limit: 100
     });
-    if (_ports.data) {
-      this.ports = _ports.data.data;
+    if (_res.data) {
+      const _ports = _res.data.data;
+      this.ports = _ports;
     }
   }
 }

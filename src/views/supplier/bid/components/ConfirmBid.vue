@@ -53,15 +53,13 @@ export default class ConfirmBid extends Vue {
 
   async confirmBid() {
     if (this.biddingNotification.id) {
-      const _biddingNofitication = await editBiddingNotifications(
-        this.biddingNotification.id,
-        {
-          isHide: true
-        }
-      );
-      if (_biddingNofitication.data) {
+      const _res = await editBiddingNotifications(this.biddingNotification.id, {
+        isHide: true
+      });
+      if (_res.data) {
+        const _biddingNofitication = _res.data;
         const index = this.biddingNotificationsSync.findIndex(
-          x => x.id === _biddingNofitication.data.id
+          x => x.id === _biddingNofitication.id
         );
         this.biddingNotificationsSync.splice(index, 1);
         this.totalItemsSync -= 1;

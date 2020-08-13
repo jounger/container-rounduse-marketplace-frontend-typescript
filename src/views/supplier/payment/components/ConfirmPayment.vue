@@ -46,12 +46,11 @@ export default class ConfirmPayment extends Vue {
 
   async confirmPayment() {
     if (this.payment.id) {
-      const _payment = await editPayment(this.payment.id, { isPaid: true });
-      if (_payment.data) {
-        const index = this.paymentsSync.findIndex(
-          x => x.id === _payment.data.id
-        );
-        this.paymentsSync.splice(index, 1, _payment.data);
+      const _res = await editPayment(this.payment.id, { isPaid: true });
+      if (_res.data) {
+        const _payment = _res.data;
+        const index = this.paymentsSync.findIndex(x => x.id === _payment.id);
+        this.paymentsSync.splice(index, 1, _payment);
         this.dialogConfirmSync = false;
       }
     }

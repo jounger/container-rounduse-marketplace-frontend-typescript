@@ -129,13 +129,14 @@ export default class Trailer extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _trailers = await getContainerSemiTrailersByForwarder({
-        page: this.options.page - 1,
-        limit: this.options.itemsPerPage
+      const _res = await getContainerSemiTrailersByForwarder({
+        page: val.page - 1,
+        limit: val.itemsPerPage
       });
-      if (_trailers.data) {
-        this.trailers = _trailers.data.data;
-        this.serverSideOptions.totalItems = _trailers.data.totalElements;
+      if (_res.data) {
+        const _trailers = _res.data.data;
+        this.trailers = _trailers;
+        this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }

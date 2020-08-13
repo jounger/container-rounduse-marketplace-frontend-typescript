@@ -134,14 +134,15 @@ export default class Supplier extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _suppliers = await getSuppliersByStatus({
+      const _res = await getSuppliersByStatus({
         page: val.page - 1,
         limit: val.itemsPerPage,
         status: "PENDING"
       });
-      if (_suppliers.data) {
-        this.suppliers = _suppliers.data.data;
-        this.serverSideOptions.totalItems = _suppliers.data.totalElements;
+      if (_res.data) {
+        const _suppliers = _res.data.data;
+        this.suppliers = _suppliers;
+        this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }

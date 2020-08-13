@@ -101,8 +101,11 @@ export default class Operator extends Vue {
     },
     {
       text: "Tên đăng nhập",
-      align: "start",
       value: "username"
+    },
+    {
+      text: "Họ và tên",
+      value: "fullname"
     },
     { text: "Email", value: "email" },
     { text: "Số điện thoại", value: "phone" },
@@ -138,13 +141,14 @@ export default class Operator extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _operators = await getOperators({
+      const _res = await getOperators({
         page: val.page - 1,
         limit: val.itemsPerPage
       });
-      if (_operators.data) {
-        this.operators = _operators.data.data;
-        this.serverSideOptions.totalItems = _operators.data.totalElements;
+      if (_res.data) {
+        const _operators = _res.data.data;
+        this.operators = _operators;
+        this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }

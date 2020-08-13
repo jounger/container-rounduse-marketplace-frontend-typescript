@@ -69,14 +69,13 @@ export default class ReviewSupplier extends Vue {
   reason = "";
   async reviewSupplier(status: string) {
     if (this.supplier.id) {
-      const _supplier = await reviewSupplier(this.supplier.id, {
+      const _res = await reviewSupplier(this.supplier.id, {
         status: status
       });
-      if (_supplier.data) {
-        const index = this.suppliersSync.findIndex(
-          x => x.id == _supplier.data.id
-        );
-        this.suppliersSync.splice(index, 1, _supplier.data);
+      if (_res.data) {
+        const _supplier = _res.data;
+        const index = this.suppliersSync.findIndex(x => x.id == _supplier.id);
+        this.suppliersSync.splice(index, 1, _supplier);
         this.dialogReviewSync = false;
       }
     }

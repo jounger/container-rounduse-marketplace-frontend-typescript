@@ -290,9 +290,10 @@ export default class CreateShippingLine extends Vue {
 
   async createShippingLine() {
     if (this.shippingLineLocal) {
-      const _shippingLine = await createShippingLine(this.shippingLineLocal);
-      if (_shippingLine.data) {
-        this.shippingLinesSync.unshift(_shippingLine.data);
+      const _res = await createShippingLine(this.shippingLineLocal);
+      if (_res.data) {
+        const _shippingLine = _res.data.data;
+        this.shippingLinesSync.unshift(_shippingLine);
         this.totalItemsSync += 1;
         this.dialogAddSync = false;
       }

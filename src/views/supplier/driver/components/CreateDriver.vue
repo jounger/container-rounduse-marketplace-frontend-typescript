@@ -185,9 +185,10 @@ export default class CreateDriver extends Vue {
   }
   async createDriver() {
     if (this.driverLocal) {
-      const _driver = await createDriver(this.driverLocal);
-      if (_driver.data) {
-        this.driversSync.unshift(_driver.data);
+      const _res = await createDriver(this.driverLocal);
+      if (_res.data) {
+        const _driver = _res.data.data;
+        this.driversSync.unshift(_driver);
         this.totalItemsSync += 1;
         this.dialogAddSync = false;
       }
@@ -195,10 +196,11 @@ export default class CreateDriver extends Vue {
   }
   async updateDriver() {
     if (this.driverLocal.id) {
-      const _driver = await editDriver(this.driverLocal.id, this.driverLocal);
-      if (_driver.data) {
-        const index = this.driversSync.findIndex(x => x.id == _driver.data.id);
-        this.driversSync.splice(index, 1, _driver.data);
+      const _res = await editDriver(this.driverLocal.id, this.driverLocal);
+      if (_res.data) {
+        const _driver = _res.data.data;
+        const index = this.driversSync.findIndex(x => x.id == _driver.id);
+        this.driversSync.splice(index, 1, _driver);
       }
     }
   }

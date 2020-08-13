@@ -100,23 +100,22 @@ export default class CreateFeedback extends Vue {
   async createFeedback() {
     if (this.feedbackLocal && this.report.id) {
       if (this.$auth.user().roles[0] == "ROLE_MODERATOR") {
-        const _feedback = await createFeedback(
-          this.report.id,
-          this.feedbackLocal
-        );
-        if (_feedback.data) {
-          this.feedbacksSync.push(_feedback.data);
+        const _res = await createFeedback(this.report.id, this.feedbackLocal);
+        if (_res.data) {
+          const _feedback = _res.data.data;
+          this.feedbacksSync.push(_feedback);
           this.dialogAddSync = false;
         }
       } else {
         if (this.receiver) {
-          const _feedback = await createFeedbackToModerator(
+          const _res = await createFeedbackToModerator(
             this.report.id,
             this.receiver,
             this.feedbackLocal
           );
-          if (_feedback.data) {
-            this.feedbacksSync.push(_feedback.data);
+          if (_res.data) {
+            const _feedback = _res.data.data;
+            this.feedbacksSync.push(_feedback);
             this.dialogAddSync = false;
           }
         }
@@ -126,15 +125,14 @@ export default class CreateFeedback extends Vue {
 
   async updateFeedback() {
     if (this.feedbackLocal.id) {
-      const _feedback = await editFeedback(
+      const _res = await editFeedback(
         this.feedbackLocal.id,
         this.feedbackLocal
       );
-      if (_feedback.data) {
-        const index = this.feedbacksSync.findIndex(
-          x => x.id == _feedback.data.id
-        );
-        this.feedbacksSync.splice(index, 1, _feedback.data);
+      if (_res.data) {
+        const _feedback = _res.data.data;
+        const index = this.feedbacksSync.findIndex(x => x.id == _feedback.id);
+        this.feedbacksSync.splice(index, 1, _feedback);
       }
     }
   }

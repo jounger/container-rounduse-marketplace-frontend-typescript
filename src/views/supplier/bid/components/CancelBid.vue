@@ -46,12 +46,13 @@ export default class CancelBid extends Vue {
 
   async cancelBid() {
     if (this.bid.id) {
-      const _bid = await editBid(this.bid.id, {
+      const _res = await editBid(this.bid.id, {
         status: "CANCELED"
       });
-      if (_bid.data) {
-        const index = this.bidsSync.findIndex(x => x.id === _bid.data.id);
-        this.bidsSync.splice(index, 1, _bid.data);
+      if (_res.data) {
+        const _bid = _res.data;
+        const index = this.bidsSync.findIndex(x => x.id === _bid.id);
+        this.bidsSync.splice(index, 1, _bid);
         this.dialogCancelSync = false;
       }
     }

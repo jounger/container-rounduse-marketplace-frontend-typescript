@@ -144,13 +144,14 @@ export default class Driver extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _drivers = await getDriversByForwarder({
-        page: this.options.page - 1,
-        limit: this.options.itemsPerPage
+      const _res = await getDriversByForwarder({
+        page: val.page - 1,
+        limit: val.itemsPerPage
       });
-      if (_drivers.data) {
-        this.drivers = _drivers.data.data;
-        this.serverSideOptions.totalItems = _drivers.data.totalElements;
+      if (_res.data) {
+        const _drivers = _res.data.data;
+        this.drivers = _drivers;
+        this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }

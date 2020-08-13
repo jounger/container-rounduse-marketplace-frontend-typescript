@@ -81,15 +81,17 @@ export default class CreateReport extends Vue {
 
   reportLocal = null as IReport | null;
   valid = false;
+
   created() {
     this.reportLocal = Object.assign({}, this.report);
   }
   async updateReport() {
     if (this.reportLocal && this.reportLocal.id) {
-      const _report = await editReport(this.reportLocal.id, this.reportLocal);
-      if (_report.data) {
-        const index = this.reportsSync.findIndex(x => x.id == _report.data.id);
-        this.reportsSync.splice(index, 1, _report.data);
+      const _res = await editReport(this.reportLocal.id, this.reportLocal);
+      if (_res.data) {
+        const _report = _res.data;
+        const index = this.reportsSync.findIndex(x => x.id == _report.id);
+        this.reportsSync.splice(index, 1, _report);
       }
     }
   }

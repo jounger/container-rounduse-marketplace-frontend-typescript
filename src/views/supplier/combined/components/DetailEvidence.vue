@@ -82,15 +82,14 @@ export default class DetailEvidence extends Vue {
 
   async reviewEvidence(isValid: boolean) {
     if (this.evidence.id) {
-      const _evidence = await editEvidence(this.evidence.id, {
+      const _res = await editEvidence(this.evidence.id, {
         isValid: isValid
       });
-      if (_evidence.data) {
-        const index = this.evidencesSync.findIndex(
-          x => x.id == _evidence.data.id
-        );
-        this.evidencesSync.splice(index, 1, _evidence.data);
-        if (this.finalEvidence && _evidence.data.isValid) {
+      if (_res.data) {
+        const _evidence = _res.data;
+        const index = this.evidencesSync.findIndex(x => x.id == _evidence.id);
+        this.evidencesSync.splice(index, 1, _evidence);
+        if (this.finalEvidence && _evidence.isValid) {
           this.checkValidSync = true;
         }
         this.dialogDetailSync = false;

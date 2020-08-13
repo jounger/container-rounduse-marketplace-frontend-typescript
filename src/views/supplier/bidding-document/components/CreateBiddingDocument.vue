@@ -220,7 +220,7 @@ export default class CreateBiddingDocument extends Vue {
 
   dateInit = addTimeToDate(new Date().toString());
   biddingDocumentLocal = {
-    merchant: this.$auth.user().username,
+    offeree: this.$auth.user().username,
     outbound: -1 as number,
     discount: "",
     isMultipleAward: false,
@@ -282,12 +282,11 @@ export default class CreateBiddingDocument extends Vue {
     if (this.selectedOutbound && this.selectedOutbound.id) {
       this.biddingDocumentLocal.outbound = this.selectedOutbound.id as number;
     }
-    const _biddingDocument = await createBiddingDocument(
-      this.biddingDocumentLocal
-    );
-    if (_biddingDocument.data) {
+    const _res = await createBiddingDocument(this.biddingDocumentLocal);
+    if (_res.data) {
+      const _biddingDocument = _res.data.data;
       if (typeof this.biddingDocumentsSync != "undefined") {
-        this.biddingDocumentsSync.unshift(_biddingDocument.data);
+        this.biddingDocumentsSync.unshift(_biddingDocument);
       }
       if (typeof this.totalItemsSync != "undefined") this.totalItemsSync += 1;
 
@@ -308,16 +307,17 @@ export default class CreateBiddingDocument extends Vue {
         this.serverSideOptions.totalItems = 1;
         this.loading = false;
       } else {
-        const _outbound = await getOutboundByMerchant({
+        const _res = await getOutboundByMerchant({
           page: val.page - 1,
           limit: val.itemsPerPage,
           status: "CREATED"
         });
-        this.loading = false;
-        if (_outbound.data) {
-          this.outbounds = _outbound.data.data;
-          this.serverSideOptions.totalItems = _outbound.data.totalElements;
+        if (_res.data) {
+          const _outbounds = _res.data.data;
+          this.outbounds = _outbounds;
+          this.serverSideOptions.totalItems = _res.data.totalElements;
         }
+        this.loading = false;
       }
       this.loading = false;
     }

@@ -13,6 +13,12 @@ export function getBiddingNotificationsByUser(paging: PaginationRequest) {
   });
 }
 
+export function getShippingLineNotifications(paging: PaginationRequest) {
+  return Vue.axios.get(`/shipping-line-notification/`, {
+    params: paging
+  });
+}
+
 // Get notification by ID
 export function getBiddingNotification(id: number) {
   return Vue.axios.get(`/bidding-notification/${id}`);

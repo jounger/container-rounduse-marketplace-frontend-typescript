@@ -235,12 +235,13 @@ export default class Bid extends Vue {
   async getBids(item: IBiddingDocument) {
     this.loading = true;
     if (item.id) {
-      const _bid = await getBidByBiddingDocumentAndForwarder(item.id);
-      if (_bid) {
+      const _res = await getBidByBiddingDocumentAndForwarder(item.id);
+      if (_res.data) {
+        const _bid = _res.data;
         if (this.bids.length == 0) {
-          this.bids.push(_bid.data);
+          this.bids.push(_bid);
         } else {
-          this.bids.splice(0, 1, _bid.data);
+          this.bids.splice(0, 1, _bid);
         }
       }
     }
@@ -284,14 +285,14 @@ export default class Bid extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _biddingDocuments = await getBiddingDocuments({
-        page: this.options.page - 1,
-        limit: this.options.itemsPerPage
+      const _res = await getBiddingDocuments({
+        page: val.page - 1,
+        limit: val.itemsPerPage
       });
-      if (_biddingDocuments.data) {
-        this.biddingDocuments = _biddingDocuments.data.data;
-        this.serverSideOptions.totalItems =
-          _biddingDocuments.data.totalElements;
+      if (_res.data) {
+        const _biddingDocuments = _res.data.data;
+        this.biddingDocuments = _biddingDocuments;
+        this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }

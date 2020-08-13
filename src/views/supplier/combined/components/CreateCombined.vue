@@ -189,13 +189,11 @@ export default class CreateCombined extends Vue {
       this.combinedLocal.containers = this.getSelectedContainer.map(
         x => x.id
       ) as number[];
-      const _combined = await createCombined(
-        this.bidSync.id,
-        this.combinedLocal
-      );
-      if (_combined.data) {
+      const _res = await createCombined(this.bidSync.id, this.combinedLocal);
+      if (_res.data) {
+        const _combined = _res.data.data;
         this.getSelectedContainer.forEach(x => (x.status = "COMBINED"));
-        this.bidSync.status = _combined.data.bid.status;
+        this.bidSync.status = _combined.bid.status;
         this.numberWinnerSync += 1;
         this.dialogAddSync = false;
       }

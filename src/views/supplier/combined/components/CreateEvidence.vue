@@ -69,15 +69,14 @@ export default class CreateEvidence extends Vue {
     isValid: false
   } as IEvidence;
   valid = false;
+
   async createEvidence() {
     if (this.contract.id) {
-      const _evidence = await createEvidence(
-        this.contract.id,
-        this.evidenceLocal
-      );
-      if (_evidence.data) {
+      const _res = await createEvidence(this.contract.id, this.evidenceLocal);
+      if (_res.data) {
+        const _evidence = _res.data.data;
         if (this.evidencesSync) {
-          this.evidencesSync.unshift(_evidence.data);
+          this.evidencesSync.unshift(_evidence);
           this.totalItemsSync += 1;
           this.checkValidSync = false;
         }

@@ -171,9 +171,10 @@ export default class CreateOperator extends Vue {
   }
   async createOperator() {
     if (this.operatorLocal) {
-      const _operator = await createOperator(this.operatorLocal);
-      if (_operator.data) {
-        this.operatorsSync.unshift(_operator.data);
+      const _res = await createOperator(this.operatorLocal);
+      if (_res.data) {
+        const _operator = _res.data.data;
+        this.operatorsSync.unshift(_operator);
         this.totalItemsSync += 1;
         this.dialogAddSync = false;
       }
@@ -181,15 +182,14 @@ export default class CreateOperator extends Vue {
   }
   async updateOperator() {
     if (this.operatorLocal.id) {
-      const _operator = await editOperator(
+      const _res = await editOperator(
         this.operatorLocal.id,
         this.operatorLocal
       );
-      if (_operator.data) {
-        const index = this.operatorsSync.findIndex(
-          x => x.id === _operator.data.id
-        );
-        this.operatorsSync.splice(index, 1, _operator.data);
+      if (_res.data) {
+        const _operator = _res.data.data;
+        const index = this.operatorsSync.findIndex(x => x.id === _operator.id);
+        this.operatorsSync.splice(index, 1, _operator);
       }
     }
   }

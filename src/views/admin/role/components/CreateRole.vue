@@ -102,19 +102,20 @@ export default class CreateRole extends Vue {
   async getPermissions(limit: number) {
     this.loading = true;
     this.permissions = [] as Array<IPermission>;
-    const _permissions = await getPermissions({
+    const _res = await getPermissions({
       page: 0,
       limit: limit + 1
     });
-    if (_permissions.data) {
+    if (_res.data) {
+      const _permissions = _res.data.data;
       if (!this.update) {
-        _permissions.data.data.forEach((x: IPermission, index: number) => {
+        _permissions.forEach((x: IPermission, index: number) => {
           if (index != limit) {
             this.permissions.push(x);
           }
         });
       } else {
-        _permissions.data.data.forEach((x: IPermission) => {
+        _permissions.forEach((x: IPermission) => {
           for (let i = 0; i < this.roleLocal.permissions.length; i++) {
             if (x.name == this.roleLocal.permissions[i]) {
               this.permissions.push(x);
@@ -125,7 +126,7 @@ export default class CreateRole extends Vue {
           this.limit = this.permissions.length;
         } else {
           if (this.permissions.length < this.limit) {
-            _permissions.data.data.forEach((x: IPermission) => {
+            _permissions.forEach((x: IPermission) => {
               let check = false;
               for (let i = 0; i < this.permissions.length; i++) {
                 if (x.name == this.permissions[i].name) {
@@ -139,9 +140,9 @@ export default class CreateRole extends Vue {
           }
         }
       }
-    }
-    if (!_permissions.data || _permissions.data.length <= this.limit) {
-      this.seeMore = false;
+      if (!_permissions.data || _permissions.data.length <= this.limit) {
+        this.seeMore = false;
+      }
     }
     this.loading = false;
   }
@@ -166,9 +167,10 @@ export default class CreateRole extends Vue {
   }
   async createRole() {
     if (this.roleLocal) {
-      const _role = await createRole(this.roleLocal);
-      if (_role.data) {
-        this.rolesSync.unshift(_role.data);
+      const _res = await createRole(this.roleLocal);
+      if (_res.data) {
+        const _role = _res.data.data;
+        this.rolesSync.unshift(_role);
         this.totalItemsSync += 1;
         this.dialogAddSync = false;
       }
@@ -176,10 +178,11 @@ export default class CreateRole extends Vue {
   }
   async updateRole() {
     if (this.roleLocal.id) {
-      const _role = await updateRole(this.roleLocal);
-      if (_role.data) {
-        const index = this.rolesSync.findIndex(x => x.id == _role.data.id);
-        this.rolesSync.splice(index, 1, _role.data);
+      const _res = await updateRole(this.roleLocal);
+      if (_res.data) {
+        const _role = _res.data.data;
+        const index = this.rolesSync.findIndex(x => x.id == _role.id);
+        this.rolesSync.splice(index, 1, _role);
       }
     }
   }

@@ -414,13 +414,14 @@ export default class CreateBid extends Vue {
         return pV;
       },
       []);
-      const _bid = await createBid(
+      const _res = await createBid(
         this.biddingDocumentSelected.id,
         this.bidLocal
       );
-      if (_bid.data) {
+      if (_res.data) {
+        const _bid = _res.data.data;
         if (this.bidsSync) {
-          this.bidsSync.unshift(_bid.data);
+          this.bidsSync.unshift(_bid);
         }
         if (typeof this.totalItemsSync != "undefined") {
           this.totalItemsSync += 1;
@@ -430,19 +431,18 @@ export default class CreateBid extends Vue {
           typeof this.biddingNotification != "undefined" &&
           this.biddingNotification.id
         ) {
-          const _biddingNotification = await editBiddingNotifications(
+          const _res = await editBiddingNotifications(
             this.biddingNotification.id,
             {
               isHide: true
             }
           );
-          if (_biddingNotification.data) {
-            if (this.biddingNotificationsSync) {
-              const index = this.biddingNotificationsSync.findIndex(
-                x => x.id === _biddingNotification.data.id
-              );
-              this.biddingNotificationsSync.splice(index, 1);
-            }
+          if (_res.data && this.biddingNotificationsSync) {
+            const _biddingNotification = _res.data.data;
+            const index = this.biddingNotificationsSync.findIndex(
+              x => x.id === _biddingNotification.id
+            );
+            this.biddingNotificationsSync.splice(index, 1);
             if (typeof this.totalItemsBidNoSync != "undefined")
               this.totalItemsBidNoSync -= 1;
           }
@@ -524,31 +524,31 @@ export default class CreateBid extends Vue {
         const _outbound = this.biddingDocumentSelected.outbound as IOutbound;
         this.unit = _outbound.booking.unit;
         const _outboundId = _outbound.id as number;
-        const _inbounds = await getInboundsByOutboundAndForwarder(_outboundId, {
+        const _res = await getInboundsByOutboundAndForwarder(_outboundId, {
           page: val.page - 1,
           limit: val.itemsPerPage
         });
         this.loading = false;
-        if (_inbounds.data) {
-          this.inbounds = _inbounds.data.data;
-          this.inboundServerSideOptions.totalItems =
-            _inbounds.data.totalElements;
+        if (_res.data) {
+          const _inbounds = _res.data.data;
+          this.inbounds = _inbounds;
+          this.inboundServerSideOptions.totalItems = _res.data.totalElements;
         }
       }
     }
   }
 
   async loadContainersByInbound(inboundId: number, option: DataOptions) {
-    const _containers = await getContainersByInbound(inboundId, {
+    const _res = await getContainersByInbound(inboundId, {
       page: option.page - 1,
       limit: option.itemsPerPage
     });
-    if (_containers.data) {
-      this.containerServerSideOptions.totalItems =
-        _containers.data.totalElements;
-      this.containers = _containers.data.data.filter(
+    if (_res.data) {
+      const _containers = _res.data.data;
+      this.containers = _containers.filter(
         (x: IContainer) => x.status == "CREATED"
       );
+      this.containerServerSideOptions.totalItems = _res.data.totalElements;
     }
   }
 

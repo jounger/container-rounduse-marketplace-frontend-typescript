@@ -132,13 +132,14 @@ export default class Discount extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _discounts = await getDiscounts({
+      const _res = await getDiscounts({
         page: val.page - 1,
         limit: val.itemsPerPage
       });
-      if (_discounts.data) {
-        this.discounts = _discounts.data.data;
-        this.serverSideOptions.totalItems = _discounts.data.totalElements;
+      if (_res.data) {
+        const _discounts = _res.data.data;
+        this.discounts = _discounts;
+        this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }

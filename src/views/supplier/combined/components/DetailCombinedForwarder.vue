@@ -129,7 +129,7 @@
                 <v-card-title>Hồ sơ Mời thầu</v-card-title>
 
                 <v-card-text>
-                  <SupplierRating :supplier="biddingDocument.merchant" />
+                  <SupplierRating :supplier="biddingDocument.offeree" />
 
                   <v-list dense>
                     <v-subheader>Thông tin HSMT</v-subheader>
@@ -216,7 +216,7 @@
                         </v-list-item-icon>
                         <v-list-item-content>
                           <v-list-item-title>{{
-                            "Đóng tại: " +
+                            "Đóng hàng tại: " +
                               biddingDocument.outbound.packingStation
                           }}</v-list-item-title>
                           <v-list-item-subtitle>
@@ -271,7 +271,7 @@
                       </v-list-item-icon>
                       <v-list-item-content>
                         <v-list-item-title>{{
-                          "Bên chủ hàng: " + biddingDocument.merchant
+                          "Bên chủ hàng: " + biddingDocument.offeree
                         }}</v-list-item-title>
                         <v-list-item-subtitle>
                           {{ "Bên chủ xe: " + $auth.user().username }}

@@ -165,13 +165,14 @@ export default class Combined extends Vue {
   ];
 
   async loadCombineds(biddingDocumentId: number, option: DataOptions) {
-    const _combineds = await getCombinedsByBiddingDocument(biddingDocumentId, {
+    const _res = await getCombinedsByBiddingDocument(biddingDocumentId, {
       page: option.page - 1,
       limit: option.itemsPerPage
     });
-    if (_combineds.data) {
-      this.combineds = _combineds.data.data;
-      this.combinedServerSideOptions.totalItems = _combineds.data.totalElements;
+    if (_res.data) {
+      const _combineds = _res.data.data;
+      this.combineds = _combineds;
+      this.combinedServerSideOptions.totalItems = _res.data.totalElements;
     }
   }
 
@@ -199,14 +200,14 @@ export default class Combined extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _biddingDocuments = await getBiddingDocumentsByExistCombined({
-        page: this.options.page - 1,
-        limit: this.options.itemsPerPage
+      const _res = await getBiddingDocumentsByExistCombined({
+        page: val.page - 1,
+        limit: val.itemsPerPage
       });
-      if (_biddingDocuments.data) {
-        this.biddingDocuments = _biddingDocuments.data.data;
-        this.serverSideOptions.totalItems =
-          _biddingDocuments.data.totalElements;
+      if (_res.data) {
+        const _biddingDocuments = _res.data.data;
+        this.biddingDocuments = _biddingDocuments;
+        this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }
@@ -216,17 +217,17 @@ export default class Combined extends Vue {
   async onCombinedOptionsChange(val: DataOptions) {
     if (typeof val != "undefined" && this.biddingDocument) {
       this.loading = true;
-      const _combineds = await getCombinedsByBiddingDocument(
+      const _res = await getCombinedsByBiddingDocument(
         this.biddingDocument.id as number,
         {
           page: val.page - 1,
           limit: val.itemsPerPage
         }
       );
-      if (_combineds.data) {
-        this.combineds = _combineds.data.data;
-        this.combinedServerSideOptions.totalItems =
-          _combineds.data.totalElements;
+      if (_res.data) {
+        const _combineds = _res.data.data;
+        this.combineds = _combineds;
+        this.combinedServerSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }

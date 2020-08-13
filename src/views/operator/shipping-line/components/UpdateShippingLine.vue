@@ -267,15 +267,16 @@ export default class UpdateShippingLine extends Vue {
 
   async updateShippingLine() {
     if (this.shippingLineLocal && this.shippingLineLocal.id) {
-      const _shippingLine = await editShippingLine(
+      const _res = await editShippingLine(
         this.shippingLineLocal.id,
         this.shippingLineLocal
       );
-      if (_shippingLine.data) {
+      if (_res.data) {
+        const _shippingLine = _res.data.data;
         const index = this.shippingLinesSync.findIndex(
-          x => x.id == _shippingLine.data.id
+          x => x.id == _shippingLine.id
         );
-        this.shippingLinesSync.splice(index, 1, _shippingLine.data);
+        this.shippingLinesSync.splice(index, 1, _shippingLine);
         if (this.stepper == 2) {
           this.dialogEditSync = false;
         } else {

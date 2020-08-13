@@ -7,6 +7,14 @@ Vue.use(VueRouter);
 const routes: Array<RouteConfig> = [
   // AUTH
   {
+    path: "/upload",
+    name: "Upload",
+    meta: {
+      layout: "AuthLayout"
+    },
+    component: () => import("@/components/UploadFile.vue")
+  },
+  {
     path: "/login",
     name: "Login",
     meta: {
@@ -30,6 +38,14 @@ const routes: Array<RouteConfig> = [
     },
     component: () => import("@/views/auth/Register.vue")
   },
+  {
+    path: "/forgot-password",
+    name: "Forgot Password",
+    meta: {
+      layout: "AuthLayout"
+    },
+    component: () => import("@/views/user/password/ForgotPassword.vue")
+  },
   // GENERAL
   {
     path: "/",
@@ -46,6 +62,23 @@ const routes: Array<RouteConfig> = [
     meta: {
       auth: true,
       layout: "NavLayout"
+    }
+  },
+  {
+    path: "/change-password",
+    name: "Change Password",
+    component: () => import("@/views/user/password/ChangePassword.vue"),
+    meta: {
+      auth: true,
+      layout: "AuthLayout"
+    }
+  },
+  {
+    path: "/reset-password",
+    name: "Reset Password",
+    component: () => import("@/views/user/password/ResetPassword.vue"),
+    meta: {
+      layout: "AuthLayout"
     }
   },
   {

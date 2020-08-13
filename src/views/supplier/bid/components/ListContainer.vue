@@ -300,24 +300,25 @@ export default class ListContainer extends Vue {
   async createContainerBid(item: IContainer) {
     this.loading = true;
     if (this.bid.id && item.id) {
-      const _bid = await addContainer(this.bid.id, item.id);
-      if (_bid.data) {
-        const _containers: Array<IContainer> = _bid.data.containers as Array<
+      const _res = await addContainer(this.bid.id, item.id);
+      if (_res.data) {
+        const _bid = _res.data.data;
+        const _containers: Array<IContainer> = _bid.containers as Array<
           IContainer
         >;
         _containers.forEach((x: IContainer) => {
-          if (x.number == item.number) {
+          if (x.id == item.id) {
             this.containersSelectedSync.unshift(x);
             this.listContainersSelectedSync.unshift(x);
           }
         });
         this.selectedContainers.forEach((x: IContainer) => {
-          if (x.number == item.number) {
+          if (x.id == item.id) {
             x.status = "BIDDING";
           }
         });
         this.containers.forEach((x: IContainer) => {
-          if (x.number == item.number) {
+          if (x.id == item.id) {
             x.status = "BIDDING";
           }
         });
@@ -325,7 +326,7 @@ export default class ListContainer extends Vue {
         this.totalItemsSync += 1;
       } else {
         const index = this.selectedContainers.findIndex(
-          x => x.number == item.number
+          (x: IContainer) => x.id == item.id
         );
         this.selectedContainers.splice(index, 1);
       }
@@ -335,22 +336,23 @@ export default class ListContainer extends Vue {
 
   async changeContainerBid(item: IContainer) {
     if (this.bid.id && item.id) {
-      const _bid = await replaceContainer(this.bid.id, {
+      const _res = await replaceContainer(this.bid.id, {
         oldContainerId: this.container.id,
         newContainerId: item.id
       });
-      if (_bid.data) {
-        const _containers: Array<IContainer> = _bid.data.containers as Array<
+      if (_res.data) {
+        const _bid = _res.data.data;
+        const _containers: Array<IContainer> = _bid.containers as Array<
           IContainer
         >;
         const index = this.containersSelectedSync.findIndex(
-          x => x.number == this.container.number
+          (x: IContainer) => x.id == this.container.id
         );
         const indexList = this.listContainersSelectedSync.findIndex(
-          x => x.number == this.container.number
+          (x: IContainer) => x.id == this.container.id
         );
         _containers.forEach((x: IContainer) => {
-          if (x.number == item.number) {
+          if (x.id == item.id) {
             this.containersSelectedSync.splice(index, 1, x);
             this.listContainersSelectedSync.splice(indexList, 1, x);
           }
@@ -363,14 +365,15 @@ export default class ListContainer extends Vue {
   async removeContainer(item: IContainer) {
     this.loading = true;
     if (item.id && this.bid.id) {
-      const _bid = await removeContainer(this.bid.id, item.id);
-      if (_bid.data) {
+      const _res = await removeContainer(this.bid.id, item.id);
+      if (_res.data) {
+        const _container = _res.data.data;
         const index = this.containersSelectedSync.findIndex(
-          x => x.number == item.number
+          (x: IContainer) => x.id == item.id
         );
         this.containersSelectedSync.splice(index, 1);
         const indexList = this.listContainersSelectedSync.findIndex(
-          x => x.number == item.number
+          (x: IContainer) => x.id == _container.id
         );
         this.listContainersSelectedSync.splice(indexList, 1);
         this.totalItemsSync -= 1;
@@ -393,16 +396,16 @@ export default class ListContainer extends Vue {
         const _outbound = this.biddingDocumentSelected.outbound as IOutbound;
         this.unit = _outbound.booking.unit;
         const _outboundId = _outbound.id as number;
-        const _inbounds = await getInboundsByOutboundAndForwarder(_outboundId, {
+        const _res = await getInboundsByOutboundAndForwarder(_outboundId, {
           page: val.page - 1,
           limit: val.itemsPerPage
         });
-        this.loading = false;
-        if (_inbounds.data) {
-          this.inbounds = _inbounds.data.data;
-          this.inboundServerSideOptions.totalItems =
-            _inbounds.data.totalElements;
+        if (_res.data) {
+          const _inbounds = _res.data.data;
+          this.inbounds = _inbounds;
+          this.inboundServerSideOptions.totalItems = _res.data.totalElements;
         }
+        this.loading = false;
       }
     }
   }
@@ -413,17 +416,18 @@ export default class ListContainer extends Vue {
       this.loading = true;
       this.containers = [] as Array<IContainer>;
       if (this.inbound && this.inbound.id) {
-        const _containers = await getContainersByInbound(this.inbound.id, {
+        const _res = await getContainersByInbound(this.inbound.id, {
           page: val.page - 1,
           limit: val.itemsPerPage
         });
-        if (_containers.data) {
-          _containers.data.data.forEach((x: IContainer) => {
+        if (_res.data) {
+          const _containers = _res.data.data;
+          _containers.forEach((x: IContainer) => {
             if (x.status == "CREATED") {
               this.containers.push(x);
             } else {
               this.selectedContainers.forEach((item: IContainer) => {
-                if (item.number && item.number == x.number) {
+                if (item.id == x.id) {
                   this.containers.push(x);
                 }
               });

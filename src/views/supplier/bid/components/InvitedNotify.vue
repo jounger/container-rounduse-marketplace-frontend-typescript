@@ -164,8 +164,8 @@ export default class InvitedNotify extends Vue {
     if (typeof val != "undefined") {
       this.loading = true;
       const _res = await getBiddingNotificationsByUser({
-        page: this.options.page - 1,
-        limit: this.options.itemsPerPage
+        page: val.page - 1,
+        limit: val.itemsPerPage
       });
       if (_res.data) {
         const _biddingNotifications = _res.data.data as IBiddingNotification[];

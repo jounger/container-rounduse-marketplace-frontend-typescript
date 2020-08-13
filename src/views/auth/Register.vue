@@ -26,6 +26,7 @@
                   name="username"
                   prepend-icon="mdi-account"
                   type="text"
+                  autocomplete="username"
                   :counter="20"
                   :rules="[
                     minLength('Tên đăng nhập', 2),
@@ -40,6 +41,7 @@
                   name="password"
                   prepend-icon="mdi-lock"
                   type="password"
+                  autocomplete="new-password"
                   :counter="120"
                   :rules="[
                     minLength('Mật khẩu', 6),

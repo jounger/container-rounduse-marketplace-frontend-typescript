@@ -52,14 +52,13 @@ export default class MarkFeedback extends Vue {
   }
   async markFeedback() {
     if (this.feedbackLocal.id) {
-      const _feedback = await editFeedback(this.feedbackLocal.id, {
+      const _res = await editFeedback(this.feedbackLocal.id, {
         satisfactionPoints: this.feedbackLocal.satisfactionPoints
       });
-      if (_feedback.data) {
-        const index = this.feedbacksSync.findIndex(
-          x => x.id == _feedback.data.id
-        );
-        this.feedbacksSync.splice(index, 1, _feedback.data);
+      if (_res.data) {
+        const _feedback = _res.data;
+        const index = this.feedbacksSync.findIndex(x => x.id == _feedback.id);
+        this.feedbacksSync.splice(index, 1, _feedback);
         this.dialogMarkSync = false;
       }
     }

@@ -187,11 +187,13 @@ export default class CreatePayment extends Vue {
       if (this.paymentLocal.type == "Tiền phí") {
         this.paymentLocal.type = "PAYMENT";
       }
-      const _payment = await createPayment(
+      const _res = await createPayment(
         this.combined.contract.id,
         this.paymentLocal
       );
-      if (_payment.data) {
+      if (_res.data && this.paymentsSync) {
+        const _payment = _res.data.data;
+        this.paymentsSync.push(_payment);
         this.dialogAddSync = false;
       }
     }
@@ -199,17 +201,13 @@ export default class CreatePayment extends Vue {
 
   async updatePayment() {
     if (this.paymentLocal.id) {
-      const _payment = await editPayment(
-        this.paymentLocal.id,
-        this.paymentLocal
-      );
-      if (_payment.data) {
-        if (this.paymentsSync) {
-          const index = this.paymentsSync.findIndex(
-            x => x.id == _payment.data.id
-          );
-          this.paymentsSync.splice(index, 1, _payment.data);
-        }
+      const _res = await editPayment(this.paymentLocal.id, this.paymentLocal);
+      if (_res.data && this.paymentsSync) {
+        const _payment = _res.data.data;
+        const index = this.paymentsSync.findIndex(
+          x => x.id == _payment.data.id
+        );
+        this.paymentsSync.splice(index, 1, _payment.data);
       }
     }
   }

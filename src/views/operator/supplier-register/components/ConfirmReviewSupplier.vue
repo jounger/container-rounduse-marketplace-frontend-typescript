@@ -58,11 +58,12 @@ export default class ConfirmReviewSupplier extends Vue {
 
   async reviewSupplier() {
     if (this.supplierSync.id) {
-      const _supplier = await reviewSupplier(this.supplierSync.id, {
+      const _res = await reviewSupplier(this.supplierSync.id, {
         status: this.supplierSync.status
       });
-      if (_supplier.data) {
-        this.supplierSync.status = _supplier.data.status;
+      if (_res.data) {
+        const _supplier = _res.data;
+        this.supplierSync.status = _supplier.status;
         this.dialogConfirmSync = false;
         this.dialogDetailSync = false;
       }

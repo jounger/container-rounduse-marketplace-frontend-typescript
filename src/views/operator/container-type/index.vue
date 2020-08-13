@@ -130,13 +130,14 @@ export default class ContainerType extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _containerTypes = await getContainerTypes({
+      const _res = await getContainerTypes({
         page: val.page - 1,
         limit: val.itemsPerPage
       });
-      if (_containerTypes.data) {
-        this.containerTypes = _containerTypes.data.data;
-        this.serverSideOptions.totalItems = _containerTypes.data.totalElements;
+      if (_res.data) {
+        const _containerTypes = _res.data.data;
+        this.containerTypes = _containerTypes;
+        this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }

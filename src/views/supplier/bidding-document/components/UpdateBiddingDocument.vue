@@ -215,7 +215,7 @@ export default class UpdateBiddingDocument extends Vue {
 
   dateInit = addTimeToDate(new Date().toString());
   biddingDocumentLocal = {
-    merchant: this.$auth.user().username,
+    offeree: this.$auth.user().username,
     outbound: -1 as number,
     discount: "",
     isMultipleAward: false,
@@ -270,14 +270,13 @@ export default class UpdateBiddingDocument extends Vue {
   // BiddingDocument
   async updateBiddingDocument() {
     if (this.biddingDocumentLocal) {
-      const _biddingDocument = await updateBiddingDocument(
-        this.biddingDocumentLocal
-      );
-      if (_biddingDocument.data) {
+      const _res = await updateBiddingDocument(this.biddingDocumentLocal);
+      if (_res.data) {
+        const _biddingDocument = _res.data.data;
         const index = this.biddingDocumentsSync.findIndex(
-          x => x.id === _biddingDocument.data.id
+          x => x.id === _biddingDocument.id
         );
-        this.biddingDocumentsSync.splice(index, 1, _biddingDocument.data);
+        this.biddingDocumentsSync.splice(index, 1, _biddingDocument);
         this.stepper = 3;
       }
     }

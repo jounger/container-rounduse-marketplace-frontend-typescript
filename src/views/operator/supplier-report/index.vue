@@ -141,13 +141,14 @@ export default class Report extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _reports = await getReports({
+      const _res = await getReports({
         page: val.page - 1,
         limit: val.itemsPerPage
       });
-      if (_reports.data) {
-        this.reports = _reports.data.data;
-        this.serverSideOptions.totalItems = _reports.data.totalElements;
+      if (_res.data) {
+        const _reports = _res.data.data;
+        this.reports = _reports;
+        this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }
