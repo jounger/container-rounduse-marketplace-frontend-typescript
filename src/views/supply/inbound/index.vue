@@ -101,14 +101,7 @@
                   <v-list-item-title>Xóa</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item
-                v-if="
-                  inbound &&
-                    containerServerSideOptions.totalItems <
-                      inbound.billOfLading.unit
-                "
-                @click="openCreateContainer(item)"
-              >
+              <v-list-item @click="openCreateContainer(item)">
                 <v-list-item-icon>
                   <v-icon small>add</v-icon>
                 </v-list-item-icon>
