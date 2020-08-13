@@ -22,13 +22,9 @@ export function getBidsByBiddingDocument(
   id: number,
   paging: PaginationRequest
 ) {
-  return Vue.axios.get(`/bid/merchant/${id}`, {
+  return Vue.axios.get(`/bid/bidding-document/${id}`, {
     params: paging
   });
-}
-
-export function getBidByBiddingDocumentAndForwarder(id: number) {
-  return Vue.axios.get(`/bid/bidding-document/${id}`);
 }
 
 export function createBid(id: number, bid: IBid) {

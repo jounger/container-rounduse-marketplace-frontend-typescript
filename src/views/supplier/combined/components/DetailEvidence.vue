@@ -20,19 +20,23 @@
               ></v-text-field>
             </v-col>
           </v-row>
-          <v-row>
-            <v-col cols="12" md="11">
-              <v-textarea
+          <v-row v-if="evidence">
+            <v-col cols="12" md="8">
+              <v-text-field
                 label="Chứng cứ"
                 name="evidence"
-                prepend-icon="description"
-                outlined
+                prepend-icon="picture_as_pdf"
                 readonly
-                v-model="evidence.evidence"
-              ></v-textarea>
+                v-model="evidence.documentPath.split('-')[1]"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="4">
+              <v-btn color="primary" @click.stop="downLoad(evidence)"
+                ><v-icon>cloud_download</v-icon> Tải xuống</v-btn
+              >
             </v-col>
           </v-row>
-          <v-row style="margin-left:25px;">
+          <v-row>
             <v-col cols="12" md="11">
               <span style="color: green" v-if="evidence.isValid"
                 >Đã xác nhận
@@ -79,6 +83,10 @@ export default class DetailEvidence extends Vue {
   @PropSync("checkValid", { type: Boolean }) checkValidSync!: boolean;
   @Prop(Object) evidence!: IEvidence;
   @Prop(Boolean) finalEvidence!: boolean;
+
+  downLoad(item: IEvidence) {
+    window.open("http://localhost:8085" + item.documentPath, "_blank");
+  }
 
   async reviewEvidence(isValid: boolean) {
     if (this.evidence.id) {

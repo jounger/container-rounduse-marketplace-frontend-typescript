@@ -1,59 +1,40 @@
 <template>
-  <v-card
-    class="order-0 flex-grow-0 mx-auto mr-5 my-12"
-    max-width="300"
-    v-if="$auth.user()"
-  >
-    <v-row align="start" class="fill-height">
-      <v-col align-self="start" class="pa-0" cols="12">
-        <v-avatar class="profile" color="grey" size="164" tile>
-          <v-img
-            v-if="$auth.user().profileImagePath"
-            :src="profileImagePath"
-            max-width="400px"
-          ></v-img>
-          <v-img v-else src="@/assets/images/ava.jpg" max-width="400px"></v-img>
-        </v-avatar>
-      </v-col>
-      <v-col class="py-0">
-        <v-list-item color="rgba(0, 0, 0, .4)" dark>
-          <v-list-item-content>
-            <v-list-item-title class="title">{{
-              $auth.user().username
-            }}</v-list-item-title>
-            <v-list-item-subtitle>{{
-              $auth.user().roles ? $auth.user().roles[0] : ""
-            }}</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12" md="9">
-        <v-file-input
-          v-model="fileInput"
-          counter
-          chips
-          :show-size="1024"
-          accept="image/png, image/jpeg, image/bmp"
-          placeholder="Pick an avatar"
-          prepend-icon="mdi-camera"
-          label="Avatar"
-        ></v-file-input>
-      </v-col>
-      <v-col cols="12" md="3">
-        <v-btn
-          :disabled="fileInput == null"
-          outlined
-          color="primary"
-          @click.stop="onUpload"
-          fab
-          small
-          ><v-icon>mdi-pencil</v-icon></v-btn
-        >
-      </v-col>
-    </v-row>
-
+  <v-card class="order-0 flex-grow-0 mx-auto mr-5 my-5" max-width="380">
+    <v-card-text>
+      <v-avatar size="250">
+        <v-img
+          v-if="$auth.user().profileImagePath"
+          :src="profileImagePath"
+          max-width="350"
+        ></v-img>
+        <v-img v-else src="@/assets/images/ava.jpg" max-width="350"></v-img>
+      </v-avatar>
+      <v-row>
+        <v-col cols="12" md="9">
+          <v-file-input
+            v-model="fileInput"
+            counter
+            chips
+            :show-size="1024"
+            accept="image/png, image/jpeg, image/bmp, image/png"
+            placeholder="Pick an avatar"
+            prepend-icon="mdi-camera"
+            label="Avatar"
+          ></v-file-input>
+        </v-col>
+        <v-col cols="12" md="3">
+          <v-btn
+            :disabled="fileInput == null"
+            outlined
+            color="primary"
+            @click.stop="onUpload"
+            fab
+            small
+            ><v-icon>cloud_upload</v-icon></v-btn
+          >
+        </v-col>
+      </v-row>
+    </v-card-text>
     <v-card-title>Thông tin cá nhân</v-card-title>
     <v-list two-line>
       <v-list-item>

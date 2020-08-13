@@ -1,5 +1,5 @@
 <template>
-  <v-card class="order-1 flex-grow-1 mx-auto my-12" v-if="$auth.user()">
+  <v-card class="order-1 flex-grow-1 mx-auto my-5">
     <v-card-title
       ><v-icon
         large

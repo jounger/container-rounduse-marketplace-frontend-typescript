@@ -1,6 +1,9 @@
 <template>
   <v-content>
-    <v-container class="d-flex justify-space-around align-start">
+    <v-container
+      class="d-flex justify-space-around align-start"
+      v-if="$auth.user()"
+    >
       <CardProfile />
       <CardCompany />
     </v-container>

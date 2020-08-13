@@ -23,15 +23,16 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" md="11">
-              <v-text-field
-                label="Chứng cứ*"
-                name="evidence"
-                prepend-icon="description"
-                type="text"
-                :rules="[required('chứng cứ')]"
-                v-model="evidenceLocal.evidence"
-              ></v-text-field>
+            <v-col cols="12" md="12">
+              <v-file-input
+                v-model="fileInput"
+                counter
+                chips
+                :show-size="1024"
+                accept="image/png,image/jpeg,image/bmp,image/png,.pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                placeholder="Tải lên hợp đồng"
+                label="Hợp đồng"
+              ></v-file-input>
             </v-col>
           </v-row>
         </v-form>
@@ -63,16 +64,19 @@ export default class CreateEvidence extends Vue {
   @PropSync("checkValid", { type: Boolean }) checkValidSync!: boolean;
   @Prop(Object) contract!: IContract;
 
+  fileInput = null as Blob | null;
   evidenceLocal = {
     sender: this.$auth.user().username,
-    evidence: "",
+    documentPath: "",
     isValid: false
   } as IEvidence;
   valid = false;
 
   async createEvidence() {
-    if (this.contract.id) {
-      const _res = await createEvidence(this.contract.id, this.evidenceLocal);
+    if (this.contract.id && this.fileInput) {
+      const formData = new FormData();
+      formData.append("file", this.fileInput);
+      const _res = await createEvidence(this.contract.id, formData);
       if (_res.data) {
         const _evidence = _res.data.data;
         if (this.evidencesSync) {

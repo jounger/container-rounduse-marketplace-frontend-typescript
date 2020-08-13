@@ -1,6 +1,5 @@
 import Vue from "vue";
 import { PaginationRequest } from "./payload";
-import { IEvidence } from "@/entity/evidence";
 
 export function getEvidencesByContract(id: number, paging: PaginationRequest) {
   return Vue.axios.get(`/evidence/contract/${id}`, {
@@ -21,7 +20,7 @@ export function removeEvidence(id: number) {
   return Vue.axios.delete(`/evidence/${id}`);
 }
 
-export function createEvidence(id: number, evidence: IEvidence) {
+export function createEvidence(id: number, evidence: FormData) {
   return Vue.axios.post(`/evidence/contract/${id}`, evidence);
 }
 

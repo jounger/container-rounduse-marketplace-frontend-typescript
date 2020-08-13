@@ -147,11 +147,11 @@ import { IBid } from "@/entity/bid";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import CreateBid from "./components/CreateBid.vue";
 import { getBiddingDocuments } from "@/api/bidding-document";
-import { getBidByBiddingDocumentAndForwarder } from "@/api/bid";
 import Utils from "@/mixin/utils";
 import UpdateBid from "./components/UpdateBid.vue";
 import CancelBid from "./components/CancelBid.vue";
 import { DataOptions } from "vuetify";
+import { getBidsByBiddingDocument } from "@/api/bid";
 
 @Component({
   mixins: [Utils],
@@ -227,27 +227,31 @@ export default class Bid extends Vue {
       class: "elevation-1 primary"
     }
   ];
+
   openBiddingDocumentDetail(value: IBiddingDocument) {
     this.$router.push({
       path: `/bidding-document/${value.id}`
     });
   }
+
   async getBids(item: IBiddingDocument) {
     this.loading = true;
-    if (item.id) {
-      const _res = await getBidByBiddingDocumentAndForwarder(item.id);
-      if (_res.data) {
-        const _bid = _res.data;
-        if (this.bids.length == 0) {
-          this.bids.push(_bid);
-        } else {
-          this.bids.splice(0, 1, _bid);
-        }
+    const _res = await getBidsByBiddingDocument(item.id as number, {
+      page: 0,
+      limit: 10
+    });
+    if (_res.data) {
+      const _bids = _res.data.data;
+      if (this.bids.length == 0) {
+        this.bids.push(_bids[0]);
+      } else {
+        this.bids.splice(0, 1, _bids[0]);
       }
     }
     this.loading = false;
     return this.bids;
   }
+
   async clicked(value: IBiddingDocument) {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {

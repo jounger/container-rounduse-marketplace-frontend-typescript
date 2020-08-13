@@ -473,10 +473,7 @@ import { IContainer } from "@/entity/container";
 import SupplierRating from "./SupplierRating.vue";
 import { getContainersByBid } from "@/api/container";
 import CreateCombined from "../../combined/components/CreateCombined.vue";
-import {
-  getBidsByBiddingDocument,
-  getBidByBiddingDocumentAndForwarder
-} from "@/api/bid";
+import { getBidsByBiddingDocument } from "@/api/bid";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -654,54 +651,33 @@ export default class DetailBiddingDocument extends Vue {
       this.$auth.user().roles
     ) {
       this.loading = true;
+      // GET TOTAL BIDS
+      const _res = await getBidsByBiddingDocument(
+        this.biddingDocument.id as number,
+        {
+          page: val.page - 1,
+          limit: val.itemsPerPage
+        }
+      );
+      if (_res.data) {
+        const _bids = _res.data.data;
+        this.bids = _bids;
+        this.serverSideOptions.totalItems = _res.data.totalElements;
+      }
+      // COUNT NUM OF ACCEPTED BIDS
       const role = this.$auth.user().roles[0];
-      switch (role) {
-        case "ROLE_MERCHANT":
+      if (role == "ROLE_MERCHANT") {
+        const _res_ = await getBidsByBiddingDocument(
+          this.biddingDocument.id as number,
           {
-            // GET TOTAL BIDS
-            const _res = await getBidsByBiddingDocument(
-              this.biddingDocument.id as number,
-              {
-                page: val.page - 1,
-                limit: val.itemsPerPage
-              }
-            );
-            if (_res.data) {
-              const _bids = _res.data.data;
-              this.bids = _bids;
-              this.serverSideOptions.totalItems = _res.data.totalElements;
-            }
-            // COUNT NUM OF ACCEPTED BIDS
-            const _res_ = await getBidsByBiddingDocument(
-              this.biddingDocument.id as number,
-              {
-                page: val.page - 1,
-                limit: val.itemsPerPage,
-                status: "ACCEPTED"
-              }
-            );
-            if (_res_.data) {
-              this.numberWinner = _res_.data.totalElements;
-            }
+            page: val.page - 1,
+            limit: val.itemsPerPage,
+            status: "ACCEPTED"
           }
-
-          break;
-
-        case "ROLE_FORWARDER":
-          {
-            const _res = await getBidByBiddingDocumentAndForwarder(
-              this.biddingDocument.id as number
-            );
-            if (_res.data) {
-              const _bids = _res.data;
-              this.bids.splice(0, this.bids.length, _bids);
-              this.serverSideOptions.totalItems = 1;
-            }
-          }
-          break;
-
-        default:
-          break;
+        );
+        if (_res_.data) {
+          this.numberWinner = _res_.data.totalElements;
+        }
       }
       this.loading = false;
     }

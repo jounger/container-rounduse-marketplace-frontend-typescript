@@ -151,8 +151,12 @@
                   color="success"
                   @click.stop="openDetailEvidence(item)"
                 >
-                  <v-icon left>library_add_check </v-icon>Chi tiết
+                  <v-icon left dense>library_add_check </v-icon>Chi tiết
                 </v-btn>
+              </template>
+              <template v-slot:item.documentPath="{ item }">
+                <v-icon>picture_as_pdf</v-icon>
+                {{ item.documentPath ? item.documentPath.split("-")[1] : "N/A" }}
               </template>
               <template v-slot:item.isValid="{ item }">
                 {{ item.isValid ? "Đã xác nhận" : "Chưa xác nhận" }}
@@ -247,7 +251,8 @@ export default class Contract extends Vue {
       value: "id",
       class: "elevation-1 primary"
     },
-    { text: "Chứng cớ", value: "evidence", class: "elevation-1 primary" },
+    { text: "Chứng cớ", value: "documentPath", class: "elevation-1 primary" },
+    { text: "Người gửi", value: "sender", class: "elevation-1 primary" },
     { text: "Hợp lệ", value: "isValid", class: "elevation-1 primary" },
     {
       text: "Hành động",
