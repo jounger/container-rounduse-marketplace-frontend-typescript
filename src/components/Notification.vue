@@ -17,7 +17,7 @@
         </v-badge>
       </v-btn>
     </template>
-    <v-card max-width="450" class="mx-auto" v-if="$auth.check()">
+    <v-card max-width="450" class="mx-auto" v-if="$auth.user()">
       <v-list three-line avatar v-if="notifications.length > 0">
         <v-subheader
           >THÔNG BÁO<v-spacer></v-spacer>
@@ -184,7 +184,17 @@ export default class Notification extends Vue {
 
   @Watch("options", { immediate: true, deep: true })
   async onOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined" && this.$auth.check()) {
+    if (
+      typeof val != "undefined" &&
+      this.$auth.user() &&
+      this.$auth.check([
+        "ROLE_MODERATOR",
+        "ROLE_FORWARDER",
+        "ROLE_MERCHANT",
+        "ROLE_SHIPPINGLINE",
+        "ROLE_DRIVER"
+      ])
+    ) {
       this.loading = true;
       const _res = await getNotificationsByUser({
         page: val.page - 1,
@@ -246,38 +256,31 @@ export default class Notification extends Vue {
 
   mounted() {
     // CONNECT WEBSOCKET
-    if (this.$auth.check()) {
-      if (this.$auth.user() && typeof this.$auth.user().roles !== "undefined") {
-        switch (this.$auth.user().roles[0]) {
-          case "ROLE_MODERATOR":
-            this.notificationSubscribe.push(NOTIFICATION_LINK.REPORT);
-            break;
-          case "ROLE_FORWARDER":
-            this.notificationSubscribe.push(
-              NOTIFICATION_LINK.BIDDING,
-              NOTIFICATION_LINK.REPORT
-            );
-            break;
-          case "ROLE_MERCHANT":
-            this.notificationSubscribe.push(
-              NOTIFICATION_LINK.BIDDING,
-              NOTIFICATION_LINK.REPORT
-            );
-            break;
-          case "ROLE_SHIPPINGLINE":
-            this.notificationSubscribe.push(NOTIFICATION_LINK.SHIPPING_LINE);
-            break;
-          case "ROLE_DRIVER":
-            this.notificationSubscribe.push(NOTIFICATION_LINK.DRIVER);
-            break;
-          default:
-            console.log("You're not in subscribe list!");
-            break;
-        }
-        console.log(this.notificationSubscribe);
-      }
-      this.connect();
+    if (this.$auth.check("ROLE_MODERATOR")) {
+      this.notificationSubscribe.push(NOTIFICATION_LINK.REPORT);
     }
+    if (this.$auth.check("ROLE_FORWARDER")) {
+      this.notificationSubscribe.push(
+        NOTIFICATION_LINK.BIDDING,
+        NOTIFICATION_LINK.REPORT
+      );
+    }
+    if (this.$auth.check("ROLE_MERCHANT")) {
+      this.notificationSubscribe.push(
+        NOTIFICATION_LINK.BIDDING,
+        NOTIFICATION_LINK.REPORT
+      );
+    }
+    if (this.$auth.check("ROLE_SHIPPINGLINE")) {
+      this.notificationSubscribe.push(NOTIFICATION_LINK.SHIPPING_LINE);
+    }
+    if (this.$auth.check("ROLE_DRIVER")) {
+      this.notificationSubscribe.push(NOTIFICATION_LINK.DRIVER);
+    } else {
+      console.log("You're not in subscribe list!");
+    }
+    console.log(this.notificationSubscribe);
+    if (this.notificationSubscribe.length > 0) this.connect();
   }
 }
 </script>

@@ -1,13 +1,20 @@
 <template>
-  <v-navigation-drawer v-model="drawerSync" app clipped v-if="$auth.check()">
+  <v-navigation-drawer v-model="drawerSync" app clipped v-if="$auth.user()">
     <v-list dense nav>
       <v-list-item two-line link to="/profile">
-        <v-list-item-avatar>
+        <v-list-item-avatar color="indigo">
           <v-img
             v-if="$auth.user().profileImagePath"
             :src="$auth.user().profileImagePath"
           ></v-img>
-          <v-img v-else src="@/assets/images/ava.jpg"></v-img>
+          <span v-else class="white--text headline">{{
+            $auth.user().username
+              ? $auth
+                  .user()
+                  .username.substring(0, 1)
+                  .toUpperCase()
+              : ""
+          }}</span>
         </v-list-item-avatar>
 
         <v-list-item-content>
@@ -38,7 +45,7 @@
       </v-list-item>
     </v-list>
     <template v-slot:append>
-      <div class="pa-2" v-if="$auth.check()">
+      <div class="pa-2" v-if="$auth.user()">
         <v-btn block @click="$auth.logout()">Đăng xuất</v-btn>
       </div>
     </template>
@@ -73,25 +80,19 @@ export default class Navigation extends Vue {
 
   async getFullName() {
     if (this.$auth.user() && this.$auth.user().username) {
-      if (
-        this.$auth.user().roles[0] == "ROLE_ADMIN" ||
-        this.$auth.user().roles[0] == "ROLE_MODERATOR"
-      ) {
+      if (this.$auth.check(["ROLE_ADMIN", "ROLE_MODERATOR"])) {
         const _res = await getOperatorByUsername(this.$auth.user().username);
         if (_res.data) {
           const _operator = _res.data as IOperator;
           this.fullname = _operator.fullname;
         }
-      } else if (
-        this.$auth.user().roles[0] == "ROLE_FORWARDER" ||
-        this.$auth.user().roles[0] == "ROLE_MERCHANT"
-      ) {
+      } else if (this.$auth.check(["ROLE_FORWARDER", "ROLE_MERCHANT"])) {
         const _res = await getSupplier(this.$auth.user().username);
         if (_res.data) {
           const _supplier = _res.data as ISupplier;
           this.fullname = _supplier.contactPerson;
         }
-      } else {
+      } else if (this.$auth.check(["ROLE_FORWARDER"])) {
         const _res = await getShippingLine(this.$auth.user().id);
         if (_res.data) {
           const _shippingLine = _res.data as IShippingLine;
@@ -102,11 +103,8 @@ export default class Navigation extends Vue {
   }
 
   get getUserRole() {
-    if (
-      this.$auth.user() &&
-      typeof this.$auth.user().roles !== "undefined" &&
-      this.$auth.user().roles.length > 0
-    ) {
+    const roles = this.$auth.user().roles;
+    if (this.$auth.user() && roles && roles.length > 0) {
       return this.$auth
         .user()
         .roles[0].toLowerCase()
@@ -116,7 +114,7 @@ export default class Navigation extends Vue {
   }
 
   get getNavigation() {
-    if (this.$auth.check()) {
+    if (this.$auth.user()) {
       return this.generalNavigation;
     } else {
       return this.$router.push("/");

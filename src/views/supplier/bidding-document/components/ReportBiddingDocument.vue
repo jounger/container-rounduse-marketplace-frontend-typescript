@@ -137,7 +137,7 @@
         <v-card-title
           >Thông tin đấu thầu
           <v-spacer></v-spacer>
-          <v-tooltip left v-if="$auth.user().roles[0] == 'ROLE_MODERATOR'">
+          <v-tooltip left v-if="$auth.check('ROLE_MODERATOR')">
             <template v-slot:activator="{ on, attrs }">
               <v-btn @click="openCancelDialog()" icon v-bind="attrs" v-on="on">
                 <v-icon large color="red">report</v-icon>
@@ -293,10 +293,7 @@
             }}</span>
             <span
               style="color: yellowgreen;"
-              v-if="
-                item.status == 'PENDING' &&
-                  $auth.user().roles[0] == 'ROLE_FORWARDER'
-              "
+              v-if="item.status == 'PENDING' && $auth.check('ROLE_FORWARDER')"
               >{{ item.status }}</span
             >
           </template>

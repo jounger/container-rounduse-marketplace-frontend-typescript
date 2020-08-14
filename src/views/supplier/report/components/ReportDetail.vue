@@ -53,7 +53,7 @@
                     <v-list-item
                       @click="openConfirmDialog('REJECTED')"
                       v-if="
-                        $auth.user().roles[0] == 'ROLE_MODERATOR' &&
+                        $auth.check('ROLE_MODERATOR') &&
                           (report.status == 'PENDING' ||
                             report.status == 'UPDATED')
                       "
@@ -68,7 +68,7 @@
                     <v-list-item
                       @click="openConfirmDialog('CLOSED')"
                       v-if="
-                        $auth.user().roles[0] == 'ROLE_MODERATOR' &&
+                        $auth.check('ROLE_MODERATOR') &&
                           report.status == 'RESOLVED'
                       "
                     >
@@ -82,7 +82,7 @@
                     <v-list-item
                       @click="openConfirmDialog('RESOLVED')"
                       v-if="
-                        $auth.user().roles[0] == 'ROLE_FORWARDER' &&
+                        $auth.check('ROLE_FORWARDER') &&
                           (report.status == 'PENDING' ||
                             report.status == 'UPDATED')
                       "
@@ -133,7 +133,7 @@
           v-if="
             report.status != 'REJECTED' &&
               report.status != 'CLOSED' &&
-              ($auth.user().roles[0] == 'ROLE_MODERATOR' || showCreateFeedback)
+              ($auth.check('ROLE_MODERATOR') || showCreateFeedback)
           "
         >
           <v-col cols="12" md="1" style="margin-top: 30px;"
@@ -148,7 +148,7 @@
             }}</span
             ><v-divider class="mx-4" inset vertical></v-divider
             ><a
-              v-if="$auth.user().roles[0] == 'ROLE_MODERATOR'"
+              v-if="$auth.check('ROLE_MODERATOR')"
               style="font-size: 14px;color: green;font-weight: bold;"
               @click="setDefault()"
               >Mặc định</a
@@ -225,14 +225,9 @@ export default class ReportDetail extends Vue {
   }
 
   async createFeedback() {
-    if (
-      this.feedbackLocal &&
-      this.report &&
-      this.report.id &&
-      this.feedbackLocal.message != ""
-    ) {
-      if (this.$auth.user().roles[0] == "ROLE_MODERATOR") {
-        if (this.feedbackLocal.recipient == "") {
+    if (this.feedbackLocal && this.report && this.report.id) {
+      if (this.$auth.check("ROLE_MODERATOR")) {
+        if (!this.feedbackLocal.recipient) {
           this.feedbackLocal.recipient = this.report.sender;
         }
         const _res = await createFeedback(this.report.id, this.feedbackLocal);

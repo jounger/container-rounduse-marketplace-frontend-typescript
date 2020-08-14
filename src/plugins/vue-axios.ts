@@ -4,6 +4,8 @@ import VueAxios from "vue-axios";
 import snackbar from "@/store/modules/snackbar";
 import loading from "@/store/modules/loading";
 import { getErrorMessage } from "@/utils/tool";
+import router from '@/router';
+
 // --------------------------------------------------------------------
 // vue-axios CONFIGURATION
 // --------------------------------------------------------------------
@@ -65,6 +67,11 @@ instance.interceptors.response.use(
   },
   error => {
     console.log("err" + error); // for debug
+    if (error.response.status == 401) {
+      router.push("/401");
+      return error;
+    }
+
     snackbar.setSnackbar({
       text: getErrorMessage(error),
       color: error.response.status == 500 ? "error" : "warning",

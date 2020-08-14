@@ -88,7 +88,7 @@ export default class CreateTractor extends Vue {
 
   tractorLocal = {
     licensePlate: "",
-    numberOfAxles: 1
+    numberOfAxles: 2
   } as IContainerTractor;
   valid = false;
   created() {

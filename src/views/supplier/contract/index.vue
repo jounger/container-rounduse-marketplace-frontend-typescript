@@ -81,7 +81,7 @@
               </v-list-item>
               <v-list-item
                 @click="openUpdateDialog(item)"
-                v-if="$auth.user().roles[0] == 'ROLE_MERCHANT'"
+                v-if="$auth.check('ROLE_MERCHANT')"
               >
                 <v-list-item-icon>
                   <v-icon small>edit</v-icon>
@@ -92,7 +92,7 @@
               </v-list-item>
               <v-list-item
                 @click="openDetailDialog(item)"
-                v-if="$auth.user().roles[0] == 'ROLE_FORWARDER'"
+                v-if="$auth.check('ROLE_FORWARDER')"
               >
                 <v-list-item-icon>
                   <v-icon small>details</v-icon>
@@ -103,7 +103,7 @@
               </v-list-item>
               <v-list-item
                 @click="openCreateEvidence()"
-                v-if="$auth.user().roles[0] == 'ROLE_FORWARDER'"
+                v-if="$auth.check('ROLE_FORWARDER')"
               >
                 <v-list-item-icon>
                   <v-icon small>cloud_upload</v-icon>
@@ -120,7 +120,7 @@
         </template>
         <template v-slot:item.forwarder="{ item }">
           {{
-            $auth.user().roles == "ROLE_FORWARDER"
+            $auth.check("ROLE_FORWARDER")
               ? $auth.user().username
               : item.bid.bidder
           }}

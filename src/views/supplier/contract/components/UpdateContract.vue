@@ -30,7 +30,7 @@
                 name="forwarder"
                 prepend-icon="person"
                 type="text"
-                readonly
+                disabled
                 v-model="combined.bid.bidder"
               ></v-text-field>
             </v-col>
@@ -39,7 +39,7 @@
             <v-col cols="12" md="11">
               <v-checkbox
                 v-model="contractLocal.required"
-                :readonly="readonly"
+                :disabled="readonly"
                 label="Yêu cầu hợp đồng"
               />
             </v-col>

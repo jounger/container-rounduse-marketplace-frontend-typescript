@@ -71,7 +71,7 @@
         <a
           v-if="
             feedbackLocal.sender != $auth.user().username &&
-              $auth.user().roles[0] == 'ROLE_FORWARDER'
+              $auth.check('ROLE_FORWARDER')
           "
           @click="openMarkDialog()"
           >Đánh giá .</a
@@ -82,7 +82,7 @@
             report.status != 'REJECTED' &&
               report.status != 'CLOSED' &&
               feedbackLocal.sender != $auth.user().username &&
-              $auth.user().roles[0] == 'ROLE_FORWARDER'
+              $auth.check('ROLE_FORWARDER')
           "
           @click="replyFeedback()"
           >Phản hồi .</a
@@ -91,7 +91,7 @@
             report.status != 'REJECTED' &&
               report.status != 'CLOSED' &&
               (feedbackLocal.sender == $auth.user().username ||
-                $auth.user().roles[0] == 'ROLE_MODERATOR')
+                $auth.check('ROLE_MODERATOR'))
           "
           @click="replyFeedback()"
           >Phản hồi .</a
@@ -215,7 +215,7 @@ export default class UserFeedback extends Vue {
   replyFeedback() {
     this.feedbackRecipientSync = this.item.sender;
     this.recipientLabelSync = this.fullname;
-    if (this.$auth.user().roles[0] == "ROLE_FORWARDER") {
+    if (this.$auth.check("ROLE_FORWARDER")) {
       this.showCreateFeedbackSync = true;
     }
     this.focusSync = true;

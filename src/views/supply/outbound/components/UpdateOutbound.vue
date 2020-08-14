@@ -113,8 +113,8 @@
                       prepend-icon="location_on"
                       type="text"
                       label="Nơi đóng hàng"
-                    ></v-text-field>  --></v-col
-                    >
+                    ></v-text-field>  -->
+                    </v-col>
                   </v-row>
                   <v-row
                     ><v-col cols="12" sm="6">

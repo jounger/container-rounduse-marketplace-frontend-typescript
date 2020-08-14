@@ -1,19 +1,13 @@
 <template>
   <v-card class="order-1 flex-grow-1 mx-auto my-5">
     <v-card-title
-      ><v-icon
-        large
-        v-if="
-          $auth.user() &&
-            $auth.user().roles[0] != 'ROLE_ADMIN' &&
-            $auth.user().roles[0] != 'ROLE_MODERATOR'
-        "
+      ><v-icon large v-if="$auth.check(['ROLE_ADMIN', 'ROLE_MODERATOR'])"
         >business_center</v-icon
       ><span style="margin-left:10px;">
         {{
-          $auth.user().roles[0] == "ROLE_ADMIN"
+          $auth.check("ROLE_ADMIN")
             ? "Thông tin Admin"
-            : $auth.user().roles[0] == "ROLE_MODERATOR"
+            : $auth.check("ROLE_MODERATOR")
             ? "Thông tin Quản trị viên"
             : "Thông tin Công ty"
         }}</span
@@ -145,9 +139,7 @@ export default class CardCompany extends Vue {
 
   async created() {
     if (
-      this.$auth.user().roles[0] == "ROLE_MERCHANT" ||
-      this.$auth.user().roles[0] == "ROLE_FORWARDER" ||
-      this.$auth.user().roles[0] == "ROLE_SHIPPINGLINE"
+      this.$auth.check(["ROLE_MERCHANT", "ROLE_FORWARDER", "ROLE_SHIPPINGLINE"])
     ) {
       const _res = await getSupplier(this.$auth.user().username);
       if (_res.data) {

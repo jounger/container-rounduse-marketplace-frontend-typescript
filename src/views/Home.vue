@@ -4,7 +4,7 @@
       <v-row align="center" justify="center">
         <v-col class="text-center">
           <h1>Trang chủ</h1>
-          <p v-if="$auth.check()">Bạn đã đăng nhập</p>
+          <p v-if="$auth.user()">Bạn đã đăng nhập</p>
           <p v-else>Bạn chưa đăng nhập</p>
         </v-col>
       </v-row>

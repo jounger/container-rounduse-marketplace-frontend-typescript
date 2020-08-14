@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="isUser">
     <Navigation :drawer.sync="drawer" />
     <Appbar :drawer.sync="drawer" />
     <slot />
@@ -24,8 +24,24 @@ import Footer from "@/components/Footer.vue";
 })
 export default class NavLayout extends Vue {
   public drawer = true;
+
+  get isUser() {
+    return this.$auth.check([
+      "ROLE_ADMIN",
+      "ROLE_MODERATOR",
+      "ROLE_FORWARDER",
+      "ROLE_MERCHANT",
+      "ROLE_SHIPPINGLINE",
+      "ROLE_DRIVER"
+    ]);
+  }
+
   created() {
     this.$vuetify.theme.dark = false;
+    // Logout if session expired
+    if (this.isUser == false) {
+      this.$auth.logout();
+    }
   }
 }
 </script>

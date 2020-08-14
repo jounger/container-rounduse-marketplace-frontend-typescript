@@ -4,7 +4,7 @@
     <v-toolbar-title>Container Round-use Marketplace</v-toolbar-title>
     <v-divider class="mx-4" vertical></v-divider>
     <v-btn text to="/">Trang chủ</v-btn>
-    <v-btn v-if="$auth.check()" text to="/dashboard">Dashboard</v-btn>
+    <v-btn v-if="$auth.user()" text to="/dashboard">Dashboard</v-btn>
 
     <v-spacer></v-spacer>
     <Notification />
@@ -15,10 +15,10 @@
         </v-btn>
       </template>
       <v-list dense>
-        <v-list-item v-if="!$auth.check()" to="/login">
+        <v-list-item v-if="!$auth.user()" to="/login">
           <v-list-item-title>Đăng nhập</v-list-item-title>
         </v-list-item>
-        <v-list-item v-if="!$auth.check()" to="/register">
+        <v-list-item v-if="!$auth.user()" to="/register">
           <v-list-item-title>Đăng ký</v-list-item-title>
         </v-list-item>
         <v-list-item v-else @click="$auth.logout()">

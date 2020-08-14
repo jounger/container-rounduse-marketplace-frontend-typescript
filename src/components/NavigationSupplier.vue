@@ -137,9 +137,7 @@ export default class NavigationSupplier extends Vue {
   private defaultNavigation = [{ title: "Empty", icon: "dashboard", link: "" }];
 
   get getNavigation() {
-    if (this.$auth.check() && this.$auth.user().status === "PENDING") {
-      return this.supplierRegisterNavigation;
-    } else {
+    if (this.$auth.user() && this.$auth.user().status == "ACTIVE") {
       if (this.$auth.check("ROLE_FORWARDER")) {
         return this.forwarderNavigation;
       } else if (this.$auth.check("ROLE_MERCHANT")) {
@@ -149,6 +147,8 @@ export default class NavigationSupplier extends Vue {
       } else {
         return this.defaultNavigation;
       }
+    } else {
+      return this.supplierRegisterNavigation;
     }
   }
 }

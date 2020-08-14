@@ -46,6 +46,17 @@
             >
           </v-toolbar>
         </template>
+        <template v-slot:item.avatar="{ item }">
+          <v-avatar size="35" color="indigo">
+            <v-img
+              v-if="item.profileImagePath"
+              :src="item.profileImagePath"
+            ></v-img>
+            <span v-else class="white--text headline">{{
+              item.username.substring(0, 1).toUpperCase()
+            }}</span>
+          </v-avatar>
+        </template>
         <template v-slot:item.status="{ item }">
           <v-chip :color="item.status == 'ACTIVE' ? 'success' : 'error'" dark>{{
             item.status
@@ -117,6 +128,10 @@ export default class Operator extends Vue {
       align: "start",
       sortable: false,
       value: "id"
+    },
+    {
+      text: "Ảnh",
+      value: "avatar"
     },
     {
       text: "Tên đăng nhập",

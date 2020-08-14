@@ -59,7 +59,7 @@ export default class Login extends Vue {
   valid = true;
 
   public created() {
-    if (this.$auth.check()) {
+    if (this.$auth.user()) {
       setTimeout(() => {
         this.$router.push("/dashboard");
       }, 500);

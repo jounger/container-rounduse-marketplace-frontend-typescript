@@ -110,7 +110,7 @@ export default class CreateTrailer extends Vue {
     type: "",
     unitOfMeasurement: "ft",
     licensePlate: "",
-    numberOfAxles: 1
+    numberOfAxles: 2
   } as IContainerSemiTrailer;
   valid = false;
   loading = false;

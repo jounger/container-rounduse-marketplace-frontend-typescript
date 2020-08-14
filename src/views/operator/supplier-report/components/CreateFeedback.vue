@@ -99,7 +99,7 @@ export default class CreateFeedback extends Vue {
 
   async createFeedback() {
     if (this.feedbackLocal && this.report.id) {
-      if (this.$auth.user().roles[0] == "ROLE_MODERATOR") {
+      if (this.$auth.check("ROLE_MODERATOR")) {
         const _res = await createFeedback(this.report.id, this.feedbackLocal);
         if (_res.data) {
           const _feedback = _res.data.data;

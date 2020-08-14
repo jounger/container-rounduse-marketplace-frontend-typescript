@@ -52,19 +52,13 @@
         <v-btn
           @click="reviewEvidence(false)"
           color="error"
-          v-if="
-            $auth.user().roles[0] == 'ROLE_MERCHANT' &&
-              evidence.isValid == false
-          "
+          v-if="$auth.check('ROLE_MERCHANT') && evidence.isValid == false"
           >Từ chối</v-btn
         >
         <v-btn
           @click="reviewEvidence(true)"
           color="success"
-          v-if="
-            $auth.user().roles[0] == 'ROLE_MERCHANT' &&
-              evidence.isValid == false
-          "
+          v-if="$auth.check('ROLE_MERCHANT') && evidence.isValid == false"
           >Đồng ý</v-btn
         >
       </v-card-actions>

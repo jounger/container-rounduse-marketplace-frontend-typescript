@@ -21,7 +21,7 @@
                 name="sender"
                 prepend-icon="record_voice_over"
                 type="text"
-                readonly
+                disabled
                 :counter="20"
                 v-model="paymentLocal.sender"
               ></v-text-field>
@@ -32,7 +32,7 @@
                 name="recipient"
                 prepend-icon="hearing"
                 type="text"
-                readonly
+                disabled
                 :counter="20"
                 v-model="paymentLocal.recipient"
               ></v-text-field>
@@ -43,7 +43,7 @@
               <v-select
                 v-model="paymentLocal.type"
                 prepend-icon="money"
-                :readonly="update || readonly"
+                :disabled="update || readonly"
                 :items="types"
                 :rules="[required('loại hóa đơn')]"
                 label="Loại hóa đơn*"
@@ -55,7 +55,7 @@
                 name="amount"
                 prepend-icon="monetization_on"
                 type="number"
-                :readonly="readonly"
+                :disabled="readonly"
                 :rules="[required('số tiền')]"
                 :hint="currencyFormatter(paymentLocal.amount)"
                 v-model="paymentLocal.amount"
@@ -70,7 +70,7 @@
                 dateicon="event"
                 datelabel="Thời gian thanh toán*"
                 timelabel="Giờ thanh toán"
-                :readonly="readonly"
+                :disabled="readonly"
               />
             </v-col>
           </v-row>
@@ -81,7 +81,7 @@
                 name="detail"
                 prepend-icon="description"
                 outlined
-                :readonly="readonly"
+                :disabled="readonly"
                 :rules="[required('nội dung hóa đơn')]"
                 v-model="paymentLocal.detail"
               ></v-textarea>
@@ -151,14 +151,14 @@ export default class CreatePayment extends Vue {
   types: Array<string> = [];
 
   created() {
-    if (this.$auth.user().roles[0] == "ROLE_MERCHANT") {
+    if (this.$auth.check("ROLE_MERCHANT")) {
       this.types = ["Tiền phạt", "Tiền phí"];
       if (this.combined) {
         const _bid = this.combined.bid as IBid;
         this.paymentLocal.recipient = _bid.bidder;
       }
     }
-    if (this.$auth.user().roles[0] == "ROLE_FORWARDER") {
+    if (this.$auth.check("ROLE_FORWARDER")) {
       this.types = ["Tiền phạt"];
       this.paymentLocal.recipient = this.merchant;
     }

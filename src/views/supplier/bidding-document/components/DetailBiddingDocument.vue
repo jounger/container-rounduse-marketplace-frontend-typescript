@@ -152,12 +152,7 @@
         <v-card-title
           >Thông tin đấu thầu
           <v-spacer></v-spacer>
-          <v-tooltip
-            left
-            v-if="
-              $auth.user().roles && $auth.user().roles[0] == 'ROLE_FORWARDER'
-            "
-          >
+          <v-tooltip left v-if="$auth.check('ROLE_FORWARDER')">
             <template v-slot:activator="{ on, attrs }">
               <v-btn @click="openReportDialog()" icon v-bind="attrs" v-on="on">
                 <v-icon large color="red">report</v-icon>
@@ -250,12 +245,7 @@
                 </v-list-item>
               </v-list>
             </v-col>
-            <v-col
-              cols="12"
-              sm="6"
-              md="4"
-              v-if="$auth.user().roles[0] == 'ROLE_MERCHANT'"
-            >
+            <v-col cols="12" sm="6" md="4" v-if="$auth.check('ROLE_MERCHANT')">
               <v-list dense>
                 <v-list-item>
                   <v-list-item-icon>
@@ -273,12 +263,7 @@
                 </v-list-item>
               </v-list>
             </v-col>
-            <v-col
-              cols="12"
-              sm="6"
-              md="4"
-              v-if="$auth.user().roles[0] == 'ROLE_FORWARDER'"
-            >
+            <v-col cols="12" sm="6" md="4" v-if="$auth.check('ROLE_FORWARDER')">
               <v-list dense>
                 <v-list-item>
                   <v-list-item-icon>
@@ -306,15 +291,11 @@
             dark
             class="mb-2"
             @click="openCreateBidDialog()"
-            v-if="
-              $auth.user().roles[0] == 'ROLE_FORWARDER' && this.bids.length == 0
-            "
+            v-if="$auth.check('ROLE_FORWARDER') && this.bids.length == 0"
           >
             Thêm mới
           </v-btn></v-card-title
         >
-
-        <!-- TODO: table bids -->
         <v-data-table
           :headers="bidHeaders"
           :items="bids"
@@ -351,11 +332,7 @@
               outlined
               color="success"
               @click.stop="openConfirmBid(item, true)"
-              v-if="
-                item.status == 'PENDING' &&
-                  $auth.user().roles &&
-                  $auth.user().roles[0] == 'ROLE_MERCHANT'
-              "
+              v-if="item.status == 'PENDING' && $auth.check('ROLE_MERCHANT')"
               :disabled="
                 biddingDocument.isMultipleAward &&
                   (bid == null ||
@@ -373,11 +350,7 @@
               outlined
               color="error"
               @click.stop="openConfirmBid(item, false)"
-              v-if="
-                item.status == 'PENDING' &&
-                  $auth.user().roles &&
-                  $auth.user().roles[0] == 'ROLE_MERCHANT'
-              "
+              v-if="item.status == 'PENDING' && $auth.check('ROLE_MERCHANT')"
             >
               <v-icon left dense>remove_circle</v-icon>Từ chối
             </v-btn>
@@ -389,10 +362,7 @@
             }}</span>
             <span
               style="color: yellowgreen;"
-              v-if="
-                item.status == 'PENDING' &&
-                  $auth.user().roles[0] == 'ROLE_FORWARDER'
-              "
+              v-if="item.status == 'PENDING' && $auth.check('ROLE_FORWARDER')"
               >{{ item.status }}</span
             >
           </template>
@@ -648,11 +618,7 @@ export default class DetailBiddingDocument extends Vue {
 
   @Watch("options")
   async onOptionsChange(val: DataOptions) {
-    if (
-      typeof val !== "undefined" &&
-      this.biddingDocument &&
-      this.$auth.user().roles
-    ) {
+    if (typeof val !== "undefined" && this.biddingDocument) {
       this.loading = true;
       // GET TOTAL BIDS
       const _res = await getBidsByBiddingDocument(
@@ -668,8 +634,7 @@ export default class DetailBiddingDocument extends Vue {
         this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       // COUNT NUM OF ACCEPTED BIDS
-      const role = this.$auth.user().roles[0];
-      if (role == "ROLE_MERCHANT") {
+      if (this.$auth.check("ROLE_MERCHANT")) {
         const _res_ = await getBidsByBiddingDocument(
           this.biddingDocument.id as number,
           {

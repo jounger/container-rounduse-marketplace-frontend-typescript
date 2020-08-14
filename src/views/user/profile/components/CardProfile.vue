@@ -1,13 +1,12 @@
 <template>
   <v-card class="order-0 flex-grow-0 mx-auto mr-5 my-5" max-width="380">
     <v-card-text>
-      <v-avatar size="250">
+      <v-avatar size="250" color="indigo">
         <v-img
           v-if="$auth.user().profileImagePath"
           :src="profileImagePath"
-          max-width="350"
         ></v-img>
-        <v-img v-else src="@/assets/images/ava.jpg" max-width="350"></v-img>
+        <v-icon v-else dark>mdi-account-circle</v-icon>
       </v-avatar>
       <v-row>
         <v-col cols="12" md="9">

@@ -182,8 +182,9 @@ import { getSupplier } from "@/api/supplier";
 export default class RequestDetail extends Vue {
   @PropSync("dialog", { type: Boolean }) dialogSync!: boolean;
 
-  supplier = {} as ISupplier;
+  supplier = null as ISupplier | null;
   role = "";
+
   async created() {
     const _res = await getSupplier(this.$auth.user().username);
     if (_res.data) {
