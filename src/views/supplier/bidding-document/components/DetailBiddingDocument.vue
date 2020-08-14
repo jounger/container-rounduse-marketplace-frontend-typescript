@@ -6,6 +6,13 @@
         :dialogAdd.sync="dialogReport"
         :biddingDocument.sync="biddingDocument"
       />
+      <ConfirmBid
+        v-if="dialogRejectBid"
+        :dialogConfirm.sync="dialogRejectBid"
+        :bids.sync="bids"
+        :isAccept="false"
+        :bid="bid"
+      />
     </v-row>
     <CreateCombined
       v-if="bid && dialogAddCombined"
@@ -447,6 +454,7 @@ import SupplierRating from "./SupplierRating.vue";
 import { getContainersByBid } from "@/api/container";
 import CreateCombined from "../../combined/components/CreateCombined.vue";
 import { getBidsByBiddingDocument } from "@/api/bid";
+import ConfirmBid from "./ConfirmBid.vue";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -454,7 +462,8 @@ import { getBidsByBiddingDocument } from "@/api/bid";
     CreateCombined,
     CreateBid,
     CreateReport,
-    SupplierRating
+    SupplierRating,
+    ConfirmBid
   }
 })
 export default class DetailBiddingDocument extends Vue {
@@ -463,6 +472,7 @@ export default class DetailBiddingDocument extends Vue {
   containers = [] as Array<IContainer>;
   containerSelected = [] as Array<IContainer>;
   dialogAddCombined = false;
+  dialogRejectBid = false;
   dialogReport = false;
   dialogBid = false;
   bid = null as IBid | null;
@@ -525,6 +535,7 @@ export default class DetailBiddingDocument extends Vue {
   openConfirmBid(item: IBid, accept: boolean) {
     this.bid = item;
     if (accept) this.dialogAddCombined = true;
+    else this.dialogRejectBid = true;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

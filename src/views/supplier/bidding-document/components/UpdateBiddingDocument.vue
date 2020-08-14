@@ -30,7 +30,7 @@
               :hide-default-footer="true"
               no-data-text="Danh sách hàng xuất nhận được rỗng."
               disable-sort
-              class="elevation-1 my-1"
+              class="elevation-0 mb-1"
             >
               <!--  -->
               <template v-slot:top>
@@ -151,38 +151,9 @@
                 color="primary"
                 @click="updateBiddingDocument()"
                 :disabled="!valid"
-                >Lưu và Tiếp tục</v-btn
+                >Lưu và Hoàn tất</v-btn
               >
               <v-btn text @click="stepper = 1">Quay lại</v-btn>
-            </v-form>
-          </v-stepper-content>
-          <!-- FINISH -->
-          <v-stepper-step step="3">Hoàn thành</v-stepper-step>
-          <v-stepper-content step="3">
-            <v-form ref="finishForm">
-              <v-text-field
-                v-model="biddingDocumentLocal.discount"
-                type="text"
-                prepend-icon="loyalty"
-                label="Mã giảm giá"
-                readonly
-              ></v-text-field>
-              <v-checkbox
-                v-model="autoSendCheckbox"
-                label="Tự động gửi thư mời thầu"
-                readonly
-              ></v-checkbox>
-              <v-checkbox
-                v-model="checkbox"
-                label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
-              ></v-checkbox>
-              <v-btn
-                color="primary"
-                @click="updateBiddingDocument()"
-                :disabled="!checkbox"
-                >Hoàn tất</v-btn
-              >
-              <v-btn text @click="stepper = 2">Quay lại</v-btn>
             </v-form>
           </v-stepper-content>
         </v-stepper>
@@ -217,7 +188,6 @@ export default class UpdateBiddingDocument extends Vue {
   biddingDocumentLocal = {
     offeree: this.$auth.user().username,
     outbound: -1 as number,
-    discount: "",
     isMultipleAward: false,
     bidOpening: this.dateInit,
     bidClosing: this.dateInit,

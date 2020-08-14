@@ -152,6 +152,7 @@ import { getOutboundByMerchant } from "@/api/outbound";
 import Utils from "@/mixin/utils";
 import CreateBiddingDocument from "../../supplier/bidding-document/components/CreateBiddingDocument.vue";
 import { DataOptions } from "vuetify";
+
 @Component({
   mixins: [Utils],
   components: {
@@ -170,7 +171,6 @@ export default class Outbound extends Vue {
   readonly = false;
   dialogCreateBiddingDocument = false;
   loading = false;
-  dateInit = new Date().toISOString().substr(0, 10);
   options = {
     page: 1,
     itemsPerPage: 5
@@ -191,7 +191,8 @@ export default class Outbound extends Vue {
     { text: "Số cont", value: "unit" },
     { text: "Khối lượng hàng", value: "grossWeight" },
     { text: "Thời gian đóng hàng", value: "packingTime" },
-    { text: "Thời gian tàu chạy", value: "cutOffTime" },
+    { text: "Nơi đóng hàng", value: "packingStation" },
+    { text: "Thời gian Cut-off", value: "cutOffTime" },
     { text: "Cảng đóng hàng", value: "booking.portOfLoading" },
     { text: "FCL", value: "fcl" },
     { text: "Trạng thái", value: "status" },

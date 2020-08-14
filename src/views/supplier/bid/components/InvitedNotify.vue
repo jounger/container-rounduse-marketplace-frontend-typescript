@@ -7,7 +7,6 @@
         :dialogAdd.sync="dialogAdd"
         :biddingNotification="biddingNotification"
         :biddingNotifications.sync="biddingNotifications"
-        :totalItemsBidNo.sync="serverSideOptions.totalItems"
       />
       <ConfirmBid
         v-if="dialogConfirm"
@@ -81,6 +80,9 @@
         <template v-slot:item.relatedResource.bidPackagePrice="{ item }">
           {{ currencyFormatter(item.relatedResource.bidPackagePrice) }}
         </template>
+        <template v-slot:item.relatedResource.bidFloorPrice="{ item }">
+          {{ currencyFormatter(item.bidFloorPrice) }}
+        </template>
       </v-data-table>
     </v-card>
   </v-content>
@@ -127,9 +129,10 @@ export default class InvitedNotify extends Vue {
     { text: "Hãng tàu", value: "relatedResource.outbound.shippingLine" },
     { text: "Loại cont", value: "relatedResource.outbound.containerType" },
     { text: "Giá gói thầu", value: "relatedResource.bidPackagePrice" },
+    { text: "Giá sàn", value: "bidFloorPrice" },
     { text: "Mở thầu", value: "bidOpening" },
     { text: "Đóng thầu", value: "bidClosing" },
-    { text: "Nhiều thầu win", value: "isMultipleAward" },
+    { text: "Nhiều thầu thắng", value: "isMultipleAward" },
     { text: "Hành động", value: "actions", sortable: false }
   ];
 

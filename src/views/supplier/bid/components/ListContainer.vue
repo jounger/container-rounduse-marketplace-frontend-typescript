@@ -38,7 +38,7 @@
                 no-data-text="Danh sách hàng nhập rỗng."
                 :actions-append="inboundOptions.page"
                 disable-sort
-                class="elevation-1 my-1"
+                class="elevation-0 mb-1"
               >
                 <template v-slot:item.pickUpTime="{ item }">
                   {{ formatDatetime(item.pickupTime) }}

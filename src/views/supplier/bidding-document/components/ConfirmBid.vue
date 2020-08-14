@@ -70,19 +70,15 @@ export default class ConfirmBid extends Vue {
   update = false;
 
   async reviewBid(isAccept: boolean) {
-    if (isAccept) {
-      this.dialogContract = true;
-    } else {
-      if (this.bid.id) {
-        const _res = await editBid(this.bid.id, {
-          status: "REJECTED"
-        });
-        if (_res.data) {
-          const _bid = _res.data.data;
-          const index = this.bidsSync.findIndex(x => x.id === _bid.id);
-          this.bidsSync.splice(index, 1, _bid);
-          this.dialogConfirmSync = false;
-        }
+    if (this.bid.id) {
+      const _res = await editBid(this.bid.id, {
+        status: isAccept ? "ACCEPTED" : "REJECTED"
+      });
+      if (_res.data) {
+        const _bid = _res.data.data;
+        const index = this.bidsSync.findIndex(x => x.id === _bid.id);
+        this.bidsSync.splice(index, 1, _bid);
+        this.dialogConfirmSync = false;
       }
     }
   }

@@ -47,7 +47,7 @@
           </v-toolbar>
         </template>
         <template v-slot:item.avatar="{ item }">
-          <v-avatar size="35" color="gray">
+          <v-avatar size="35" color="indigo">
             <v-img
               v-if="item.profileImagePath"
               :src="item.profileImagePath"

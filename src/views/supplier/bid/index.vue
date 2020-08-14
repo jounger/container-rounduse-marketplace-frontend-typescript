@@ -64,9 +64,11 @@
         <template v-slot:item.bidClosing="{ item }">
           {{ formatDatetime(item.bidClosing) }}
         </template>
-
         <template v-slot:item.bidPackagePrice="{ item }">
           {{ currencyFormatter(item.bidPackagePrice) }}
+        </template>
+        <template v-slot:item.bidFloorPrice="{ item }">
+          {{ currencyFormatter(item.bidFloorPrice) }}
         </template>
         <template v-slot:item.actions="{ item }">
           <v-btn
@@ -190,9 +192,10 @@ export default class Bid extends Vue {
     { text: "Hãng tàu", value: "outbound.shippingLine" },
     { text: "Loại cont", value: "outbound.containerType" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
-    { text: "Mở thầu", value: "bidOpening" },
-    { text: "Đóng thầu", value: "bidClosing" },
-    { text: "Nhiều thầu win", value: "isMultipleAward" },
+    { text: "Giá sàn", value: "bidFloorPrice" },
+    { text: "Ngày mở thầu", value: "bidOpening" },
+    { text: "Ngày đóng thầu", value: "bidClosing" },
+    { text: "Nhiều thầu thắng", value: "isMultipleAward" },
     {
       text: "Hành động",
       value: "actions"

@@ -37,7 +37,7 @@
               :actions-append="options.page"
               no-data-text="Danh sách hàng xuất rỗng."
               disable-sort
-              class="elevation-1 my-1"
+              class="elevation-0 mb-1"
             >
               <!--  -->
               <template v-slot:top>
@@ -162,12 +162,6 @@
           <v-stepper-step step="3">Hoàn thành</v-stepper-step>
           <v-stepper-content step="3">
             <v-form ref="finishForm">
-              <v-text-field
-                v-model="biddingDocumentLocal.discount"
-                type="text"
-                prepend-icon="loyalty"
-                label="Mã giảm giá"
-              ></v-text-field>
               <v-checkbox
                 v-model="autoSendCheckbox"
                 label="Tự động gửi thư mời thầu"
@@ -201,9 +195,13 @@ import { isEmptyObject, addTimeToDate } from "@/utils/tool";
 import { createBiddingDocument } from "@/api/bidding-document";
 import { getOutboundByMerchant } from "@/api/outbound";
 import { DataOptions } from "vuetify";
+import DatetimePicker from "@/components/DatetimePicker.vue";
 
 @Component({
-  mixins: [FormValidate, Utils]
+  mixins: [FormValidate, Utils],
+  components: {
+    DatetimePicker
+  }
 })
 export default class CreateBiddingDocument extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
@@ -217,7 +215,6 @@ export default class CreateBiddingDocument extends Vue {
   biddingDocumentLocal = {
     offeree: this.$auth.user().username,
     outbound: -1 as number,
-    discount: "",
     isMultipleAward: false,
     bidOpening: this.dateInit,
     bidClosing: this.dateInit,

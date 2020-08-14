@@ -56,7 +56,7 @@
               :actions-append="biddingDocumentOptions.page"
               no-data-text="Danh sách HSMT đã chọn rỗng."
               disable-sort
-              class="elevation-1 my-1"
+              class="elevation-0 mb-1"
             >
               <template v-slot:top>
                 <v-toolbar flat color="white">
@@ -72,6 +72,9 @@
               </template>
               <template v-slot:item.bidPackagePrice="{ item }">
                 {{ currencyFormatter(item.bidPackagePrice) }}
+              </template>
+              <template v-slot:item.bidFloorPrice="{ item }">
+                {{ currencyFormatter(item.bidFloorPrice) }}
               </template>
             </v-data-table>
             <v-btn color="primary" @click="stepper = 2">Tiếp tục</v-btn>
@@ -128,7 +131,7 @@
                 }"
                 :actions-append="containerOptions.page"
                 disable-sort
-                class="elevation-1 my-1"
+                class="elevation-0 mb-1"
               >
                 <template v-slot:top>
                   <v-toolbar flat color="white">
@@ -295,9 +298,10 @@ export default class Update extends Vue {
     { text: "Hãng tàu", value: "outbound.shippingLine" },
     { text: "Loại cont", value: "outbound.containerType" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
+    { text: "Giá sàn", value: "bidFloorPrice" },
     { text: "Mở thầu", value: "bidOpening" },
     { text: "Đóng thầu", value: "bidClosing" },
-    { text: "Nhiều thầu win", value: "isMultipleAward" }
+    { text: "Nhiều thầu thắng", value: "isMultipleAward" }
   ];
   containerSelectedHeaders = [
     {

@@ -9,7 +9,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import Navigation from "@/components/Navigation.vue";
 import Appbar from "@/components/Appbar.vue";
 import Footer from "@/components/Footer.vue";
@@ -36,12 +36,16 @@ export default class NavLayout extends Vue {
     ]);
   }
 
-  created() {
-    this.$vuetify.theme.dark = false;
-    // Logout if session expired
-    if (this.isUser == false) {
+  @Watch("isUser", { immediate: true })
+  onUserChange(val: boolean) {
+    if (typeof val !== "undefined" && this.isUser == false) {
+      // Logout if session expired
       this.$auth.logout();
     }
+  }
+
+  created() {
+    this.$vuetify.theme.dark = false;
   }
 }
 </script>

@@ -125,6 +125,9 @@
               : item.bid.bidder
           }}
         </template>
+        <template v-slot:item.contract.required="{ item }">
+          {{ item.contract.required ? "Có" : "Không" }}
+        </template>
         <template v-slot:expanded-item="{ headers }">
           <td :colspan="headers.length" class="px-0">
             <v-data-table
@@ -244,10 +247,13 @@ export default class Contract extends Vue {
     },
     { text: "Bên chủ hàng", value: "merchant" },
     { text: "Bên chủ xe", value: "forwarder" },
+    { text: "Y/c hợp đồng", value: "contract.required" },
+    { text: "Giá hợp đồng", value: "contract.price" },
     {
       text: "% Tiền phạt",
       value: "contract.finesAgainstContractViolation"
     },
+    { text: "Mã giảm giá", value: "contract.discountCode" },
     {
       text: "Hành động",
       value: "actions",

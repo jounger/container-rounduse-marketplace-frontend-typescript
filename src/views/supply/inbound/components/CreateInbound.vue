@@ -265,7 +265,7 @@
                       serverSideOptions.itemsPerPageItems
                   }"
                   :actions-append="options.page"
-                  class="elevation-1 my-1"
+                  class="elevation-0 mb-1"
                 >
                   <template v-slot:top>
                     <v-toolbar flat color="white">

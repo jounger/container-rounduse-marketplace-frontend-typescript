@@ -209,7 +209,6 @@ export default class Inbound extends Vue {
   freeTime = "";
   loading = false;
   update = false;
-  dateInit = new Date().toISOString().substr(0, 10);
   options = {
     page: 1,
     itemsPerPage: 5
@@ -237,6 +236,8 @@ export default class Inbound extends Vue {
     { text: "Hãng tàu", value: "shippingLine" },
     { text: "Số cont đăng ký", value: "unit" },
     { text: "Thời gian lấy cont", value: "pickUpTime" },
+    { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery" },
+    { text: "Nơi bốc dỡ hàng", value: "returnStation" },
     { text: "Thời gian được thuê cont", value: "freetime" },
     { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery" },
     {
@@ -246,9 +247,14 @@ export default class Inbound extends Vue {
   ];
   containerHeaders = [
     {
-      text: "Container No.",
+      text: "Mã",
       align: "start",
       sortable: false,
+      value: "id",
+      class: "elevation-1 primary"
+    },
+    {
+      text: "Container No.",
       value: "number",
       class: "elevation-1 primary"
     },

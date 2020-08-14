@@ -36,7 +36,7 @@
               :actions-append="biddingDocumentOptions.page"
               no-data-text="Danh sách HSMT nhận được rỗng."
               disable-sort
-              class="elevation-1 mb-1"
+              class="elevation-0 mb-1"
             >
               <template v-slot:top>
                 <v-toolbar flat color="white">
@@ -65,6 +65,9 @@
               </template>
               <template v-slot:item.bidPackagePrice="{ item }">
                 {{ currencyFormatter(item.bidPackagePrice) }}
+              </template>
+              <template v-slot:item.bidFloorPrice="{ item }">
+                {{ currencyFormatter(item.bidFloorPrice) }}
               </template>
             </v-data-table>
             <v-btn
@@ -140,7 +143,7 @@
                     no-data-text="Danh sách hàng nhập rỗng."
                     :actions-append="inboundOptions.page"
                     disable-sort
-                    class="elevation-1"
+                    class="elevation-0"
                   >
                     <template v-slot:item.pickUpTime="{ item }">
                       {{ formatDatetime(item.pickupTime) }}
@@ -249,7 +252,6 @@ import { IOutbound } from "@/entity/outbound";
 import { getContainersByInbound } from "@/api/container";
 import { DataOptions } from "vuetify";
 import { IBillOfLading } from "@/entity/bill-of-lading";
-import { editBiddingNotifications } from "@/api/notification";
 
 @Component({
   mixins: [FormValidate, Utils]
@@ -257,7 +259,6 @@ import { editBiddingNotifications } from "@/api/notification";
 export default class CreateBid extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
   @PropSync("totalItems", { type: Number }) totalItemsSync?: number;
-  @PropSync("totalItemsBidNo", { type: Number }) totalItemsBidNoSync?: number;
   @PropSync("bids", { type: Array }) bidsSync?: Array<IBid>;
   @PropSync("biddingDocument", { type: Object })
   biddingDocumentSync?: IBiddingDocument;
@@ -336,9 +337,10 @@ export default class CreateBid extends Vue {
     { text: "Hãng tàu", value: "outbound.shippingLine" },
     { text: "Số cont", value: "unit" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
+    { text: "Giá sàn", value: "bidFloorPrice" },
     { text: "Mở thầu", value: "bidOpening" },
     { text: "Đóng thầu", value: "bidClosing" },
-    { text: "Nhiều thầu win", value: "isMultipleAward" }
+    { text: "Nhiều thầu thắng", value: "isMultipleAward" }
   ];
   inboundHeaders = [
     {
@@ -427,25 +429,14 @@ export default class CreateBid extends Vue {
           this.totalItemsSync += 1;
         }
         if (
-          this.biddingNotification &&
-          typeof this.biddingNotification != "undefined" &&
-          this.biddingNotification.id
+          typeof this.biddingNotification !== "undefined" &&
+          typeof this.biddingNotificationsSync !== "undefined"
         ) {
-          const _res = await editBiddingNotifications(
-            this.biddingNotification.id,
-            {
-              isHide: true
-            }
+          const id = this.biddingNotification.id;
+          const index = this.biddingNotificationsSync.findIndex(
+            x => x.id === id
           );
-          if (_res.data && this.biddingNotificationsSync) {
-            const _biddingNotification = _res.data.data;
-            const index = this.biddingNotificationsSync.findIndex(
-              x => x.id === _biddingNotification.id
-            );
-            this.biddingNotificationsSync.splice(index, 1);
-            if (typeof this.totalItemsBidNoSync != "undefined")
-              this.totalItemsBidNoSync -= 1;
-          }
+          this.biddingNotificationsSync.splice(index, 1);
         }
         this.dialogAddSync = false;
       }

@@ -207,7 +207,7 @@ export default class BiddingDocument extends Vue {
       sortable: false,
       value: "id"
     },
-    { text: "Mã booking", value: "outbound.booking.number" },
+    { text: "Mã hàng xuất", value: "outbound.code" },
     { text: "Hãng tàu", value: "outbound.shippingLine" },
     { text: "Số cont", value: "unit" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },

@@ -52,32 +52,46 @@
 
           <v-stepper-content step="2">
             <v-form ref="contractForm" v-model="valid" validation>
-              <v-text-field
-                v-model="merchant"
-                prepend-icon="money"
-                type="text"
-                label="Bên chủ hàng"
-                readonly
-              ></v-text-field>
-              <v-text-field
-                v-model="forwarder"
-                prepend-icon="money"
-                type="text"
-                label="Bên chủ xe"
-                readonly
-              ></v-text-field>
-              <v-checkbox
-                v-model="combinedLocal.contract.required"
-                label="Yêu cầu hợp đồng"
-              />
-              <v-text-field
-                v-if="combinedLocal.contract.required"
-                v-model="combinedLocal.contract.finesAgainstContractViolations"
-                prepend-icon="money"
-                type="number"
-                :rules="[required('phần trăm tiền phạt')]"
-                label="% tiền phạt"
-              ></v-text-field>
+              <v-row>
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="merchant"
+                    prepend-icon="money"
+                    type="text"
+                    label="Bên chủ hàng"
+                    disabled
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="forwarder"
+                    prepend-icon="money"
+                    type="text"
+                    label="Bên chủ xe"
+                    disabled
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" sm="6">
+                  <v-checkbox
+                    v-model="combinedLocal.contract.required"
+                    label="Yêu cầu hợp đồng"
+                  />
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-if="combinedLocal.contract.required"
+                    v-model="
+                      combinedLocal.contract.finesAgainstContractViolations
+                    "
+                    prepend-icon="money"
+                    type="number"
+                    :rules="[required('phần trăm tiền phạt')]"
+                    label="% tiền phạt"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
               <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
                 >Tiếp tục</v-btn
               >

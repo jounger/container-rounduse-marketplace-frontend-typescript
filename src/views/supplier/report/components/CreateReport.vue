@@ -34,7 +34,7 @@
               }"
               :actions-append="options.page"
               disable-sort
-              class="elevation-1 my-1"
+              class="elevation-0 mb-1"
             >
               <template v-slot:top>
                 <v-toolbar flat color="white">
@@ -47,6 +47,12 @@
               </template>
               <template v-slot:item.bidClosing="{ item }">
                 {{ formatDatetime(item.bidClosing) }}
+              </template>
+              <template v-slot:item.bidPackagePrice="{ item }">
+                {{ currencyFormatter(item.bidPackagePrice) }}
+              </template>
+              <template v-slot:item.bidFloorPrice="{ item }">
+                {{ currencyFormatter(item.bidFloorPrice) }}
               </template>
               <template v-slot:item.actions="{ item }">
                 <v-switch
@@ -186,9 +192,10 @@ export default class CreateReport extends Vue {
     { text: "Hãng tàu", value: "outbound.shippingLine" },
     { text: "Loại cont", value: "outbound.containerType" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
+    { text: "Giá sàn", value: "bidFloorPrice" },
     { text: "Mở thầu", value: "bidOpening" },
     { text: "Đóng thầu", value: "bidClosing" },
-    { text: "Nhiều thầu win", value: "isMultipleAward" },
+    { text: "Nhiều thầu thắng", value: "isMultipleAward" },
     { text: "Hành động", value: "actions", sortable: false }
   ];
 

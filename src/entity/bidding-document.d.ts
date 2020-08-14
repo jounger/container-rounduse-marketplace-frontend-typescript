@@ -6,7 +6,6 @@ export interface IBiddingDocument {
   offeree: string; // IMerchant username
   outbound: IOutbound | number;
   bids: Array<IBid>;
-  discount?: string;
   isMultipleAward: boolean;
   bidOpening: string;
   bidClosing: string;

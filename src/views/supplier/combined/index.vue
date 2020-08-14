@@ -25,21 +25,6 @@
             <v-toolbar-title>Danh sách hàng đã ghép</v-toolbar-title>
           </v-toolbar>
         </template>
-        <template v-slot:item.status="{ item }">
-          <v-chip
-            :style="
-              item.status == 'CREATED'
-                ? 'background-color:orange'
-                : item.status == 'BIDDING'
-                ? 'background-color:blue'
-                : item.status == 'COMBINED'
-                ? 'background-color:green'
-                : 'background-color:blue'
-            "
-            dark
-            >{{ item.outbound.status }}</v-chip
-          >
-        </template>
         <template v-slot:item.packingTime="{ item }">
           {{ formatDatetime(item.outbound.packingTime) }}
         </template>
@@ -73,6 +58,9 @@
               dense
               dark
             >
+              <template v-slot:item.contract.required="{ item }">
+                {{ item.contract.required ? "Có" : "Không" }}
+              </template>
               <template v-slot:item.bid.bidPrice="{ item }">
                 {{ currencyFormatter(item.bid.bidPrice) }}
               </template>
@@ -153,9 +141,9 @@ export default class Combined extends Vue {
     { text: "Số cont", value: "unit" },
     { text: "Khối lượng hàng", value: "grossWeight" },
     { text: "Thời gian đóng hàng", value: "packingTime" },
-    { text: "Thời gian tàu chạy", value: "cutOffTime" },
-    { text: "Cảng đóng hàng", value: "outbound.booking.portOfLoading" },
-    { text: "Trạng thái", value: "status" }
+    { text: "Nơi đóng hàng", value: "outbound.packingStation" },
+    { text: "Thời gian Cut-off", value: "cutOffTime" },
+    { text: "Cảng trả hàng", value: "outbound.booking.portOfLoading" }
   ];
   combinedHeaders = [
     {
@@ -167,6 +155,7 @@ export default class Combined extends Vue {
     { text: "Nhà thầu", value: "bid.bidder" },
     { text: "Ngày trúng thầu", value: "bid.dateOfDecision" },
     { text: "Giá trúng thầu", value: "bid.bidPrice" },
+    { text: "Y/c hợp đồng", value: "contract.required" },
     { text: "Trạng thái", value: "isCanceled" },
     {
       text: "Hành động",

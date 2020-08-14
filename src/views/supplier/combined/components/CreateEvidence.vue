@@ -16,8 +16,7 @@
                 name="sender"
                 prepend-icon="person"
                 type="text"
-                readonly
-                :counter="20"
+                disabled
                 v-model="evidenceLocal.sender"
               ></v-text-field>
             </v-col>
