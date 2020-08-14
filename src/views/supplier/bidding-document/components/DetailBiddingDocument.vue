@@ -26,7 +26,7 @@
       v-if="biddingDocument"
     >
       <!-- OUTOUNBD -->
-      <v-card class="order-0 flex-grow-0 mx-auto mr-5 my-5" max-width="400">
+      <v-card class="order-0 flex-grow-0 mx-auto mr-5 my-5" max-width="380">
         <v-img height="100" src="@/assets/images/biddingdocument.jpg"></v-img>
         <v-card-title>Hồ sơ Mời thầu</v-card-title>
         <v-card-text>
@@ -203,10 +203,12 @@
                     <v-icon>date_range</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
-                    <v-list-item-title>Đóng thầu</v-list-item-title>
-                    <v-list-item-title>{{
-                      formatDatetime(biddingDocument.bidClosing)
-                    }}</v-list-item-title>
+                    <v-list-item-title
+                      >Đóng:
+                      {{
+                        formatDatetime(biddingDocument.bidClosing)
+                      }}</v-list-item-title
+                    >
                     <v-list-item-subtitle>
                       {{
                         new Date(this.biddingDocument.bidClosing).getTime() -
@@ -355,10 +357,11 @@
                   $auth.user().roles[0] == 'ROLE_MERCHANT'
               "
               :disabled="
-                bid == null ||
-                  (bid &&
-                    (bid.containers.filter(x => x.isSelected).length <= 0 ||
-                      bid.id != item.id))
+                biddingDocument.isMultipleAward &&
+                  (bid == null ||
+                    (bid &&
+                      (bid.containers.filter(x => x.isSelected).length <= 0 ||
+                        bid.id != item.id)))
               "
             >
               <v-icon left dense>library_add_check </v-icon>Đồng ý

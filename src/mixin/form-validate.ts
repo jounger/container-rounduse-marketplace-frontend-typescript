@@ -10,7 +10,8 @@ export default class FormValidate extends Vue {
 
   equals(propertyType: unknown, newPropertyType: unknown, oldVal: string) {
     return (v: string) =>
-      (v && (v == oldVal)) || `${propertyType} phải giống với ${newPropertyType}.`;
+      (v && v == oldVal) ||
+      `${propertyType} phải giống với ${newPropertyType}.`;
   }
 
   // input length must greater than min length
@@ -36,13 +37,13 @@ export default class FormValidate extends Vue {
   // input must greater than min number
   minNumber(propertyType: unknown, minNumber: number) {
     return (v: number) =>
-      (v && v > minNumber) || `${propertyType} phải lớn hơn ${minNumber}`;
+      (v && v >= minNumber) || `${propertyType} phải lớn hơn ${minNumber}`;
   }
 
   // input must less than max number
   maxNumber(propertyType: unknown, maxNumber: number) {
     return (v: number) =>
-      (v && v < maxNumber) || `${propertyType} phải nhỏ hơn ${maxNumber}.`;
+      (v && v <= maxNumber) || `${propertyType} phải nhỏ hơn ${maxNumber}.`;
   }
   minTime(propertyType: unknown, minTime: string) {
     return (v: string) =>

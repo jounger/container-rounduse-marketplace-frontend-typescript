@@ -5,15 +5,24 @@ Vue.use(VueRouter);
 
 // DIVICE BY PERMISSION
 const routes: Array<RouteConfig> = [
-  // AUTH
+  // ERROR
   {
-    path: "/upload",
-    name: "Upload",
+    path: "/404",
+    name: "NotFound",
     meta: {
-      layout: "AuthLayout"
+      layout: "EmptyLayout"
     },
-    component: () => import("@/components/UploadFile.vue")
+    component: () => import("@/views/error-page/404.vue")
   },
+  {
+    path: "/401",
+    name: "Unauthorized",
+    meta: {
+      layout: "EmptyLayout"
+    },
+    component: () => import("@/views/error-page/401.vue")
+  },
+  // AUTH
   {
     path: "/login",
     name: "Login",
@@ -356,7 +365,10 @@ const routes: Array<RouteConfig> = [
       auth: ["ROLE_SHIPPINGLINE"],
       layout: "NavLayout"
     }
-  }
+  },
+
+  // 404 page must be placed at the end !!!
+  { path: "*", redirect: "/404" }
 ];
 
 const router = new VueRouter({

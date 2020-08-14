@@ -3,7 +3,7 @@ import axios from "axios";
 import VueAxios from "vue-axios";
 import snackbar from "@/store/modules/snackbar";
 import loading from "@/store/modules/loading";
-import { getErrorMessage } from "../utils/tool";
+import { getErrorMessage } from "@/utils/tool";
 // --------------------------------------------------------------------
 // vue-axios CONFIGURATION
 // --------------------------------------------------------------------
