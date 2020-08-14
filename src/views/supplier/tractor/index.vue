@@ -48,12 +48,31 @@
           </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon small class="mr-2" @click="openUpdateDialog(item)">
-            mdi-pencil
-          </v-icon>
-          <v-icon small @click="openDeleteDialog(item)">
-            mdi-delete
-          </v-icon>
+          <v-menu :close-on-click="true">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="primary" icon outlined v-bind="attrs" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <v-list dense>
+              <v-list-item @click="openUpdateDialog(item)">
+                <v-list-item-icon>
+                  <v-icon small>edit</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Chỉnh sửa</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item @click="openDeleteDialog(item)">
+                <v-list-item-icon>
+                  <v-icon small>delete</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Xóa bỏ</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </template>
       </v-data-table>
     </v-card>

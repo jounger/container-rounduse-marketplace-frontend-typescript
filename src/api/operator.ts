@@ -23,10 +23,6 @@ export function createOperator(operator: IOperator) {
   return Vue.axios.post("/operator", operator);
 }
 
-export function updateOperator(operator: IOperator) {
-  return Vue.axios.put("/operator", operator);
-}
-
 export function editOperator(id: number, updates: object) {
   return Vue.axios.patch(`/operator/${id}`, updates);
 }

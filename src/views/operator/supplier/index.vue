@@ -43,7 +43,7 @@
           <v-menu :loading="item.createloading" :disabled="item.createloading">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
-                color="pink"
+                color="primary"
                 icon
                 outlined
                 v-bind="attrs"
@@ -53,20 +53,29 @@
                 <v-icon>mdi-dots-vertical</v-icon></v-btn
               >
             </template>
-            <v-list>
+            <v-list dense>
               <v-list-item @click="openDetailDialog(item)">
+                <v-list-item-icon>
+                  <v-icon small>edit</v-icon>
+                </v-list-item-icon>
                 <v-list-item-title>Xem chi tiết</v-list-item-title>
               </v-list-item>
               <v-list-item
                 @click="openReviewDialog(item)"
                 v-if="item.status === 'ACTIVE'"
               >
+                <v-list-item-icon>
+                  <v-icon small>lock</v-icon>
+                </v-list-item-icon>
                 <v-list-item-title>Khóa tài khoản</v-list-item-title>
               </v-list-item>
               <v-list-item
                 @click="openReviewDialog(item)"
                 v-if="item.status === 'BANNED'"
               >
+                <v-list-item-icon>
+                  <v-icon small>lock_open</v-icon>
+                </v-list-item-icon>
                 <v-list-item-title>Mở khóa tài khoản</v-list-item-title>
               </v-list-item>
             </v-list>

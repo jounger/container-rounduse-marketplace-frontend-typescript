@@ -18,6 +18,7 @@
                 name="licensePlate"
                 prepend-icon="tram"
                 type="text"
+                :disabled="update"
                 :counter="20"
                 :rules="[minLength('Biển số', 5), maxLength('Biển số', 20)]"
                 v-model="tractorLocal.licensePlate"
@@ -70,7 +71,7 @@ import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
 import {
   createContainerTractor,
-  updateContainerTractor
+  editContainerTractor
 } from "@/api/container-tractor";
 
 @Component({
@@ -108,7 +109,10 @@ export default class CreateTractor extends Vue {
   }
   async updateTractor() {
     if (this.tractorLocal.id) {
-      const _res = await updateContainerTractor(this.tractorLocal);
+      const _res = await editContainerTractor(
+        this.tractorLocal.id,
+        this.tractorLocal
+      );
       if (_res.data) {
         const _tractor = _res.data.data;
         const index = this.tractorsSync.findIndex(x => x.id == _tractor.id);

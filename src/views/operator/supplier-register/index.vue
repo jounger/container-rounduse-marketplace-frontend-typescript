@@ -38,7 +38,7 @@
           <v-menu :loading="item.createloading" :disabled="item.createloading">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
-                color="pink"
+                color="primary"
                 icon
                 outlined
                 v-bind="attrs"
@@ -48,15 +48,30 @@
                 <v-icon>mdi-dots-vertical</v-icon></v-btn
               >
             </template>
-            <v-list>
+            <v-list dense>
               <v-list-item @click="openDetailDialog(item)">
-                <v-list-item-title>Xem chi tiết</v-list-item-title>
+                <v-list-item-icon>
+                  <v-icon small>details</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Xem chi tiết</v-list-item-title>
+                </v-list-item-content>
               </v-list-item>
               <v-list-item @click="openConfirmDialog(item, true)">
-                <v-list-item-title>Đồng ý đơn</v-list-item-title>
+                <v-list-item-icon>
+                  <v-icon small>add</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Đồng ý đơn</v-list-item-title>
+                </v-list-item-content>
               </v-list-item>
               <v-list-item @click="openConfirmDialog(item, false)">
-                <v-list-item-title>Từ chối đơn</v-list-item-title>
+                <v-list-item-icon>
+                  <v-icon small>delete</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Từ chối đơn</v-list-item-title>
+                </v-list-item-content>
               </v-list-item>
             </v-list>
           </v-menu>

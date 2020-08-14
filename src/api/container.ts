@@ -33,10 +33,6 @@ export function createContainer(id: number, container: IContainer) {
   return Vue.axios.post(`/container/bill-of-lading/${id}`, container);
 }
 
-export function updateContainer(container: IContainer) {
-  return Vue.axios.put("/container", container);
-}
-
 export function editContainer(id: number, updates: object) {
   return Vue.axios.patch(`/container/${id}`, updates);
 }

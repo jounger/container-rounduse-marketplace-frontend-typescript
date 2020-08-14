@@ -26,7 +26,7 @@
                     name="nameCode"
                     prepend-icon="verified_user"
                     type="text"
-                    readonly
+                    disabled
                     v-model="portLocal.nameCode"
                     :rules="[required('mã bến cảng')]"
                   ></v-text-field>

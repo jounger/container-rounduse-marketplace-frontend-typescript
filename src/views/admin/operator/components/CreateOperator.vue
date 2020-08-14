@@ -41,7 +41,7 @@
                   type="text"
                   prepend-icon="mdi-account"
                   v-model="operatorLocal.username"
-                  :readonly="update"
+                  :disabled="update"
                   :counter="20"
                   :rules="[
                     minLength('Tên đăng nhập', 2),
@@ -163,12 +163,14 @@ export default class CreateOperator extends Vue {
     fullname: "",
     isRoot: false
   } as IOperator;
+
   created() {
     this.roles = ["ROLE_ADMIN", "ROLE_MODERATOR"];
     if (this.update) {
       this.operatorLocal = Object.assign({}, this.operator);
     }
   }
+
   async createOperator() {
     if (this.operatorLocal) {
       const _res = await createOperator(this.operatorLocal);
@@ -180,6 +182,7 @@ export default class CreateOperator extends Vue {
       }
     }
   }
+
   async updateOperator() {
     if (this.operatorLocal.id) {
       const _res = await editOperator(

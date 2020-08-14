@@ -16,10 +16,6 @@ export function createShippingLine(shippingLine: IShippingLine) {
   return Vue.axios.post("/shipping-line", shippingLine);
 }
 
-export function updateShippingLine(shippingLine: IShippingLine) {
-  return Vue.axios.put("/shipping-line", shippingLine);
-}
-
 export function editShippingLine(id: number, updates: object) {
   return Vue.axios.patch(`/shipping-line/${id}`, updates);
 }

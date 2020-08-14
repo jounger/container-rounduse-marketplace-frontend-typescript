@@ -24,12 +24,6 @@ export function createContainerSemiTrailer(
   return Vue.axios.post("/container-semi-trailer", containerSemiTrailer);
 }
 
-export function updateContainerSemiTrailer(
-  containerSemiTrailer: IContainerSemiTrailer
-) {
-  return Vue.axios.put("/container-semi-trailer", containerSemiTrailer);
-}
-
 export function editContainerSemiTrailer(id: number, updates: object) {
   return Vue.axios.patch(`/container-semi-trailer/${id}`, updates);
 }

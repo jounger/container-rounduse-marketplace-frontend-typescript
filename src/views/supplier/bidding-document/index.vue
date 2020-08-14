@@ -76,11 +76,11 @@
         <template v-slot:item.actions="{ item }">
           <v-menu :close-on-click="true">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn color="pink" icon outlined v-bind="attrs" v-on="on">
+              <v-btn color="primary" icon outlined v-bind="attrs" v-on="on">
                 <v-icon>mdi-dots-vertical</v-icon>
               </v-btn>
             </template>
-            <v-list>
+            <v-list dense>
               <v-list-item
                 @click.stop="openEditDialog(item)"
                 v-if="item.status == 'BIDDING'"

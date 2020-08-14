@@ -66,11 +66,11 @@
         <template v-slot:item.actions="{ item }">
           <v-menu :close-on-click="true">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn color="pink" icon outlined v-bind="attrs" v-on="on">
+              <v-btn color="primary" icon outlined v-bind="attrs" v-on="on">
                 <v-icon>mdi-dots-vertical</v-icon>
               </v-btn>
             </template>
-            <v-list>
+            <v-list dense>
               <v-list-item @click="openCreatePayment(item)">
                 <v-list-item-icon>
                   <v-icon small>add</v-icon>
@@ -95,22 +95,21 @@
                 v-if="$auth.user().roles[0] == 'ROLE_FORWARDER'"
               >
                 <v-list-item-icon>
-                  <v-icon small>edit</v-icon>
+                  <v-icon small>details</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>Xem chi tiết</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <!--  -->
               <v-list-item
                 @click="openCreateEvidence()"
                 v-if="$auth.user().roles[0] == 'ROLE_FORWARDER'"
               >
                 <v-list-item-icon>
-                  <v-icon small>edit</v-icon>
+                  <v-icon small>cloud_upload</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
-                  <v-list-item-title>Thêm chứng cứ</v-list-item-title>
+                  <v-list-item-title>Tải lên hợp đồng</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -151,12 +150,14 @@
                   color="success"
                   @click.stop="openDetailEvidence(item)"
                 >
-                  <v-icon left dense>library_add_check </v-icon>Chi tiết
+                  <v-icon left dense>details </v-icon>Chi tiết
                 </v-btn>
               </template>
               <template v-slot:item.documentPath="{ item }">
                 <v-icon>picture_as_pdf</v-icon>
-                {{ item.documentPath ? item.documentPath.split("-")[1] : "N/A" }}
+                {{
+                  item.documentPath ? item.documentPath.split("-")[1] : "N/A"
+                }}
               </template>
               <template v-slot:item.isValid="{ item }">
                 {{ item.isValid ? "Đã xác nhận" : "Chưa xác nhận" }}

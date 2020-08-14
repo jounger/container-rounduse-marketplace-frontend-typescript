@@ -1,14 +1,19 @@
 <template>
   <v-navigation-drawer v-model="drawerSync" app clipped v-if="$auth.check()">
     <v-list dense nav>
-      <v-list-item two-line class="px-0" link to="/profile">
+      <v-list-item two-line link to="/profile">
         <v-list-item-avatar>
-          <v-img src="@/assets/images/ava.jpg" />
+          <v-img
+            v-if="$auth.user().profileImagePath"
+            :src="$auth.user().profileImagePath"
+          ></v-img>
+          <v-img v-else src="@/assets/images/ava.jpg"></v-img>
         </v-list-item-avatar>
 
         <v-list-item-content>
           <v-list-item-title>{{ fullname }}</v-list-item-title>
-          <v-list-item-subtitle style="margin-top:10px;">
+          <v-list-item-subtitle>
+            <v-icon small color="success">security</v-icon>
             {{ getUserRole }}</v-list-item-subtitle
           >
         </v-list-item-content>

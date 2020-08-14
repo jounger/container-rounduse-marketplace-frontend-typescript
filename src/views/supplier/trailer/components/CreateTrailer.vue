@@ -18,6 +18,7 @@
                 name="licensePlate"
                 prepend-icon="format_strikethrough"
                 type="text"
+                :disabled="update"
                 :counter="20"
                 :rules="[minLength('Biển số', 5), maxLength('Biển số', 20)]"
                 v-model="trailerLocal.licensePlate"
@@ -92,7 +93,7 @@ import { IContainerSemiTrailer } from "@/entity/container-semi-trailer";
 import FormValidate from "@/mixin/form-validate";
 import {
   createContainerSemiTrailer,
-  updateContainerSemiTrailer
+  editContainerSemiTrailer
 } from "@/api/container-semi-trailer";
 
 @Component({
@@ -147,10 +148,12 @@ export default class CreateTrailer extends Vue {
     }
     this.loading = false;
   }
+
   loadMore() {
     this.limit += 5;
     this.getTypes(this.limit);
   }
+
   created() {
     this.types = ["T28", "T32", "T34", "T36", "T40", "T45", "T48", "T53"];
     if (this.update) {
@@ -160,6 +163,7 @@ export default class CreateTrailer extends Vue {
       this.getTypes(5);
     }
   }
+
   async createTrailer() {
     if (this.trailerLocal) {
       const _res = await createContainerSemiTrailer(this.trailerLocal);
@@ -171,9 +175,13 @@ export default class CreateTrailer extends Vue {
       }
     }
   }
+
   async updateTrailer() {
     if (this.trailerLocal.id) {
-      const _res = await updateContainerSemiTrailer(this.trailerLocal);
+      const _res = await editContainerSemiTrailer(
+        this.trailerLocal.id,
+        this.trailerLocal
+      );
       if (_res.data) {
         const _trailer = _res.data.data;
         const index = this.trailersSync.findIndex(x => x.id == _trailer.id);

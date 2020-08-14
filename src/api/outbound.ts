@@ -22,10 +22,6 @@ export function createOutbound(outbound: IOutbound) {
   return Vue.axios.post("/outbound", outbound);
 }
 
-export function updateOutbound(outbound: IOutbound) {
-  return Vue.axios.put("/outbound", outbound);
-}
-
 export function editOutbound(id: number, updates: object) {
   return Vue.axios.patch(`/outbound/${id}`, updates);
 }

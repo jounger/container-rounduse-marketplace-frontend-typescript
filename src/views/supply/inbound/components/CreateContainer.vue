@@ -123,7 +123,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
-import { createContainer, updateContainer } from "@/api/container";
+import { createContainer, editContainer } from "@/api/container";
 import { IContainer } from "@/entity/container";
 import { IBillOfLading } from "@/entity/bill-of-lading";
 import FormValidate from "@/mixin/form-validate";
@@ -334,7 +334,10 @@ export default class CreateContainer extends Vue {
   }
 
   async updateContainer() {
-    const _res = await updateContainer(this.containerLocal);
+    const _res = await editContainer(
+      this.containerLocal.id as number,
+      this.containerLocal
+    );
     if (_res.data) {
       const _container = _res.data.data;
       const index = this.containersSync.findIndex(x => x.id === _container.id);

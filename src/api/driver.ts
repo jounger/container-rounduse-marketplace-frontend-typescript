@@ -13,15 +13,13 @@ export function getDriversByForwarder(paging: PaginationRequest) {
     params: paging
   });
 }
+
 export function getDriverById(id: number) {
   return Vue.axios.get(`/driver/${id}`);
 }
+
 export function createDriver(driver: IDriver) {
   return Vue.axios.post("/driver/forwarder/", driver);
-}
-
-export function updateDriver(driver: IDriver) {
-  return Vue.axios.put("/driver", driver);
 }
 
 export function editDriver(id: number, updates: object) {

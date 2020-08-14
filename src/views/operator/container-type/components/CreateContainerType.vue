@@ -48,7 +48,7 @@
                 name="name"
                 prepend-icon="directions_bus"
                 type="text"
-                :readonly="update"
+                :disabled="update"
                 v-model="containerTypeLocal.name"
                 :rules="[required('Tên loại Container')]"
               ></v-text-field>

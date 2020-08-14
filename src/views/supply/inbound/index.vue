@@ -80,11 +80,11 @@
         <template v-slot:item.actions="{ item }">
           <v-menu :close-on-click="true">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn color="pink" icon outlined v-bind="attrs" v-on="on">
+              <v-btn color="primary" icon outlined v-bind="attrs" v-on="on">
                 <v-icon>mdi-dots-vertical</v-icon>
               </v-btn>
             </template>
-            <v-list>
+            <v-list dense>
               <v-list-item @click="openUpdateDialog(item)">
                 <v-list-item-icon>
                   <v-icon small>edit</v-icon>
@@ -98,7 +98,7 @@
                   <v-icon small>delete</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
-                  <v-list-item-title>Xóa</v-list-item-title>
+                  <v-list-item-title>Xóa bỏ</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
               <v-list-item @click="openCreateContainer(item)">

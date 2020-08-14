@@ -22,10 +22,6 @@ export function createContainerTractor(containerTractor: IContainerTractor) {
   return Vue.axios.post("/container-tractor", containerTractor);
 }
 
-export function updateContainerTractor(containerTractor: IContainerTractor) {
-  return Vue.axios.put("/container-tractor", containerTractor);
-}
-
 export function editContainerTractor(id: number, updates: object) {
   return Vue.axios.patch(`/container-tractor/${id}`, updates);
 }

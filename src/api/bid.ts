@@ -43,10 +43,6 @@ export function replaceContainer(id: number, updates: object) {
   return Vue.axios.patch(`/bid/${id}/container`, updates);
 }
 
-export function updateBid(bid: IBid) {
-  return Vue.axios.put("/bid", bid);
-}
-
 export function editBid(id: number, updates: object) {
   return Vue.axios.patch(`/bid/${id}`, updates);
 }

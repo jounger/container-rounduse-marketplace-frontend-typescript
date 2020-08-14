@@ -18,7 +18,7 @@
                 name="name"
                 prepend-icon="enhanced_encryption"
                 type="text"
-                :readonly="update"
+                :disabled="update"
                 :counter="20"
                 :rules="[
                   minLength('Tên vai trò', 5),

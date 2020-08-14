@@ -30,10 +30,6 @@ export function createBiddingDocument(biddingDocument: IBiddingDocument) {
   return Vue.axios.post("/bidding-document", biddingDocument);
 }
 
-export function updateBiddingDocument(biddingDocument: IBiddingDocument) {
-  return Vue.axios.put("/bidding-document", biddingDocument);
-}
-
 export function editBiddingDocument(id: number, updates: object) {
   return Vue.axios.patch(`/bidding-document/${id}`, updates);
 }

@@ -19,7 +19,7 @@
                 prepend-icon="mdi-account"
                 type="text"
                 v-model="driverLocal.username"
-                :readonly="update"
+                :disabled="update"
                 :counter="20"
                 :rules="[
                   minLength('Tên đăng nhập', 2),

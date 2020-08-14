@@ -19,7 +19,7 @@
                 prepend-icon="security"
                 type="text"
                 v-model="roleLocal.name"
-                :readonly="update"
+                :disabled="update"
                 :counter="20"
                 :rules="[minLength('Tên quyền', 5), maxLength('Tên quyền', 20)]"
               ></v-text-field>

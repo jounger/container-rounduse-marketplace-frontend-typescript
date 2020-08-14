@@ -196,7 +196,7 @@ import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
-import { updateBiddingDocument } from "@/api/bidding-document";
+import { editBiddingDocument } from "@/api/bidding-document";
 import { IOutbound } from "@/entity/outbound";
 import { addTimeToDate } from "@/utils/tool";
 import DatetimePicker from "@/components/DatetimePicker.vue";
@@ -267,10 +267,13 @@ export default class UpdateBiddingDocument extends Vue {
       this.biddingDocumentLocal.outbound = this.biddingDocument.outbound.id;
     }
   }
-  // BiddingDocument
+
   async updateBiddingDocument() {
     if (this.biddingDocumentLocal) {
-      const _res = await updateBiddingDocument(this.biddingDocumentLocal);
+      const _res = await editBiddingDocument(
+        this.biddingDocumentLocal.id as number,
+        this.biddingDocumentLocal
+      );
       if (_res.data) {
         const _biddingDocument = _res.data.data;
         const index = this.biddingDocumentsSync.findIndex(

@@ -256,8 +256,6 @@
         <v-divider class="mx-1"></v-divider>
 
         <v-card-title>Danh sách HSDT<v-spacer></v-spacer></v-card-title>
-
-        <!-- TODO: table bids -->
         <v-data-table
           :headers="bidHeaders"
           :items="bids"

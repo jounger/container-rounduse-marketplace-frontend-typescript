@@ -20,10 +20,6 @@ export function createPort(port: IPort) {
   return Vue.axios.post("/port", port);
 }
 
-export function updatePort(port: IPort) {
-  return Vue.axios.put("/port", port);
-}
-
 export function editPort(id: number, updates: object) {
   return Vue.axios.patch(`/port/${id}`, updates);
 }

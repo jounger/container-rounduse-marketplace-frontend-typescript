@@ -288,7 +288,7 @@
                         color="success"
                         @click.stop="openDetailEvidence(item)"
                       >
-                        <v-icon left>library_add_check </v-icon>Chi tiết
+                        <v-icon left>details </v-icon>Chi tiết
                       </v-btn>
                     </template>
                     <template v-slot:item.isValid="{ item }">
@@ -346,7 +346,7 @@
               :color="shippingInfo.id == item.id ? 'info' : 'gray'"
               @click.stop="openDetailRouter(item)"
             >
-              <v-icon left dense>library_add_check </v-icon>Lịch trình
+              <v-icon left dense>details </v-icon>Lịch trình
             </v-btn>
           </template>
         </v-data-table>

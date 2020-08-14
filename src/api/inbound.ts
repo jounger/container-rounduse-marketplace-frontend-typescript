@@ -12,7 +12,6 @@ export function getInbound(id: number) {
   return Vue.axios.get(`/inbound/${id}`);
 }
 
-
 export function getInboundByContainer(id: number) {
   return Vue.axios.get(`/inbound/container/${id}`);
 }
@@ -22,6 +21,7 @@ export function getInboundsByForwarder(paging: PaginationRequest) {
     params: paging
   });
 }
+
 export function getInboundsByOutbound(id: number, paging: PaginationRequest) {
   return Vue.axios.get(`/inbound/outbound/${id}`, {
     params: paging
@@ -39,10 +39,6 @@ export function getInboundsByOutboundAndForwarder(
 
 export function createInbound(inbound: IInbound) {
   return Vue.axios.post("/inbound", inbound);
-}
-
-export function updateInbound(inbound: IInbound) {
-  return Vue.axios.put("/inbound", inbound);
 }
 
 export function editInbound(id: number, updates: object) {

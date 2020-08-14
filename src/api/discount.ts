@@ -20,10 +20,6 @@ export function createDiscount(discount: IDiscount) {
   return Vue.axios.post("/discount", discount);
 }
 
-export function updateDiscount(discount: IDiscount) {
-  return Vue.axios.put("/discount", discount);
-}
-
 export function editDiscount(id: number, updates: object) {
   return Vue.axios.patch(`/discount/${id}`, updates);
 }

@@ -156,7 +156,7 @@
                   <v-menu :close-on-click="true">
                     <template v-slot:activator="{ on, attrs }">
                       <v-btn
-                        color="pink"
+                        color="primary"
                         icon
                         outlined
                         v-bind="attrs"

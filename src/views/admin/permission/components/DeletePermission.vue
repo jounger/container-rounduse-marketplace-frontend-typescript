@@ -44,17 +44,15 @@ export default class DeletePermission extends Vue {
   @Prop(Object) permission!: IPermission;
 
   async removePermission() {
-    if (this.permission.id) {
-      const _res = await removePermission(this.permission.id);
-      if (_res.data) {
-        const _permission = _res.data.data;
-        const index = this.permissionsSync.findIndex(
-          x => x.id === _permission.id
-        );
-        this.permissionsSync.splice(index, 1);
-        this.totalItemsSync -= 1;
-        this.dialogDelSync = false;
-      }
+    const _res = await removePermission(this.permission.id as number);
+    if (_res.data) {
+      // const _permission = _res.data.data;
+      const index = this.permissionsSync.findIndex(
+        x => x.id === this.permission.id
+      );
+      this.permissionsSync.splice(index, 1);
+      this.totalItemsSync -= 1;
+      this.dialogDelSync = false;
     }
   }
 }

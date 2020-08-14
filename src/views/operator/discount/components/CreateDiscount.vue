@@ -16,7 +16,7 @@
               <v-text-field
                 label="Mã giảm giá*"
                 name="code"
-                :readonly="update"
+                :disabled="update"
                 prepend-icon="loyalty"
                 type="text"
                 v-model="discountLocal.code"
