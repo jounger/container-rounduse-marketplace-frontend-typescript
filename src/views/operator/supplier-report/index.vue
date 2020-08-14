@@ -35,14 +35,14 @@
           <v-chip
             :style="
               item.status == 'PENDING'
-                ? 'background-color:orange'
+                ? 'background-color:blue'
                 : item.status == 'RESOLVED'
-                ? 'background-color:blueviolet'
+                ? 'background-color:green'
                 : item.status == 'REJECTED'
                 ? 'background-color:red'
                 : item.status == 'UPDATED'
-                ? 'background-color:cornflowerblue'
-                : 'background-color:green'
+                ? 'background-color:orange'
+                : 'background-color:blue'
             "
             dark
             >{{ item.status }}</v-chip

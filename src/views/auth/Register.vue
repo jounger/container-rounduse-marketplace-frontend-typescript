@@ -1,5 +1,5 @@
 <template>
-  <v-card tile>
+  <v-card tile class="elevation-0">
     <!-- TITLE -->
     <v-toolbar dark color="primary">
       <v-toolbar-title>Đăng ký tài khoản</v-toolbar-title>

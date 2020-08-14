@@ -4,13 +4,13 @@ import VueAxios from "vue-axios";
 import snackbar from "@/store/modules/snackbar";
 import loading from "@/store/modules/loading";
 import { getErrorMessage } from "@/utils/tool";
-import router from '@/router';
+import router from "@/router";
 
 // --------------------------------------------------------------------
 // vue-axios CONFIGURATION
 // --------------------------------------------------------------------
 const instance = axios.create({
-  baseURL: "http://localhost:8085/api", // base on server-side port
+  baseURL: process.env.VUE_APP_ENDPOINT + "/api", // base on server-side port
   timeout: 15000,
   headers: {
     "Content-type": "application/json",

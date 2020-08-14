@@ -70,7 +70,7 @@
                 dateicon="event"
                 datelabel="Thời gian thanh toán*"
                 timelabel="Giờ thanh toán"
-                :disabled="readonly"
+                :disabled="update"
               />
             </v-col>
           </v-row>

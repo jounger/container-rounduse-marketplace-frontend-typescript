@@ -10,7 +10,7 @@
 
         <p>Bạn không có quyền truy cập vào tài nguyên này.</p>
 
-        <v-btn to="/login" color="primary" outlined>
+        <v-btn to="/logout" color="primary" outlined>
           Tới trang đăng nhập
         </v-btn>
       </v-col>

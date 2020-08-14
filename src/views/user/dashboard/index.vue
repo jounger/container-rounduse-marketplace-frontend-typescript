@@ -88,7 +88,7 @@
             <v-list-item v-for="n in actions" :key="n.user">
               <v-list-item-content>
                 <v-list-item-title
-                  ><v-avatar color="indigo">
+                  ><v-avatar color="gray">
                     <v-icon dark>mdi-account-circle</v-icon> </v-avatar
                   >{{ n.user }} vừa {{ n.action }}</v-list-item-title
                 >

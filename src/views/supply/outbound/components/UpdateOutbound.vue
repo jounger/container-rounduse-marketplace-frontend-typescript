@@ -90,10 +90,10 @@
                       <DatetimePicker
                         :datetime="outboundLocal.packingTime"
                         :return-value.sync="outboundLocal.packingTime"
-                        :readonly="readonly"
                         dateicon="flight_land"
                         datelabel="Ngày đóng hàng"
                         timelabel="Giờ đóng hàng"
+                        disabled
                       />
                     </v-col>
                   </v-row>
@@ -206,10 +206,10 @@
                       <DatetimePicker
                         :datetime="outboundLocal.booking.cutOffTime"
                         :return-value.sync="outboundLocal.booking.cutOffTime"
-                        :readonly="readonly"
                         dateicon="flight_takeoff"
                         datelabel="Ngày tàu cắt máng"
                         timelabel="Giờ cắt máng"
+                        disabled
                       />
                     </v-col>
                   </v-row>
@@ -386,7 +386,6 @@ import GoogleMapLoader from "@/components/googlemaps/GoogleMapLoader.vue";
 import GoogleMapAutocomplete from "@/components/googlemaps/GoogleMapAutocomplete.vue";
 import GoogleMapMarker from "@/components/googlemaps/GoogleMapMarker.vue";
 import GoogleMapMixins from "@/components/googlemaps/map-mixins";
-import { apiKey } from "@/components/googlemaps/map-constant";
 import GoogleMapDirection from "@/components/googlemaps/GoogleMapDirection.vue";
 import GoogleMapDistanceMatrix from "@/components/googlemaps/GoogleMapDistanceMatrix.vue";
 import { DistanceMatrix } from "@/components/googlemaps/map-interface";
@@ -661,7 +660,7 @@ export default class UpdateOutbound extends Vue {
   }
 
   get apiKey() {
-    return apiKey;
+    return process.env.VUE_APP_GMAP_KEY;
   }
 
   mounted() {

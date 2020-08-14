@@ -160,7 +160,16 @@
                 }}
               </template>
               <template v-slot:item.isValid="{ item }">
-                {{ item.isValid ? "Đã xác nhận" : "Chưa xác nhận" }}
+                <v-chip
+                  :style="
+                    item.isValid
+                      ? 'background-color:green'
+                      : 'background-color:orange'
+                  "
+                  dark
+                  x-small
+                  >{{ item.isValid ? "Đã xác nhận" : "Chưa xác nhận" }}</v-chip
+                >
               </template>
             </v-data-table>
           </td>

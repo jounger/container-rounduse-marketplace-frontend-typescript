@@ -26,9 +26,7 @@
           </v-toolbar>
         </template>
         <template v-slot:item.action="{ item }">
-          <v-chip style="background-color:blueviolet" dark>{{
-            item.action
-          }}</v-chip>
+          <v-chip style="background-color:blue" dark>{{ item.action }}</v-chip>
         </template>
         <template v-slot:item.sendDate="{ item }">
           {{ formatDatetime(item.sendDate) }}

@@ -14,13 +14,28 @@
       </template>
       <v-list dense>
         <v-list-item v-if="!$auth.user()" to="/login">
-          <v-list-item-title>Đăng nhập</v-list-item-title>
+          <v-list-item-icon>
+            <v-icon small>subdirectory_arrow_right</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>Đăng nhập</v-list-item-title>
+          </v-list-item-content>
         </v-list-item>
         <v-list-item v-if="!$auth.user()" to="/register">
-          <v-list-item-title>Đăng ký</v-list-item-title>
+          <v-list-item-icon>
+            <v-icon small>assignment_ind</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>Đăng ký</v-list-item-title>
+          </v-list-item-content>
         </v-list-item>
         <v-list-item v-else @click="$auth.logout()">
-          <v-list-item-title>Đăng xuất</v-list-item-title>
+          <v-list-item-icon>
+            <v-icon small>keyboard_return</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>Đăng xuất</v-list-item-title>
+          </v-list-item-content>
         </v-list-item>
       </v-list>
     </v-menu>

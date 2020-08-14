@@ -64,10 +64,10 @@
           <v-chip
             :style="
               item.status == 'BIDDING'
-                ? 'background-color:cornflowerblue'
+                ? 'background-color:blue'
                 : item.status == 'COMBINED'
-                ? 'background-color:blueviolet'
-                : 'background-color:red'
+                ? 'background-color:green'
+                : 'background-color:blue'
             "
             dark
             >{{ item.status }}</v-chip
@@ -155,13 +155,11 @@ import { getPorts } from "@/api/port";
 import { getShippingLines } from "@/api/shipping-line";
 import { IShippingLine } from "@/entity/shipping-line";
 import { IPort } from "@/entity/port";
-import DatetimePicker from "@/components/DatetimePicker.vue";
 import { addTimeToDate } from "@/utils/tool";
 
 @Component({
   mixins: [Utils],
   components: {
-    DatetimePicker,
     CreateBiddingDocument,
     UpdateBiddingDocument,
     DeleteBiddingDocument,

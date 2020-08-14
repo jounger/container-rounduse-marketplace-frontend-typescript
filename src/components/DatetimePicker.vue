@@ -15,12 +15,12 @@
             v-model="date"
             :label="datelabel"
             :prepend-icon="dateicon"
-            :readonly="disable"
+            :disabled="disabled"
             v-bind="attrs"
             v-on="on"
           ></v-text-field>
         </template>
-        <v-date-picker v-model="date" no-title scrollable v-if="!disable">
+        <v-date-picker v-model="date" no-title scrollable v-if="!disabled">
           <v-spacer></v-spacer>
           <v-btn text color="primary" @click="dateTimePicker = false"
             >Cancel</v-btn
@@ -35,7 +35,7 @@
       <v-text-field
         :label="timelabel"
         name="time"
-        :readonly="disable"
+        :disabled="disabled"
         type="time"
         v-model="time"
       ></v-text-field>
@@ -52,19 +52,12 @@ export default class DatetimePicker extends Vue {
   @Prop({ default: "event" }) readonly dateicon!: string;
   @Prop({ default: "Ngày" }) readonly datelabel!: string;
   @Prop({ default: "Giờ" }) readonly timelabel!: string;
-  @Prop(Boolean) readonly?: boolean;
+  @Prop({ default: false }) disabled?: boolean;
 
   dateTimePicker = false;
   time = "";
   t = "T";
   date = "";
-  disable = false;
-
-  created() {
-    if (this.readonly && typeof this.readonly != "undefined") {
-      this.disable = this.readonly;
-    }
-  }
 
   get datetimeLocal() {
     return this.date + this.t + this.time;

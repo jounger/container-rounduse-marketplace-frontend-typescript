@@ -1,4 +1,3 @@
-export const BACKEND_WEBSOCKET_ENDPOINT = "http://localhost:8085/stomp";
 export const INTL_TIME_OPTION = {
   year: "numeric",
   month: "short",

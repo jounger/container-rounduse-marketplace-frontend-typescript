@@ -2,7 +2,7 @@
   <v-navigation-drawer v-model="drawerSync" app clipped v-if="$auth.user()">
     <v-list dense nav>
       <v-list-item two-line link to="/profile">
-        <v-list-item-avatar color="indigo">
+        <v-list-item-avatar color="gray">
           <v-img
             v-if="$auth.user().profileImagePath"
             :src="$auth.user().profileImagePath"

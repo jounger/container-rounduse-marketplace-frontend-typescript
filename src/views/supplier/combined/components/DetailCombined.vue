@@ -372,7 +372,6 @@ import { getInboundByContainer } from "@/api/inbound";
 import { getCombined } from "@/api/combined";
 import { getPorts } from "@/api/port";
 import { IPort } from "@/entity/port";
-import { apiKey } from "@/components/googlemaps/map-constant";
 import GoogleMapLoader from "@/components/googlemaps/GoogleMapLoader.vue";
 import GoogleMapDirection from "@/components/googlemaps/GoogleMapDirection.vue";
 import { IBiddingDocument } from "@/entity/bidding-document";
@@ -591,7 +590,7 @@ export default class DetailCombined extends Vue {
   }
 
   get apiKey() {
-    return apiKey;
+    return process.env.VUE_APP_GMAP_KEY;
   }
 
   getPortAddress(portCode: string) {

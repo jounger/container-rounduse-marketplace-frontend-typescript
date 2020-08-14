@@ -99,10 +99,7 @@ import { Vue, Component, Watch } from "vue-property-decorator";
 import SockJS from "sockjs-client";
 import Stomp, { Client } from "webstomp-client";
 import { DataOptions } from "vuetify";
-import {
-  NOTIFICATION_LINK,
-  BACKEND_WEBSOCKET_ENDPOINT
-} from "@/utils/constants";
+import { NOTIFICATION_LINK } from "@/utils/constants";
 import {
   getBiddingNotification,
   getNotificationsByUser,
@@ -212,7 +209,7 @@ export default class Notification extends Vue {
   }
 
   connect() {
-    this.socket = new SockJS(BACKEND_WEBSOCKET_ENDPOINT);
+    this.socket = new SockJS(process.env.VUE_APP_ENDPOINT + "/stomp");
     this.stompClient = Stomp.over(this.socket);
     this.stompClient.debug = () => {
       // Disable Debug

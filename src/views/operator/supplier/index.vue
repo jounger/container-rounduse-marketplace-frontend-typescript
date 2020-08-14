@@ -35,7 +35,7 @@
         class="elevation-1"
       >
         <template v-slot:item.avatar="{ item }">
-          <v-avatar size="35" color="indigo">
+          <v-avatar size="35" color="gray">
             <v-img
               v-if="item.profileImagePath"
               :src="item.profileImagePath"

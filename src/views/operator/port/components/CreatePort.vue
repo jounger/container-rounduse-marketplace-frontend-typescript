@@ -121,7 +121,6 @@ import GoogleMapLoader from "@/components/googlemaps/GoogleMapLoader.vue";
 import GoogleMapAutocomplete from "@/components/googlemaps/GoogleMapAutocomplete.vue";
 import GoogleMapMarker from "@/components/googlemaps/GoogleMapMarker.vue";
 import GoogleMapMixins from "@/components/googlemaps/map-mixins";
-import { apiKey } from "@/components/googlemaps/map-constant";
 import Utils from "@/mixin/utils";
 
 @Component({
@@ -194,7 +193,7 @@ export default class CreatePort extends Vue {
   }
 
   get apiKey() {
-    return apiKey;
+    return process.env.VUE_APP_GMAP_KEY;
   }
 
   beforeDestroy() {

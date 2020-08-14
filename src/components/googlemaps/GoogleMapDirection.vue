@@ -8,7 +8,6 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import { google } from "google-maps";
-import { LIMIT_RATE } from "./map-constant";
 
 @Component
 export default class GoogleMapDirection extends Vue {
@@ -38,7 +37,7 @@ export default class GoogleMapDirection extends Vue {
       setTimeout(() => {
         if (this.directionsService)
           this.directionsService.route(val, this.rendererService);
-      }, LIMIT_RATE);
+      }, process.env.VUE_APP_GMAP_RATE);
     } else {
       console.log("GoogleMapDirection > watch");
     }

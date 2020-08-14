@@ -106,8 +106,8 @@
                       : item.status == 'REJECTED'
                       ? 'background-color:red'
                       : item.status == 'EXPIRED'
-                      ? 'background-color:cadetblue'
-                      : 'background-color:darkgoldenrod'
+                      ? 'background-color:gray'
+                      : 'background-color:blue'
                   "
                   dark
                   x-small

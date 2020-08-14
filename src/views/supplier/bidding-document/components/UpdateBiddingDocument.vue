@@ -79,7 +79,7 @@
                     dateicon="event_available"
                     datelabel="Ngày mở thầu"
                     timelabel="Giờ mở thầu"
-                    readonly
+                    disabled
                   />
                 </v-col>
                 <!-- Bid Closing -->

@@ -8,7 +8,6 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import { google } from "google-maps";
-import { LIMIT_RATE } from "./map-constant";
 
 @Component
 export default class GoogleMapDistanceMatrix extends Vue {
@@ -63,7 +62,7 @@ export default class GoogleMapDistanceMatrix extends Vue {
               cloneVal,
               this.responseService
             );
-        }, LIMIT_RATE);
+        }, process.env.VUE_APP_GMAP_RATE);
       } else {
         setTimeout(() => {
           if (this.distanceMatrixService)
@@ -71,7 +70,7 @@ export default class GoogleMapDistanceMatrix extends Vue {
               val,
               this.responseService
             );
-        }, LIMIT_RATE);
+        }, process.env.VUE_APP_GMAP_RATE);
       }
     } else {
       console.log("GoogleMapDistanceMatrix > watch");

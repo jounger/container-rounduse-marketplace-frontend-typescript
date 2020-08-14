@@ -13,7 +13,7 @@
         <v-form>
           <v-container>
             <span style="color: black; font-size:22px;"
-              >Bạn có xác nhận đã nhận tiền cho hóa đơn này?</span
+              >Bạn xác nhận đã nhận đủ tiền theo đơn này?</span
             >
             <v-divider class="mt-3"></v-divider>
             <v-list>

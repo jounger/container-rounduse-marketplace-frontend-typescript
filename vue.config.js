@@ -1,6 +1,6 @@
 module.exports = {
   transpileDependencies: ["vuetify"],
   devServer: {
-    proxy: "http://localhost:8085"
+    proxy: process.env.VUE_APP_ENDPOINT
   }
 };

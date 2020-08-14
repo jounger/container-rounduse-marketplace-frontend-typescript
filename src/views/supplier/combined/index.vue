@@ -26,9 +26,19 @@
           </v-toolbar>
         </template>
         <template v-slot:item.status="{ item }">
-          <v-chip style="background-color:blueviolet" dark>{{
-            item.outbound.status
-          }}</v-chip>
+          <v-chip
+            :style="
+              item.status == 'CREATED'
+                ? 'background-color:orange'
+                : item.status == 'BIDDING'
+                ? 'background-color:blue'
+                : item.status == 'COMBINED'
+                ? 'background-color:green'
+                : 'background-color:blue'
+            "
+            dark
+            >{{ item.outbound.status }}</v-chip
+          >
         </template>
         <template v-slot:item.packingTime="{ item }">
           {{ formatDatetime(item.outbound.packingTime) }}
@@ -69,13 +79,13 @@
               <template v-slot:item.isCanceled="{ item }">
                 <v-chip
                   :style="
-                    item.isCanceled == true
-                      ? 'background-color:orange'
+                    item.isCanceled
+                      ? 'background-color:red'
                       : 'background-color:green'
                   "
                   dark
                   x-small
-                  >{{ item.isCanceled ? "CANCELED" : "COMBINED" }}</v-chip
+                  >{{ item.isCanceled ? "Đã hủy" : "Đã ghép" }}</v-chip
                 >
               </template>
               <template v-slot:item.actions="{ item }">

@@ -32,7 +32,7 @@
         class="elevation-1"
       >
         <template v-slot:item.status="{ item }">
-          <v-chip color="orange" dark>{{ item.status }}</v-chip>
+          <v-chip color="info" dark>{{ item.status }}</v-chip>
         </template>
         <template v-slot:item.actions="{ item }">
           <v-menu :loading="item.createloading" :disabled="item.createloading">

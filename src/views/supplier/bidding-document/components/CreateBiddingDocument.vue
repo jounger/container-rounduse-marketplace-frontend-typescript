@@ -200,15 +200,10 @@ import Utils from "@/mixin/utils";
 import { isEmptyObject, addTimeToDate } from "@/utils/tool";
 import { createBiddingDocument } from "@/api/bidding-document";
 import { getOutboundByMerchant } from "@/api/outbound";
-import DatetimePicker from "@/components/DatetimePicker.vue";
-
 import { DataOptions } from "vuetify";
 
 @Component({
-  mixins: [FormValidate, Utils],
-  components: {
-    DatetimePicker
-  }
+  mixins: [FormValidate, Utils]
 })
 export default class CreateBiddingDocument extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;

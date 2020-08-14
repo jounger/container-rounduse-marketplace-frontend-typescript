@@ -59,10 +59,10 @@
               item.status == 'CREATED'
                 ? 'background-color:orange'
                 : item.status == 'BIDDING'
-                ? 'background-color:cornflowerblue'
+                ? 'background-color:blue'
                 : item.status == 'COMBINED'
-                ? 'background-color:blueviolet'
-                : 'background-color:green'
+                ? 'background-color:green'
+                : 'background-color:blue'
             "
             dark
             >{{ item.status }}</v-chip

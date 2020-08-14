@@ -79,7 +79,7 @@ export default class DetailEvidence extends Vue {
   @Prop(Boolean) finalEvidence!: boolean;
 
   downLoad(item: IEvidence) {
-    window.open("http://localhost:8085" + item.documentPath, "_blank");
+    window.open(process.env.VUE_APP_ENDPOINT + item.documentPath, "_blank");
   }
 
   async reviewEvidence(isValid: boolean) {

@@ -54,7 +54,7 @@
         </template>
         <template v-slot:item.status="{ item }">
           <v-chip :color="item.isPaid ? 'success' : 'error'" dark>{{
-            item.isPaid ? "Đã trả" : "Chưa trả"
+            item.isPaid ? "Đã xác nhận" : "Chưa xác nhận"
           }}</v-chip>
         </template>
         <template v-slot:item.paymentDate="{ item }">
@@ -174,19 +174,13 @@ export default class Payment extends Vue {
       align: "start",
       value: "id"
     },
-    { text: "Hợp đồng", value: "contract" },
+    { text: "Mã hợp đồng", value: "contract" },
     { text: "Người gửi", value: "sender" },
     { text: "Người nhận", value: "recipient" },
-    {
-      text: "Số tiền",
-      value: "amount"
-    },
-    {
-      text: "Trạng thái",
-      value: "status"
-    },
+    { text: "Số tiền", value: "amount" },
     { text: "Loại hóa đơn", value: "type" },
     { text: "Ngày thanh toán", value: "paymentDate" },
+    { text: "Trạng thái", value: "status" },
     {
       text: "Hành động",
       value: "actions",
