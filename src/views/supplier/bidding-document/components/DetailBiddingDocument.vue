@@ -95,7 +95,7 @@
                 <v-list-item-subtitle>
                   {{
                     "Cảng bốc hàng: " +
-                      biddingDocument.outbound.booking.portOfLoading
+                      biddingDocument.outbound.booking.portOfLoading.fullname
                   }}
                 </v-list-item-subtitle>
               </v-list-item-content>
@@ -107,14 +107,15 @@
               </v-list-item-icon>
               <v-list-item-content>
                 <v-list-item-title>{{
-                  "Hãng tàu: " + biddingDocument.outbound.shippingLine
+                  "Hãng tàu: " +
+                    biddingDocument.outbound.shippingLine.companyName
                 }}</v-list-item-title>
                 <v-list-item-subtitle>
                   {{
                     "Số lượng: " +
                       biddingDocument.outbound.booking.unit +
                       " x " +
-                      biddingDocument.outbound.containerType
+                      biddingDocument.outbound.containerType.name
                   }}
                 </v-list-item-subtitle>
               </v-list-item-content>
@@ -298,7 +299,7 @@
             dark
             class="mb-2"
             @click="openCreateBidDialog()"
-            v-if="$auth.check('ROLE_FORWARDER') && this.bids.length == 0"
+            v-if="$auth.check('ROLE_FORWARDER')"
           >
             Thêm mới
           </v-btn></v-card-title
@@ -503,7 +504,7 @@ export default class DetailBiddingDocument extends Vue {
       sortable: false,
       value: "id"
     },
-    { text: "Đối tác", value: "bidder" },
+    { text: "Đối tác", value: "bidder.companyName" },
     { text: "Cont qty", value: "containers.length" },
     { text: "Giá thầu", value: "bidPrice" },
     { text: "Ngày thầu", value: "bidDate" },
@@ -518,7 +519,7 @@ export default class DetailBiddingDocument extends Vue {
       value: "number",
       class: "primary"
     },
-    { text: "Tài xế", value: "driver", class: "primary" },
+    { text: "Tài xế", value: "driver.fullname", class: "primary" },
     {
       text: "Rơ moóc",
       value: "trailer.licensePlate",

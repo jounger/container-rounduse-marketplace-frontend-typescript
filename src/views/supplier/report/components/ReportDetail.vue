@@ -219,7 +219,7 @@ export default class ReportDetail extends Vue {
     const _res = await getSupplier(username);
     if (_res.data) {
       const _supplier = _res.data as ISupplier;
-      return _supplier.contactPerson;
+      return _supplier.fullname;
     }
     return username;
   }

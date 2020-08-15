@@ -312,9 +312,9 @@ export default class CreateContainer extends Vue {
       await this.getTractors(100);
       await this.getTrailers(100);
     } else {
-      await this.getDrivers(5);
-      await this.getTractors(5);
-      await this.getTrailers(5);
+      await this.getDrivers(50);
+      await this.getTractors(50);
+      await this.getTrailers(50);
     }
   }
 

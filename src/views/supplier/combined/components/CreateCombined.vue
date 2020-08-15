@@ -58,16 +58,16 @@
                     v-model="merchant"
                     prepend-icon="money"
                     type="text"
-                    label="Bên chủ hàng"
+                    label="Chủ hàng"
                     disabled
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
                   <v-text-field
-                    v-model="forwarder"
+                    v-model="forwarder.companyName"
                     prepend-icon="money"
                     type="text"
-                    label="Bên chủ xe"
+                    label="Công ty vận chuyển"
                     disabled
                   ></v-text-field>
                 </v-col>
@@ -131,6 +131,7 @@ import { IBid } from "@/entity/bid";
 import { IContract } from "@/entity/contract";
 import { DataOptions } from "vuetify";
 import { IContainer } from "@/entity/container";
+import { IForwarder } from "@/entity/forwarder";
 
 @Component({
   mixins: [FormValidate, Utils]
@@ -156,7 +157,7 @@ export default class CreateCombined extends Vue {
   editable = false;
   stepper = 1;
   merchant = "";
-  forwarder = "";
+  forwarder = null as IForwarder | null;
   valid = true;
 
   // Outbound form
@@ -182,7 +183,7 @@ export default class CreateCombined extends Vue {
       value: "number"
     },
     { text: "HSDT", value: "bid" },
-    { text: "Tài xế", value: "driver" },
+    { text: "Tài xế", value: "driver.fullname" },
     {
       text: "Rơ moóc",
       value: "trailer.licensePlate"
@@ -253,8 +254,8 @@ export default class CreateCombined extends Vue {
 
   created() {
     // TODO: API get Outbound
-    this.merchant = this.$auth.user().username;
-    this.forwarder = this.bidSync.bidder;
+    this.merchant = this.$auth.user().fullname;
+    this.forwarder = this.bidSync.bidder as IForwarder;
   }
 }
 </script>

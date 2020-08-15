@@ -43,7 +43,7 @@
             outlined
             color="success"
             @click.stop="openAddDialog(item)"
-            small
+            x-small
           >
             <v-icon left dense>add</v-icon> Đồng ý
           </v-btn>
@@ -53,7 +53,7 @@
             outlined
             color="error"
             @click.stop="openConfirmDialog(item)"
-            small
+            x-small
           >
             <v-icon left dense>clear</v-icon> Từ chối
           </v-btn>
@@ -63,7 +63,7 @@
             outlined
             color="info"
             @click.stop="openBiddingDocumentDetail(item)"
-            small
+            x-small
           >
             <v-icon left dense>details</v-icon> Chi tiết
           </v-btn>
@@ -126,8 +126,11 @@ export default class InvitedNotify extends Vue {
       sortable: false,
       value: "relatedResource.id"
     },
-    { text: "Hãng tàu", value: "relatedResource.outbound.shippingLine" },
-    { text: "Loại cont", value: "relatedResource.outbound.containerType" },
+    {
+      text: "Hãng tàu",
+      value: "relatedResource.outbound.shippingLine.companyName"
+    },
+    { text: "Loại cont", value: "relatedResource.outbound.containerType.name" },
     { text: "Giá gói thầu", value: "relatedResource.bidPackagePrice" },
     { text: "Giá sàn", value: "bidFloorPrice" },
     { text: "Mở thầu", value: "bidOpening" },

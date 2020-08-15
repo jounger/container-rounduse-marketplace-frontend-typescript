@@ -88,7 +88,7 @@
                 prepend-icon="menu"
                 v-model="reportLocal.title"
                 type="text"
-                :counter="20"
+                :counter="100"
                 :rules="[
                   minLength('Tiêu đề Report', 5),
                   maxLength('Tiêu đề Report', 100)
@@ -189,8 +189,8 @@ export default class CreateReport extends Vue {
       sortable: false,
       value: "id"
     },
-    { text: "Hãng tàu", value: "outbound.shippingLine" },
-    { text: "Loại cont", value: "outbound.containerType" },
+    { text: "Hãng tàu", value: "outbound.shippingLine.companyName" },
+    { text: "Loại cont", value: "outbound.containerType.name" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
     { text: "Giá sàn", value: "bidFloorPrice" },
     { text: "Mở thầu", value: "bidOpening" },

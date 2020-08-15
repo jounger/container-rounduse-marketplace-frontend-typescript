@@ -1,5 +1,5 @@
 <template>
-  <v-list dense>
+  <v-list dense v-if="$auth.user()">
     <template v-for="item in getNavigation">
       <v-row v-if="item.heading" :key="item.heading" align="center">
         <v-col cols="6">
@@ -8,7 +8,7 @@
           </v-subheader>
         </v-col>
         <v-col cols="6" class="text-center">
-          <a href="#!" class="body-2 black--text">EDIT</a>
+          <a href="#!" class="body-2 black--text">Chỉnh sửa</a>
         </v-col>
       </v-row>
       <v-list-group
@@ -130,25 +130,33 @@ export default class NavigationSupplier extends Vue {
     { title: "Thông báo mượn", icon: "tram", link: "/borrow-notify" }
   ];
 
+  private driverNavigation = [
+    { title: "Hàng đang vận chuyển", icon: "format_strikethrough", link: "" },
+    { title: "Lịch sử giao hàng", icon: "tram", link: "" }
+  ];
+
   private supplierRegisterNavigation = [
     { title: "Đơn đăng ký", icon: "dashboard", link: "/application" }
   ];
 
-  private defaultNavigation = [{ title: "Empty", icon: "dashboard", link: "" }];
-
   get getNavigation() {
-    if (this.$auth.user() && this.$auth.user().status == "ACTIVE") {
+    const status = this.$auth.user().status;
+    if (status == "ACTIVE") {
       if (this.$auth.check("ROLE_FORWARDER")) {
         return this.forwarderNavigation;
       } else if (this.$auth.check("ROLE_MERCHANT")) {
         return this.merchantNavigation;
       } else if (this.$auth.check("ROLE_SHIPPINGLINE")) {
         return this.shippingLineNavigation;
+      } else if (this.$auth.check("ROLE_DRIVER")) {
+        return this.driverNavigation;
       } else {
-        return this.defaultNavigation;
+        return [];
       }
-    } else {
+    } else if (status == "PENDING") {
       return this.supplierRegisterNavigation;
+    } else {
+      return [];
     }
   }
 }

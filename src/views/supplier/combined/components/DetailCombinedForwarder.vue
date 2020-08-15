@@ -533,7 +533,7 @@ export default class DetailCombinedForwarder extends Vue {
       sortable: false,
       value: "number"
     },
-    { text: "Tài xế", value: "driver" },
+    { text: "Tài xế", value: "driver.fullname" },
     { text: "Rơ mọt", value: "trailer.licensePlate" },
     { text: "Đầu kéo", value: "tractor.licensePlate" },
     {

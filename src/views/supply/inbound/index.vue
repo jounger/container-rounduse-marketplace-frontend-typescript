@@ -68,7 +68,7 @@
           </v-toolbar>
         </template>
         <template v-slot:item.unit="{ item }">
-          {{ item.billOfLading.unit + " x " + item.containerType }}
+          {{ item.billOfLading.unit + " x " + item.containerType.name }}
         </template>
         <template v-slot:item.pickUpTime="{ item }">
           {{ formatDatetime(item.pickupTime) }}
@@ -233,13 +233,13 @@ export default class Inbound extends Vue {
       value: "id"
     },
     { text: "B/L No.", value: "billOfLading.number" },
-    { text: "Hãng tàu", value: "shippingLine" },
+    { text: "Hãng tàu", value: "shippingLine.companyName" },
     { text: "Số cont đăng ký", value: "unit" },
     { text: "Thời gian lấy cont", value: "pickUpTime" },
-    { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery" },
+    { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery.fullname" },
     { text: "Nơi bốc dỡ hàng", value: "returnStation" },
     { text: "Thời gian được thuê cont", value: "freetime" },
-    { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery" },
+    { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery.fullname" },
     {
       text: "Hành động",
       value: "actions"
@@ -258,7 +258,7 @@ export default class Inbound extends Vue {
       value: "number",
       class: "elevation-1 primary"
     },
-    { text: "Tài xế", value: "driver", class: "elevation-1 primary" },
+    { text: "Tài xế", value: "driver.fullname", class: "elevation-1 primary" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate",

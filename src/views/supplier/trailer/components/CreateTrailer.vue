@@ -160,7 +160,7 @@ export default class CreateTrailer extends Vue {
       this.trailerLocal = Object.assign({}, this.trailer);
       this.getTypes(10);
     } else {
-      this.getTypes(5);
+      this.getTypes(50);
     }
   }
 

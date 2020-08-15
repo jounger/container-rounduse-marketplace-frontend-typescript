@@ -74,10 +74,7 @@
               </v-btn>
             </template>
             <v-list dense>
-              <v-list-item
-                @click="openDetailDialog(item)"
-                v-if="item.isPaid == true"
-              >
+              <v-list-item @click="openDetailDialog(item)">
                 <v-list-item-icon>
                   <v-icon small>details</v-icon>
                 </v-list-item-icon>
@@ -88,8 +85,7 @@
               <v-list-item
                 @click="openConfirmDialog(item)"
                 v-if="
-                  item.recipient == $auth.user().username &&
-                    item.isPaid == false
+                  item.recipient.id == $auth.user().id && item.isPaid == false
                 "
               >
                 <v-list-item-icon>
@@ -101,9 +97,7 @@
               </v-list-item>
               <v-list-item
                 @click="openUpdateDialog(item)"
-                v-if="
-                  item.sender == $auth.user().username && item.isPaid == false
-                "
+                v-if="item.sender.id == $auth.user().id && item.isPaid == false"
               >
                 <v-list-item-icon>
                   <v-icon small>edit</v-icon>
@@ -114,9 +108,7 @@
               </v-list-item>
               <v-list-item
                 @click="openDeleteDialog(item)"
-                v-if="
-                  item.sender == $auth.user().username && item.isPaid == false
-                "
+                v-if="item.sender.id == $auth.user().id && item.isPaid == false"
               >
                 <v-list-item-icon>
                   <v-icon small>delete</v-icon>
@@ -174,9 +166,9 @@ export default class Payment extends Vue {
       align: "start",
       value: "id"
     },
-    { text: "Mã hợp đồng", value: "contract" },
-    { text: "Người gửi", value: "sender" },
-    { text: "Người nhận", value: "recipient" },
+    { text: "Mã hợp đồng", value: "contract.id" },
+    { text: "Người gửi", value: "sender.companyName" },
+    { text: "Người nhận", value: "recipient.companyName" },
     { text: "Số tiền", value: "amount" },
     { text: "Loại hóa đơn", value: "type" },
     { text: "Ngày thanh toán", value: "paymentDate" },

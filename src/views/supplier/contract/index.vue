@@ -38,9 +38,10 @@
       </v-row>
       <v-data-table
         :headers="headers"
-        :items="combinedsWithIndex"
+        :items="combineds"
         :single-expand="singleExpand"
         :expanded.sync="expanded"
+        item-key="id"
         show-expand
         @click:row="clicked"
         :loading="loading"
@@ -102,7 +103,7 @@
                 </v-list-item-content>
               </v-list-item>
               <v-list-item
-                @click="openCreateEvidence()"
+                @click="openCreateEvidence(item)"
                 v-if="$auth.check('ROLE_FORWARDER')"
               >
                 <v-list-item-icon>
@@ -116,14 +117,15 @@
           </v-menu>
         </template>
         <template v-slot:item.merchant="{ item }">
-          {{ merchants[item.index] }}
+          {{
+            $auth.check("ROLE_MERCHANT") ? $auth.user().fullname : item.merchant
+          }}
         </template>
         <template v-slot:item.forwarder="{ item }">
-          {{
-            $auth.check("ROLE_FORWARDER")
-              ? $auth.user().username
-              : item.bid.bidder
-          }}
+          {{ item.bid.bidder.companyName }}
+        </template>
+        <template v-slot:item.contract.price="{ item }">
+          {{ currencyFormatter(item.contract.price) }}
         </template>
         <template v-slot:item.contract.required="{ item }">
           {{ item.contract.required ? "Có" : "Không" }}
@@ -159,7 +161,9 @@
               <template v-slot:item.documentPath="{ item }">
                 <v-icon>picture_as_pdf</v-icon>
                 {{
-                  item.documentPath ? item.documentPath.split("-")[1] : "N/A"
+                  item.documentPath
+                    ? item.documentPath.split("/")[4].substring(14)
+                    : "N/A"
                 }}
               </template>
               <template v-slot:item.isValid="{ item }">
@@ -192,11 +196,11 @@ import { ICombined } from "@/entity/combined";
 import DetailEvidence from "../combined/components/DetailEvidence.vue";
 import UpdateContract from "./components/UpdateContract.vue";
 import CreatePayment from "../payment/components/CreatePayment.vue";
-import { getBiddingDocumentByBid } from "@/api/bidding-document";
-import { IBid } from "@/entity/bid";
 import CreateEvidence from "../combined/components/CreateEvidence.vue";
+import Utils from "@/mixin/utils";
 
 @Component({
+  mixins: [Utils],
   components: {
     DetailEvidence,
     UpdateContract,
@@ -217,7 +221,7 @@ export default class Contract extends Vue {
   update = false;
   readonly = false;
   checkValid = false;
-  expanded: Array<IContract> = [];
+  expanded: Array<ICombined> = [];
   evidences: Array<IEvidence> = [];
   merchants: Array<string> = [];
   merchant = "";
@@ -268,7 +272,11 @@ export default class Contract extends Vue {
       class: "elevation-1 primary"
     },
     { text: "Chứng cớ", value: "documentPath", class: "elevation-1 primary" },
-    { text: "Người gửi", value: "sender", class: "elevation-1 primary" },
+    {
+      text: "Bên gửi hợp đồng",
+      value: "sender.companyName",
+      class: "elevation-1 primary"
+    },
     { text: "Hợp lệ", value: "isValid", class: "elevation-1 primary" },
     {
       text: "Hành động",
@@ -279,6 +287,7 @@ export default class Contract extends Vue {
   ];
 
   openCreatePayment(item: ICombined) {
+    this.contract = item.contract as IContract;
     this.combined = item;
     const index = this.combineds.findIndex((x: ICombined) => x.id == item.id);
     this.merchant = this.merchants[index];
@@ -295,7 +304,8 @@ export default class Contract extends Vue {
     this.dialogDetail = true;
   }
 
-  openCreateEvidence() {
+  openCreateEvidence(item: ICombined) {
+    this.contract = item.contract as IContract;
     this.dialogAddEvidence = true;
   }
 
@@ -317,22 +327,15 @@ export default class Contract extends Vue {
     this.dialogAdd = true;
   }
 
-  get combinedsWithIndex() {
-    return this.combineds.map((combineds, index) => ({
-      ...combineds,
-      index: index
-    }));
-  }
+  // async getBiddingDocument(id: number) {
+  //   const _res = await getBiddingDocumentByBid(id);
+  //   if (_res.data) {
+  //     const _biddingDocument = _res.data;
+  //     this.merchants.push(_biddingDocument.offeree);
+  //   }
+  // }
 
-  async getBiddingDocument(id: number) {
-    const _res = await getBiddingDocumentByBid(id);
-    if (_res.data) {
-      const _biddingDocument = _res.data;
-      this.merchants.push(_biddingDocument.offeree);
-    }
-  }
-
-  @Watch("options")
+  @Watch("options", { immediate: true })
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
@@ -343,12 +346,12 @@ export default class Contract extends Vue {
       if (_res.data) {
         const _combineds = _res.data.data;
         this.combineds = _combineds;
-        _combineds.forEach((x: ICombined) => {
-          const _bid = x.bid as IBid;
-          if (_bid.id) {
-            this.getBiddingDocument(_bid.id);
-          }
-        });
+        // _combineds.forEach((x: ICombined) => {
+        //   const _bid = x.bid as IBid;
+        //   if (_bid.id) {
+        //     this.getBiddingDocument(_bid.id);
+        //   }
+        // });
         this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
@@ -383,13 +386,13 @@ export default class Contract extends Vue {
         if (this.expanded.length > 0) {
           this.expanded.splice(0, this.expanded.length);
           if (value.contract) {
-            this.expanded.push(value.contract);
+            this.expanded.push(value);
             this.contract = value.contract;
             await this.onEvidenceOptionsChange(this.evidenceOptions);
           }
         } else {
           if (value.contract) {
-            this.expanded.push(value.contract);
+            this.expanded.push(value);
             this.contract = value.contract;
           }
         }

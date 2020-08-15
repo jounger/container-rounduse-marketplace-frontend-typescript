@@ -295,8 +295,8 @@ export default class Update extends Vue {
       sortable: false,
       value: "id"
     },
-    { text: "Hãng tàu", value: "outbound.shippingLine" },
-    { text: "Loại cont", value: "outbound.containerType" },
+    { text: "Hãng tàu", value: "outbound.shippingLine.companyName" },
+    { text: "Loại cont", value: "outbound.containerType.name" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
     { text: "Giá sàn", value: "bidFloorPrice" },
     { text: "Mở thầu", value: "bidOpening" },
@@ -310,7 +310,7 @@ export default class Update extends Vue {
       sortable: false,
       value: "number"
     },
-    { text: "Tài xế", value: "driver" },
+    { text: "Tài xế", value: "driver.fullname" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate"

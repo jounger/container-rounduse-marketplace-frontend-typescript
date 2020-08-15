@@ -204,11 +204,11 @@ export default class ListContainer extends Vue {
       sortable: false,
       value: "id"
     },
-    { text: "Hãng tàu", value: "shippingLine" },
-    { text: "Loại cont", value: "containerType" },
+    { text: "Hãng tàu", value: "shippingLine.companyName" },
+    { text: "Loại cont", value: "containerType.name" },
     { text: "Time lấy cont", value: "pickUpTime" },
     { text: "B/L No.", value: "billOfLading.number" },
-    { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery" },
+    { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery.fullname" },
     { text: "Số lượng cont đăng ký", value: "billOfLading.unit" }
   ];
   // Container form
@@ -220,7 +220,7 @@ export default class ListContainer extends Vue {
       value: "number",
       class: "elevation-1 primary"
     },
-    { text: "Tài xế", value: "driver", class: "elevation-1 primary" },
+    { text: "Tài xế", value: "driver.fullname", class: "elevation-1 primary" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate",
@@ -240,7 +240,7 @@ export default class ListContainer extends Vue {
       sortable: false,
       value: "number"
     },
-    { text: "Tài xế", value: "driver" },
+    { text: "Tài xế", value: "driver.fullname" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate"

@@ -189,8 +189,8 @@ export default class Bid extends Vue {
       sortable: false,
       value: "id"
     },
-    { text: "Hãng tàu", value: "outbound.shippingLine" },
-    { text: "Loại cont", value: "outbound.containerType" },
+    { text: "Hãng tàu", value: "outbound.shippingLine.companyName" },
+    { text: "Loại cont", value: "outbound.containerType.name" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
     { text: "Giá sàn", value: "bidFloorPrice" },
     { text: "Ngày mở thầu", value: "bidOpening" },

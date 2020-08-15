@@ -47,6 +47,8 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   response => {
     console.log(`RESPONSE: ${response.config.url}`, response);
+
+    setTimeout(() => loading.setLoading(false), 200);
     if (
       response.config.method?.toUpperCase() != "GET" &&
       response.config.url?.includes("/notification") == false &&
@@ -62,24 +64,26 @@ instance.interceptors.response.use(
       snackbar.setDisplay(true);
     }
 
-    setTimeout(() => loading.setLoading(false), 200);
     return response;
   },
   error => {
     console.log("err" + error); // for debug
-    if (error.response.status == 401) {
-      router.push("/401");
-      return error;
-    }
-
-    snackbar.setSnackbar({
-      text: getErrorMessage(error),
-      color: error.response.status == 500 ? "error" : "warning",
-      timeout: 5 * 1000
-    });
-    snackbar.setDisplay(true);
 
     setTimeout(() => loading.setLoading(false), 200);
+    if (error.response) {
+      if (error.response.status == 401) {
+        router.push("/401");
+        return error;
+      }
+
+      snackbar.setSnackbar({
+        text: getErrorMessage(error),
+        color: error.response.status == 500 ? "error" : "warning",
+        timeout: 5 * 1000
+      });
+      snackbar.setDisplay(true);
+    }
+
     return error;
   }
 );

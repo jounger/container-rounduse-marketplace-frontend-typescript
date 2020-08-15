@@ -6,7 +6,7 @@
     <v-btn v-if="$auth.user()" text to="/dashboard">Dashboard</v-btn>
 
     <v-spacer></v-spacer>
-    <v-menu left bottom :offset-x="true">
+    <v-menu left bottom :offset-y="true">
       <template v-slot:activator="{ on, attrs }">
         <v-btn icon v-bind="attrs" v-on="on">
           <v-icon>mdi-dots-vertical</v-icon>
@@ -15,7 +15,7 @@
       <v-list dense>
         <v-list-item v-if="!$auth.user()" to="/login">
           <v-list-item-icon>
-            <v-icon small>subdirectory_arrow_right</v-icon>
+            <v-icon small>trending_flat</v-icon>
           </v-list-item-icon>
           <v-list-item-content>
             <v-list-item-title>Đăng nhập</v-list-item-title>

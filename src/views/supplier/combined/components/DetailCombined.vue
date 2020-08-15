@@ -43,7 +43,7 @@
                       :router="{
                         origin: shippingInfo.outbound.packingStation,
                         destination: getPortAddress(
-                          shippingInfo.outbound.booking.portOfLoading
+                          shippingInfo.outbound.booking.portOfLoading.fullname
                         ),
                         travelMode: 'DRIVING'
                       }"
@@ -60,7 +60,8 @@
                 <v-card-text>
                   <v-stepper value="2" vertical class="elevation-0 pb-0">
                     <v-stepper-step step="1" complete
-                      >Cảng lấy cont: {{ inbound.billOfLading.portOfDelivery }}
+                      >Cảng lấy cont:
+                      {{ inbound.billOfLading.portOfDelivery.fullname }}
                       <small class="mt-1"
                         >Thời gian lấy:
                         {{ formatDatetime(inbound.pickupTime) }}</small
@@ -90,7 +91,7 @@
                     <v-stepper-content step="3"></v-stepper-content>
                     <v-stepper-step step="4"
                       >Cảng bốc hàng:
-                      {{ shippingInfo.outbound.booking.portOfLoading }}
+                      {{ shippingInfo.outbound.booking.portOfLoading.fullname }}
                       <small class="mt-1"
                         >Thời gian Cut-off:
                         {{
@@ -131,6 +132,7 @@
                           {{
                             "Cảng bốc hàng: " +
                               shippingInfo.outbound.booking.portOfLoading
+                                .fullname
                           }}
                         </v-list-item-subtitle>
                       </v-list-item-content>
@@ -142,14 +144,15 @@
                       </v-list-item-icon>
                       <v-list-item-content>
                         <v-list-item-title>{{
-                          "Hãng tàu: " + shippingInfo.outbound.shippingLine
+                          "Hãng tàu: " +
+                            shippingInfo.outbound.shippingLine.companyName
                         }}</v-list-item-title>
                         <v-list-item-subtitle>
                           {{
                             "Số lượng: " +
                               shippingInfo.outbound.booking.unit +
                               " x " +
-                              shippingInfo.outbound.containerType
+                              shippingInfo.outbound.containerType.name
                           }}
                         </v-list-item-subtitle>
                       </v-list-item-content>
@@ -218,10 +221,10 @@
                     </v-list-item-icon>
                     <v-list-item-content>
                       <v-list-item-title v-if="biddingDocument">{{
-                        "Bên chủ hàng: " + biddingDocument.offeree
+                        "Bên chủ hàng: " + biddingDocument.offeree.companyName
                       }}</v-list-item-title>
                       <v-list-item-subtitle>
-                        {{ "Bên chủ xe: " + combined.bid.bidder }}
+                        {{ "Bên chủ xe: " + combined.bid.bidder.companyName }}
                       </v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
@@ -434,7 +437,8 @@ export default class DetailCombined extends Vue {
       sortable: false,
       value: "container.number"
     },
-    { text: "Tài xế", value: "container.driver" },
+    { text: "Tài xế", value: "container.driver.fullname" },
+    { text: "SĐT Tài xế", value: "container.driver.phone" },
     {
       text: "Rơ mọt",
       value: "container.trailer.licensePlate"
@@ -442,6 +446,10 @@ export default class DetailCombined extends Vue {
     {
       text: "Đầu kéo",
       value: "container.tractor.licensePlate"
+    },
+    {
+      text: "Trạng thái",
+      value: "status"
     },
     {
       text: "Hành động",

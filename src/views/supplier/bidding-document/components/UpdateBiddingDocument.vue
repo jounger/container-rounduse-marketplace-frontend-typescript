@@ -54,7 +54,7 @@
                 {{ item.booking.isFcl ? "Có" : "Không" }}
               </template>
               <template v-slot:item.unit="{ item }">
-                {{ item.booking.unit + " x " + item.containerType }}
+                {{ item.booking.unit + " x " + item.containerType.name }}
               </template>
             </v-data-table>
             <v-btn
@@ -217,12 +217,12 @@ export default class UpdateBiddingDocument extends Vue {
       value: "id"
     },
     { text: "Booking No.", value: "booking.number" },
-    { text: "Hãng tàu", value: "shippingLine" },
+    { text: "Hãng tàu", value: "shippingLine.companyName" },
     { text: "Trạng thái", value: "status" },
     { text: "Thời gian đóng hàng", value: "packingTime" },
     { text: "Thời gian tàu chạy", value: "cutOffTime" },
     { text: "Nơi đóng hàng", value: "packingStation" },
-    { text: "Cảng đóng hàng", value: "booking.portOfLoading" },
+    { text: "Cảng đóng hàng", value: "booking.portOfLoading.fullname" },
     { text: "Khối lượng hàng", value: "grossWeight" },
     { text: "Số cont", value: "unit" },
     { text: "FCL", value: "fcl" }

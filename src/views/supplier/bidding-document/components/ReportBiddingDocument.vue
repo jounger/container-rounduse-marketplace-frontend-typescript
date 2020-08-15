@@ -90,7 +90,7 @@
                     "Số lượng: " +
                       biddingDocument.outbound.booking.unit +
                       " x " +
-                      biddingDocument.outbound.containerType
+                      biddingDocument.outbound.containerType.name
                   }}
                 </v-list-item-subtitle>
               </v-list-item-content>
@@ -415,7 +415,7 @@ export default class ReportBiddingDocument extends Vue {
       value: "number",
       class: "primary"
     },
-    { text: "Tài xế", value: "driver", class: "primary" },
+    { text: "Tài xế", value: "driver.fullname", class: "primary" },
     {
       text: "Rơ moóc",
       value: "trailer.licensePlate",

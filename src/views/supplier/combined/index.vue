@@ -38,7 +38,11 @@
           {{ item.outbound.booking.isFcl ? "Có" : "Không" }}
         </template>
         <template v-slot:item.unit="{ item }">
-          {{ item.outbound.booking.unit + " x " + item.outbound.containerType }}
+          {{
+            item.outbound.booking.unit +
+              " x " +
+              item.outbound.containerType.name
+          }}
         </template>
         <!-- EDITING -->
         <template v-slot:expanded-item="{ headers }">
@@ -137,13 +141,13 @@ export default class Combined extends Vue {
       sortable: false,
       value: "id"
     },
-    { text: "Hãng tàu", value: "outbound.shippingLine" },
+    { text: "Hãng tàu", value: "outbound.shippingLine.companyName" },
     { text: "Số cont", value: "unit" },
     { text: "Khối lượng hàng", value: "grossWeight" },
     { text: "Thời gian đóng hàng", value: "packingTime" },
     { text: "Nơi đóng hàng", value: "outbound.packingStation" },
     { text: "Thời gian Cut-off", value: "cutOffTime" },
-    { text: "Cảng trả hàng", value: "outbound.booking.portOfLoading" }
+    { text: "Cảng trả hàng", value: "outbound.booking.portOfLoading.fullname" }
   ];
   combinedHeaders = [
     {
@@ -152,7 +156,7 @@ export default class Combined extends Vue {
       sortable: false,
       value: "id"
     },
-    { text: "Nhà thầu", value: "bid.bidder" },
+    { text: "Nhà thầu", value: "bid.bidder.companyName" },
     { text: "Ngày trúng thầu", value: "bid.dateOfDecision" },
     { text: "Giá trúng thầu", value: "bid.bidPrice" },
     { text: "Y/c hợp đồng", value: "contract.required" },

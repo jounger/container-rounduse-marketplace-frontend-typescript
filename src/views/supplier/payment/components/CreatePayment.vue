@@ -120,6 +120,7 @@ import { IBid } from "@/entity/bid";
 import Utils from "@/mixin/utils";
 import DatetimePicker from "@/components/DatetimePicker.vue";
 import { addTimeToDate } from "@/utils/tool";
+import { IForwarder } from "@/entity/forwarder";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -139,7 +140,7 @@ export default class CreatePayment extends Vue {
 
   dateInit = addTimeToDate(new Date().toISOString());
   paymentLocal = {
-    sender: this.$auth.user().username,
+    sender: this.$auth.user().fullname,
     recipient: "",
     detail: "",
     amount: 0,
@@ -155,7 +156,8 @@ export default class CreatePayment extends Vue {
       this.types = ["Tiền phạt", "Tiền phí"];
       if (this.combined) {
         const _bid = this.combined.bid as IBid;
-        this.paymentLocal.recipient = _bid.bidder;
+        const _bidder = _bid.bidder as IForwarder;
+        this.paymentLocal.recipient = _bidder.username;
       }
     }
     if (this.$auth.check("ROLE_FORWARDER")) {

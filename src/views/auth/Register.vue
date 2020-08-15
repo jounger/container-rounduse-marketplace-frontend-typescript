@@ -151,7 +151,7 @@
               <v-col cols="12" md="6">
                 <v-text-field
                   label="Người liên hệ*"
-                  name="contactPerson"
+                  name="fullname"
                   prepend-icon="add_ic_call"
                   type="text"
                   :counter="50"
@@ -159,7 +159,7 @@
                     minLength('Người liên hệ', 5),
                     maxLength('Người liên hệ', 50)
                   ]"
-                  v-model="supplier.contactPerson"
+                  v-model="supplier.fullname"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
@@ -276,7 +276,7 @@ export default class Register extends Vue {
     phone: "",
     address: "",
     website: "",
-    contactPerson: "",
+    fullname: "",
     companyName: "",
     companyCode: "",
     companyDescription: "",

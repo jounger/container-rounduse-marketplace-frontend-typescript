@@ -134,7 +134,7 @@
               <v-row>
                 <v-col cols="12" md="6">
                   <v-text-field
-                    v-model="shippingLineLocal.contactPerson"
+                    v-model="shippingLineLocal.fullname"
                     prepend-icon="add_ic_call"
                     :counter="50"
                     :rules="[

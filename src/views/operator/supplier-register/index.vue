@@ -120,7 +120,7 @@ export default class Supplier extends Vue {
       value: "username"
     },
     { text: "Email", value: "email" },
-    { text: "Người liên hệ", value: "contactPerson" },
+    { text: "Người liên hệ", value: "fullname" },
     { text: "Tên công ty", value: "companyName" },
     { text: "Mã số thuế", value: "tin" },
     { text: "Trang web", value: "website" },

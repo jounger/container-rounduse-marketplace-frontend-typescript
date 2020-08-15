@@ -81,7 +81,7 @@
           {{ item.booking.isFcl ? "Có" : "Không" }}
         </template>
         <template v-slot:item.unit="{ item }">
-          {{ item.booking.unit + " x " + item.containerType }}
+          {{ item.booking.unit + " x " + item.containerType.name }}
         </template>
         <template v-slot:item.actions="{ item }">
           <v-menu :close-on-click="true">
@@ -187,13 +187,13 @@ export default class Outbound extends Vue {
       value: "id"
     },
     { text: "Booking No.", value: "booking.number" },
-    { text: "Hãng tàu", value: "shippingLine" },
+    { text: "Hãng tàu", value: "shippingLine.companyName" },
     { text: "Số cont", value: "unit" },
     { text: "Khối lượng hàng", value: "grossWeight" },
     { text: "Thời gian đóng hàng", value: "packingTime" },
     { text: "Nơi đóng hàng", value: "packingStation" },
     { text: "Thời gian Cut-off", value: "cutOffTime" },
-    { text: "Cảng đóng hàng", value: "booking.portOfLoading" },
+    { text: "Cảng đóng hàng", value: "booking.portOfLoading.fullname" },
     { text: "FCL", value: "fcl" },
     { text: "Trạng thái", value: "status" },
     {

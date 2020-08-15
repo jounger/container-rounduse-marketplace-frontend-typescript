@@ -15,8 +15,8 @@
                 name="sender"
                 prepend-icon="person"
                 type="text"
-                readonly
-                v-model="evidence.sender"
+                disabled
+                v-model="evidence.sender.companyName"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -26,22 +26,14 @@
                 label="Chứng cứ"
                 name="evidence"
                 prepend-icon="picture_as_pdf"
-                readonly
-                v-model="evidence.documentPath.split('-')[1]"
+                disabled
+                v-model="documentPath"
               ></v-text-field>
             </v-col>
-            <v-col cols="12" md="4">
+            <v-col cols="12" md="4" class="mt-3">
               <v-btn color="primary" @click.stop="downLoad(evidence)"
                 ><v-icon>cloud_download</v-icon> Tải xuống</v-btn
               >
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" md="11">
-              <span style="color: green" v-if="evidence.isValid"
-                >Đã xác nhận
-              </span>
-              <span style="color: red" v-else>Chưa xác nhận </span>
             </v-col>
           </v-row>
         </v-form>
@@ -80,6 +72,12 @@ export default class DetailEvidence extends Vue {
 
   downLoad(item: IEvidence) {
     window.open(process.env.VUE_APP_ENDPOINT + item.documentPath, "_blank");
+  }
+
+  get documentPath() {
+    return this.evidence
+      ? this.evidence.documentPath.split("/")[4].substring(14)
+      : "";
   }
 
   async reviewEvidence(isValid: boolean) {

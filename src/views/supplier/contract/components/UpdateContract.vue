@@ -18,8 +18,8 @@
                 name="merchant"
                 prepend-icon="person"
                 type="text"
-                readonly
-                v-model="merchant"
+                disabled
+                v-model="$auth.user().fullname"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -31,7 +31,7 @@
                 prepend-icon="person"
                 type="text"
                 disabled
-                v-model="combined.bid.bidder"
+                v-model="combined.bid.bidder.companyName"
               ></v-text-field>
             </v-col>
           </v-row>

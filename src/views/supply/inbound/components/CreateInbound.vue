@@ -228,7 +228,7 @@
                         prepend-icon="gesture"
                         type="string"
                         label="Mã hàng nhập"
-                        readonly
+                        disabled
                       ></v-text-field
                     ></v-col>
                   </v-row>
@@ -510,7 +510,7 @@ export default class CreateInbound extends Vue {
       sortable: false,
       value: "number"
     },
-    { text: "Tài xế", value: "driver" },
+    { text: "Tài xế", value: "driver.fullname" },
     { text: "Rơ mọt", value: "trailer" },
     { text: "Đầu kéo", value: "tractor" },
     {
@@ -773,9 +773,9 @@ export default class CreateInbound extends Vue {
   }
 
   async created() {
-    await this.getShippingLines(5);
-    await this.getContainerTypes(5);
-    await this.getPorts(5);
+    await this.getShippingLines(50);
+    await this.getContainerTypes(50);
+    await this.getPorts(50);
     const _res = await getSupplier(this.$auth.user().username);
     if (_res.data) {
       const _supplier = _res.data;

@@ -155,7 +155,7 @@ export default class CreateRole extends Vue {
       this.roleLocal = Object.assign({}, this.role);
       await this.getPermissions(100);
     } else {
-      await this.getPermissions(5);
+      await this.getPermissions(50);
     }
   }
   get permissionsToString() {

@@ -18,7 +18,7 @@
         </v-list-item-avatar>
 
         <v-list-item-content>
-          <v-list-item-title>{{ fullname }}</v-list-item-title>
+          <v-list-item-title>{{ $auth.user().fullname }}</v-list-item-title>
           <v-list-item-subtitle>
             <v-icon small color="success">security</v-icon>
             {{ getUserRole }}</v-list-item-subtitle
@@ -56,12 +56,6 @@
 import { Vue, Component, PropSync } from "vue-property-decorator";
 import NavigationOperator from "./NavigationOperator.vue";
 import NavigationSupplier from "./NavigationSupplier.vue";
-import { getOperatorByUsername } from "@/api/operator";
-import { IOperator } from "@/entity/operator";
-import { getSupplier } from "@/api/supplier";
-import { getShippingLine } from "@/api/shipping-line";
-import { ISupplier } from "@/entity/supplier";
-import { IShippingLine } from "@/entity/shipping-line";
 
 @Component({
   components: {
@@ -76,31 +70,6 @@ export default class Navigation extends Vue {
   protected generalNavigation = [
     { title: "Trang cá nhân", icon: "account_circle", link: "/profile" }
   ];
-  fullname = "";
-
-  async getFullName() {
-    if (this.$auth.user() && this.$auth.user().username) {
-      if (this.$auth.check(["ROLE_ADMIN", "ROLE_MODERATOR"])) {
-        const _res = await getOperatorByUsername(this.$auth.user().username);
-        if (_res.data) {
-          const _operator = _res.data as IOperator;
-          this.fullname = _operator.fullname;
-        }
-      } else if (this.$auth.check(["ROLE_FORWARDER", "ROLE_MERCHANT"])) {
-        const _res = await getSupplier(this.$auth.user().username);
-        if (_res.data) {
-          const _supplier = _res.data as ISupplier;
-          this.fullname = _supplier.contactPerson;
-        }
-      } else if (this.$auth.check(["ROLE_FORWARDER"])) {
-        const _res = await getShippingLine(this.$auth.user().id);
-        if (_res.data) {
-          const _shippingLine = _res.data as IShippingLine;
-          this.fullname = _shippingLine.contactPerson;
-        }
-      }
-    }
-  }
 
   get getUserRole() {
     const roles = this.$auth.user().roles;
@@ -125,7 +94,6 @@ export default class Navigation extends Vue {
     if (this.$auth.check(["ROLE_ADMIN", "ROLE_MODERATOR"])) {
       this.navigation = NavigationOperator;
     }
-    await this.getFullName();
   }
 }
 </script>

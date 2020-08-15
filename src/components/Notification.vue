@@ -146,11 +146,10 @@ export default class Notification extends Vue {
     }
     if (location.pathname == ROUTER) {
       location.reload();
-      return;
     } else {
-      console.log(ROUTER);
       this.$router.push(ROUTER);
     }
+    return;
   }
 
   seenAllNotification() {
@@ -255,23 +254,14 @@ export default class Notification extends Vue {
     // CONNECT WEBSOCKET
     if (this.$auth.check("ROLE_MODERATOR")) {
       this.notificationSubscribe.push(NOTIFICATION_LINK.REPORT);
-    }
-    if (this.$auth.check("ROLE_FORWARDER")) {
+    } else if (this.$auth.check(["ROLE_FORWARDER", "ROLE_MERCHANT"])) {
       this.notificationSubscribe.push(
         NOTIFICATION_LINK.BIDDING,
         NOTIFICATION_LINK.REPORT
       );
-    }
-    if (this.$auth.check("ROLE_MERCHANT")) {
-      this.notificationSubscribe.push(
-        NOTIFICATION_LINK.BIDDING,
-        NOTIFICATION_LINK.REPORT
-      );
-    }
-    if (this.$auth.check("ROLE_SHIPPINGLINE")) {
+    } else if (this.$auth.check("ROLE_SHIPPINGLINE")) {
       this.notificationSubscribe.push(NOTIFICATION_LINK.SHIPPING_LINE);
-    }
-    if (this.$auth.check("ROLE_DRIVER")) {
+    } else if (this.$auth.check("ROLE_DRIVER")) {
       this.notificationSubscribe.push(NOTIFICATION_LINK.DRIVER);
     } else {
       console.log("You're not in subscribe list!");

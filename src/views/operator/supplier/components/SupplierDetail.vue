@@ -101,10 +101,10 @@
             <v-col cols="12" md="6">
               <v-text-field
                 label="Người liên hệ"
-                name="contactPerson"
+                name="fullname"
                 prepend-icon="add_ic_call"
                 type="text"
-                v-model="supplier.contactPerson"
+                v-model="supplier.fullname"
                 readonly
               ></v-text-field>
             </v-col>

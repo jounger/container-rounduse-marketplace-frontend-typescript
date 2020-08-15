@@ -58,7 +58,11 @@
           </v-toolbar>
         </template>
         <template v-slot:item.unit="{ item }">
-          {{ item.outbound.booking.unit + " x " + item.outbound.containerType }}
+          {{
+            item.outbound.booking.unit +
+              " x " +
+              item.outbound.containerType.name
+          }}
         </template>
         <template v-slot:item.status="{ item }">
           <v-chip
@@ -208,7 +212,7 @@ export default class BiddingDocument extends Vue {
       value: "id"
     },
     { text: "Mã hàng xuất", value: "outbound.code" },
-    { text: "Hãng tàu", value: "outbound.shippingLine" },
+    { text: "Hãng tàu", value: "outbound.shippingLine.companyName" },
     { text: "Số cont", value: "unit" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
     { text: "Đóng thầu", value: "bidClosing" },

@@ -1,6 +1,7 @@
 export interface IUser {
   id?: number;
   username: string;
+  fullname: string;
   email: string;
   phone: string;
   roles: Array<string>;

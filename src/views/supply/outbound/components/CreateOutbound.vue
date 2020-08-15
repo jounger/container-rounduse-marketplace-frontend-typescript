@@ -241,7 +241,7 @@
                         prepend-icon="gesture"
                         type="string"
                         label="Mã hàng xuất"
-                        readonly
+                        disabled
                       ></v-text-field
                     ></v-col>
                   </v-row>
@@ -624,9 +624,9 @@ export default class CreateOutbound extends Vue {
 
   async created() {
     // API GET Ports
-    await this.getShippingLines(5);
-    await this.getContainerTypes(5);
-    await this.getPorts(5);
+    await this.getShippingLines(50);
+    await this.getContainerTypes(50);
+    await this.getPorts(50);
     const _res = await getSupplier(this.$auth.user().username);
     if (_res.data) {
       const _supplier = _res.data;
