@@ -1,5 +1,5 @@
-import { IOutbound } from './outbound';
-import { IContainer } from './container';
+import { IOutbound } from "./outbound";
+import { IContainer } from "./container";
 export interface IShippingInfo {
   id?: number;
   outbound: IOutbound;

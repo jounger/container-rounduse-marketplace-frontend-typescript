@@ -11,7 +11,7 @@
 
       <v-divider></v-divider>
 
-      <v-card-actions>
+      <v-card-actions class="justify-space-between">
         <v-spacer></v-spacer>
         <v-btn color="primary" text @click="handleClick()">
           Confirm

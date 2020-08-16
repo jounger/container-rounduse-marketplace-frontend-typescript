@@ -37,7 +37,6 @@
         disable-sort
         class="elevation-1"
       >
-        <!--  -->
         <template v-slot:top>
           <v-toolbar flat color="white">
             <v-toolbar-title>Danh sách hãng tàu</v-toolbar-title>

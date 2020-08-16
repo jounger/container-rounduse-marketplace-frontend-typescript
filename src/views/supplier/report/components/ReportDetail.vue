@@ -2,25 +2,24 @@
   <v-content>
     <v-row justify="center">
       <v-card class="mx-12 my-5" width="800" v-if="report">
-        <v-row justify="center">
-          <ChangeStatusReport
-            v-if="dialogConfirm"
-            :dialogConfirm.sync="dialogConfirm"
-            :report.sync="report"
-            :status="status"
-          />
-        </v-row>
-
         <v-row>
-          <v-col cols="12" sm="6" md="4">
-            <v-list-item>
-              <v-list-item-avatar>
-                <v-img src="@/assets/images/ava.jpg" />
+          <v-col cols="12" md="11">
+            <v-list-item two-line>
+              <v-list-item-avatar color="indigo">
+                <v-img
+                  v-if="report.sender.profileImagePath"
+                  :src="report.sender.profileImagePath"
+                ></v-img>
+                <span v-else class="white--text headline">{{
+                  report.sender.username
+                    ? report.sender.username.substring(0, 1).toUpperCase()
+                    : ""
+                }}</span>
               </v-list-item-avatar>
               <v-list-item-content>
                 <v-list-item-title
                   ><span style="font-weight:bold;">{{
-                    forwarderFullname
+                    report.sender.fullname
                   }}</span></v-list-item-title
                 >
                 <v-list-item-subtitle>{{
@@ -29,179 +28,278 @@
               </v-list-item-content>
             </v-list-item>
           </v-col>
+          <v-spacer></v-spacer>
+          <v-col cols="12" md="1">
+            <v-menu :close-on-click="true">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn color="primary" icon outlined v-bind="attrs" v-on="on">
+                  <v-icon>mdi-dots-vertical</v-icon>
+                </v-btn>
+              </template>
+              <v-list dense :offset-y="true">
+                <v-list-item @click="openBiddingDocumentDetail">
+                  <v-list-item-icon>
+                    <v-icon small>edit</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>Xem HSMT</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item
+                  @click="openConfirmDialog('REJECTED')"
+                  v-if="
+                    $auth.check('ROLE_MODERATOR') &&
+                      ['PENDING', 'UPDATED'].includes(report.status)
+                  "
+                >
+                  <v-list-item-icon>
+                    <v-icon small>close</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>Từ chối</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item
+                  @click="openConfirmDialog('CLOSED')"
+                  v-if="
+                    $auth.check('ROLE_MODERATOR') && report.status == 'RESOLVED'
+                  "
+                >
+                  <v-list-item-icon>
+                    <v-icon small>edit</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>Đóng Report</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item
+                  @click="openConfirmDialog('RESOLVED')"
+                  v-if="
+                    $auth.check('ROLE_FORWARDER') &&
+                      ['PENDING', 'UPDATED'].includes(report.status)
+                  "
+                >
+                  <v-list-item-icon>
+                    <v-icon small>delete</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>Đóng Report</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-col>
         </v-row>
-        <v-list>
-          <v-list-item>
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title style="font-weight:bold;"
+              >{{ report.title }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{ report.detail }}</v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+        <v-divider></v-divider>
+        <div
+          class="text-center"
+          v-if="options.page < serverSideOptions.totalPages"
+        >
+          <v-btn
+            class="ma-2"
+            :loading="loading"
+            :disabled="loading"
+            @click.stop="seeMore()"
+            outlined
+            color="indigo"
+            small
+            >Xem thêm...</v-btn
+          >
+        </div>
+        <v-list dense>
+          <v-list-item
+            three-line
+            :feedback="item"
+            v-for="item in feedbacks"
+            :key="item.id"
+          >
+            <v-list-item-avatar color="indigo">
+              <v-img
+                v-if="item.sender.profileImagePath"
+                :src="item.sender.profileImagePath"
+              ></v-img>
+              <span v-else class="white--text headline">{{
+                item.sender.username
+                  ? item.sender.username.substring(0, 1).toUpperCase()
+                  : ""
+              }}</span>
+            </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title style="font-weight:bold;"
-                >Tiêu đề
-                <v-menu :close-on-click="true">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn text v-bind="attrs" v-on="on" class="ml-10">
-                      <span style="margin-bottom: 10px;">...</span>
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-item @click="viewDetailBiddingDocument()">
-                      <v-list-item-icon>
-                        <v-icon small>edit</v-icon>
-                      </v-list-item-icon>
-                      <v-list-item-content>
-                        <v-list-item-title>Xem HSMT</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item
-                      @click="openConfirmDialog('REJECTED')"
-                      v-if="
-                        $auth.check('ROLE_MODERATOR') &&
-                          (report.status == 'PENDING' ||
-                            report.status == 'UPDATED')
-                      "
-                    >
-                      <v-list-item-icon>
-                        <v-icon small>close</v-icon>
-                      </v-list-item-icon>
-                      <v-list-item-content>
-                        <v-list-item-title>Từ chối</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item
-                      @click="openConfirmDialog('CLOSED')"
-                      v-if="
-                        $auth.check('ROLE_MODERATOR') &&
-                          report.status == 'RESOLVED'
-                      "
-                    >
-                      <v-list-item-icon>
-                        <v-icon small>edit</v-icon>
-                      </v-list-item-icon>
-                      <v-list-item-content>
-                        <v-list-item-title>Đóng Report</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item
-                      @click="openConfirmDialog('RESOLVED')"
-                      v-if="
-                        $auth.check('ROLE_FORWARDER') &&
-                          (report.status == 'PENDING' ||
-                            report.status == 'UPDATED')
-                      "
-                    >
-                      <v-list-item-icon>
-                        <v-icon small>delete</v-icon>
-                      </v-list-item-icon>
-                      <v-list-item-content>
-                        <v-list-item-title>Đóng Report</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-menu></v-list-item-title
-              >
-              <v-list-item-subtitle>{{ report.title }}</v-list-item-subtitle>
-            </v-list-item-content> </v-list-item
-          ><v-list-item>
-            <v-list-item-content>
-              <v-list-item-title style="font-weight:bold;"
-                >Chi tiết</v-list-item-title
-              >
-              <v-list-item-subtitle>{{ report.detail }}</v-list-item-subtitle>
+              <v-list-item-title>{{
+                item.sender.fullname || "N/A"
+              }}</v-list-item-title>
+              <v-list-item-subtitle>{{ item.message }} </v-list-item-subtitle>
+              <v-list-item-subtitle
+                >{{ item.satisfactionPoints }}
+              </v-list-item-subtitle>
             </v-list-item-content>
+            <v-spacer></v-spacer>
+            <v-menu :close-on-click="true">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn color="primary" icon dense v-bind="attrs" v-on="on">
+                  <v-icon>mdi-dots-vertical</v-icon>
+                </v-btn>
+              </template>
+              <v-list dense :offset-y="true">
+                <v-list-item
+                  @click="openMarkDialog(item)"
+                  v-if="
+                    item.sender.roles.includes('ROLE_MODERATOR') &&
+                      $auth.check('ROLE_FORWARDER')
+                  "
+                >
+                  <v-list-item-icon>
+                    <v-icon small>edit</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>Đánh giá phản hồi</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item
+                  @click="openDeleteDialog(item)"
+                  v-if="item.sender.username == $auth.user().username"
+                >
+                  <v-list-item-icon>
+                    <v-icon small>delete</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>Xóa bỏ</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list></v-menu
+            >
           </v-list-item>
         </v-list>
-        <v-divider></v-divider>
-        <v-card-title>Phản hồi</v-card-title>
-        <a
-          style="margin-left: 20px;"
-          @click="loadMoreFeedbacks()"
-          v-if="seeMore"
-          >Xem thêm Phản hồi</a
-        >
-        <v-list dense nav v-for="(item, index) in feedbacks" :key="index">
-          <UserFeedback
-            :item="item"
-            :report="report"
-            :forwarderFullname="forwarderFullname"
-            :feedbacks.sync="feedbacks"
-            :feedbackRecipient.sync="feedbackLocal.recipient"
-            :showCreateFeedback.sync="showCreateFeedback"
-            :recipientLabel.sync="recipient"
-            :focus.sync="focus"
-          />
-        </v-list>
         <v-row
-          style="margin-left:-2px;margin-right:2px;"
           v-if="
             report.status != 'REJECTED' &&
               report.status != 'CLOSED' &&
-              ($auth.check('ROLE_MODERATOR') || showCreateFeedback)
+              $auth.check('ROLE_MODERATOR')
           "
+          align="center"
         >
-          <v-col cols="12" md="1" style="margin-top: 30px;"
-            ><v-avatar size="43">
-              <v-img src="@/assets/images/ava.jpg" /> </v-avatar
-          ></v-col>
-          <v-col cols="12" md="11">
-            <span style="font-size: 14px; margin-left: 24px;"
-              >Phản hồi tới: </span
-            ><span style="color: black; font-weight: bold;">{{
-              recipient
-            }}</span
-            ><v-divider class="mx-4" inset vertical></v-divider
-            ><a
-              v-if="$auth.check('ROLE_MODERATOR')"
-              style="font-size: 14px;color: green;font-weight: bold;"
-              @click="setDefault()"
-              >Mặc định</a
-            >
-            <v-textarea
-              v-model="feedbackLocal.message"
-              :autofocus="focus"
-              outlined
-              rounded
-              auto-grow
-              clearable
-              row-height="24"
-              rows="1"
-              placeholder="Phản hồi ..."
-              @keydown.enter.exact.prevent
-              @keyup.enter.exact="createFeedback"
-              @keydown.enter.shift.exact="newline"
-            ></v-textarea></v-col></v-row></v-card></v-row
+          <v-col cols="12" md="1">
+            <v-list-item two-line>
+              <v-list-item-avatar color="indigo">
+                <v-img
+                  v-if="$auth.user().profileImagePath"
+                  :src="$auth.user().profileImagePath"
+                ></v-img>
+                <span v-else class="white--text headline">{{
+                  $auth.user().username
+                    ? $auth
+                        .user()
+                        .username.substring(0, 1)
+                        .toUpperCase()
+                    : ""
+                }}</span>
+              </v-list-item-avatar>
+            </v-list-item></v-col
+          >
+          <v-col cols="12" md="10" class="mt-5">
+            <v-form v-model="valid" validation>
+              <v-textarea
+                v-model="feedbackLocal.message"
+                :autofocus="false"
+                outlined
+                rounded
+                auto-grow
+                clearable
+                row-height="24"
+                rows="1"
+                :placeholder="`Phản hồi tới ${feedbackLocal.recipient}`"
+                @keydown.enter.exact.prevent
+                @keyup.enter.exact="createFeedback"
+                @keydown.enter.shift.exact="feedbackLocal.message"
+                dense
+                :counter="255"
+                :rules="[minLength('feedback', 2), maxLength('feedback', 255)]"
+              ></v-textarea>
+            </v-form> </v-col></v-row></v-card
+    ></v-row>
+    <v-row justify="center">
+      <ChangeStatusReport
+        v-if="dialogConfirm"
+        :dialogConfirm.sync="dialogConfirm"
+        :report.sync="report"
+        :status="status"
+      />
+      <ReportBiddingDocument
+        v-if="dialogBiddingDocumentDetail"
+        :biddingDocument="biddingDocument"
+        :dialogDetail.sync="dialogBiddingDocumentDetail"
+      />
+      <RatingFeedback
+        v-if="dialogFeedbackRating"
+        :dialogRating.sync="dialogFeedbackRating"
+        :feedback="feedback"
+        :feedbacks.sync="feedbacks"
+      />
+      <DeleteFeedback
+        v-if="dialogFeedbackDel"
+        :dialogDel.sync="dialogFeedbackDel"
+        :feedback="feedback"
+        :feedbacks.sync="feedbacks"
+      /> </v-row
   ></v-content>
 </template>
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import Utils from "@/mixin/utils";
 import { IReport } from "@/entity/report";
 import { IFeedback } from "@/entity/feedback";
 import ChangeStatusReport from "./ChangeStatusReport.vue";
 import { getReport } from "@/api/report";
-import { getSupplier } from "@/api/supplier";
-import UserFeedback from "./UserFeedback.vue";
-import { ISupplier } from "@/entity/supplier";
+import ReportBiddingDocument from "../../bidding-document/components/ReportBiddingDocument.vue";
 import {
   getFeedbacksByReport,
   createFeedbackToModerator,
   createFeedback
 } from "@/api/feedback";
+import { IBiddingDocument } from "@/entity/bidding-document";
+import { IUser } from "@/entity/user";
+import DeleteFeedback from "./DeleteFeedback.vue";
+import RatingFeedback from "./RatingFeedback.vue";
+import { DataOptions } from "vuetify";
+import FormValidate from "@/mixin/form-validate";
 
 @Component({
-  mixins: [Utils],
+  mixins: [FormValidate, Utils],
   components: {
-    UserFeedback,
-    ChangeStatusReport
+    ChangeStatusReport,
+    ReportBiddingDocument,
+    DeleteFeedback,
+    RatingFeedback
   }
 })
 export default class ReportDetail extends Vue {
-  focus = false;
-  seeMore = true;
-  recipient = "";
-  showCreateFeedback = false;
-  forwarderFullname = "";
   feedbacks: Array<IFeedback> = [];
+  feedback = null as IFeedback | null;
   report = null as IReport | null;
-  limit = 5;
+  biddingDocument = null as IBiddingDocument | null;
+  valid = true;
+  options = {
+    page: 1,
+    itemsPerPage: 5
+  } as DataOptions;
+  serverSideOptions = {
+    totalItems: 0,
+    totalPages: 0,
+    itemsPerPageItems: [5, 10, 20, 50]
+  };
+  loading = false;
+  dialogFeedbackDel = false;
+  dialogFeedbackRating = false;
   dialogConfirm = false;
+  dialogBiddingDocumentDetail = false;
   status = "";
   openFeedback = false;
   feedbackLocal = {
@@ -211,108 +309,81 @@ export default class ReportDetail extends Vue {
     satisfactionPoints: 0
   } as IFeedback;
 
-  newline() {
-    this.feedbackLocal.message = `${this.feedbackLocal.message}`;
+  openDeleteDialog(item: IFeedback) {
+    this.feedback = item;
+    this.dialogFeedbackDel = true;
   }
 
-  async getFullname(username: string) {
-    const _res = await getSupplier(username);
-    if (_res.data) {
-      const _supplier = _res.data as ISupplier;
-      return _supplier.fullname;
+  openMarkDialog(item: IFeedback) {
+    this.feedback = item;
+    this.dialogFeedbackRating = true;
+  }
+
+  openBiddingDocumentDetail() {
+    if (this.report) {
+      this.biddingDocument = this.report.report as IBiddingDocument;
+      this.dialogBiddingDocumentDetail = true;
     }
-    return username;
   }
 
   async createFeedback() {
-    if (this.feedbackLocal && this.report && this.report.id) {
-      if (this.$auth.check("ROLE_MODERATOR")) {
-        if (!this.feedbackLocal.recipient) {
-          this.feedbackLocal.recipient = this.report.sender;
-        }
-        const _res = await createFeedback(this.report.id, this.feedbackLocal);
-        if (_res.data) {
-          const _feedback = _res.data.data;
-          this.feedbacks.push(_feedback);
-          this.recipient = this.forwarderFullname;
-        }
-        this.feedbackLocal = {
-          sender: this.$auth.user().username,
-          message: "",
-          satisfactionPoints: 0
-        } as IFeedback;
-      } else {
-        const _res = await createFeedbackToModerator(
-          this.report.id,
-          this.report.sender,
-          this.feedbackLocal
-        );
-        if (_res.data) {
-          const _feedback = _res.data.data;
-          this.feedbacks.push(_feedback);
-        }
-        this.feedbackLocal = {
-          sender: this.$auth.user().username,
-          message: "",
-          satisfactionPoints: 0
-        } as IFeedback;
+    if (this.feedbackLocal && this.report) {
+      const user = this.report.sender as IUser;
+      const _res = this.$auth.check("ROLE_MODERATOR")
+        ? await createFeedback(this.report.id as number, this.feedbackLocal)
+        : await createFeedbackToModerator(
+            this.report.id as number,
+            user.username,
+            this.feedbackLocal
+          );
+      if (_res.data) {
+        const _feedback = _res.data.data;
+        this.feedbacks.push(_feedback);
+        this.feedbackLocal.message = "";
       }
     }
   }
 
-  async getFeedbacks(limit: number) {
-    this.feedbacks = [] as Array<IFeedback>;
-    const _res = await getFeedbacksByReport(parseInt(this.getRouterId), {
-      page: 0,
-      limit: limit + 1
-    });
-    if (_res.data) {
-      const _feedbacks = _res.data.data;
-      _feedbacks.forEach((x: IFeedback, index: number) => {
-        if (index != limit) {
-          this.feedbacks.unshift(x);
-        }
+  seeMore() {
+    if (this.options.page < this.serverSideOptions.totalPages)
+      this.options.page++;
+  }
+
+  @Watch("options", { immediate: true, deep: true })
+  async onOptionsChange(val: DataOptions) {
+    if (typeof val != "undefined") {
+      this.loading = true;
+      const _res = await getFeedbacksByReport(this.getRouterId, {
+        page: val.page - 1,
+        limit: val.itemsPerPage
       });
-      if (!_feedbacks || _feedbacks.length <= limit) {
-        this.seeMore = false;
+      if (_res.data) {
+        const _feedbacks = _res.data.data as IFeedback[];
+        this.feedbacks = [..._feedbacks, ...this.feedbacks];
+        this.serverSideOptions.totalPages = _res.data.totalPages;
       }
+      this.loading = false;
     }
-  }
-
-  async loadMoreFeedbacks() {
-    this.limit += 5;
-    await this.getFeedbacks(this.limit);
   }
 
   get getRouterId() {
-    return this.$route.params.id;
+    const reportId = this.$route.params.id;
+    if (reportId) return parseInt(reportId);
+    else return -1;
   }
 
-  async created() {
-    const _res = await getReport(parseInt(this.getRouterId));
+  async mounted() {
+    const _res = await getReport(this.getRouterId);
     if (_res.data) {
       const _report = _res.data;
       this.report = _report;
-      this.forwarderFullname = await this.getFullname(_report.sender);
-      this.recipient = this.forwarderFullname;
+      this.feedbackLocal.recipient = _report.sender.username;
     }
-    await this.getFeedbacks(5);
   }
 
   openConfirmDialog(status: string) {
     this.status = status;
     this.dialogConfirm = true;
-  }
-
-  viewDetailBiddingDocument() {
-    if (this.report && this.report.id) {
-      this.$router.push({ path: `/report-bidding-document/${this.report.id}` });
-    }
-  }
-
-  setDefault() {
-    this.recipient = this.forwarderFullname;
-    this.feedbackLocal.recipient = "";
   }
 }
 </script>

@@ -205,18 +205,6 @@ const routes: Array<RouteConfig> = [
     }
   },
   {
-    path: "/report-bidding-document/:id",
-    name: "Report Bidding Document Detail",
-    component: () =>
-      import(
-        "@/views/supplier/bidding-document/components/ReportBiddingDocument.vue"
-      ),
-    meta: {
-      auth: ["ROLE_MODERATOR", "ROLE_FORWARDER"],
-      layout: "NavLayout"
-    }
-  },
-  {
     path: "/combined/:id",
     name: "Combined Detail",
     component: () =>
@@ -339,20 +327,11 @@ const routes: Array<RouteConfig> = [
     }
   },
   {
-    path: "/supplier-report",
-    name: "SupplierReport",
-    component: () => import("@/views/operator/supplier-report/index.vue"),
-    meta: {
-      auth: ["ROLE_MODERATOR"],
-      layout: "NavLayout"
-    }
-  },
-  {
     path: "/report",
     name: "Report",
     component: () => import("@/views/supplier/report/index.vue"),
     meta: {
-      auth: ["ROLE_FORWARDER"],
+      auth: ["ROLE_MODERATOR", "ROLE_FORWARDER"],
       layout: "NavLayout"
     }
   },

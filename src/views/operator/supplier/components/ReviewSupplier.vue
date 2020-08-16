@@ -1,44 +1,28 @@
 <template>
-  <v-dialog v-model="dialogReviewSync" max-width="600px">
+  <v-dialog v-model="dialogReviewSync" max-width="400">
     <v-card tile>
-      <v-toolbar dark color="primary">
-        <v-toolbar-title
-          ><span class="headline" style="color:white;">{{
-            supplier.status == "ACTIVE" ? "Khóa tài khoản" : "Mở khóa tài khoản"
-          }}</span>
-        </v-toolbar-title>
-      </v-toolbar>
+      <v-card-title class="headline">{{
+        supplier.status == "ACTIVE" ? "Khóa tài khoản" : "Mở khóa tài khoản"
+      }}</v-card-title>
 
       <v-card-text>
         <v-form>
           <v-row>
-            <v-col cols="12" md="11">
+            <v-col cols="12" md="12">
               <v-text-field
                 label="Tên đăng nhập"
                 name="username"
                 prepend-icon="mdi-account"
                 type="text"
                 v-model="supplier.username"
-                readonly
-              ></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row v-if="supplier.status == 'ACTIVE'">
-            <v-col cols="12" md="11">
-              <v-text-field
-                label="Lý do khóa tài khoản"
-                name="reason"
-                prepend-icon="comment"
-                type="text"
-                v-model="reason"
-                required
+                disabled
               ></v-text-field>
             </v-col>
           </v-row>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-left: 205px;">
-        <v-btn @click="dialogReviewSync = false">Hủy</v-btn>
+      <v-card-actions class="justify-space-between">
+        <v-btn @click="dialogReviewSync = false">Trở về</v-btn>
         <v-btn
           @click="reviewSupplier('BANNED')"
           color="error"
@@ -73,7 +57,7 @@ export default class ReviewSupplier extends Vue {
         status: status
       });
       if (_res.data) {
-        const _supplier = _res.data;
+        const _supplier = _res.data.data;
         const index = this.suppliersSync.findIndex(x => x.id == _supplier.id);
         this.suppliersSync.splice(index, 1, _supplier);
         this.dialogReviewSync = false;

@@ -1,20 +1,18 @@
 <template>
   <v-content>
-    <CancelBiddingDocument
-      v-if="dialogCancel"
-      :dialogCancel.sync="dialogCancel"
-      :biddingDocument="biddingDocument"
-    />
-    <v-container
-      class="d-flex justify-space-around align-start"
-      v-if="biddingDocument"
-    >
-      <!-- OUTOUNBD -->
-      <v-card class="order-0 flex-grow-0 mx-auto mr-5 my-5" max-width="330">
-        <v-img height="100" src="@/assets/images/biddingdocument.jpg"></v-img>
-        <v-card-title>Hồ sơ Mời thầu</v-card-title>
-        <v-card-text>
-          <SupplierRating :supplier="biddingDocument.offeree" />
+    <v-dialog v-model="dialogDetailSync" max-width="600">
+      <v-card>
+        <v-container v-if="biddingDocument">
+          <v-img
+            height="100"
+            max-width="400"
+            src="@/assets/images/biddingdocument.jpg"
+          ></v-img>
+          <v-card-title>Hồ sơ Mời thầu</v-card-title>
+          <v-card-text>
+            Chủ hàng xuất:
+            <SupplierRating :supplier="biddingDocument.offeree" />
+          </v-card-text>
 
           <v-list dense>
             <v-subheader>Thông tin HSMT</v-subheader>
@@ -66,12 +64,12 @@
               </v-list-item-icon>
               <v-list-item-content>
                 <v-list-item-title>{{
-                  "Mã Booking: " + biddingDocument.outbound.booking.number
+                  "Mã hàng xuất: " + biddingDocument.outbound.code
                 }}</v-list-item-title>
                 <v-list-item-subtitle>
                   {{
                     "Cảng bốc hàng: " +
-                      biddingDocument.outbound.booking.portOfLoading
+                      biddingDocument.outbound.booking.portOfLoading.fullname
                   }}
                 </v-list-item-subtitle>
               </v-list-item-content>
@@ -83,7 +81,8 @@
               </v-list-item-icon>
               <v-list-item-content>
                 <v-list-item-title>{{
-                  "Hãng tàu: " + biddingDocument.outbound.shippingLine
+                  "Hãng tàu: " +
+                    biddingDocument.outbound.shippingLine.companyName
                 }}</v-list-item-title>
                 <v-list-item-subtitle>
                   {{
@@ -119,393 +118,40 @@
               </v-list-item-icon>
               <v-list-item-content>
                 <v-list-item-title>{{
-                  "Mô tả: " + biddingDocument.outbound.goodsDescription
+                  "Khối lượng: " +
+                    biddingDocument.outbound.grossWeight +
+                    biddingDocument.outbound.unitOfMeasurement
                 }}</v-list-item-title>
                 <v-list-item-subtitle>
-                  {{
-                    "Khối lượng: " +
-                      biddingDocument.outbound.grossWeight +
-                      biddingDocument.outbound.unitOfMeasurement
-                  }}
+                  {{ "Mô tả: " + biddingDocument.outbound.goodsDescription }}
                 </v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
           </v-list>
-        </v-card-text>
+        </v-container>
+        <v-card-actions class="justify-space-between">
+          <v-btn text @click="dialogDetailSync = false">
+            Trở vể
+          </v-btn>
+        </v-card-actions>
       </v-card>
-      <v-card class="order-1 flex-grow-1 mx-auto my-5">
-        <v-card-title
-          >Thông tin đấu thầu
-          <v-spacer></v-spacer>
-          <v-tooltip left v-if="$auth.check('ROLE_MODERATOR')">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn @click="openCancelDialog()" icon v-bind="attrs" v-on="on">
-                <v-icon large color="red">report</v-icon>
-              </v-btn>
-            </template>
-            <span>Hủy HSMT</span>
-          </v-tooltip>
-        </v-card-title>
-
-        <v-card-text>
-          <v-row>
-            <v-col cols="12" sm="6" md="4">
-              <v-list dense>
-                <v-list-item>
-                  <v-list-item-icon>
-                    <v-icon>attach_money</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>{{
-                      "Giá dẫn đầu: " +
-                        currencyFormatter(
-                          biddingDocument.priceLeadership,
-                          biddingDocument.currencyOfPayment
-                        )
-                    }}</v-list-item-title>
-                    <v-list-item-subtitle>
-                      {{
-                        "Giá sàn: " +
-                          currencyFormatter(
-                            biddingDocument.bidFloorPrice,
-                            biddingDocument.currencyOfPayment
-                          )
-                      }}
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </v-col>
-            <v-col cols="12" sm="6" md="4">
-              <v-list dense>
-                <v-list-item v-if="biddingDocument.status == 'BIDDING'">
-                  <v-list-item-icon>
-                    <v-icon>date_range</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>Đóng thầu</v-list-item-title>
-                    <v-list-item-title>{{
-                      formatDatetime(biddingDocument.bidClosing)
-                    }}</v-list-item-title>
-                    <v-list-item-subtitle>
-                      {{
-                        new Date(this.biddingDocument.bidClosing).getTime() -
-                          new Date() >
-                        0
-                          ? "Còn lại: " +
-                            Math.floor(
-                              (new Date(
-                                this.biddingDocument.bidClosing
-                              ).getTime() -
-                                new Date()) /
-                                3600000
-                            ) +
-                            " giờ"
-                          : "Đã hết hạn"
-                      }}
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item v-if="biddingDocument.status == 'CANCELED'">
-                  <v-list-item-icon>
-                    <v-icon>mood_bad</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title style="color:red;"
-                      >Thầu đã hủy</v-list-item-title
-                    >
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item v-if="biddingDocument.status == 'COMBINED'">
-                  <v-list-item-icon>
-                    <v-icon>mood</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title style="color:green;"
-                      >Thầu thành công</v-list-item-title
-                    >
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </v-col>
-            <v-col cols="12" sm="6" md="4">
-              <v-list dense>
-                <v-list-item>
-                  <v-list-item-icon>
-                    <v-icon>people</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>{{
-                      "Số lượng tham gia: " + serverSideOptions.totalItems
-                    }}</v-list-item-title>
-                    <v-list-item-subtitle>
-                      Số thầu thắng:
-                      {{
-                        numberWinner +
-                          "/" +
-                          biddingDocument.outbound.booking.unit
-                      }}
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </v-col>
-          </v-row>
-        </v-card-text>
-
-        <v-divider class="mx-1"></v-divider>
-
-        <v-card-title>Danh sách HSDT<v-spacer></v-spacer></v-card-title>
-        <v-data-table
-          :headers="bidHeaders"
-          :items="bids"
-          :single-expand="singleExpand"
-          :expanded.sync="expanded"
-          show-expand
-          @click:row="clicked"
-          item-key="id"
-          :loading="loading"
-          :options.sync="options"
-          :server-items-length="serverSideOptions.totalItems"
-          :footer-props="{
-            'items-per-page-options': serverSideOptions.itemsPerPageItems
-          }"
-          no-data-text="Danh sách HSDT rỗng."
-          :actions-append="options.page"
-          disable-sort
-          class="elevation-0"
-        >
-          <template v-slot:item.bidDate="{ item }">
-            {{ formatDatetime(item.bidDate) }}
-          </template>
-          <template v-slot:item.bidPrice="{ item }">
-            {{ currencyFormatter(item.bidPrice) }}
-          </template>
-          <template v-slot:item.bidValidityPeriod="{ item }">
-            {{ formatDatetime(item.bidValidityPeriod) }}
-          </template>
-          <template v-slot:item.actions="{ item }">
-            <span style="color: red;" v-if="item.status == 'REJECTED'">{{
-              item.status
-            }}</span>
-            <span style="color: green;" v-if="item.status == 'ACCEPTED'">{{
-              item.status
-            }}</span>
-            <span
-              style="color: yellowgreen;"
-              v-if="item.status == 'PENDING' && $auth.check('ROLE_FORWARDER')"
-              >{{ item.status }}</span
-            >
-          </template>
-
-          <template v-slot:expanded-item="{ headers }">
-            <td :colspan="headers.length" class="px-0">
-              <v-data-table
-                v-if="biddingDocument.isMultipleAward"
-                :headers="containerHeaders"
-                :items="bid.containers"
-                :loading="loading"
-                :options.sync="containerOptions"
-                :server-items-length="containerServerSideOptions.totalItems"
-                :footer-props="{
-                  'items-per-page-options':
-                    containerServerSideOptions.itemsPerPageItems
-                }"
-                :actions-append="containerOptions.page"
-                v-model="containerSelected"
-                show-select
-                disable-sort
-                dark
-                dense
-              >
-              </v-data-table>
-              <v-data-table
-                v-if="!biddingDocument.isMultipleAward"
-                :headers="containerHeaders"
-                :items="bid.containers"
-                :loading="loading"
-                :options.sync="containerOptions"
-                :server-items-length="containerServerSideOptions.totalItems"
-                :footer-props="{
-                  'items-per-page-options':
-                    containerServerSideOptions.itemsPerPageItems
-                }"
-                :actions-append="containerOptions.page"
-                disable-sort
-                dark
-                dense
-              >
-              </v-data-table>
-            </td>
-          </template>
-        </v-data-table>
-      </v-card>
-    </v-container>
+    </v-dialog>
   </v-content>
 </template>
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
-import FormValidate from "@/mixin/form-validate";
-import Utils from "@/mixin/utils";
+import { Component, Vue, Prop, PropSync } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
-import { IBid } from "@/entity/bid";
-import { getBidsByBiddingDocument } from "@/api/bid";
-import { DataOptions } from "vuetify";
-import { IContainer } from "@/entity/container";
+import Utils from "@/mixin/utils";
 import SupplierRating from "./SupplierRating.vue";
-import { getContainersByBid } from "@/api/container";
-import { IReport } from "@/entity/report";
-import { getReport } from "@/api/report";
-import CancelBiddingDocument from "./CancelBiddingDocument.vue";
 
 @Component({
-  mixins: [FormValidate, Utils],
+  mixins: [Utils],
   components: {
-    SupplierRating,
-    CancelBiddingDocument
+    SupplierRating
   }
 })
 export default class ReportBiddingDocument extends Vue {
-  biddingDocument = null as IBiddingDocument | null;
-  report = null as IReport | null;
-  loading = false;
-  containerSelected = [] as Array<IContainer>;
-  isAccept = false;
-  dialogCancel = false;
-  bid = {} as IBid;
-  expanded: Array<IBid> = [];
-  singleExpand = true;
-  numberWinner = 0;
-  options = {
-    page: 1,
-    itemsPerPage: 5
-  } as DataOptions;
-  serverSideOptions = {
-    totalItems: 0,
-    itemsPerPageItems: [5, 10, 20, 50]
-  };
-  containerOptions = {
-    page: 1,
-    itemsPerPage: 5
-  } as DataOptions;
-  containerServerSideOptions = {
-    totalItems: 0,
-    itemsPerPageItems: [5, 10, 20, 50]
-  };
-  bids: Array<IBid> = [];
-  bidHeaders = [
-    {
-      text: "Mã",
-      align: "start",
-      sortable: false,
-      value: "id"
-    },
-    { text: "Đối tác", value: "bidder" },
-    { text: "Cont qty", value: "containers.length" },
-    { text: "Giá thầu", value: "bidPrice" },
-    { text: "Ngày thầu", value: "bidDate" },
-    { text: "Hành động", value: "actions", sortable: false }
-  ];
-
-  containerHeaders = [
-    {
-      text: "Container No.",
-      align: "start",
-      sortable: false,
-      value: "number",
-      class: "primary"
-    },
-    { text: "Tài xế", value: "driver.fullname", class: "primary" },
-    {
-      text: "Rơ moóc",
-      value: "trailer.licensePlate",
-      class: "primary"
-    },
-    {
-      text: "Đầu kéo",
-      value: "tractor.licensePlate",
-      class: "primary"
-    }
-  ];
-
-  clicked(value: IBid) {
-    if (this.singleExpand) {
-      if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
-        this.expanded.splice(0, this.expanded.length);
-        this.containerSelected = [];
-        this.bid = {} as IBid;
-      } else {
-        if (this.expanded.length > 0) {
-          this.expanded.splice(0, this.expanded.length);
-          this.expanded.push(value);
-          this.containerSelected = value.containers as Array<IContainer>;
-          this.bid = value;
-          this.onContainerOptionsChange(this.containerOptions);
-        } else {
-          this.expanded.push(value);
-          this.containerSelected = value.containers as Array<IContainer>;
-          this.bid = value;
-        }
-      }
-    }
-  }
-  @Watch("containerOptions")
-  async onContainerOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined") {
-      this.loading = true;
-      if (this.bid && this.bid.id) {
-        const _res = await getContainersByBid(this.bid.id, {
-          page: val.page - 1,
-          limit: val.itemsPerPage
-        });
-        if (_res.data) {
-          const _containers = _res.data.data;
-          this.bid.containers = _containers;
-          this.containerServerSideOptions.totalItems = _res.data.totalElements;
-        }
-      }
-      this.loading = false;
-    }
-  }
-
-  @Watch("options")
-  async onOptionsChange(val: DataOptions) {
-    if (typeof val !== "undefined" && this.biddingDocument) {
-      this.loading = true;
-      const _res = await getBidsByBiddingDocument(
-        this.biddingDocument.id as number,
-        {
-          page: this.options.page - 1,
-          limit: this.options.itemsPerPage
-        }
-      );
-      if (_res.data) {
-        const _bids = _res.data.data;
-        this.bids = _bids;
-        this.numberWinner = this.bids.filter(
-          (x: IBid) => x.status == "ACCEPTED"
-        ).length;
-        this.serverSideOptions.totalItems = _res.data.totalElements;
-      }
-      this.loading = false;
-    }
-  }
-  get getRouterId() {
-    return this.$route.params.id;
-  }
-
-  @Watch("getRouterId", { immediate: true })
-  async onRouterIdChange() {
-    const _res = await getReport(parseInt(this.getRouterId));
-    if (_res.data) {
-      const _report = _res.data;
-      this.report = _report;
-      this.biddingDocument = _report.report as IBiddingDocument;
-    }
-  }
-
-  openCancelDialog() {
-    this.dialogCancel = true;
-  }
+  @Prop() biddingDocument!: IBiddingDocument;
+  @PropSync("dialogDetail", { type: Boolean }) dialogDetailSync!: boolean;
 }
 </script>

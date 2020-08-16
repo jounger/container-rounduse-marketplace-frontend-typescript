@@ -41,7 +41,7 @@
                     ]"
                     type="text"
                     label="Tên đăng nhập*"
-                    readonly
+                    disabled
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" md="6">
@@ -91,7 +91,7 @@
                 :disabled="!valid"
                 >Lưu và tiếp tục</v-btn
               >
-              <!-- <v-btn text @click="dialogEditSync = false">Hủy</v-btn> -->
+              <!-- <v-btn text @click="dialogEditSync = false">Trở về</v-btn> -->
             </v-form>
           </v-stepper-content>
 
@@ -114,7 +114,7 @@
                     ]"
                     label="Mã công ty*"
                     type="text"
-                    readonly
+                    disabled
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" md="6">
@@ -194,7 +194,7 @@
                       minLength('Mã số thuế', 5),
                       maxLength('Mã số thuế', 20)
                     ]"
-                    readonly
+                    disabled
                     label="Mã số thuế*"
                     type="number"
                   ></v-text-field>

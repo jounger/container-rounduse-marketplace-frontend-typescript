@@ -1,5 +1,5 @@
 import { IContainer } from "./container";
-import { IForwarder } from './forwarder';
+import { IForwarder } from "./forwarder";
 export interface IBid {
   id?: number;
   bidder: IForwarder | string;

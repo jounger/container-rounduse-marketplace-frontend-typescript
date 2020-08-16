@@ -111,7 +111,7 @@ export default class Report extends Vue {
       text: "Mã Report",
       value: "id"
     },
-    { text: "Người gửi", value: "sender" },
+    { text: "Người gửi", value: "sender.companyName" },
     { text: "HSMT", value: "reportId" },
     { text: "Tiêu đề", value: "title" },
     { text: "Nội dung", value: "detail" },

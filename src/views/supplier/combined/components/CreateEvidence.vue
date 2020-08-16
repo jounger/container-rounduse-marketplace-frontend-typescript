@@ -1,11 +1,7 @@
 <template>
   <v-dialog v-model="dialogAddSync" max-width="600px">
     <v-card>
-      <v-toolbar color="primary" light flat>
-        <v-toolbar-title
-          ><span class="headline" style="color:white;">Thêm mới Chứng cứ</span>
-        </v-toolbar-title>
-      </v-toolbar>
+      <v-card-title class="headline">Thêm mới Chứng cứ</v-card-title>
       <v-card-text>
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
@@ -36,7 +32,7 @@
           </v-row>
         </v-form>
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions class="justify-space-between">
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
         <v-btn @click="createEvidence()" color="primary" :disabled="!valid"

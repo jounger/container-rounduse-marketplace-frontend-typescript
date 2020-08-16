@@ -18,7 +18,6 @@ export interface PaginationResponse<T> {
   data: T[];
 }
 
-
 export interface ChangePasswordRequest {
   oldPassword: string;
   newPassword: string;

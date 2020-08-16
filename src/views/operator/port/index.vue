@@ -34,14 +34,14 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
-        no-data-text="Danh sách bến cảng rỗng."
+        no-data-text="Danh sách cảng rỗng."
         disable-sort
         class="elevation-1"
       >
         <template v-slot:top>
           <v-toolbar flat color="white">
             <v-toolbar-title style="font-weight:bold; font-size: 25px;"
-              >Danh sách bến cảng</v-toolbar-title
+              >Danh sách cảng</v-toolbar-title
             >
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
@@ -99,7 +99,7 @@ import { DataOptions } from "vuetify";
 })
 export default class Port extends Vue {
   ports: Array<IPort> = [];
-  port = {} as IPort;
+  port = null as IPort | null;
   dialogAdd = false;
   dialogEdit = false;
   dialogDel = false;
@@ -115,12 +115,16 @@ export default class Port extends Vue {
   };
   headers = [
     {
-      text: "Mã code",
+      text: "Mã",
       align: "start",
       sortable: true,
+      value: "id"
+    },
+    {
+      text: "Mã code",
       value: "nameCode"
     },
-    { text: "Tên bến cảng", value: "fullname" },
+    { text: "Tên cảng", value: "fullname" },
     { text: "Địa chỉ", value: "address" },
     {
       text: "Hành động",

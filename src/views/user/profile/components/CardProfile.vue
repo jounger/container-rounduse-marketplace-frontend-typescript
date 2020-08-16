@@ -2,7 +2,7 @@
   <v-card class="order-0 flex-grow-0 mx-auto mr-5 my-5" max-width="380">
     <v-card-text>
       <v-hover v-slot:default="{ hover }" open-delay="200">
-        <v-avatar size="250" color="gray" :class="{ 'opacity-hover': hover }">
+        <v-avatar size="250" color="indigo" :class="{ 'opacity-hover': hover }">
           <v-img
             v-if="$auth.user().profileImagePath"
             :src="profileImagePath"

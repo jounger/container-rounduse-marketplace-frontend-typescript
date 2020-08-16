@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="dialogDelContSync" max-width="600px">
+    <v-dialog v-model="dialogDelContSync" max-width="400">
       <v-card>
         <v-toolbar color="primary" light flat>
           <v-toolbar-title
@@ -11,9 +11,7 @@
         <v-card-text>
           <v-form>
             <v-container>
-              <span style="color: black; font-size:22px;"
-                >Bạn có chắc chắn muốn xóa Container này?</span
-              >
+              <span>Bạn có chắc chắn muốn xóa Container này?</span>
               <v-divider class="mt-3"></v-divider>
               <v-list>
                 <v-list-item>
@@ -27,9 +25,9 @@
             </v-container>
           </v-form>
         </v-card-text>
-        <v-card-actions style="margin-left: 205px;">
-          <v-btn @click="dialogDelContSync = false">Hủy</v-btn>
-          <v-btn @click="removeContainer()" color="error">Xóa</v-btn>
+        <v-card-actions class="justify-space-between">
+          <v-btn @click="dialogDelContSync = false">Trở về</v-btn>
+          <v-btn @click="removeContainer()" color="error">Xóa bỏ</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogConfirmSync" max-width="600px">
+  <v-dialog v-model="dialogConfirmSync" max-width="400">
     <v-card>
       <CreateCombined
         :dialogAdd.sync="dialogContract"
@@ -8,18 +8,14 @@
         :bids.sync="bidsSync"
         :bid="bid"
       />
-      <v-toolbar color="primary" light flat>
-        <v-toolbar-title
-          ><span class="headline" style="color:white;">{{
-            isAccept == true ? "Xác nhận đồng ý HSDT" : "Xác nhận từ chối HSDT"
-          }}</span>
-        </v-toolbar-title>
-      </v-toolbar>
+      <v-card-title class="headline">{{
+        isAccept == true ? "Xác nhận đồng ý HSDT" : "Xác nhận từ chối HSDT"
+      }}</v-card-title>
 
       <v-card-text>
         <v-form>
           <v-container>
-            <span style="color: black; font-size:22px;"
+            <span
               >Bạn có chắc chắn muốn
               {{ isAccept == true ? "đồng ý" : "từ chối" }} HSDT này?</span
             >
@@ -36,8 +32,8 @@
           </v-container>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-left: 205px;">
-        <v-btn @click="dialogConfirmSync = false">Hủy</v-btn>
+      <v-card-actions class="justify-space-between">
+        <v-btn @click="dialogConfirmSync = false">Trở về</v-btn>
         <v-btn @click="reviewBid(isAccept)" color="green" v-if="isAccept"
           ><span style="color:white;">Đồng ý</span></v-btn
         >

@@ -1,7 +1,8 @@
 import { IBiddingDocument } from "./bidding-document";
+import { IUser } from "./user";
 export interface IReport {
   id?: number;
-  sender: string;
+  sender: IUser | string;
   report: number | IBiddingDocument;
   title: string;
   detail: string;

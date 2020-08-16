@@ -28,7 +28,7 @@
                     type="text"
                     disabled
                     v-model="portLocal.nameCode"
-                    :rules="[required('mã bến cảng')]"
+                    :rules="[required('mã cảng')]"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -40,7 +40,7 @@
                     prepend-icon="flag"
                     type="text"
                     v-model="portLocal.fullname"
-                    :rules="[required('tên bến cảng')]"
+                    :rules="[required('tên cảng')]"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -52,7 +52,7 @@
                     class="place-input"
                     type="text"
                     placeholder="Vị trí cảng"
-                    :rules="[required('vị trí bến cảng')]"
+                    :rules="[required('vị trí cảng')]"
                     required
                   />
                   <!-- <v-text-field
@@ -108,9 +108,9 @@
           </v-card>
         </v-container>
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions class="justify-space-between">
         <v-spacer></v-spacer>
-        <v-btn @click="dialogEditSync = false">Hủy</v-btn>
+        <v-btn @click="dialogEditSync = false">Trở về</v-btn>
         <v-btn @click="updatePort()" color="primary" :disabled="!valid"
           >Lưu</v-btn
         >
@@ -135,7 +135,6 @@ import GoogleMapAutocomplete from "@/components/googlemaps/GoogleMapAutocomplete
 import GoogleMapMarker from "@/components/googlemaps/GoogleMapMarker.vue";
 import GoogleMapMixins from "@/components/googlemaps/map-mixins";
 import Utils from "@/mixin/utils";
-import { isEmptyObject } from "@/utils/tool";
 
 @Component({
   components: {
@@ -159,12 +158,10 @@ export default class UpdatePort extends Vue {
   @Watch("dialogEditSync")
   onDialogEditSyncChange(val: boolean) {
     if (val == true) {
-      if (!isEmptyObject(this.port)) {
-        this.portLocal = Object.assign({}, this.port);
-        this.$nextTick(() => {
-          this.inputAddress1.value = this.port.address;
-        });
-      }
+      this.portLocal = Object.assign({}, this.port);
+      this.$nextTick(() => {
+        this.inputAddress1.value = this.port.address;
+      });
     }
   }
   async updatePort() {
@@ -194,9 +191,7 @@ export default class UpdatePort extends Vue {
   }
   created() {
     console.log("UpdatePort");
-    if (!isEmptyObject(this.port)) {
-      this.portLocal = Object.assign({}, this.port);
-    }
+    this.portLocal = Object.assign({}, this.port);
   }
   get apiKey() {
     return process.env.VUE_APP_GMAP_KEY;

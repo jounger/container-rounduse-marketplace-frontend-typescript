@@ -1,20 +1,16 @@
 <template>
-  <v-dialog v-model="dialogConfirmSync" max-width="600px">
+  <v-dialog v-model="dialogConfirmSync" max-width="400">
     <v-card>
-      <v-toolbar color="primary" light flat>
-        <v-toolbar-title
-          ><span class="headline" style="color:white;">{{
-            supplierSync.status == true
-              ? "Xác nhận kích hoạt tài khoản người dùng"
-              : "Xác nhận từ chối tài khoản người dùng"
-          }}</span></v-toolbar-title
-        >
-      </v-toolbar>
+      <v-card-title class="headline">{{
+        supplierSync.status == true
+          ? "Xác nhận kích hoạt tài khoản người dùng"
+          : "Xác nhận từ chối tài khoản người dùng"
+      }}</v-card-title>
 
       <v-card-text>
         <v-form>
           <v-container>
-            <span style="color: black; font-size:22px;"
+            <span
               >Bạn có chắc chắn muốn
               {{ supplierSync.status == "ACTIVE" ? "kích hoạt" : "từ chối" }}
               tài khoản này?</span
@@ -32,8 +28,8 @@
           </v-container>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-left: 205px;">
-        <v-btn @click="dialogConfirmSync = false">Hủy</v-btn>
+      <v-card-actions class="justify-space-between">
+        <v-btn @click="dialogConfirmSync = false">Trở về</v-btn>
         <v-btn
           @click="reviewSupplier()"
           color="success"

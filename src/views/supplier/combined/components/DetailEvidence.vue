@@ -1,11 +1,7 @@
 <template>
-  <v-dialog v-model="dialogDetailSync" max-width="600px">
+  <v-dialog v-model="dialogDetailSync" max-width="400">
     <v-card>
-      <v-toolbar color="primary" light flat>
-        <v-toolbar-title
-          ><span class="headline" style="color:white;">Chi tiết Chứng cứ</span>
-        </v-toolbar-title>
-      </v-toolbar>
+      <v-card-title class="headline">Chi tiết Chứng cứ</v-card-title>
       <v-card-text>
         <v-form>
           <v-row>
@@ -32,14 +28,13 @@
             </v-col>
             <v-col cols="12" md="4" class="mt-3">
               <v-btn color="primary" @click.stop="downLoad(evidence)"
-                ><v-icon>cloud_download</v-icon> Tải xuống</v-btn
+                ><v-icon>cloud_download</v-icon></v-btn
               >
             </v-col>
           </v-row>
         </v-form>
       </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
+      <v-card-actions class="justify-space-between">
         <v-btn @click="dialogDetailSync = false">Trở về</v-btn>
         <v-btn
           @click="reviewEvidence(false)"

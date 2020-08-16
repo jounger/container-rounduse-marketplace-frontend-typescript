@@ -30,7 +30,7 @@
                     prepend-icon="verified_user"
                     type="text"
                     v-model="portLocal.nameCode"
-                    :rules="[required('mã bến cảng')]"
+                    :rules="[required('mã cảng')]"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -42,7 +42,7 @@
                     prepend-icon="flag"
                     type="text"
                     v-model="portLocal.fullname"
-                    :rules="[required('tên bến cảng')]"
+                    :rules="[required('tên cảng')]"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -54,7 +54,7 @@
                     class="place-input"
                     type="text"
                     placeholder="Vị trí cảng*"
-                    :rules="[required('vị trí bến cảng')]"
+                    :rules="[required('vị trí cảng')]"
                     required
                   />
                   <!-- <v-text-field
@@ -102,9 +102,9 @@
           </v-card>
         </v-container>
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions class="justify-space-between">
         <v-spacer></v-spacer>
-        <v-btn @click="dialogAddSync = false">Hủy</v-btn>
+        <v-btn @click="dialogAddSync = false">Trở về</v-btn>
         <v-btn @click="createPort()" color="primary" :disabled="!valid"
           >Thêm mới</v-btn
         >

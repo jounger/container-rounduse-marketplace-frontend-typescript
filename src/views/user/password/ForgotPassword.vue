@@ -17,7 +17,7 @@
         ></v-text-field>
       </v-form>
     </v-card-text>
-    <v-card-actions>
+    <v-card-actions class="justify-space-between">
       <v-btn text small to="/login">Đã nhớ mật khẩu?</v-btn>
       <v-spacer></v-spacer>
       <v-btn @click.stop="forgotPassword()" color="primary"

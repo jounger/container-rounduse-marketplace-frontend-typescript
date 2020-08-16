@@ -2,23 +2,6 @@
   <v-content>
     <v-card class="ma-5">
       <v-row justify="center">
-        <DeleteReport
-          v-if="dialogDel"
-          :dialogDel.sync="dialogDel"
-          :report="report"
-          :reports.sync="reports"
-          :totalItems.sync="serverSideOptions.totalItems"
-        />
-      </v-row>
-      <v-row justify="center">
-        <CreateReport
-          v-if="dialogAdd"
-          :reports.sync="reports"
-          :dialogAdd.sync="dialogAdd"
-          :totalItems.sync="serverSideOptions.totalItems"
-        />
-      </v-row>
-      <v-row justify="center">
         <UpdateReport
           v-if="dialogEdit"
           :report="report"
@@ -55,11 +38,14 @@
             tile
             outlined
             color="success"
-            @click.stop="viewDetailReport(item)"
+            @click.stop="openBiddingDocumentDetail(item)"
             small
           >
             <v-icon left>business_center</v-icon> Xem HSMT
           </v-btn>
+        </template>
+        <template v-slot:item.sendDate="{ item }">
+          {{ formatDatetime(item.sendDate) }}
         </template>
         <template v-slot:item.status="{ item }">
           <v-chip
@@ -86,7 +72,7 @@
               </v-btn>
             </template>
             <v-list dense>
-              <v-list-item @click="openDetailDialog(item)">
+              <v-list-item :to="`/report/${item.id}`">
                 <v-list-item-icon>
                   <v-icon small>details</v-icon>
                 </v-list-item-icon>
@@ -115,6 +101,28 @@
         </template>
       </v-data-table>
     </v-card>
+    <v-row justify="center">
+      <DeleteReport
+        v-if="dialogDel"
+        :dialogDel.sync="dialogDel"
+        :report="report"
+        :reports.sync="reports"
+        :totalItems.sync="serverSideOptions.totalItems"
+      />
+      <ReportBiddingDocument
+        v-if="dialogBiddingDocumentDetail"
+        :biddingDocument="biddingDocument"
+        :dialogDetail.sync="dialogBiddingDocumentDetail"
+      />
+    </v-row>
+    <v-row justify="center">
+      <CreateReport
+        v-if="dialogAdd"
+        :reports.sync="reports"
+        :dialogAdd.sync="dialogAdd"
+        :totalItems.sync="serverSideOptions.totalItems"
+      />
+    </v-row>
   </v-content>
 </template>
 <script lang="ts">
@@ -123,24 +131,31 @@ import { IReport } from "@/entity/report";
 import CreateReport from "./components/CreateReport.vue";
 import DeleteReport from "./components/DeleteReport.vue";
 import UpdateReport from "./components/UpdateReport.vue";
-import { getReportsByUser } from "@/api/report";
+import { getReportsByUser, getReports } from "@/api/report";
 import { DataOptions } from "vuetify";
+import ReportBiddingDocument from "../bidding-document/components/ReportBiddingDocument.vue";
+import { IBiddingDocument } from "@/entity/bidding-document";
+import Utils from "@/mixin/utils";
 
 @Component({
+  mixins: [Utils],
   components: {
     CreateReport,
     DeleteReport,
-    UpdateReport
+    UpdateReport,
+    ReportBiddingDocument
   }
 })
 export default class Report extends Vue {
   reports: Array<IReport> = [];
   report = null as IReport | null;
+  biddingDocument = null as IBiddingDocument | null;
 
   dialogAdd = false;
   dialogDel = false;
   dialogEdit = false;
   dialogMark = false;
+  dialogBiddingDocumentDetail = false;
   loading = true;
   options = {
     page: 1,
@@ -157,10 +172,11 @@ export default class Report extends Vue {
       sortable: false,
       value: "id"
     },
-    { text: "Người gửi", value: "sender" },
-    { text: "HSMT", value: "reportId" },
+    { text: "Người gửi", value: "sender.companyName" },
+    { text: "Nguồn liên quan", value: "reportId" },
     { text: "Tiêu đề", value: "title" },
     { text: "Nội dung", value: "detail" },
+    { text: "Ngày gửi", value: "sendDate" },
     { text: "Trạng thái", value: "status" },
     {
       text: "Hành động",
@@ -174,26 +190,30 @@ export default class Report extends Vue {
     this.report = item;
     this.dialogEdit = true;
   }
+
   openDeleteDialog(item: IReport) {
     this.report = item;
     this.dialogDel = true;
   }
-  viewDetailReport(item: IReport) {
-    this.$router.push({ path: `/report-bidding-document/${item.id}` });
-  }
-  openDetailDialog(item: IReport) {
-    const id = item.id;
-    this.$router.push({ path: `/report/${id}` });
+
+  openBiddingDocumentDetail(item: IReport) {
+    this.biddingDocument = item.report as IBiddingDocument;
+    this.dialogBiddingDocumentDetail = true;
   }
 
   @Watch("options")
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _res = await getReportsByUser({
-        page: val.page - 1,
-        limit: val.itemsPerPage
-      });
+      const _res = this.$auth.check("ROLE_MODERATOR")
+        ? await getReports({
+            page: val.page - 1,
+            limit: val.itemsPerPage
+          })
+        : await getReportsByUser({
+            page: val.page - 1,
+            limit: val.itemsPerPage
+          });
       if (_res.data) {
         const _reports = _res.data.data;
         this.reports = _reports;

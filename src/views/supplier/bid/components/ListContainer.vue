@@ -1,13 +1,7 @@
 <template>
   <v-dialog v-model="dialogContainerSync">
     <v-card>
-      <v-toolbar color="primary" light flat>
-        <v-toolbar-title
-          ><span class="headline" style="color:white;"
-            >Danh sách Container</span
-          ></v-toolbar-title
-        >
-      </v-toolbar>
+      <v-card-title class="headline">Danh sách Container</v-card-title>
 
       <v-card-text>
         <v-tabs background-color="white" color="deep-purple accent-4" left>
@@ -122,9 +116,9 @@
           </v-tab-item>
         </v-tabs>
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions class="justify-space-between">
         <v-spacer></v-spacer>
-        <v-btn @click="dialogContainerSync = false">Hủy</v-btn>
+        <v-btn @click="dialogContainerSync = false">Trở về</v-btn>
         <v-btn
           @click="dialogContainerSync = false"
           color="primary"

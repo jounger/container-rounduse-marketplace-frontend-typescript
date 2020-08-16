@@ -1,18 +1,12 @@
 <template>
-  <v-dialog v-model="dialogConfirmSync" max-width="600px">
+  <v-dialog v-model="dialogConfirmSync" max-width="400">
     <v-card>
-      <v-toolbar color="primary" light flat>
-        <v-toolbar-title
-          ><span class="headline" style="color:white;"
-            >Thay đổi trạng thái Report</span
-          ></v-toolbar-title
-        >
-      </v-toolbar>
+      <v-card-title class="headline">Thay đổi trạng thái Report</v-card-title>
 
       <v-card-text>
         <v-form>
           <v-container>
-            <span style="color: black; font-size:22px;"
+            <span
               >Bạn có chắc chắn muốn
               {{
                 status == "RESOLVED" || status == "CLOSED" ? "đóng" : "từ chối"
@@ -30,8 +24,8 @@
           </v-container>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-left: 205px;">
-        <v-btn @click="dialogConfirmSync = false">Hủy</v-btn>
+      <v-card-actions class="justify-space-between">
+        <v-btn @click="dialogConfirmSync = false">Trở về</v-btn>
         <v-btn @click="changeStatusReport()" class="primary">Đồng ý</v-btn>
       </v-card-actions>
     </v-card>

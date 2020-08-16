@@ -1,13 +1,9 @@
 <template>
   <v-dialog v-model="dialogAddContSync" max-width="500px">
     <v-card>
-      <v-toolbar color="primary" light flat>
-        <v-toolbar-title
-          ><span class="headline" style="color:white;">{{
-            update ? "Cập nhật Container" : "Thêm mới Container"
-          }}</span></v-toolbar-title
-        >
-      </v-toolbar>
+      <v-card-title class="headline">{{
+        update ? "Cập nhật Container" : "Thêm mới Container"
+      }}</v-card-title>
 
       <v-card-text>
         <v-form v-model="valid" validation>
@@ -100,7 +96,7 @@
         </v-form>
       </v-card-text>
 
-      <v-card-actions>
+      <v-card-actions class="justify-space-between">
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddContSync = false">Trở về</v-btn>
         <v-btn

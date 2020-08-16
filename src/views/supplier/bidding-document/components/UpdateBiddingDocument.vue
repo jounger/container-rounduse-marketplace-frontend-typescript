@@ -32,7 +32,6 @@
               disable-sort
               class="elevation-0 mb-1"
             >
-              <!--  -->
               <template v-slot:top>
                 <v-toolbar flat color="white">
                   <v-toolbar-title>Danh sách hàng xuất</v-toolbar-title>
@@ -40,7 +39,6 @@
                   <v-spacer></v-spacer>
                 </v-toolbar>
               </template>
-              <!--  -->
               <template v-slot:item.packingTime="{ item }">
                 {{ formatDatetime(item.packingTime) }}
               </template>

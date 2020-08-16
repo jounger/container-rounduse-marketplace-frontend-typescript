@@ -9,7 +9,6 @@
       :outbound="outbound"
       :dialogEdit.sync="dialogEdit"
       :outbounds.sync="outbounds"
-      :readonly="readonly"
     />
     <CreateBiddingDocument
       v-if="dialogCreateBiddingDocument"
@@ -41,7 +40,6 @@
         disable-sort
         class="elevation-1"
       >
-        <!--  -->
         <template v-slot:top>
           <v-toolbar flat color="white">
             <v-toolbar-title>Danh sách hàng xuất</v-toolbar-title>
@@ -52,7 +50,6 @@
             </v-btn>
           </v-toolbar>
         </template>
-        <!--  -->
         <template v-slot:item.status="{ item }">
           <v-chip
             :style="
@@ -90,11 +87,8 @@
                 <v-icon>mdi-dots-vertical</v-icon>
               </v-btn>
             </template>
-            <v-list dense>
-              <v-list-item
-                @click="openCreateBiddingDocument(item)"
-                v-if="item.status == 'CREATED'"
-              >
+            <v-list dense v-if="item.status == 'CREATED'">
+              <v-list-item @click="openCreateBiddingDocument(item)">
                 <v-list-item-icon>
                   <v-icon small>add</v-icon>
                 </v-list-item-icon>
@@ -102,10 +96,7 @@
                   <v-list-item-title>Mở đấu thầu</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item
-                @click="openUpdateDialog(item)"
-                v-if="item.status == 'CREATED'"
-              >
+              <v-list-item @click="openUpdateDialog(item)">
                 <v-list-item-icon>
                   <v-icon small>edit</v-icon>
                 </v-list-item-icon>
@@ -113,21 +104,7 @@
                   <v-list-item-title>Chỉnh sửa</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item
-                @click="openDetailDialog(item)"
-                v-if="item.status != 'CREATED'"
-              >
-                <v-list-item-icon>
-                  <v-icon small>details</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>Xem chi tiết</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-              <v-list-item
-                @click="openDeleteDialog(item)"
-                v-if="item.status == 'CREATED'"
-              >
+              <v-list-item @click="openDeleteDialog(item)">
                 <v-list-item-icon>
                   <v-icon small>delete</v-icon>
                 </v-list-item-icon>
@@ -168,7 +145,6 @@ export default class Outbound extends Vue {
   dialogAdd = false;
   dialogEdit = false;
   dialogDel = false;
-  readonly = false;
   dialogCreateBiddingDocument = false;
   loading = false;
   options = {
@@ -204,12 +180,6 @@ export default class Outbound extends Vue {
 
   openUpdateDialog(item: IOutbound) {
     this.outbound = item;
-    this.readonly = false;
-    this.dialogEdit = true;
-  }
-  openDetailDialog(item: IOutbound) {
-    this.outbound = item;
-    this.readonly = true;
     this.dialogEdit = true;
   }
 

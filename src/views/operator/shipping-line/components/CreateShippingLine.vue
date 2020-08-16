@@ -99,7 +99,6 @@
               <v-btn color="primary" @click="stepper = 2" :disabled="!valid"
                 >Tiếp tục</v-btn
               >
-              <!-- <v-btn text @click="dialogAddSync = false">Hủy</v-btn> -->
             </v-form>
           </v-stepper-content>
 

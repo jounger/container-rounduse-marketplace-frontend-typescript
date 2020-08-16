@@ -41,6 +41,7 @@
             </v-list>
           </v-menu></v-subheader
         >
+        <v-divider></v-divider>
         <v-list-item-group>
           <v-list-item
             v-for="item in notifications"
@@ -51,8 +52,9 @@
             "
           >
             <v-list-item-avatar color="green">
-              <!-- <v-img :src="item.avatar"></v-img> -->
-              {{ item.id }}
+              <span class="white--text headline">
+                {{ item.id }}
+              </span>
             </v-list-item-avatar>
 
             <v-list-item-content>
@@ -69,6 +71,7 @@
       </v-list>
       <v-list two-line v-else>
         <v-subheader>THÔNG BÁO</v-subheader>
+        <v-divider></v-divider>
         <v-list-item>
           <v-list-item-content>
             {{ "Không có thông báo mới!" }}
@@ -118,7 +121,7 @@ export default class Notification extends Vue {
   notificationSubscribe: Array<string> = [];
   options = {
     page: 1,
-    itemsPerPage: 2
+    itemsPerPage: 5
   } as DataOptions;
   serverSideOptions = {
     totalItems: 0,
@@ -198,7 +201,7 @@ export default class Notification extends Vue {
       });
       if (_res.data) {
         const _notifications = _res.data.data as INotification[];
-        this.notifications = this.notifications.concat(_notifications);
+        this.notifications = [...this.notifications, ..._notifications];
         this.serverSideOptions.totalPages = _res.data.totalPages;
         if (this.notifications.length > 0)
           this.messageCount = this.notifications.filter(x => !x.isRead).length;

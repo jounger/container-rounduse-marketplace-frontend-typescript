@@ -1,20 +1,12 @@
 <template>
-  <v-dialog v-model="dialogConfirmSync" max-width="600px">
+  <v-dialog v-model="dialogConfirmSync" max-width="400">
     <v-card>
-      <v-toolbar color="primary" light flat>
-        <v-toolbar-title
-          ><span class="headline" style="color:white;"
-            >Xác nhận bỏ chọn Container</span
-          ></v-toolbar-title
-        >
-      </v-toolbar>
+      <v-card-title class="headline">Xác nhận bỏ chọn Container</v-card-title>
 
       <v-card-text>
         <v-form>
           <v-container>
-            <span style="color: black; font-size:22px;"
-              >Bạn có chắc chắn muốn bỏ chọn Container này?</span
-            >
+            <span>Bạn có chắc chắn muốn bỏ chọn Container này?</span>
             <v-divider class="mt-3"></v-divider>
             <v-list>
               <v-list-item>
@@ -26,8 +18,8 @@
           </v-container>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-left: 205px;">
-        <v-btn @click="dialogConfirmSync = false">Hủy</v-btn>
+      <v-card-actions class="justify-space-between">
+        <v-btn @click="dialogConfirmSync = false">Trở về</v-btn>
         <v-btn @click="confirmContainer()" color="error">Bỏ chọn</v-btn>
       </v-card-actions>
     </v-card>

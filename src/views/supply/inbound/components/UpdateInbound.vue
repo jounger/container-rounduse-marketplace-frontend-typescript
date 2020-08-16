@@ -107,6 +107,7 @@
                         dateicon="flight_land"
                         datelabel="Ngày lấy cont đặc"
                         timelabel="Giờ lấy cont"
+                        disabled
                       />
                     </v-col>
                   </v-row>
@@ -137,7 +138,7 @@
                         type="text"
                         :rules="[required('Số B/L')]"
                         label="Số B/L*"
-                        readonly
+                        disabled
                       ></v-text-field> </v-col
                     ><v-col cols="12" sm="6">
                       <v-select
@@ -146,7 +147,7 @@
                         :loading="loadingPorts"
                         :items="portsToString"
                         :rules="[required('cảng lấy Container đặc')]"
-                        no-data-text="Danh sách bến cảng rỗng."
+                        no-data-text="Danh sách cảng rỗng."
                         label="Cảng lấy cont đặc*"
                         ><v-btn
                           text
@@ -169,6 +170,7 @@
                         dateicon="event_available"
                         datelabel="Ngày DEM/DET (Freetime)"
                         timelabel="Giờ Freetime"
+                        disabled
                       />
                     </v-col>
                   </v-row>

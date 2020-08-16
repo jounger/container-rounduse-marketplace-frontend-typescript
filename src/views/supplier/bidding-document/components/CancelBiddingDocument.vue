@@ -1,18 +1,12 @@
 <template>
-  <v-dialog v-model="dialogCancelSync" max-width="600px">
+  <v-dialog v-model="dialogCancelSync" max-width="400">
     <v-card>
-      <v-toolbar color="primary" light flat>
-        <v-toolbar-title
-          ><span class="headline" style="color:white;">Hủy HSMT</span>
-        </v-toolbar-title>
-      </v-toolbar>
+      <v-card-title class="headline">Hủy bỏ HSMT</v-card-title>
 
       <v-card-text>
         <v-form>
           <v-container>
-            <span style="color: black; font-size:22px;"
-              >Bạn có chắc chắn muốn hủy HSMT này?</span
-            >
+            <span>Bạn có chắc chắn muốn hủy HSMT này?</span>
             <v-divider class="mt-3"></v-divider>
             <v-list>
               <v-list-item>
@@ -28,9 +22,9 @@
           </v-container>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-left: 205px;">
+      <v-card-actions class="justify-space-between">
         <v-btn @click="dialogCancelSync = false">Trở về</v-btn>
-        <v-btn @click="cancelBiddingDocument()" color="error">Hủy thầu</v-btn>
+        <v-btn @click="cancelBiddingDocument()" color="error">Hủy bỏ</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

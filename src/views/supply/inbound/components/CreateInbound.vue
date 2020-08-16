@@ -164,7 +164,7 @@
                         :loading="loadingPorts"
                         :items="portsToString"
                         :rules="[required('cảng lấy Container đặc')]"
-                        no-data-text="Danh sách bến cảng rỗng."
+                        no-data-text="Danh sách cảng rỗng."
                         label="Cảng lấy cont đặc*"
                         ><v-btn
                           text

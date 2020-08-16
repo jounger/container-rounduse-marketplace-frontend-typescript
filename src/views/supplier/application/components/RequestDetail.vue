@@ -31,7 +31,7 @@
                 prepend-icon="mdi-account"
                 type="text"
                 v-model="supplier.username"
-                readonly
+                disabled
               ></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
@@ -41,7 +41,7 @@
                 prepend-icon="alternate_email"
                 type="text"
                 v-model="supplier.email"
-                readonly
+                disabled
               ></v-text-field>
             </v-col>
           </v-row>
@@ -53,7 +53,7 @@
                 prepend-icon="phone"
                 type="number"
                 v-model="supplier.phone"
-                readonly
+                disabled
               ></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
@@ -63,7 +63,7 @@
                 prepend-icon="security"
                 type="text"
                 v-model="role"
-                readonly
+                disabled
               ></v-text-field>
             </v-col>
           </v-row>
@@ -75,7 +75,7 @@
                 prepend-icon="location_on"
                 type="text"
                 v-model="supplier.address"
-                readonly
+                disabled
               ></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
@@ -85,7 +85,7 @@
                 prepend-icon="verified_user"
                 type="text"
                 v-model="supplier.companyCode"
-                readonly
+                disabled
               ></v-text-field>
             </v-col>
           </v-row>
@@ -97,7 +97,7 @@
                 prepend-icon="contacts"
                 type="text"
                 v-model="supplier.companyName"
-                readonly
+                disabled
               >
               </v-text-field>
             </v-col>
@@ -108,7 +108,7 @@
                 prepend-icon="add_ic_call"
                 type="text"
                 v-model="supplier.fullname"
-                readonly
+                disabled
               ></v-text-field>
             </v-col>
           </v-row>
@@ -120,7 +120,7 @@
                 prepend-icon="card_travel"
                 type="number"
                 v-model="supplier.tin"
-                readonly
+                disabled
               ></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
@@ -130,7 +130,7 @@
                 prepend-icon="perm_phone_msg"
                 type="number"
                 v-model="supplier.fax"
-                readonly
+                disabled
               ></v-text-field>
             </v-col>
           </v-row>
@@ -142,7 +142,7 @@
                 prepend-icon="copyright"
                 type="text"
                 v-model="supplier.website"
-                readonly
+                disabled
               ></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
@@ -152,7 +152,7 @@
                 prepend-icon="description"
                 type="text"
                 v-model="supplier.companyDescription"
-                readonly
+                disabled
               ></v-text-field>
             </v-col>
           </v-row>
@@ -164,7 +164,7 @@
                 prepend-icon="room"
                 type="text"
                 v-model="supplier.companyAddress"
-                readonly
+                disabled
               ></v-text-field>
             </v-col>
           </v-row>

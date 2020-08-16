@@ -112,7 +112,7 @@
                   <v-icon small>cancel_presentation</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
-                  <v-list-item-title>Hủy thầu</v-list-item-title>
+                  <v-list-item-title>Hủy bỏ</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
               <v-list-item

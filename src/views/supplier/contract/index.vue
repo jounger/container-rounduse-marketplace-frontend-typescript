@@ -327,14 +327,6 @@ export default class Contract extends Vue {
     this.dialogAdd = true;
   }
 
-  // async getBiddingDocument(id: number) {
-  //   const _res = await getBiddingDocumentByBid(id);
-  //   if (_res.data) {
-  //     const _biddingDocument = _res.data;
-  //     this.merchants.push(_biddingDocument.offeree);
-  //   }
-  // }
-
   @Watch("options", { immediate: true })
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
@@ -346,12 +338,6 @@ export default class Contract extends Vue {
       if (_res.data) {
         const _combineds = _res.data.data;
         this.combineds = _combineds;
-        // _combineds.forEach((x: ICombined) => {
-        //   const _bid = x.bid as IBid;
-        //   if (_bid.id) {
-        //     this.getBiddingDocument(_bid.id);
-        //   }
-        // });
         this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
@@ -360,18 +346,16 @@ export default class Contract extends Vue {
 
   @Watch("evidenceOptions")
   async onEvidenceOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined") {
+    if (typeof val != "undefined" && this.contract) {
       this.loading = true;
-      if (this.contract && this.contract.id) {
-        const _res = await getEvidencesByContract(this.contract.id, {
-          page: val.page - 1,
-          limit: val.itemsPerPage
-        });
-        if (_res.data) {
-          const _evidences = _res.data.data;
-          this.evidences = _evidences;
-          this.evidenceServerSideOptions.totalItems = _res.data.totalElements;
-        }
+      const _res = await getEvidencesByContract(this.contract.id as number, {
+        page: val.page - 1,
+        limit: val.itemsPerPage
+      });
+      if (_res.data) {
+        const _evidences = _res.data.data;
+        this.evidences = _evidences;
+        this.evidenceServerSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }
@@ -388,6 +372,7 @@ export default class Contract extends Vue {
           if (value.contract) {
             this.expanded.push(value);
             this.contract = value.contract;
+            this.evidenceOptions.page = 1;
             await this.onEvidenceOptionsChange(this.evidenceOptions);
           }
         } else {

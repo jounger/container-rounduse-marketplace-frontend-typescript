@@ -1,6 +1,6 @@
 <template>
   <v-footer app style="margin-top:20px;">
-    <span>&copy; 2020</span>
+    <span>Container Round-use Marketplace &copy; 2020</span>
   </v-footer>
 </template>
 <script lang="ts">

@@ -1,18 +1,12 @@
 <template>
-  <v-dialog v-model="dialogDelSync" max-width="600px">
+  <v-dialog v-model="dialogDelSync" max-width="400px">
     <v-card>
-      <v-toolbar color="primary" light flat>
-        <v-toolbar-title
-          ><span class="headline" style="color:white;">Xóa hàng</span>
-        </v-toolbar-title>
-      </v-toolbar>
+      <v-card-title class="headline">Xóa hàng</v-card-title>
 
       <v-card-text>
         <v-form>
           <v-container>
-            <span style="color: black; font-size:22px;"
-              >Bạn có chắc chắn muốn xóa hàng nhập này?</span
-            >
+            <span>Bạn có chắc chắn muốn xóa hàng nhập này?</span>
             <v-divider class="mt-3"></v-divider>
             <v-list>
               <v-list-item>
@@ -28,9 +22,9 @@
           </v-container>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-left: 205px;">
-        <v-btn @click="dialogDelSync = false">Hủy</v-btn>
-        <v-btn @click="removeInbound()" color="error">Xóa</v-btn>
+      <v-card-actions class="justify-space-between">
+        <v-btn @click="dialogDelSync = false">Trở về</v-btn>
+        <v-btn @click="removeInbound()" color="error">Xóa bỏ</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

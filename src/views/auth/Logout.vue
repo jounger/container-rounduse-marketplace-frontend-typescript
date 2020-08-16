@@ -6,7 +6,7 @@ import { Component, Vue } from "vue-property-decorator";
 
 @Component
 export default class Logout extends Vue {
-  mounted() {
+  created() {
     this.$auth.logout();
   }
 }

@@ -1,13 +1,9 @@
 <template>
   <v-dialog v-model="dialogAddSync" max-width="600px">
     <v-card>
-      <v-toolbar color="primary" light flat>
-        <v-toolbar-title
-          ><span class="headline" style="color:white;">{{
-            update ? "Cập nhật Phản hồi" : "Thêm mới Phản hồi"
-          }}</span></v-toolbar-title
-        >
-      </v-toolbar>
+      <v-card-title class="headline">{{
+        update ? "Cập nhật Phản hồi" : "Thêm mới Phản hồi"
+      }}</v-card-title>
       <v-card-text>
         <v-form v-model="valid" validation>
           <v-row>
@@ -17,7 +13,7 @@
                 name="sender"
                 prepend-icon="person"
                 type="text"
-                readonly
+                disabled
                 v-model="report.sender"
               ></v-text-field>
             </v-col>
@@ -41,7 +37,7 @@
           </v-row>
         </v-form>
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions class="justify-space-between">
         <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
         <v-btn

@@ -170,7 +170,7 @@
                         :items="portsToString"
                         :rules="[required('cảng xuất hàng')]"
                         :loading="loadingPorts"
-                        no-data-text="Danh sách bến cảng rỗng."
+                        no-data-text="Danh sách cảng rỗng."
                         label="Cảng xuất hàng*"
                       >
                         <v-btn

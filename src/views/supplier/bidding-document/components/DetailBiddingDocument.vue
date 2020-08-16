@@ -34,7 +34,11 @@
     >
       <!-- OUTOUNBD -->
       <v-card class="order-0 flex-grow-0 mx-auto mr-5 my-5" max-width="380">
-        <v-img height="100" src="@/assets/images/biddingdocument.jpg"></v-img>
+        <v-img
+          height="100"
+          max-width="380"
+          src="@/assets/images/biddingdocument.jpg"
+        ></v-img>
         <v-card-title>Hồ sơ Mời thầu</v-card-title>
         <v-card-text>
           Chủ hàng xuất:

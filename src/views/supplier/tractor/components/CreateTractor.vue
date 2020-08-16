@@ -1,13 +1,9 @@
 <template>
   <v-dialog v-model="dialogAddSync" max-width="600px">
     <v-card>
-      <v-toolbar color="primary" light flat>
-        <v-toolbar-title
-          ><span class="headline" style="color:white;">{{
-            update ? "Cập nhật Đầu kéo" : "Thêm mới Đầu kéo"
-          }}</span></v-toolbar-title
-        >
-      </v-toolbar>
+      <v-card-title class="headline">{{
+        update ? "Cập nhật Đầu kéo" : "Thêm mới Đầu kéo"
+      }}</v-card-title>
       <v-card-text>
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
@@ -43,8 +39,7 @@
           </v-row>
         </v-form>
       </v-card-text>
-      <v-card-actions style="margin-top: 65px;">
-        <v-spacer></v-spacer>
+      <v-card-actions class="justify-space-between">
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
         <v-btn
           @click="updateTractor()"

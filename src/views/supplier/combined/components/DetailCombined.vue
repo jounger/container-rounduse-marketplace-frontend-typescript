@@ -8,6 +8,14 @@
       :finalEvidence="finalEvidence"
       :evidence="evidence"
     />
+    <CreateEvidence
+      v-if="dialogAddEvidence"
+      :dialogAdd.sync="dialogAddEvidence"
+      :evidences.sync="evidences"
+      :checkValid.sync="checkValid"
+      :totalItems.sync="evidenceServerSideOptions.totalItems"
+      :contract="contract"
+    />
     <v-container
       class="d-flex justify-space-around align-start"
       v-if="combined"
@@ -28,10 +36,6 @@
             <v-container fluid>
               <v-card class="elevation-0" v-if="shippingInfo && inbound">
                 <v-row justify="center"> </v-row>
-                <!-- <v-img
-                  height="250"
-                  src="@/assets/images/google-maps-directions.jpg"
-                ></v-img> -->
                 <GoogleMapLoader
                   :options="mapConfig"
                   :apiKey="apiKey"
@@ -108,10 +112,11 @@
           </v-tab-item>
 
           <v-tab-item>
-            <v-container fluid v-if="shippingInfo">
-              <v-card class="elevation-0">
+            <v-container fluid>
+              <v-card class="elevation-0" v-if="shippingInfo">
                 <v-img
                   height="100"
+                  max-width="400"
                   src="@/assets/images/biddingdocument.jpg"
                 ></v-img>
 
@@ -203,6 +208,7 @@
               <v-card class="elevation-0" v-if="combined">
                 <v-img
                   height="100"
+                  max-width="400"
                   src="@/assets/images/biddingdocument.jpg"
                 ></v-img>
 
@@ -250,22 +256,6 @@
                   </v-list-item>
                 </v-list>
                 <v-list dense v-if="combined.contract.required">
-                  <v-subheader
-                    >Chứng cứ
-                    <v-tooltip bottom>
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-icon
-                          style="color:gold;"
-                          v-if="!checkValid"
-                          v-bind="attrs"
-                          v-on="on"
-                          >report_problem</v-icon
-                        >
-                      </template>
-                      <span>Bạn cần xác nhận ít nhất một chứng cứ.</span>
-                    </v-tooltip>
-                  </v-subheader>
-                  <v-card-title>Danh sách Chứng cứ</v-card-title>
                   <v-data-table
                     :headers="evidenceHeaders"
                     :items="evidences"
@@ -282,6 +272,23 @@
                     disable-sort
                     class="elevation-0"
                   >
+                    <template v-slot:top>
+                      <v-toolbar flat color="white">
+                        <v-toolbar-title
+                          >Danh sách file hợp đồng</v-toolbar-title
+                        >
+                        <v-divider class="mx-4" inset vertical></v-divider>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                          color="primary"
+                          dark
+                          class="mb-2"
+                          @click="dialogAddEvidence = true"
+                        >
+                          Thêm mới
+                        </v-btn>
+                      </v-toolbar>
+                    </template>
                     <template v-slot:item.actions="{ item }">
                       <v-btn
                         class="ma-1"
@@ -364,6 +371,7 @@ import Utils from "@/mixin/utils";
 import { ICombined } from "@/entity/combined";
 import { IEvidence } from "@/entity/evidence";
 import { getEvidencesByContract } from "@/api/evidence";
+import CreateEvidence from "./CreateEvidence.vue";
 import DetailEvidence from "./DetailEvidence.vue";
 import { IInbound } from "@/entity/inbound";
 import { DataOptions } from "vuetify";
@@ -383,6 +391,7 @@ import { getBiddingDocumentByCombined } from "@/api/bidding-document";
 @Component({
   mixins: [FormValidate, Utils],
   components: {
+    CreateEvidence,
     DetailEvidence,
     SupplierRating,
     GoogleMapLoader,
@@ -404,6 +413,7 @@ export default class DetailCombined extends Vue {
   stepper = 1;
   exception = true;
   dialogDetail = false;
+  dialogAddEvidence = false;
   checkValid = false;
   finalEvidence = false;
   shippingInfoOptions = {
@@ -459,12 +469,12 @@ export default class DetailCombined extends Vue {
   ];
   evidenceHeaders = [
     {
-      text: "Evidence No.",
+      text: "Mã.",
       align: "start",
       sortable: false,
       value: "id"
     },
-    { text: "Người gửi", value: "sender" },
+    { text: "Người gửi", value: "sender.companyName" },
     { text: "Hợp lệ", value: "isValid" },
     {
       text: "Hành động",
@@ -537,6 +547,7 @@ export default class DetailCombined extends Vue {
     if (_res.data) {
       const _combined = _res.data;
       this.combined = _combined;
+      this.contract = _combined.contract;
       const _res_ = await getBiddingDocumentByCombined(_combined.id);
       if (_res_.data) {
         const _biddingDocument = _res_.data;
@@ -561,23 +572,23 @@ export default class DetailCombined extends Vue {
     this.dialogDetail = true;
   }
 
-  @Watch("evidenceOptions")
+  @Watch("evidenceOptions", { immediate: true })
   async onEvidenceOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined") {
-      if (this.contract && this.contract.id) {
-        const _res = await getEvidencesByContract(this.contract.id, {
-          page: val.page - 1,
-          limit: val.itemsPerPage
-        });
-        if (_res.data) {
-          const _evidences = _res.data.data;
-          this.evidences = _evidences;
-          this.evidenceServerSideOptions.totalItems = _res.data.totalElements;
-          if (this.evidences.length > 0 && this.evidences[0].isValid == true) {
-            this.checkValid = true;
-          }
+    if (typeof val != "undefined" && this.contract) {
+      this.loading = true;
+      const _res = await getEvidencesByContract(this.contract.id as number, {
+        page: val.page - 1,
+        limit: val.itemsPerPage
+      });
+      if (_res.data) {
+        const _evidences = _res.data.data;
+        this.evidences = _evidences;
+        this.evidenceServerSideOptions.totalItems = _res.data.totalElements;
+        if (this.evidences.length > 0 && this.evidences[0].isValid == true) {
+          this.checkValid = true;
         }
       }
+      this.loading = false;
     }
   }
 

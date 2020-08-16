@@ -1,25 +1,9 @@
 <template>
   <v-dialog v-model="dialogEditSync" max-width="600px">
     <v-card>
-      <v-toolbar color="primary" light flat>
-        <v-toolbar-title
-          ><span class="headline" style="color:white;">Cập nhật Report</span>
-        </v-toolbar-title>
-      </v-toolbar>
+      <v-card-title class="headline">Cập nhật Report</v-card-title>
       <v-card-text>
         <v-form v-model="valid" validation>
-          <!-- <v-row>
-            <v-col cols="12" md="11">
-              <v-text-field
-                label="Người gửi*"
-                name="sender"
-                prepend-icon="person"
-                type="text"
-                readonly
-                v-model="reportLocal.sender"
-              ></v-text-field>
-            </v-col>
-          </v-row> -->
           <v-row>
             <v-col cols="12">
               <v-text-field
@@ -27,7 +11,7 @@
                 name="title"
                 prepend-icon="menu"
                 type="text"
-                :counter="20"
+                :counter="100"
                 :rules="[
                   minLength('Tiêu đề Report', 5),
                   maxLength('Tiêu đề Report', 100)
@@ -55,7 +39,7 @@
           </v-row>
         </v-form>
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions class="justify-space-between">
         <v-spacer></v-spacer>
         <v-btn @click="dialogEditSync = false">Trở về</v-btn>
         <v-btn @click="updateReport()" color="primary" :disabled="!valid"
