@@ -116,14 +116,6 @@
             </v-list>
           </v-menu>
         </template>
-        <template v-slot:item.merchant="{ item }">
-          {{
-            $auth.check("ROLE_MERCHANT") ? $auth.user().fullname : item.merchant
-          }}
-        </template>
-        <template v-slot:item.forwarder="{ item }">
-          {{ item.bid.bidder.companyName }}
-        </template>
         <template v-slot:item.contract.price="{ item }">
           {{ currencyFormatter(item.contract.price) }}
         </template>
@@ -191,7 +183,7 @@ import { IContract } from "@/entity/contract";
 import { DataOptions } from "vuetify";
 import { IEvidence } from "@/entity/evidence";
 import { getEvidencesByContract } from "@/api/evidence";
-import { getCombinedsByUser } from "@/api/combined";
+import { getCombineds } from "@/api/combined";
 import { ICombined } from "@/entity/combined";
 import DetailEvidence from "../combined/components/DetailEvidence.vue";
 import UpdateContract from "./components/UpdateContract.vue";
@@ -249,8 +241,8 @@ export default class Contract extends Vue {
       align: "start",
       value: "id"
     },
-    { text: "Bên chủ hàng", value: "merchant" },
-    { text: "Bên chủ xe", value: "forwarder" },
+    { text: "Bên chủ hàng", value: "contract.sender.companyName" },
+    { text: "Bên chủ xe", value: "bid.bidder.companyName" },
     { text: "Y/c hợp đồng", value: "contract.required" },
     { text: "Giá hợp đồng", value: "contract.price" },
     {
@@ -331,7 +323,7 @@ export default class Contract extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _res = await getCombinedsByUser({
+      const _res = await getCombineds({
         page: val.page - 1,
         limit: val.itemsPerPage
       });

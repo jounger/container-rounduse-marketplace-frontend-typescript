@@ -8,12 +8,6 @@ export function getCombineds(paging: PaginationRequest) {
   });
 }
 
-export function getCombinedsByUser(paging: PaginationRequest) {
-  return Vue.axios.get("/combined/user", {
-    params: paging
-  });
-}
-
 export function getCombinedsByBiddingDocument(
   id: number,
   paging: PaginationRequest

@@ -40,7 +40,6 @@
     </v-card-text>
     <v-card-actions class="justify-space-between">
       <v-btn to="/register" outlined>Đăng ký</v-btn>
-      <v-spacer></v-spacer>
       <v-btn @click.stop="login()" color="primary">Đăng nhập</v-btn>
     </v-card-actions>
   </v-card>

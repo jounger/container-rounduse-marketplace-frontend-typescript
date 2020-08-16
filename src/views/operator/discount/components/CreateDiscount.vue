@@ -72,7 +72,6 @@
         </v-form>
       </v-card-text>
       <v-card-actions class="justify-space-between">
-        <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
         <v-btn
           @click="updateDiscount()"

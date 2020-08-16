@@ -97,7 +97,6 @@
       </v-card-text>
 
       <v-card-actions class="justify-space-between">
-        <v-spacer></v-spacer>
         <v-btn @click="dialogAddContSync = false">Trở về</v-btn>
         <v-btn
           color="primary"

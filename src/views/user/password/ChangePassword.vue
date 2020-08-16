@@ -54,7 +54,6 @@
     </v-card-text>
     <v-card-actions class="justify-space-between">
       <v-btn text small to="/">Trang chủ</v-btn>
-      <v-spacer></v-spacer>
       <v-btn @click.stop="changePassword()" color="primary">Thay đổi</v-btn>
     </v-card-actions>
   </v-card>

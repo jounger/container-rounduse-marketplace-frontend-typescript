@@ -5,7 +5,7 @@
         <v-container v-if="biddingDocument">
           <v-img
             height="100"
-            max-width="400"
+            max-width="600"
             src="@/assets/images/biddingdocument.jpg"
           ></v-img>
           <v-card-title>Hồ sơ Mời thầu</v-card-title>

@@ -27,7 +27,7 @@
                 <v-icon>mdi-dots-vertical</v-icon>
               </v-btn>
             </template>
-            <v-list>
+            <v-list dense>
               <v-list-item-group>
                 <v-list-item>
                   <v-list-item-icon>

@@ -33,7 +33,6 @@
         </v-form>
       </v-card-text>
       <v-card-actions class="justify-space-between">
-        <v-spacer></v-spacer>
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
         <v-btn @click="createEvidence()" color="primary" :disabled="!valid"
           >Thêm mới</v-btn

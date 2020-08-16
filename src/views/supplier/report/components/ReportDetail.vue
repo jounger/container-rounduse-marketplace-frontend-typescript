@@ -137,9 +137,15 @@
                 item.sender.fullname || "N/A"
               }}</v-list-item-title>
               <v-list-item-subtitle>{{ item.message }} </v-list-item-subtitle>
-              <v-list-item-subtitle
-                >{{ item.satisfactionPoints }}
-              </v-list-item-subtitle>
+              <v-rating
+                v-model="item.satisfactionPoints"
+                color="yellow darken-3"
+                background-color="grey darken-1"
+                empty-icon="$ratingFull"
+                hover
+                x-small
+                readonly
+              ></v-rating>
             </v-list-item-content>
             <v-spacer></v-spacer>
             <v-menu :close-on-click="true">

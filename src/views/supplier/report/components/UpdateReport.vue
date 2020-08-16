@@ -40,7 +40,6 @@
         </v-form>
       </v-card-text>
       <v-card-actions class="justify-space-between">
-        <v-spacer></v-spacer>
         <v-btn @click="dialogEditSync = false">Trở về</v-btn>
         <v-btn @click="updateReport()" color="primary" :disabled="!valid"
           >Cập nhật</v-btn

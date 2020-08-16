@@ -19,14 +19,12 @@
         />
       </v-row>
       <v-row justify="center">
-        <CreatePayment
-          v-if="dialogAdd"
+        <UpdatePayment
+          v-if="dialogEdit"
           :payment="payment"
           :payments.sync="payments"
-          :dialogAdd.sync="dialogAdd"
-          :totalItems.sync="serverSideOptions.totalItems"
-          :update="update"
-          :readonly="readonly"
+          :dialogEdit.sync="dialogEdit"
+          :disabled="disabled"
         />
       </v-row>
       <v-data-table
@@ -133,11 +131,13 @@ import Utils from "@/mixin/utils";
 import { getPaymentsByUser } from "@/api/payment";
 import { DataOptions } from "vuetify";
 import ConfirmPayment from "./components/ConfirmPayment.vue";
+import UpdatePayment from "./components/UpdatePayment.vue";
 
 @Component({
   mixins: [Utils],
   components: {
     CreatePayment,
+    UpdatePayment,
     DeletePayment,
     ConfirmPayment
   }
@@ -146,12 +146,13 @@ export default class Payment extends Vue {
   payments: Array<IPayment> = [];
   payment = null as IPayment | null;
   dialogAdd = false;
+  dialogEdit = false;
   dialogDel = false;
   dialogConfirm = false;
   roleSearch = "";
   loading = true;
   update = false;
-  readonly = false;
+  disabled = false;
   options = {
     page: 1,
     itemsPerPage: 5
@@ -179,28 +180,24 @@ export default class Payment extends Vue {
       sortable: false
     }
   ];
-  openCreateDialog() {
-    this.update = false;
-    this.dialogAdd = true;
-  }
 
   openUpdateDialog(item: IPayment) {
     this.payment = item;
-    this.readonly = false;
-    this.update = true;
-    this.dialogAdd = true;
+    this.disabled = false;
+    this.dialogEdit = true;
   }
+
   openDetailDialog(item: IPayment) {
     this.payment = item;
-    this.readonly = true;
-    this.update = true;
-    this.dialogAdd = true;
+    this.disabled = true;
+    this.dialogEdit = true;
   }
 
   openDeleteDialog(item: IPayment) {
     this.payment = item;
     this.dialogDel = true;
   }
+
   openConfirmDialog(item: IPayment) {
     this.payment = item;
     this.dialogConfirm = true;

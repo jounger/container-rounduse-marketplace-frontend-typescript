@@ -1,7 +1,9 @@
 <template>
-  <v-dialog v-model="dialogAddSync" max-width="600px">
+  <v-dialog v-model="dialogEditSync" max-width="600px">
     <v-card>
-      <v-card-title class="headline">Khai báo Hóa đơn</v-card-title>
+      <v-card-title class="headline"
+        >{{ disabled ? "Thông tin" : "Cập nhật" }} Hóa đơn</v-card-title
+      >
       <v-card-text>
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
@@ -14,7 +16,7 @@
                 type="text"
                 disabled
                 :counter="20"
-                v-model="paymentLocal.sender"
+                v-model="paymentLocal.sender.companyName"
               ></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
@@ -25,7 +27,7 @@
                 type="text"
                 disabled
                 :counter="20"
-                v-model="paymentLocal.recipient"
+                v-model="paymentLocal.recipient.companyName"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -34,6 +36,7 @@
               <v-select
                 v-model="paymentLocal.type"
                 prepend-icon="money"
+                disabled
                 :items="types"
                 :rules="[required('loại hóa đơn')]"
                 label="Loại hóa đơn*"
@@ -45,6 +48,7 @@
                 name="amount"
                 prepend-icon="monetization_on"
                 type="number"
+                :disabled="disabled"
                 :rules="[required('số tiền')]"
                 :hint="currencyFormatter(paymentLocal.amount)"
                 v-model="paymentLocal.amount"
@@ -59,6 +63,7 @@
                 dateicon="event"
                 datelabel="Thời gian thanh toán*"
                 timelabel="Giờ thanh toán"
+                :disabled="disabled"
               />
             </v-col>
           </v-row>
@@ -69,6 +74,7 @@
                 name="detail"
                 prepend-icon="description"
                 outlined
+                :disabled="disabled"
                 :rules="[required('nội dung hóa đơn')]"
                 v-model="paymentLocal.detail"
               ></v-textarea>
@@ -77,9 +83,13 @@
         </v-form>
       </v-card-text>
       <v-card-actions class="justify-space-between">
-        <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn @click="createPayment()" color="primary" :disabled="!valid"
-          >Thêm mới</v-btn
+        <v-btn @click="dialogEditSync = false">Trở về</v-btn>
+        <v-btn
+          @click="updatePayment()"
+          color="primary"
+          v-if="!disabled"
+          :disabled="!valid"
+          >Cập nhật</v-btn
         >
       </v-card-actions>
     </v-card>
@@ -89,14 +99,10 @@
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
 import { IPayment } from "@/entity/payment";
 import FormValidate from "@/mixin/form-validate";
-import { createPayment } from "@/api/payment";
-import { ICombined } from "@/entity/combined";
-import { IBid } from "@/entity/bid";
+import { editPayment } from "@/api/payment";
 import Utils from "@/mixin/utils";
 import DatetimePicker from "@/components/DatetimePicker.vue";
 import { addTimeToDate } from "@/utils/tool";
-import { IForwarder } from "@/entity/forwarder";
-import { IContract } from "@/entity/contract";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -104,51 +110,33 @@ import { IContract } from "@/entity/contract";
     DatetimePicker
   }
 })
-export default class CreatePayment extends Vue {
-  @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
+export default class UpdatePayment extends Vue {
+  @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
   @PropSync("payments", { type: Array }) paymentsSync?: Array<IPayment>;
-  @Prop(Object) combined!: ICombined;
+  @Prop(Object) payment?: IPayment;
+  @Prop(Boolean) disabled!: boolean;
 
   dateInit = addTimeToDate(new Date().toISOString());
-  paymentLocal = {
-    sender: "",
-    recipient: "",
-    detail: "",
-    amount: 0,
-    isPaid: false,
-    type: "",
-    paymentDate: this.dateInit
-  } as IPayment;
+  paymentLocal = null as IPayment | null;
+
   valid = false;
-  types: Array<string> = [];
+  types: Array<string> = ["FINES", "PAYMENT"];
 
   created() {
-    const _contract = this.combined.contract as IContract;
-    const _bid = this.combined.bid as IBid;
-    const _bidder = _bid.bidder as IForwarder;
-    if (this.$auth.check("ROLE_MERCHANT")) {
-      this.types = ["FINES", "PAYMENT"];
-      this.paymentLocal.sender = _contract.sender.companyName;
-      this.paymentLocal.recipient = _bidder.companyName;
-    } else if (this.$auth.check("ROLE_FORWARDER")) {
-      this.types = ["FINES"];
-      this.paymentLocal.sender = _bidder.companyName;
-      this.paymentLocal.recipient = _contract.sender.companyName;
-    }
+    this.paymentLocal = Object.assign({}, this.payment);
+    this.paymentLocal = Object.assign({}, this.payment);
   }
 
-  async createPayment() {
-    if (this.combined.contract) {
-      const _res = await createPayment(
-        this.combined.contract.id as number,
+  async updatePayment() {
+    if (this.payment && this.paymentLocal) {
+      const _res = await editPayment(
+        this.payment.id as number,
         this.paymentLocal
       );
       if (_res.data && this.paymentsSync) {
         const _payment = _res.data.data;
-        this.paymentsSync.push(_payment);
-      }
-      if (_res.status == 201) {
-        this.dialogAddSync = false;
+        const index = this.paymentsSync.findIndex(x => x.id == _payment.id);
+        this.paymentsSync.splice(index, 1, _payment);
       }
     }
   }

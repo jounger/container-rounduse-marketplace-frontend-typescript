@@ -109,7 +109,6 @@
         </v-container>
       </v-card-text>
       <v-card-actions class="justify-space-between">
-        <v-spacer></v-spacer>
         <v-btn @click="dialogEditSync = false">Trở về</v-btn>
         <v-btn @click="updatePort()" color="primary" :disabled="!valid"
           >Lưu</v-btn

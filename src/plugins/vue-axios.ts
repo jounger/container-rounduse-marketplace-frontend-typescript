@@ -71,7 +71,10 @@ instance.interceptors.response.use(
 
     setTimeout(() => loading.setLoading(false), 200);
     if (error.response) {
-      if (error.response.status == 401) {
+      if (
+        error.response.status == 401 &&
+        error.response.data.path?.includes("/api/auth/signin") == false
+      ) {
         router.push("/401");
         return error;
       }
