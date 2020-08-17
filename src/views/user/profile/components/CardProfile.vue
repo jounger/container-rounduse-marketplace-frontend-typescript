@@ -1,8 +1,8 @@
 <template>
-  <v-card class="order-0 flex-grow-0 mx-auto mr-5 my-5" max-width="380">
+  <v-card class="order-0 flex-grow-1 mx-auto mr-5 my-5">
     <v-card-text>
       <v-hover v-slot:default="{ hover }" open-delay="200">
-        <v-avatar size="250" color="indigo" :class="{ 'opacity-hover': hover }">
+        <v-avatar size="200" color="indigo" :class="{ 'opacity-hover': hover }">
           <v-img
             v-if="$auth.user().profileImagePath"
             :src="profileImagePath"
@@ -28,7 +28,7 @@
             chips
             :show-size="1024"
             accept="image/png, image/jpeg, image/bmp, image/png"
-            placeholder="Pick an avatar"
+            placeholder="Chọn ảnh đại diện"
             prepend-icon="mdi-camera"
             label="Avatar"
           ></v-file-input>
@@ -51,19 +51,29 @@
     <v-list two-line>
       <v-list-item>
         <v-list-item-icon>
+          <v-icon color="indigo">bookmarks</v-icon>
+        </v-list-item-icon>
+
+        <v-list-item-content>
+          <v-list-item-subtitle>Họ và tên</v-list-item-subtitle>
+          <v-list-item-title>{{
+            $auth.user().fullname || "N/A"
+          }}</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-divider></v-divider>
+      <v-list-item>
+        <v-list-item-icon>
           <v-icon color="indigo">mdi-phone</v-icon>
         </v-list-item-icon>
 
         <v-list-item-content>
           <v-list-item-subtitle>Số điện thoại</v-list-item-subtitle>
           <v-list-item-title>{{
-            $auth.user() ? $auth.user().phone : ""
+            $auth.user().phone || "N/A"
           }}</v-list-item-title>
         </v-list-item-content>
-
-        <v-list-item-icon>
-          <v-icon>mdi-message-text</v-icon>
-        </v-list-item-icon>
       </v-list-item>
 
       <v-divider></v-divider>
@@ -76,22 +86,7 @@
         <v-list-item-content>
           <v-list-item-subtitle>Email</v-list-item-subtitle>
           <v-list-item-title>{{
-            $auth.user() ? $auth.user().email : ""
-          }}</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-
-      <v-divider></v-divider>
-
-      <v-list-item>
-        <v-list-item-icon>
-          <v-icon color="indigo">mdi-map-marker</v-icon>
-        </v-list-item-icon>
-
-        <v-list-item-content>
-          <v-list-item-subtitle>Địa chỉ</v-list-item-subtitle>
-          <v-list-item-title>{{
-            $auth.user() ? $auth.user().address : ""
+            $auth.user().email || "N/A"
           }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>

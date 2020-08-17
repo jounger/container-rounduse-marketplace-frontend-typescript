@@ -4,9 +4,10 @@ export interface IContract {
   id?: number;
   sender: ISupplier;
   price?: number;
-  finesAgainstContractViolation: number;
+  containers?: number[];
+  finesAgainstContractViolation?: number;
   discount?: IDiscount;
   required: boolean;
-  creationDate: string;
+  creationDate?: string;
   isSelected?: boolean;
 }

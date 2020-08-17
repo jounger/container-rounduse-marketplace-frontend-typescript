@@ -1,48 +1,52 @@
 <template>
-  <v-card width="550" height="fit-content" class="mt-12">
-    <v-toolbar color="primary" light flat>
-      <v-toolbar-title
-        ><span style="color: white">Đăng nhập</span></v-toolbar-title
-      >
-    </v-toolbar>
-    <v-card-text>
-      <v-form v-model="valid" validation>
-        <v-text-field
-          label="Tên đăng nhập"
-          name="login"
-          prepend-icon="mdi-account"
-          type="text"
-          autocomplete="username"
-          v-model="username"
-          :rules="[required('username')]"
-        ></v-text-field>
+  <v-container>
+    <v-layout wrap>
+      <v-flex sm12 md6 offset-md3>
+        <v-card width="550" height="fit-content" class="mt-12 ma-2 mx-auto">
+          <v-toolbar color="primary" light flat>
+            <v-toolbar-title
+              ><span style="color: white">Đăng nhập</span></v-toolbar-title
+            >
+          </v-toolbar>
+          <v-card-text>
+            <v-form v-model="valid" validation>
+              <v-text-field
+                label="Tên đăng nhập"
+                name="login"
+                prepend-icon="mdi-account"
+                type="text"
+                autocomplete="username"
+                v-model="username"
+                :rules="[required('username')]"
+              ></v-text-field>
 
-        <v-text-field
-          id="password"
-          label="Mật khẩu"
-          name="password"
-          prepend-icon="mdi-key"
-          type="password"
-          autocomplete="current-password"
-          v-model="password"
-          :rules="[required('password'), minLength('password', 6)]"
-        ></v-text-field>
-        <v-row style="margin-left: -7px">
-          <v-checkbox class="mx-2" label="Ghi nhớ đăng nhập"></v-checkbox>
-          <v-spacer></v-spacer>
-          <a
-            style="margin-top: 20px;
-    margin-right: 15px;"
-            >Quên mật khẩu</a
-          >
-        </v-row>
-      </v-form>
-    </v-card-text>
-    <v-card-actions class="justify-space-between">
-      <v-btn to="/register" outlined>Đăng ký</v-btn>
-      <v-btn @click.stop="login()" color="primary">Đăng nhập</v-btn>
-    </v-card-actions>
-  </v-card>
+              <v-text-field
+                id="password"
+                label="Mật khẩu"
+                name="password"
+                prepend-icon="mdi-key"
+                type="password"
+                autocomplete="current-password"
+                v-model="password"
+                :rules="[required('password'), minLength('password', 6)]"
+              ></v-text-field>
+            </v-form>
+          </v-card-text>
+          <v-card-actions class="justify-space-between">
+            <v-btn text to="/forgot-password">Quên mật khẩu</v-btn>
+            <v-btn @click.stop="login()" color="primary">Đăng nhập</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-flex>
+      <v-flex sm12 md6 offset-md3>
+        <v-layout align-center justify-space-between>
+          <p class="caption ma-3">
+            <router-link to="/">Quay lại trang chủ</router-link>
+          </p>
+        </v-layout>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script lang="ts">

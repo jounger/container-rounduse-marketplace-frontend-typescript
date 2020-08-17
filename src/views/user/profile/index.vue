@@ -1,11 +1,8 @@
 <template>
   <v-content>
-    <v-container
-      class="d-flex justify-space-around align-start"
-      v-if="$auth.user()"
-    >
+    <v-container class="d-flex justify-space-around align-start">
       <CardProfile />
-      <CardCompany />
+      <CardCompany v-if="isSupplier" />
     </v-container>
   </v-content>
 </template>
@@ -21,8 +18,13 @@ import CardCompany from "./components/CardCompany.vue";
   }
 })
 export default class Profile extends Vue {
-  created() {
-    console.log(this.$auth.user());
+  get isSupplier() {
+    return this.$auth.check([
+      "ROLE_FORWARDER",
+      "ROLE_MERCHANT",
+      "ROLE_SHIPPINGLINE",
+      "ROLE_DRIVER"
+    ]);
   }
 }
 </script>

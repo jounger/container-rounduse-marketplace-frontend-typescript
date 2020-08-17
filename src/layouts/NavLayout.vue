@@ -38,7 +38,7 @@ export default class NavLayout extends Vue {
 
   @Watch("isUser", { immediate: true })
   onUserChange(val: boolean) {
-    if (typeof val !== "undefined" && this.isUser == false) {
+    if (val == false) {
       // Logout if session expired
       this.$auth.logout();
     }

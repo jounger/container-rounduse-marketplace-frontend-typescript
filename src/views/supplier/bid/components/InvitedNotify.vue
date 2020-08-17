@@ -81,7 +81,7 @@
           {{ currencyFormatter(item.relatedResource.bidPackagePrice) }}
         </template>
         <template v-slot:item.relatedResource.bidFloorPrice="{ item }">
-          {{ currencyFormatter(item.bidFloorPrice) }}
+          {{ currencyFormatter(item.relatedResource.bidFloorPrice) }}
         </template>
       </v-data-table>
     </v-card>
@@ -132,11 +132,11 @@ export default class InvitedNotify extends Vue {
     },
     { text: "Loại cont", value: "relatedResource.outbound.containerType.name" },
     { text: "Giá gói thầu", value: "relatedResource.bidPackagePrice" },
-    { text: "Giá sàn", value: "bidFloorPrice" },
+    { text: "Giá sàn", value: "relatedResource.bidFloorPrice" },
     { text: "Mở thầu", value: "bidOpening" },
     { text: "Đóng thầu", value: "bidClosing" },
     { text: "Nhiều thầu thắng", value: "isMultipleAward" },
-    { text: "Hành động", value: "actions", sortable: false }
+    { text: "Hành động", value: "actions" }
   ];
 
   bidHeaders = [
@@ -150,7 +150,7 @@ export default class InvitedNotify extends Vue {
     { text: "Giá thầu", value: "bidPrice" },
     { text: "Ngày thầu", value: "bidDate" },
     { text: "Hiệu lực", value: "bidValidityPeriod" },
-    { text: "Hành động", value: "actions", sortable: false }
+    { text: "Hành động", value: "actions" }
   ];
 
   openAddDialog(item: IBiddingNotification) {

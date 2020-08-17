@@ -239,7 +239,6 @@ export default class Inbound extends Vue {
     { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery.fullname" },
     { text: "Nơi bốc dỡ hàng", value: "returnStation" },
     { text: "Thời gian được thuê cont", value: "freetime" },
-    { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery.fullname" },
     {
       text: "Hành động",
       value: "actions"

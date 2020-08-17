@@ -512,7 +512,7 @@ export default class DetailBiddingDocument extends Vue {
     { text: "Cont qty", value: "containers.length" },
     { text: "Giá thầu", value: "bidPrice" },
     { text: "Ngày thầu", value: "bidDate" },
-    { text: "Hành động", value: "actions", sortable: false }
+    { text: "Hành động", value: "actions" }
   ];
 
   containerHeaders = [

@@ -1,12 +1,13 @@
 <template>
   <v-content>
-    <ConfirmReviewSupplier
-      v-if="dialogConfirm"
-      :dialogConfirm.sync="dialogConfirm"
-      :supplier.sync="supplier"
-    />
     <v-row justify="center">
-      <RegisterDetail
+      <ConfirmReviewSupplier
+        v-if="dialogConfirm"
+        :dialogConfirm.sync="dialogConfirm"
+        :supplier.sync="supplier"
+        :status="status"
+      />
+      <SupplierDetail
         v-if="dialogDetail"
         :dialogDetail.sync="dialogDetail"
         :supplier="supplier"
@@ -84,13 +85,13 @@
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { ISupplier } from "@/entity/supplier";
 import { getSuppliersByStatus } from "@/api/supplier";
-import RegisterDetail from "./components/RegisterDetail.vue";
 import { DataOptions } from "vuetify";
 import ConfirmReviewSupplier from "./components/ConfirmReviewSupplier.vue";
+import SupplierDetail from "../supplier/components/SupplierDetail.vue";
 
 @Component({
   components: {
-    RegisterDetail,
+    SupplierDetail,
     ConfirmReviewSupplier
   }
 })
@@ -100,6 +101,7 @@ export default class Supplier extends Vue {
   dialogDetail = false;
   dialogConfirm = false;
   loading = true;
+  status = false;
   options = {
     page: 1,
     itemsPerPage: 5
@@ -141,7 +143,7 @@ export default class Supplier extends Vue {
 
   openConfirmDialog(item: ISupplier, status: boolean) {
     this.supplier = item;
-    this.supplier.status = status ? "ACTIVE" : "BANNED";
+    this.status = status;
     this.dialogConfirm = true;
   }
 

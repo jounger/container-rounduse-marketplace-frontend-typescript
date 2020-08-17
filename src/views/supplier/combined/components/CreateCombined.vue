@@ -145,9 +145,10 @@ export default class CreateCombined extends Vue {
   dateInit = new Date().toISOString().substr(0, 10);
   containersSelected: Array<IContainer> = [];
   combinedLocal = {
-    bid: this.bidSync ? this.bidSync.id : -1,
-    containers: [],
+    bid: -1,
     contract: {
+      sender: this.$auth.user().username,
+      containers: [],
       finesAgainstContractViolation: 0,
       required: false
     } as IContract
@@ -200,11 +201,14 @@ export default class CreateCombined extends Vue {
 
   // Create combined
   async createCombined() {
-    if (this.bidSync.id) {
-      this.combinedLocal.containers = this.getSelectedContainer.map(
+    if (typeof this.combinedLocal.contract !== "undefined") {
+      this.combinedLocal.contract.containers = this.getSelectedContainer.map(
         x => x.id
       ) as number[];
-      const _res = await createCombined(this.bidSync.id, this.combinedLocal);
+      const _res = await createCombined(
+        this.bidSync.id as number,
+        this.combinedLocal
+      );
       if (_res.data) {
         const _combined = _res.data.data;
         this.getSelectedContainer.forEach(x => (x.status = "COMBINED"));

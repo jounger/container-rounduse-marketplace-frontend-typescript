@@ -1,7 +1,14 @@
 <template>
-  <v-navigation-drawer v-model="drawerSync" app clipped v-if="$auth.user()">
+  <v-navigation-drawer
+    v-model="drawerSync"
+    :expand-on-hover="mini"
+    permanent
+    app
+    clipped
+    v-if="$auth.user()"
+  >
     <v-list dense nav>
-      <v-list-item two-line link to="/profile">
+      <v-list-item two-line :class="mini && 'px-0'">
         <v-list-item-avatar color="indigo">
           <v-img
             v-if="$auth.user().profileImagePath"
@@ -18,12 +25,17 @@
         </v-list-item-avatar>
 
         <v-list-item-content>
-          <v-list-item-title>{{ $auth.user().fullname }}</v-list-item-title>
+          <v-list-item-title link to="/profile">{{
+            $auth.user().fullname
+          }}</v-list-item-title>
           <v-list-item-subtitle>
             <v-icon small color="success">security</v-icon>
             {{ getUserRole }}</v-list-item-subtitle
           >
         </v-list-item-content>
+        <v-btn icon @click.stop="mini = !mini">
+          <v-icon>{{ `mdi-chevron-${mini ? "right" : "left"}` }}</v-icon>
+        </v-btn>
       </v-list-item>
     </v-list>
     <v-divider></v-divider>
@@ -46,7 +58,7 @@
     </v-list>
     <template v-slot:append>
       <div class="pa-2" v-if="$auth.user()">
-        <v-btn block @click="$auth.logout()">Đăng xuất</v-btn>
+        <v-btn block to="/logout" v-if="!mini">Đăng xuất</v-btn>
       </div>
     </template>
   </v-navigation-drawer>
@@ -65,6 +77,8 @@ import NavigationSupplier from "./NavigationSupplier.vue";
 })
 export default class Navigation extends Vue {
   @PropSync("drawer", { type: Boolean, default: true }) drawerSync!: boolean;
+
+  mini = false;
 
   protected navigation: object = NavigationSupplier;
   protected generalNavigation = [

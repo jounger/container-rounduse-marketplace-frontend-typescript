@@ -1,28 +1,7 @@
 <template>
   <v-card class="order-1 flex-grow-1 mx-auto my-5">
-    <v-card-title
-      ><v-icon large v-if="$auth.check(['ROLE_ADMIN', 'ROLE_MODERATOR'])"
-        >business_center</v-icon
-      ><span style="margin-left:10px;">
-        {{
-          $auth.check("ROLE_ADMIN")
-            ? "Thông tin Admin"
-            : $auth.check("ROLE_MODERATOR")
-            ? "Thông tin Quản trị viên"
-            : "Thông tin Công ty"
-        }}</span
-      ><v-spacer></v-spacer>
-      <v-tooltip left v-if="$auth.user() && $auth.user().status == 'PENDING'">
-        <template v-slot:activator="{ on, attrs }">
-          <v-icon large v-bind="attrs" v-on="on" style="color:gold;"
-            >report_problem</v-icon
-          >
-        </template>
-        <span>Hồ sơ của bạn chưa được xác nhận bởi Quản trị viên.</span>
-      </v-tooltip>
-    </v-card-title>
-
-    <v-divider inset></v-divider>
+    <v-card-title> Thông tin nhà cung cấp </v-card-title>
+    <v-divider></v-divider>
     <v-row>
       <v-col cols="12" md="6">
         <v-list-item>
@@ -33,7 +12,7 @@
           <v-list-item-content>
             <v-list-item-subtitle>Mã Công ty</v-list-item-subtitle>
             <v-list-item-title>{{
-              profile ? profile.companyCode : ""
+              supplier.companyCode || "N/A"
             }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
@@ -46,7 +25,7 @@
           <v-list-item-content>
             <v-list-item-subtitle>Tên Công ty</v-list-item-subtitle>
             <v-list-item-title>{{
-              profile ? profile.companyName : ""
+              supplier.companyName || "N/A"
             }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
@@ -61,7 +40,7 @@
           <v-list-item-content>
             <v-list-item-subtitle>Website</v-list-item-subtitle>
             <v-list-item-title>{{
-              profile ? profile.website : ""
+              supplier.website || "N/A"
             }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
@@ -74,7 +53,7 @@
           <v-list-item-content>
             <v-list-item-subtitle>Địa chỉ công ty</v-list-item-subtitle>
             <v-list-item-title>{{
-              profile ? profile.companyAddress : ""
+              supplier.companyAddress || "N/A"
             }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
@@ -88,9 +67,7 @@
           </v-list-item-icon>
           <v-list-item-content>
             <v-list-item-subtitle>Mã số thuế</v-list-item-subtitle>
-            <v-list-item-title>{{
-              profile ? profile.tin : ""
-            }}</v-list-item-title>
+            <v-list-item-title>{{ supplier.tin || "N/A" }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-col>
@@ -101,9 +78,7 @@
           </v-list-item-icon>
           <v-list-item-content>
             <v-list-item-subtitle>Fax</v-list-item-subtitle>
-            <v-list-item-title>{{
-              profile ? profile.fax : ""
-            }}</v-list-item-title>
+            <v-list-item-title>{{ supplier.fax || "N/A" }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-col>
@@ -117,7 +92,7 @@
           <v-list-item-content>
             <v-list-item-subtitle>Mô tả</v-list-item-subtitle>
             <v-list-item-title>{{
-              profile ? profile.companyDescription : ""
+              supplier.companyDescription || "N/A"
             }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
@@ -128,24 +103,18 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { IUser } from "@/entity/user";
 import { getSupplier } from "@/api/supplier";
-import { IOperator } from "@/entity/operator";
 import { ISupplier } from "@/entity/supplier";
 
 @Component
 export default class CardCompany extends Vue {
-  public profile: IUser | IOperator | ISupplier | null = null;
+  public supplier = null as ISupplier | null;
 
   async created() {
-    if (
-      this.$auth.check(["ROLE_MERCHANT", "ROLE_FORWARDER", "ROLE_SHIPPINGLINE"])
-    ) {
-      const _res = await getSupplier(this.$auth.user().username);
-      if (_res.data) {
-        const _supplier = _res.data;
-        this.profile = _supplier;
-      }
+    const _res = await getSupplier(this.$auth.user().username);
+    if (_res.data) {
+      const _supplier = _res.data;
+      this.supplier = _supplier;
     }
   }
 }

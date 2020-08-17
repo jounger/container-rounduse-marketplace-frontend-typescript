@@ -196,7 +196,7 @@ export default class CreateReport extends Vue {
     { text: "Mở thầu", value: "bidOpening" },
     { text: "Đóng thầu", value: "bidClosing" },
     { text: "Nhiều thầu thắng", value: "isMultipleAward" },
-    { text: "Hành động", value: "actions", sortable: false }
+    { text: "Hành động", value: "actions" }
   ];
 
   async createReport() {

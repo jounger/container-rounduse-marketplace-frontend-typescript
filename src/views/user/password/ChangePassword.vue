@@ -2,7 +2,9 @@
   <v-card width="550" height="fit-content" class="mt-12">
     <v-toolbar color="primary" light flat>
       <v-toolbar-title
-        ><span style="color: white">Đổi mật khẩu</span></v-toolbar-title
+        ><span style="color: white"
+          >Đổi mật khẩu #{{ username }}</span
+        ></v-toolbar-title
       >
     </v-toolbar>
     <v-card-text>

@@ -4,7 +4,6 @@ export interface ICombined {
   id?: number;
   bid: IBid | number;
   contract?: IContract;
-  containers?: number[];
   isCanceled?: boolean;
   isSelected?: boolean;
 }

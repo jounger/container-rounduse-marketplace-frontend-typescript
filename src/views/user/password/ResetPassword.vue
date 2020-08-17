@@ -8,15 +8,6 @@
     <v-card-text>
       <v-form v-model="valid" validation>
         <v-text-field
-          class="d-none"
-          label="Tên đăng nhập"
-          name="username"
-          prepend-icon="mdi-account"
-          type="text"
-          autocomplete="username"
-          v-model="username"
-        ></v-text-field>
-        <v-text-field
           id="new-password"
           label="Mật khẩu mới"
           name="new-password"
@@ -44,7 +35,12 @@
     </v-card-text>
     <v-card-actions class="justify-space-between">
       <v-btn text small to="/">Trang chủ</v-btn>
-      <v-btn @click.stop="changePassword()" color="primary">Thay đổi</v-btn>
+      <v-btn
+        @click.stop="changePassword()"
+        color="primary"
+        :disabled="!valid || !getRouterHash"
+        >Thay đổi</v-btn
+      >
     </v-card-actions>
   </v-card>
 </template>
@@ -52,27 +48,31 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import FormValidate from "@/mixin/form-validate";
+import { resetPassword } from "@/api/user";
 
 @Component({
   mixins: [FormValidate]
 })
 export default class ResetPassword extends Vue {
-  public username = "";
   public newPassword = "";
   public reNewPassword = "";
   valid = true;
 
   async changePassword() {
-    // const _res = await changePasswordLink({
-    //   newPassword: this.newPassword
-    // });
-    // if (_res.data) {
-    //   this.$router.push("/login");
-    // }
+    const _res = await resetPassword(this.getRouterHash, {
+      newPassword: this.newPassword
+    });
+    if (_res.data) {
+      setTimeout(() => {
+        this.$router.push("/login");
+      }, 2000);
+    }
   }
 
-  created() {
-    this.username = this.$auth.user().username;
+  get getRouterHash() {
+    const authHash = this.$route.params.hash;
+    if (authHash) return authHash;
+    return "";
   }
 }
 </script>

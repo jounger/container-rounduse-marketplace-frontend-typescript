@@ -5,7 +5,10 @@
         ><span style="color: white">Quên mật khẩu</span></v-toolbar-title
       >
     </v-toolbar>
-    <v-card-text>
+    <v-card-text v-if="message">
+      {{ message }}
+    </v-card-text>
+    <v-card-text v-if="!message">
       <v-form v-model="valid" validation>
         <v-text-field
           label="Địa chỉ email"
@@ -19,8 +22,7 @@
     </v-card-text>
     <v-card-actions class="justify-space-between">
       <v-btn text small to="/login">Đã nhớ mật khẩu?</v-btn>
-      <v-spacer></v-spacer>
-      <v-btn @click.stop="forgotPassword()" color="primary"
+      <v-btn @click.stop="forgotPassword()" color="primary" v-if="!message"
         >Gửi vào email</v-btn
       >
     </v-card-actions>
@@ -30,21 +32,23 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import FormValidate from "@/mixin/form-validate";
+import { forgotPassword } from "@/api/user";
 
 @Component({
   mixins: [FormValidate]
 })
 export default class ForgotPassword extends Vue {
-  public emailAddress = "";
+  emailAddress = "";
+  message = "";
   valid = true;
 
   async forgotPassword() {
-    // const _res = await forgotPassword({
-    //   email: this.email
-    // });
-    // if (_res.data) {
-    //   this.$router.push("/login");
-    // }
+    const _res = await forgotPassword({
+      email: this.emailAddress
+    });
+    if (_res.data) {
+      this.message = _res.data.message;
+    }
   }
 }
 </script>
