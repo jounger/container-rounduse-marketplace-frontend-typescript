@@ -4,6 +4,7 @@
       <ConfirmReviewSupplier
         v-if="dialogConfirm"
         :dialogConfirm.sync="dialogConfirm"
+        :suppliers.sync="suppliers"
         :supplier.sync="supplier"
         :status="status"
       />

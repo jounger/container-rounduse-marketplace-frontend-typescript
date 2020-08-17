@@ -4,9 +4,13 @@
       <v-flex sm12 md6 offset-md3>
         <v-card width="550" height="fit-content" class="mt-12 ma-2 mx-auto">
           <v-toolbar color="primary" light flat>
-            <v-toolbar-title
-              ><span style="color: white">Đăng nhập</span></v-toolbar-title
-            >
+            <v-toolbar-title class="white--text">Đăng nhập </v-toolbar-title
+            ><v-spacer></v-spacer>
+            <p class="caption ma-3">
+              <router-link to="/" class="white--text"
+                >Quay lại trang chủ</router-link
+              >
+            </p>
           </v-toolbar>
           <v-card-text>
             <v-form v-model="valid" validation>
@@ -39,11 +43,7 @@
         </v-card>
       </v-flex>
       <v-flex sm12 md6 offset-md3>
-        <v-layout align-center justify-space-between>
-          <p class="caption ma-3">
-            <router-link to="/">Quay lại trang chủ</router-link>
-          </p>
-        </v-layout>
+        <v-layout align-center justify-space-between> </v-layout>
       </v-flex>
     </v-layout>
   </v-container>

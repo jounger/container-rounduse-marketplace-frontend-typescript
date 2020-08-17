@@ -1,5 +1,5 @@
 <template>
-  <v-card class="order-1 flex-grow-1 mx-auto my-5">
+  <v-card class="order-1 flex-grow-1 mx-auto my-5" v-if="supplier">
     <v-card-title> Thông tin nhà cung cấp </v-card-title>
     <v-divider></v-divider>
     <v-row>

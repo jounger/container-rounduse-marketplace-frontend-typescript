@@ -18,7 +18,7 @@
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title>{{
-                    supplierSync.companyName
+                    supplier.companyName
                   }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -45,17 +45,21 @@ import { reviewSupplier } from "@/api/supplier";
 export default class ConfirmReviewSupplier extends Vue {
   @PropSync("dialogConfirm", { type: Boolean }) dialogConfirmSync!: boolean;
   @PropSync("dialogDetail", { type: Boolean }) dialogDetailSync!: boolean;
-  @PropSync("supplier", { type: Object }) supplierSync!: ISupplier;
+  @PropSync("suppliers", { type: Array }) suppliersSync!: ISupplier[];
+  @Prop() supplier!: ISupplier;
   @Prop() status!: boolean;
 
   async reviewSupplier() {
-    if (this.supplierSync.id) {
-      const _res = await reviewSupplier(this.supplierSync.id, {
-        status: status ? "ACTIVE" : "BANNED"
+    if (this.supplier) {
+      const _res = await reviewSupplier(this.supplier.id as number, {
+        status: this.status ? "ACTIVE" : "REJECT"
       });
       if (_res.data) {
-        const _supplier = _res.data;
-        this.supplierSync.status = _supplier.status;
+        const _supplier = _res.data.data;
+        const index = this.suppliersSync.findIndex(
+          x => x.id === this.supplier.id
+        );
+        this.suppliersSync.splice(index, 1, _supplier);
         this.dialogConfirmSync = false;
         this.dialogDetailSync = false;
       }

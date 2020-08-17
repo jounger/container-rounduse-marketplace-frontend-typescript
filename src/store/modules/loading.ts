@@ -14,7 +14,7 @@ import store from "@/store/index";
 })
 class LoadingModule extends VuexModule {
   info = {
-    text: "Please stand by",
+    text: "Xin hãy đợi...",
     color: "white"
   } as ILoading;
   loading = false;
