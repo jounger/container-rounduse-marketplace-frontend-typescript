@@ -4,6 +4,7 @@
       <v-card-title class="headline">{{
         update ? "Cập nhật Rơ moóc" : "Thêm mới Rơ moóc"
       }}</v-card-title>
+      <v-divider></v-divider>
       <v-card-text>
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>

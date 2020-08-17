@@ -72,10 +72,7 @@
             </v-data-table>
             <v-btn
               color="primary"
-              @click="
-                stepper = 2;
-                getInbound();
-              "
+              @click="stepper = 2"
               :disabled="!biddingDocumentSelected"
               >Tiếp tục</v-btn
             >
@@ -396,13 +393,7 @@ export default class CreateBid extends Vue {
     },
     { text: "Trạng thái", value: "status" }
   ];
-  // Bid
-  getInbound() {
-    this.inboundOptions = {
-      page: 1,
-      itemsPerPage: 5
-    } as DataOptions;
-  }
+
   async createBid() {
     // TODO: API create bid
     if (this.biddingDocumentSelected && this.biddingDocumentSelected.id) {
@@ -447,14 +438,12 @@ export default class CreateBid extends Vue {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
-        this.inbound.billOfLading.containers = [] as Array<IContainer>;
       } else {
         this.containerOptions.page = 1;
         if (this.expanded.length > 0) {
           this.expanded.splice(0, this.expanded.length);
           this.expanded.push(value);
           this.inbound = value;
-          this.inbound.billOfLading.containers = [] as Array<IContainer>;
         } else {
           this.expanded.push(value);
           this.inbound = value;

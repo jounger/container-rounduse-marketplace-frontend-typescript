@@ -154,16 +154,34 @@ export default class Combined extends Vue {
       text: "Mã",
       align: "start",
       sortable: false,
-      value: "id"
+      value: "id",
+      class: "elevation-1 primary"
     },
-    { text: "Nhà thầu", value: "bid.bidder.companyName" },
-    { text: "Ngày trúng thầu", value: "bid.dateOfDecision" },
-    { text: "Giá trúng thầu", value: "bid.bidPrice" },
-    { text: "Y/c hợp đồng", value: "contract.required" },
-    { text: "Trạng thái", value: "isCanceled" },
+    {
+      text: "Nhà thầu",
+      value: "bid.bidder.companyName",
+      class: "elevation-1 primary"
+    },
+    {
+      text: "Ngày trúng thầu",
+      value: "bid.dateOfDecision",
+      class: "elevation-1 primary"
+    },
+    {
+      text: "Giá trúng thầu",
+      value: "bid.bidPrice",
+      class: "elevation-1 primary"
+    },
+    {
+      text: "Y/c hợp đồng",
+      value: "contract.required",
+      class: "elevation-1 primary"
+    },
+    { text: "Trạng thái", value: "isCanceled", class: "elevation-1 primary" },
     {
       text: "Hành động",
-      value: "actions"
+      value: "actions",
+      class: "elevation-1 primary"
     }
   ];
 

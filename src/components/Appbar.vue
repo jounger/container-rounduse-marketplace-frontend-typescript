@@ -10,7 +10,7 @@
     <Notification />
     <v-menu left bottom :offset-y="true">
       <template v-slot:activator="{ on, attrs }">
-        <v-btn icon v-bind="attrs" v-on="on">
+        <v-btn color="primary" icon outlined v-bind="attrs" v-on="on">
           <v-icon>mdi-dots-vertical</v-icon>
         </v-btn>
       </template>
@@ -44,12 +44,11 @@ export default class Appbar extends Vue {
   @PropSync("drawer", { type: Boolean, default: true }) drawerSync!: boolean;
 
   menu = [
-    { title: "Đăng nhập", icon: "lock_open", link: "/login", auth: false },
     {
-      title: "Đăng ký",
+      title: "Trang cá nhân",
       icon: "assignment_ind",
-      link: "/register",
-      auth: false
+      link: "/profile",
+      auth: true
     },
     {
       title: "Đổi mật khẩu",

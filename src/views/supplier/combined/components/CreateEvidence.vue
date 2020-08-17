@@ -62,7 +62,7 @@ export default class CreateEvidence extends Vue {
   evidenceLocal = {
     sender: this.$auth.user().username,
     documentPath: "",
-    isValid: false
+    status: "PENDING"
   } as IEvidence;
   valid = false;
 

@@ -51,7 +51,7 @@ instance.interceptors.response.use(
     setTimeout(() => loading.setLoading(false), 200);
     if (
       response.config.method?.toUpperCase() != "GET" &&
-      response.config.url?.includes("/notification") == false &&
+      response.config.url?.includes("notification") == false &&
       (response.status == 200 ||
         response.status == 201 ||
         response.status == 204)

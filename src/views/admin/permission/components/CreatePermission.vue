@@ -2,23 +2,24 @@
   <v-dialog v-model="dialogAddSync" max-width="600">
     <v-card>
       <v-card-title class="headline">{{
-        update ? "Cập nhật Vai trò" : "Thêm mới Vai trò"
+        update ? "Cập nhật Đặc quyền" : "Thêm mới Đặc quyền"
       }}</v-card-title>
+      <v-divider></v-divider>
       <v-card-text>
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
           <v-row>
             <v-col cols="12" md="11">
               <v-text-field
-                label="Tên vai trò*"
+                label="Tên dặc quyền*"
                 name="name"
                 prepend-icon="enhanced_encryption"
                 type="text"
                 :disabled="update"
                 :counter="20"
                 :rules="[
-                  minLength('Tên vai trò', 5),
-                  maxLength('Tên vai trò', 20)
+                  minLength('Tên dặc quyền', 5),
+                  maxLength('Tên dặc quyền', 20)
                 ]"
                 v-model="permissionLocal.name"
               ></v-text-field>
@@ -33,8 +34,8 @@
                 type="text"
                 :counter="100"
                 :rules="[
-                  minLength('Mô tả vai trò', 5),
-                  maxLength('Mô tả vai trò', 100)
+                  minLength('Mô tả dặc quyền', 5),
+                  maxLength('Mô tả dặc quyền', 100)
                 ]"
                 v-model="permissionLocal.description"
               ></v-text-field>

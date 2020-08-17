@@ -6,14 +6,12 @@
         :dialogDetail.sync="dialogDetail"
         :evidences.sync="evidences"
         :checkValid.sync="checkValid"
-        :finalEvidence="finalEvidence"
         :evidence="evidence"
       />
       <CreateEvidence
         v-if="dialogAddEvidence"
         :dialogAdd.sync="dialogAddEvidence"
         :evidences.sync="evidences"
-        :checkValid.sync="checkValid"
         :totalItems.sync="evidenceServerSideOptions.totalItems"
         :contract="contract"
       />
@@ -158,17 +156,8 @@
                     : "N/A"
                 }}
               </template>
-              <template v-slot:item.isValid="{ item }">
-                <v-chip
-                  :style="
-                    item.isValid
-                      ? 'background-color:green'
-                      : 'background-color:orange'
-                  "
-                  dark
-                  x-small
-                  >{{ item.isValid ? "Đã xác nhận" : "Chưa xác nhận" }}</v-chip
-                >
+              <template v-slot:item.status="{ item }">
+                <v-chip dark x-small>{{ item.status }}</v-chip>
               </template>
             </v-data-table>
           </td>
@@ -208,7 +197,6 @@ export default class Contract extends Vue {
   dialogAdd = false;
   dialogAddPayment = false;
   dialogAddEvidence = false;
-  finalEvidence = false;
   loading = true;
   update = false;
   readonly = false;
@@ -249,7 +237,6 @@ export default class Contract extends Vue {
       text: "% Tiền phạt",
       value: "contract.finesAgainstContractViolation"
     },
-    { text: "Mã giảm giá", value: "contract.discountCode" },
     {
       text: "Hành động",
       value: "actions",
@@ -269,7 +256,7 @@ export default class Contract extends Vue {
       value: "sender.companyName",
       class: "elevation-1 primary"
     },
-    { text: "Hợp lệ", value: "isValid", class: "elevation-1 primary" },
+    { text: "Hợp lệ", value: "status", class: "elevation-1 primary" },
     {
       text: "Hành động",
       value: "actions",
@@ -287,12 +274,7 @@ export default class Contract extends Vue {
   }
 
   openDetailEvidence(item: IEvidence) {
-    this.finalEvidence = false;
     this.evidence = item;
-    const index = this.evidences.findIndex((x: IEvidence) => x.id == item.id);
-    if (index == 0) {
-      this.finalEvidence = true;
-    }
     this.dialogDetail = true;
   }
 

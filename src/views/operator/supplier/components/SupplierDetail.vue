@@ -2,6 +2,7 @@
   <v-dialog v-model="dialogDetailSync" max-width="600">
     <v-card tile>
       <v-card-title class="headline">Chi tiết nhà cung cấp</v-card-title>
+      <v-divider></v-divider>
       <v-card-text>
         <v-form>
           <v-row>

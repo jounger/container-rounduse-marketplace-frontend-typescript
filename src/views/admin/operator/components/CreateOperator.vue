@@ -1,37 +1,12 @@
 <template>
-  <v-dialog
-    v-model="dialogAddSync"
-    fullscreen
-    persistent
-    hide-overlay
-    transition="dialog-bottom-transition"
-  >
+  <v-dialog v-model="dialogAddSync" max-width="600">
     <v-card>
-      <v-form v-model="valid" validation>
-        <v-toolbar dark color="primary">
-          <v-btn icon dark @click="dialogAddSync = false">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-          <v-toolbar-title>{{
-            update ? "Cập nhật Quản trị viên" : "Thêm mới Quản trị viên"
-          }}</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-toolbar-items>
-            <v-btn dark text @click="dialogAddSync = false">Trở về</v-btn>
-            <v-btn
-              dark
-              text
-              @click="updateOperator()"
-              v-if="update"
-              :disabled="!valid"
-              >Cập nhật</v-btn
-            >
-            <v-btn dark text @click="createOperator()" v-else :disabled="!valid"
-              >Thêm mới</v-btn
-            >
-          </v-toolbar-items>
-        </v-toolbar>
-        <v-card-text>
+      <v-card-title class="headline">{{
+        update ? "Cập nhật Quản trị viên" : "Thêm mới Quản trị viên"
+      }}</v-card-title>
+      <v-divider></v-divider>
+      <v-card-text>
+        <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
           <v-container>
             <v-row>
@@ -129,8 +104,25 @@
                 ></v-select> </v-col
             ></v-row>
           </v-container>
-        </v-card-text>
-      </v-form>
+        </v-form>
+      </v-card-text>
+      <v-card-actions class="justify-space-between">
+        <v-btn @click="dialogAddSync = false">Trở về</v-btn>
+        <v-btn
+          @click="updateOperator()"
+          color="primary"
+          v-if="update"
+          :disabled="!valid"
+          >Cập nhật</v-btn
+        >
+        <v-btn
+          @click="createOperator()"
+          color="primary"
+          v-else
+          :disabled="!valid"
+          >Thêm mới</v-btn
+        >
+      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>

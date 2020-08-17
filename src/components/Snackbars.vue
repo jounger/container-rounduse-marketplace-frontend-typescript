@@ -9,6 +9,7 @@
     :timeout="snackbarInfo.timeout"
     :top="true"
     :vertical="false"
+    style="position: absolute; top: 70px;"
     >{{ snackbarInfo.text }}
     <v-btn dark text @click="closeSnackbar()">
       Close

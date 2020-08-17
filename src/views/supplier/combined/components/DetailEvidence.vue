@@ -39,13 +39,13 @@
         <v-btn
           @click="reviewEvidence(false)"
           color="error"
-          v-if="$auth.check('ROLE_MERCHANT') && evidence.isValid == false"
+          v-if="$auth.check('ROLE_MERCHANT') && evidence.status == 'PENDING'"
           >Từ chối</v-btn
         >
         <v-btn
           @click="reviewEvidence(true)"
           color="success"
-          v-if="$auth.check('ROLE_MERCHANT') && evidence.isValid == false"
+          v-if="$auth.check('ROLE_MERCHANT') && evidence.status == 'PENDING'"
           >Đồng ý</v-btn
         >
       </v-card-actions>
@@ -61,7 +61,6 @@ import { editEvidence } from "@/api/evidence";
 export default class DetailEvidence extends Vue {
   @PropSync("dialogDetail", { type: Boolean }) dialogDetailSync!: boolean;
   @PropSync("evidences", { type: Array }) evidencesSync!: Array<IEvidence>;
-  @PropSync("checkValid", { type: Boolean }) checkValidSync!: boolean;
   @Prop(Object) evidence!: IEvidence;
   @Prop(Boolean) finalEvidence!: boolean;
 
@@ -75,18 +74,15 @@ export default class DetailEvidence extends Vue {
       : "";
   }
 
-  async reviewEvidence(isValid: boolean) {
-    if (this.evidence.id) {
-      const _res = await editEvidence(this.evidence.id, {
-        isValid: isValid
+  async reviewEvidence(status: boolean) {
+    if (this.evidence) {
+      const _res = await editEvidence(this.evidence.id as number, {
+        status: status ? "ACCEPTED" : "REJECTED"
       });
       if (_res.data) {
         const _evidence = _res.data.data;
-        const index = this.evidencesSync.findIndex(x => x.id == _evidence.id);
+        const index = this.evidencesSync.findIndex(x => x.id === _evidence.id);
         this.evidencesSync.splice(index, 1, _evidence);
-        if (this.finalEvidence && _evidence.isValid) {
-          this.checkValidSync = true;
-        }
         this.dialogDetailSync = false;
       }
     }

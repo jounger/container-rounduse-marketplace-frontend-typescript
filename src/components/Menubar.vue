@@ -8,7 +8,7 @@
     <v-spacer></v-spacer>
     <v-menu left bottom :offset-y="true">
       <template v-slot:activator="{ on, attrs }">
-        <v-btn icon v-bind="attrs" v-on="on">
+        <v-btn color="primary" icon outlined v-bind="attrs" v-on="on">
           <v-icon>mdi-dots-vertical</v-icon>
         </v-btn>
       </template>

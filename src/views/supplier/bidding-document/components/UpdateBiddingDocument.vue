@@ -247,14 +247,14 @@ export default class UpdateBiddingDocument extends Vue {
           x => x.id === _biddingDocument.id
         );
         this.biddingDocumentsSync.splice(index, 1, _biddingDocument);
-        this.stepper = 3;
+        this.dialogEditSync = false;
       }
     }
   }
 
   mounted() {
     this.currencyOfPayments = ["VND", "USD"];
-    this.unitOfMeasurements = ["KG", "Ton"];
+    this.unitOfMeasurements = ["KG"];
   }
 }
 </script>

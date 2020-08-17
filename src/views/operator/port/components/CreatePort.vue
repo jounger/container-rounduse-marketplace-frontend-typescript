@@ -2,6 +2,7 @@
   <v-dialog v-model="dialogAddSync" max-width="900px">
     <v-card>
       <v-card-title class="headline">Thêm mới cảng</v-card-title>
+      <v-divider></v-divider>
       <v-card-text>
         <v-container class="d-flex justify-space-around align-start">
           <div

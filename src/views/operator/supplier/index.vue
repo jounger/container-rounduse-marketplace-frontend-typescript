@@ -17,7 +17,7 @@
         />
       </v-row>
       <v-card-title>
-        Danh sách Supplier
+        Danh sách Nhà cung cấp
       </v-card-title>
       <v-data-table
         :headers="headers"

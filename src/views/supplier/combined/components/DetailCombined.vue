@@ -4,15 +4,14 @@
       v-if="dialogDetail"
       :dialogDetail.sync="dialogDetail"
       :evidences.sync="evidences"
-      :checkValid.sync="checkValid"
-      :finalEvidence="finalEvidence"
+      :status.sync="status"
       :evidence="evidence"
     />
     <CreateEvidence
       v-if="dialogAddEvidence"
       :dialogAdd.sync="dialogAddEvidence"
       :evidences.sync="evidences"
-      :checkValid.sync="checkValid"
+      :status.sync="status"
       :totalItems.sync="evidenceServerSideOptions.totalItems"
       :contract="contract"
     />
@@ -212,9 +211,7 @@
                   max-width="400"
                   src="@/assets/images/biddingdocument.jpg"
                 ></v-img>
-
                 <v-card-title>Thông tin Hợp đồng</v-card-title>
-
                 <v-card-text>
                   Thông tin Chủ xe:
                   <SupplierRating :supplier="combined.bid.bidder" />
@@ -301,9 +298,6 @@
                       >
                         <v-icon left>details </v-icon>Chi tiết
                       </v-btn>
-                    </template>
-                    <template v-slot:item.isValid="{ item }">
-                      {{ item.isValid ? "Đã xác nhận" : "Chưa xác nhận" }}
                     </template>
                   </v-data-table>
                 </v-list>
@@ -423,8 +417,7 @@ export default class DetailCombined extends Vue {
   exception = true;
   dialogDetail = false;
   dialogAddEvidence = false;
-  checkValid = false;
-  finalEvidence = false;
+  status = false;
   shippingInfoOptions = {
     page: 1,
     itemsPerPage: 5
@@ -484,7 +477,7 @@ export default class DetailCombined extends Vue {
       value: "id"
     },
     { text: "Người gửi", value: "sender.companyName" },
-    { text: "Hợp lệ", value: "isValid" },
+    { text: "Trạng thái", value: "status" },
     {
       text: "Hành động",
       value: "actions",
@@ -594,12 +587,7 @@ export default class DetailCombined extends Vue {
   }
 
   openDetailEvidence(item: IEvidence) {
-    this.finalEvidence = false;
     this.evidence = item;
-    const index = this.evidences.findIndex((x: IEvidence) => x.id == item.id);
-    if (index == 0) {
-      this.finalEvidence = true;
-    }
     this.dialogDetail = true;
   }
 
@@ -615,9 +603,6 @@ export default class DetailCombined extends Vue {
         const _evidences = _res.data.data;
         this.evidences = _evidences;
         this.evidenceServerSideOptions.totalItems = _res.data.totalElements;
-        if (this.evidences.length > 0 && this.evidences[0].isValid == true) {
-          this.checkValid = true;
-        }
       }
       this.loading = false;
     }

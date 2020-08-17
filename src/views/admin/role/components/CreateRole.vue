@@ -2,8 +2,9 @@
   <v-dialog v-model="dialogAddSync" max-width="600">
     <v-card>
       <v-card-title class="headline">{{
-        update ? "Cập nhật Quyền" : "Thêm mới Quyền"
+        update ? "Cập nhật Vai trò" : "Thêm mới Vai trò"
       }}</v-card-title>
+      <v-divider></v-divider>
       <v-card-text>
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>

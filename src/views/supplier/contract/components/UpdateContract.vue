@@ -4,6 +4,7 @@
       <v-card-title class="headline"
         >{{ readonly ? "Thông tin" : "Cập nhật" }} Hợp đồng</v-card-title
       >
+      <v-divider></v-divider>
       <v-card-text>
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>

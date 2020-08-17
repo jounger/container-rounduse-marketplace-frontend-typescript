@@ -12,10 +12,6 @@
       <v-card-title>
         Danh sách Report
         <v-divider class="mx-4" inset vertical></v-divider>
-        <v-spacer></v-spacer>
-        <v-btn color="primary" dark class="mb-2" @click="dialogAdd = true"
-          >Thêm mới</v-btn
-        >
       </v-card-title>
       <v-data-table
         :headers="headers"

@@ -2,6 +2,6 @@ export interface IEvidence {
   id?: number;
   sender: string;
   documentPath: string;
-  isValid: boolean;
+  status: string;
   isSelected?: boolean;
 }
