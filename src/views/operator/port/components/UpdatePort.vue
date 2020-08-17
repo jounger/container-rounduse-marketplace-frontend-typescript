@@ -1,15 +1,7 @@
 <template>
   <v-dialog v-model="dialogEditSync" max-width="900px">
     <v-card>
-      <v-toolbar color="primary" light flat>
-        <v-btn icon dark @click="dialogEditSync = false">
-          <v-icon>mdi-close</v-icon> </v-btn
-        ><v-toolbar-title
-          ><span class="headline" style="color:white;"
-            >Hộp thoại chỉnh sửa cảng</span
-          >
-        </v-toolbar-title>
-      </v-toolbar>
+      <v-card-title class="headline">Chỉnh sửa cảng</v-card-title>
       <v-card-text>
         <v-container class="d-flex justify-space-around align-start">
           <div
@@ -67,7 +59,7 @@
               </v-row>
             </v-form>
           </div>
-          <v-card class="order-1 flex-shrink-1 mx-auto my-5">
+          <v-card class="order-1 flex-shrink-1 mx-auto my-5 elevation-0">
             <GoogleMapLoader
               :options="mapConfig"
               :apiKey="apiKey"

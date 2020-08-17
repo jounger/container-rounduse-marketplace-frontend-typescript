@@ -121,7 +121,7 @@ export default class Port extends Vue {
       value: "id"
     },
     {
-      text: "Mã code",
+      text: "Mã cảng",
       value: "nameCode"
     },
     { text: "Tên cảng", value: "fullname" },

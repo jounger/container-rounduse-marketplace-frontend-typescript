@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogAddSync" max-width="600px">
+  <v-dialog v-model="dialogAddSync" max-width="600">
     <v-card>
       <v-card-title class="headline">{{
         update ? "Cập nhật Mã giảm giá" : "Thêm mới Mã giảm giá"
@@ -8,7 +8,7 @@
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
           <v-row>
-            <v-col cols="12" md="5">
+            <v-col cols="12" md="6">
               <v-text-field
                 label="Mã giảm giá*"
                 name="code"
@@ -20,6 +20,17 @@
               ></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
+              <v-text-field
+                label="Giảm (%)"
+                name="percent"
+                prepend-icon="shopping_cart"
+                type="number"
+                v-model="discountLocal.percent"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="12">
               <DatetimePicker
                 :datetime="discountLocal.expiredDate"
                 :return-value.sync="discountLocal.expiredDate"
@@ -30,16 +41,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" md="3">
-              <v-text-field
-                label="Giảm (%)"
-                name="percent"
-                prepend-icon="shopping_cart"
-                type="number"
-                v-model="discountLocal.percent"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="8">
               <v-text-field
                 label="Giảm nhiều nhất (money)"
                 name="maximumDiscount"
@@ -48,7 +50,7 @@
                 v-model="discountLocal.maximumDiscount"
               ></v-text-field>
             </v-col>
-            <v-col cols="12" md="3">
+            <v-col cols="12" md="4">
               <v-select
                 prepend-icon="monetization_on"
                 :items="currencies"

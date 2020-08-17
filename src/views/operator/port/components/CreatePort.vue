@@ -1,19 +1,7 @@
 <template>
   <v-dialog v-model="dialogAddSync" max-width="900px">
     <v-card>
-      <v-toolbar color="primary" light flat>
-        <v-btn icon dark @click="dialogAddSync = false">
-          <v-icon>mdi-close</v-icon> </v-btn
-        ><v-toolbar-title
-          ><span class="headline" style="color:white;"
-            >Hộp thoại thêm mới cảng</span
-          >
-        </v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-toolbar-items>
-          <v-btn dark text @click="clearForm()">Xóa dữ liệu đã nhập</v-btn>
-        </v-toolbar-items>
-      </v-toolbar>
+      <v-card-title class="headline">Thêm mới cảng</v-card-title>
       <v-card-text>
         <v-container class="d-flex justify-space-around align-start">
           <div
@@ -69,7 +57,7 @@
               </v-row>
             </v-form>
           </div>
-          <v-card class="order-1 flex-shrink-1 mx-auto my-5">
+          <v-card class="order-1 flex-shrink-1 mx-auto my-5 elevation-0">
             <GoogleMapLoader
               :options="mapConfig"
               :apiKey="apiKey"

@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogAddSync" max-width="600px">
+  <v-dialog v-model="dialogAddSync" max-width="600">
     <v-card>
       <v-card-title class="headline">{{
         update ? "Cập nhật Lái xe" : "Thêm mới Lái xe"

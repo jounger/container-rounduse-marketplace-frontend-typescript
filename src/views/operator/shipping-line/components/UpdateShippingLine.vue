@@ -12,7 +12,7 @@
         <v-btn icon dark @click="dialogEditSync = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title>Chỉnh sửa</v-toolbar-title>
+        <v-toolbar-title>Chỉnh sửa hãng tàu</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
           <v-btn dark text @click="dialogEditSync = false">Trở về</v-btn>
@@ -22,7 +22,7 @@
       <v-list three-line subheader>
         <v-stepper v-model="stepper" vertical class="elevation-0">
           <v-stepper-step :complete="stepper > 1" step="1" :editable="editable">
-            Thông tin hãng tàu
+            Thông tin đăng nhập
             <small>Thông tin chung</small>
           </v-stepper-step>
 

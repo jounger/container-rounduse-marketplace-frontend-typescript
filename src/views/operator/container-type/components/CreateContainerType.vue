@@ -1,70 +1,25 @@
 <template>
-  <v-dialog
-    v-model="dialogAddSync"
-    fullscreen
-    persistent
-    hide-overlay
-    transition="dialog-bottom-transition"
-  >
+  <v-dialog v-model="dialogAddSync" max-width="600">
     <v-card>
-      <v-form v-model="valid" validation>
-        <v-toolbar dark color="primary">
-          <v-btn icon dark @click="dialogAddSync = false">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-          <v-toolbar-title
-            >{{
-              update ? "Cập nhật Loại Container" : "Thêm mới Loại Container"
-            }}
-          </v-toolbar-title>
-
-          <v-spacer></v-spacer>
-          <v-toolbar-items>
-            <v-btn dark text @click="dialogAddSync = false">Trở về</v-btn>
-            <v-btn
-              dark
-              text
-              @click="updateContainerType()"
-              v-if="update"
-              :disabled="!valid"
-              >Cập nhật</v-btn
-            >
-            <v-btn
-              dark
-              text
-              @click="createContainerType()"
-              v-else
-              :disabled="!valid"
-              >Thêm mới</v-btn
-            >
-          </v-toolbar-items>
-        </v-toolbar>
-        <v-card-text>
+      <v-card-title class="headline"
+        >{{ update ? "Cập nhật Loại Container" : "Thêm mới Loại Container" }}
+      </v-card-title>
+      <v-card-text>
+        <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
           <v-row>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="4">
               <v-text-field
-                label="Tên loại Container*"
+                label="Tên loại*"
                 name="name"
                 prepend-icon="directions_bus"
                 type="text"
                 :disabled="update"
                 v-model="containerTypeLocal.name"
-                :rules="[required('Tên loại Container')]"
+                :rules="[required('Tên loại')]"
               ></v-text-field>
             </v-col>
-            <v-col cols="12" md="6">
-              <v-text-field
-                label="Chi tiết"
-                name="description"
-                prepend-icon="description"
-                type="text"
-                v-model="containerTypeLocal.description"
-              ></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="4">
               <v-text-field
                 label="Khối lượng vỏ"
                 name="tareWeight"
@@ -73,7 +28,7 @@
                 v-model="containerTypeLocal.tareWeight"
               ></v-text-field>
             </v-col>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="4">
               <v-text-field
                 label="Trọng tải"
                 name="payloadCapacity"
@@ -84,16 +39,16 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="4">
               <v-text-field
-                label="Công suất khối"
+                label="Thể tích khối"
                 name="cubicCapacity"
                 prepend-icon="network_check"
                 type="number"
                 v-model="containerTypeLocal.cubicCapacity"
               ></v-text-field>
             </v-col>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="4">
               <v-text-field
                 label="Chiều dài trong"
                 name="internalLength"
@@ -102,9 +57,7 @@
                 v-model="containerTypeLocal.internalLength"
               ></v-text-field>
             </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="4">
               <v-text-field
                 label="Chiều rộng trong"
                 name="internalWidth"
@@ -113,7 +66,9 @@
                 v-model="containerTypeLocal.internalWidth"
               ></v-text-field>
             </v-col>
-            <v-col cols="12" md="6">
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="4">
               <v-text-field
                 label="Chiều cao trong"
                 name="internalHeight"
@@ -122,9 +77,7 @@
                 v-model="containerTypeLocal.internalHeight"
               ></v-text-field>
             </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="4">
               <v-text-field
                 label="Chiều rộng cửa mở"
                 name="doorOpeningWidth"
@@ -133,7 +86,7 @@
                 v-model="containerTypeLocal.doorOpeningWidth"
               ></v-text-field>
             </v-col>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="4">
               <v-text-field
                 label="Chiều cao cửa mở"
                 name="doorOpeningHeight"
@@ -143,8 +96,29 @@
               ></v-text-field>
             </v-col>
           </v-row>
-        </v-card-text>
-      </v-form>
+          <v-row>
+            <v-col cols="12" md="12">
+              <v-textarea
+                label="Chi tiết"
+                name="description"
+                prepend-icon="description"
+                type="text"
+                v-model="containerTypeLocal.description"
+                outlined
+              ></v-textarea>
+            </v-col>
+          </v-row>
+        </v-form>
+      </v-card-text>
+      <v-card-actions class="justify-space-between">
+        <v-btn @click="dialogAddSync = false">Trở về</v-btn>
+        <v-btn @click="updateContainerType()" v-if="update" :disabled="!valid"
+          >Cập nhật</v-btn
+        >
+        <v-btn @click="createContainerType()" v-else :disabled="!valid"
+          >Thêm mới</v-btn
+        >
+      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>

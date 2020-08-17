@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogEditSync" max-width="600px">
+  <v-dialog v-model="dialogEditSync" max-width="600">
     <v-card>
       <v-card-title class="headline">Cập nhật Report</v-card-title>
       <v-card-text>

@@ -131,7 +131,6 @@ export default class ShippingLine extends Vue {
     { text: "Tên công ty", value: "companyName" },
     { text: "Mã số thuế", value: "tin" },
     { text: "Trang web", value: "website" },
-    { text: "Vai trò", value: "roles" },
     { text: "Trạng thái", value: "status" },
     {
       text: "Hành động",

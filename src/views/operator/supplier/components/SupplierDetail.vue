@@ -1,23 +1,7 @@
 <template>
-  <v-dialog
-    v-model="dialogDetailSync"
-    fullscreen
-    hide-overlay
-    transition="dialog-bottom-transition"
-  >
+  <v-dialog v-model="dialogDetailSync" max-width="600">
     <v-card tile>
-      <v-toolbar dark color="primary">
-        <v-btn icon dark @click="dialogDetailSync = false">
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-        <v-toolbar-title
-          ><span class="headline" style="color:white;">Chi tiết Supplier</span>
-        </v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-toolbar-items>
-          <v-btn dark text @click="dialogDetailSync = false">Trở về</v-btn>
-        </v-toolbar-items>
-      </v-toolbar>
+      <v-card-title class="headline">Chi tiết Supplier</v-card-title>
       <v-card-text>
         <v-form>
           <v-row>
@@ -167,6 +151,9 @@
           </v-row>
         </v-form>
       </v-card-text>
+      <v-card-actions class="justify-space-between">
+        <v-btn @click="dialogDetailSync = false">Trở về</v-btn>
+      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>

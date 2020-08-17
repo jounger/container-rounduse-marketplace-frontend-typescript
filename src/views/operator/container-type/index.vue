@@ -109,20 +109,21 @@ export default class ContainerType extends Vue {
   };
   headers = [
     {
-      text: "Tên loại Container",
+      text: "Mã",
       align: "start",
       sortable: true,
-      value: "name"
+      value: "id"
     },
+    { text: "Tên loại", value: "name" },
     { text: "Mô tả", value: "description" },
     { text: "Khối lượng vỏ", value: "tareWeight" },
     { text: "Sức chứa", value: "grossWeight" },
-    { text: "Công suất khối", value: "cubicCapacity" },
-    { text: "Chiều dài trong", value: "internalLength" },
-    { text: "Chiều rộng trong", value: "internalWidth" },
-    { text: "Chiều cao trong", value: "internalHeight" },
-    { text: "Chiều rộng cửa mở", value: "doorOpeningWidth" },
-    { text: "Chiều cao cửa mở", value: "doorOpeningHeight" },
+    { text: "Thể tích", value: "cubicCapacity" },
+    { text: "Dài trong", value: "internalLength" },
+    { text: "Rộng trong", value: "internalWidth" },
+    { text: "Cao trong", value: "internalHeight" },
+    { text: "Rộng cửa mở", value: "doorOpeningWidth" },
+    { text: "Cao cửa mở", value: "doorOpeningHeight" },
     {
       text: "Hành động",
       value: "actions"
