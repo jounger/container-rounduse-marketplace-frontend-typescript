@@ -25,22 +25,13 @@
                   <v-select
                     v-model="containerLocal.driver"
                     prepend-icon="airline_seat_recline_normal"
-                    :items="driversToString"
+                    :items="drivers"
                     :rules="[required('lái xe')]"
-                    :loading="loadingDrivers"
+                    item-text="fullname"
+                    item-value="username"
                     no-data-text="Danh sách lái xe rỗng."
                     label="Tài xế*"
-                    ><v-btn
-                      text
-                      small
-                      color="primary"
-                      v-if="seeMoreDrivers"
-                      slot="append-item"
-                      style="margin-left:20px;"
-                      @click="loadMoreDrivers()"
-                      >Xem thêm</v-btn
-                    ></v-select
-                  >
+                  ></v-select>
                 </v-flex>
               </v-layout>
             </v-layout>
@@ -50,22 +41,13 @@
                   <v-select
                     v-model="containerLocal.tractor"
                     prepend-icon="tram"
-                    :items="tractorsToString"
+                    :items="tractors"
                     :rules="[required('đầu kéo')]"
-                    :loading="loadingTractors"
+                    item-text="licensePlate"
+                    item-value="licensePlate"
                     no-data-text="Danh sách đầu kéo rỗng."
                     label="Chọn đầu kéo*"
-                    ><v-btn
-                      text
-                      small
-                      color="primary"
-                      v-if="seeMoreTractors"
-                      slot="append-item"
-                      style="margin-left:20px;"
-                      @click="loadMoreTractors()"
-                      >Xem thêm</v-btn
-                    ></v-select
-                  >
+                  ></v-select>
                 </v-flex>
               </v-layout>
               <v-layout col>
@@ -73,22 +55,13 @@
                   <v-select
                     v-model="containerLocal.trailer"
                     prepend-icon="format_strikethrough"
-                    :items="trailersToString"
+                    :items="trailers"
                     :rules="[required('rơ moóc')]"
-                    :loading="loadingTrailers"
+                    item-text="licensePlate"
+                    item-value="licensePlate"
                     no-data-text="Danh sách rơ moóc rỗng."
                     label="Chọn rơ moóc*"
-                    ><v-btn
-                      text
-                      small
-                      color="primary"
-                      v-if="seeMoreTrailers"
-                      slot="append-item"
-                      style="margin-left:20px;"
-                      @click="loadMoreTrailers()"
-                      >Xem thêm</v-btn
-                    ></v-select
-                  >
+                  ></v-select>
                 </v-flex>
               </v-layout>
             </v-layout>
@@ -151,165 +124,43 @@ export default class CreateContainer extends Vue {
   trailers: Array<IContainerSemiTrailer> = [];
   tractors: Array<IContainerTractor> = [];
   drivers: Array<IDriver> = [];
-  loadingDrivers = false;
-  seeMoreDrivers = true;
-  limitDrivers = 5;
-  loadingTractors = false;
-  seeMoreTractors = true;
-  limitTractors = 5;
-  loadingTrailers = false;
-  seeMoreTrailers = true;
-  limitTrailers = 5;
-
-  async getDrivers(limit: number) {
-    this.loadingDrivers = true;
-    this.drivers = [] as Array<IDriver>;
-    const _res = await getDriversByForwarder({
-      page: 0,
-      limit: 100
-    });
-    const _drivers = _res.data;
-    if (_drivers.data) {
-      if (!this.update) {
-        _drivers.data.forEach((x: IDriver, index: number) => {
-          if (index != limit) {
-            this.drivers.push(x);
-          }
-        });
-      } else {
-        _drivers.data.forEach((x: IDriver) => {
-          if (x.username == this.containerLocal.driver) {
-            this.drivers.push(x);
-          }
-        });
-        _drivers.data.forEach((x: IDriver) => {
-          let check = false;
-          if (x.username == this.containerLocal.driver) {
-            check = true;
-          }
-          if (check == false && this.drivers.length < this.limitDrivers) {
-            this.drivers.push(x);
-          }
-        });
-      }
-    }
-    if (!_res.data || _drivers.data.length <= this.limitDrivers) {
-      this.seeMoreDrivers = false;
-    }
-    this.loadingDrivers = false;
-  }
-
-  async loadMoreDrivers() {
-    this.limitDrivers += 5;
-    await this.getDrivers(this.limitDrivers);
-  }
-
-  async getTractors(limit: number) {
-    this.loadingTractors = true;
-    this.tractors = [] as Array<IContainerTractor>;
-    const _res = await getContainerTractorsByForwarder({
-      page: 0,
-      limit: limit + 1
-    });
-    const _tractors = _res.data;
-    if (_tractors.data) {
-      if (!this.update) {
-        _tractors.data.forEach((x: IContainerTractor, index: number) => {
-          if (index != limit) {
-            this.tractors.push(x);
-          }
-        });
-      } else {
-        _tractors.data.forEach((x: IContainerTractor) => {
-          if (x.licensePlate == this.containerLocal.tractor) {
-            this.tractors.push(x);
-          }
-        });
-        if (this.tractors.length < this.limitTractors) {
-          _tractors.data.forEach((x: IContainerTractor) => {
-            let check = false;
-            if (x.licensePlate == this.containerLocal.tractor) {
-              check = true;
-            }
-            if (check == false && this.tractors.length < this.limitTractors) {
-              this.tractors.push(x);
-            }
-          });
-        }
-      }
-    }
-    if (!_tractors.data || _tractors.data.length <= this.limitTractors) {
-      this.seeMoreTractors = false;
-    }
-    this.loadingTractors = false;
-  }
-
-  async loadMoreTractors() {
-    this.limitTractors += 5;
-    await this.getTractors(this.limitTractors);
-  }
-
-  async getTrailers(limit: number) {
-    this.loadingTrailers = true;
-    this.trailers = [] as Array<IContainerSemiTrailer>;
-    const _res = await getContainerSemiTrailersByForwarder({
-      page: 0,
-      limit: 100
-    });
-    const _trailers = _res.data;
-    if (_trailers.data) {
-      if (!this.update) {
-        _trailers.data.forEach((x: IContainerSemiTrailer, index: number) => {
-          if (index != limit) {
-            this.trailers.push(x);
-          }
-        });
-      } else {
-        _trailers.data.forEach((x: IContainerSemiTrailer) => {
-          if (x.licensePlate == this.containerLocal.trailer) {
-            this.trailers.push(x);
-          }
-        });
-        if (this.trailers.length < this.limitTrailers) {
-          _trailers.data.forEach((x: IContainerSemiTrailer) => {
-            let check = false;
-            if (x.licensePlate == this.containerLocal.trailer) {
-              check = true;
-            }
-            if (check == false && this.trailers.length < this.limitTrailers) {
-              this.trailers.push(x);
-            }
-          });
-        }
-      }
-    }
-    if (!_trailers.data || _trailers.data.length <= this.limitTrailers) {
-      this.seeMoreTrailers = false;
-    }
-    this.loadingTrailers = false;
-  }
-
-  async loadMoreTrailers() {
-    this.limitTrailers += 5;
-    await this.getTrailers(this.limitTrailers);
-  }
 
   async created() {
     if (this.update) {
       this.containerLocal = Object.assign({}, this.container);
-      if (typeof this.containerLocal.trailer != "string") {
-        this.containerLocal.trailer = this.containerLocal.trailer.licensePlate;
-      }
-      if (typeof this.containerLocal.tractor != "string") {
-        this.containerLocal.tractor = this.containerLocal.tractor.licensePlate;
-      }
-      await this.getDrivers(100);
-      await this.getTractors(100);
-      await this.getTrailers(100);
-    } else {
-      await this.getDrivers(50);
-      await this.getTractors(50);
-      await this.getTrailers(50);
+      // REFACTOR CONTAINER
+      const _driver = this.container.driver as IDriver;
+      const _trailer = this.container.trailer as IContainerSemiTrailer;
+      const _tractor = this.container.tractor as IContainerTractor;
+
+      this.containerLocal.driver = _driver.username;
+      this.containerLocal.trailer = _trailer.licensePlate;
+      this.containerLocal.tractor = _tractor.licensePlate;
+      // END
+    }
+    const _resD = await getDriversByForwarder({
+      page: 0,
+      limit: 100
+    });
+    if (_resD.data) {
+      const _drivers = _resD.data.data;
+      this.drivers = _drivers;
+    }
+    const _resT = await getContainerTractorsByForwarder({
+      page: 0,
+      limit: 100
+    });
+    if (_resT.data) {
+      const _tractors = _resT.data.data;
+      this.tractors = _tractors;
+    }
+    const _resSt = await getContainerSemiTrailersByForwarder({
+      page: 0,
+      limit: 100
+    });
+    if (_resSt.data) {
+      const _trailers = _resSt.data.data;
+      this.trailers = _trailers;
     }
   }
 
@@ -330,7 +181,7 @@ export default class CreateContainer extends Vue {
 
   async updateContainer() {
     const _res = await editContainer(
-      this.containerLocal.id as number,
+      this.container.id as number,
       this.containerLocal
     );
     if (_res.data) {
@@ -338,16 +189,6 @@ export default class CreateContainer extends Vue {
       const index = this.containersSync.findIndex(x => x.id === _container.id);
       this.containersSync.splice(index, 1, _container);
     }
-  }
-
-  get trailersToString() {
-    return this.trailers.map(x => x.licensePlate);
-  }
-  get tractorsToString() {
-    return this.tractors.map(x => x.licensePlate);
-  }
-  get driversToString() {
-    return this.drivers.map(x => x.username);
   }
 }
 </script>

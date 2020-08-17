@@ -8,7 +8,7 @@
     <UpdateInbound
       :inbound="inbound"
       :dialogEdit.sync="dialogEdit"
-      :inbounds.sync="inbounds"
+      :inbounds="inbounds"
     />
     <v-row justify="center">
       <DeleteInbound
@@ -282,42 +282,42 @@ export default class Inbound extends Vue {
     this.inbound = item;
     this.dialogDel = true;
   }
+
   openCreateContainer(item: IInbound) {
     this.inbound = item;
     this.update = false;
     this.dialogAddCont = true;
   }
+
   openUpdateContainer(item: IContainer) {
     // TODO
     this.update = true;
     this.container = item;
     this.dialogAddCont = true;
   }
+
   openRemoveContainer(item: IContainer) {
     this.container = item;
     this.dialogDelCont = true;
   }
-  async loadContainer(inboundId: number, option: DataOptions) {
-    const _res = await getContainersByInbound(inboundId, {
-      page: option.page - 1,
-      limit: option.itemsPerPage
-    });
-    if (_res.data) {
-      const _containers = _res.data.data;
-      this.containers = _containers;
-      this.containerServerSideOptions.totalItems = _res.data.totalElements;
-    }
-  }
+
   @Watch("containerOptions", { deep: true })
   async onContainerOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined") {
+    if (typeof val != "undefined" && this.inbound) {
       this.loading = true;
-      if (this.inbound && this.inbound.id) {
-        await this.loadContainer(this.inbound.id, val);
+      const _res = await getContainersByInbound(this.inbound.id as number, {
+        page: val.page - 1,
+        limit: val.itemsPerPage
+      });
+      if (_res.data) {
+        const _containers = _res.data.data;
+        this.containers = _containers;
+        this.containerServerSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }
   }
+
   @Watch("options", { immediate: true })
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
@@ -334,12 +334,14 @@ export default class Inbound extends Vue {
       this.loading = false;
     }
   }
+
   async clicked(value: IInbound) {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
         this.inbound = null;
       } else {
+        this.containerOptions.page = 1;
         if (this.expanded.length > 0) {
           this.expanded.splice(0, this.expanded.length);
           this.expanded.push(value);
@@ -350,8 +352,6 @@ export default class Inbound extends Vue {
         }
       }
     }
-    this.containerOptions.page = 1;
-    await this.loadContainer(value.id as number, this.containerOptions);
   }
 }
 </script>

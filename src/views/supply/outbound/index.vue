@@ -6,9 +6,9 @@
       :totalItems.sync="serverSideOptions.totalItems"
     />
     <UpdateOutbound
-      :outbound="outbound"
+      :outbound.sync="outbound"
       :dialogEdit.sync="dialogEdit"
-      :outbounds.sync="outbounds"
+      :outbounds="outbounds"
     />
     <CreateBiddingDocument
       v-if="dialogCreateBiddingDocument"

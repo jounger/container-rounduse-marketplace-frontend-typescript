@@ -16,7 +16,7 @@
       </v-toolbar>
       <!-- START CONTENT -->
       <v-list three-line subheader>
-        <v-stepper v-model="stepper" vertical>
+        <v-stepper v-model="stepper" vertical class="elevation-0">
           <v-stepper-step :complete="stepper > 1" step="1" :editable="editable">
             Chọn HSMT
             <small>Thông tin bắt buộc</small>
@@ -449,6 +449,7 @@ export default class CreateBid extends Vue {
         this.expanded.splice(0, this.expanded.length);
         this.inbound.billOfLading.containers = [] as Array<IContainer>;
       } else {
+        this.containerOptions.page = 1;
         if (this.expanded.length > 0) {
           this.expanded.splice(0, this.expanded.length);
           this.expanded.push(value);
@@ -460,8 +461,6 @@ export default class CreateBid extends Vue {
         }
       }
     }
-    this.containerOptions.page = 1;
-    this.loadContainersByInbound(value.id as number, this.containerOptions);
   }
 
   @Watch("biddingDocumentOptions")
@@ -529,28 +528,23 @@ export default class CreateBid extends Vue {
     }
   }
 
-  async loadContainersByInbound(inboundId: number, option: DataOptions) {
-    const _res = await getContainersByInbound(inboundId, {
-      page: option.page - 1,
-      limit: option.itemsPerPage
-    });
-    if (_res.data) {
-      const _containers = _res.data.data;
-      this.containers = _containers.filter(
-        (x: IContainer) => x.status == "CREATED"
-      );
-      this.containerServerSideOptions.totalItems = _res.data.totalElements;
-    }
-  }
-
-  @Watch("containerOptions")
+  @Watch("containerOptions", { deep: true })
   async onContainerOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined") {
+    if (typeof val != "undefined" && this.inbound) {
       this.loading = true;
-      if (this.inbound)
-        await this.loadContainersByInbound(this.inbound.id as number, val);
+      const _res = await getContainersByInbound(this.inbound.id as number, {
+        page: val.page - 1,
+        limit: val.itemsPerPage
+      });
+      if (_res.data) {
+        const _containers = _res.data.data;
+        this.containers = _containers.filter(
+          (x: IContainer) => x.status == "CREATED"
+        );
+        this.containerServerSideOptions.totalItems = _res.data.totalElements;
+        this.loading = false;
+      }
     }
-    this.loading = false;
   }
 }
 </script>

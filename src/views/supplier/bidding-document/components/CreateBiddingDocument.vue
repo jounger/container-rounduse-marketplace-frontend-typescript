@@ -16,7 +16,7 @@
       </v-toolbar>
       <!-- START CONTENT -->
       <v-list three-line subheader>
-        <v-stepper v-model="stepper" vertical>
+        <v-stepper v-model="stepper" vertical class="elevation-0">
           <v-stepper-step :complete="stepper > 1" step="1" :editable="editable">
             Chọn hàng xuất đấu thầu
             <small>Thông tin bắt buộc</small>
@@ -37,7 +37,7 @@
               :actions-append="options.page"
               no-data-text="Danh sách hàng xuất rỗng."
               disable-sort
-              class="elevation-0 mb-1"
+              class="elevation-0"
             >
               <template v-slot:top>
                 <v-toolbar flat color="white">
@@ -85,6 +85,7 @@
                     dateicon="event_available"
                     datelabel="Ngày mở thầu"
                     timelabel="Giờ mở thầu"
+                    disabled
                   />
                 </v-col>
                 <!-- Bid Closing -->

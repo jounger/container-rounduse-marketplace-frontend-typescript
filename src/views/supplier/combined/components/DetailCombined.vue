@@ -45,10 +45,7 @@
                     <GoogleMapDirection
                       v-if="shippingInfo"
                       :router="{
-                        origin: shippingInfo.outbound.packingStation,
-                        destination: getPortAddress(
-                          shippingInfo.outbound.booking.portOfLoading.fullname
-                        ),
+                        ...router,
                         travelMode: 'DRIVING'
                       }"
                       :google="google"
@@ -62,7 +59,11 @@
                   {{ "#" + shippingInfo.container.number }}</v-card-title
                 >
                 <v-card-text>
-                  <v-stepper value="2" vertical class="elevation-0 pb-0">
+                  <v-stepper
+                    :value="stepper2"
+                    vertical
+                    class="elevation-0 pb-0"
+                  >
                     <v-stepper-step step="1" complete
                       >Cảng lấy cont:
                       {{ inbound.billOfLading.portOfDelivery.fullname }}
@@ -72,7 +73,7 @@
                       >
                     </v-stepper-step>
                     <v-stepper-content step="1"></v-stepper-content>
-                    <v-stepper-step step="2"
+                    <v-stepper-step step="2" :complete="stepper2 >= 2"
                       >Nơi trả hàng: {{ inbound.returnStation }}
                       <small class="mt-1"
                         >Thời gian trả:
@@ -82,7 +83,7 @@
                       ></v-stepper-step
                     >
                     <v-stepper-content step="2"></v-stepper-content>
-                    <v-stepper-step step="3"
+                    <v-stepper-step step="3" :complete="stepper2 >= 3"
                       >Nơi đóng hàng:
                       {{ shippingInfo.outbound.packingStation }}
                       <small class="mt-1"
@@ -93,7 +94,7 @@
                       ></v-stepper-step
                     >
                     <v-stepper-content step="3"></v-stepper-content>
-                    <v-stepper-step step="4"
+                    <v-stepper-step step="4" :complete="stepper2 >= 4"
                       >Cảng bốc hàng:
                       {{ shippingInfo.outbound.booking.portOfLoading.fullname }}
                       <small class="mt-1"
@@ -318,14 +319,21 @@
         <v-card-text>
           <v-stepper :value="stepper" alt-labels class="elevation-0">
             <v-stepper-header>
-              <v-stepper-step step="1">Nhận thông tin</v-stepper-step>
+              <v-stepper-step step="1" :complete="stepper >= 1"
+                >Nhận thông tin</v-stepper-step
+              >
               <v-divider></v-divider>
-              <v-stepper-step step="2" :rules="[() => exception]"
+              <v-stepper-step
+                step="2"
+                :complete="stepper >= 2"
+                :rules="[() => exception]"
                 >Đang vận chuyển
                 <small v-if="exception == false">Đã có lỗi xảy ra</small>
               </v-stepper-step>
               <v-divider></v-divider>
-              <v-stepper-step step="3">Đã giao hàng</v-stepper-step>
+              <v-stepper-step step="3" :complete="stepper >= 3"
+                >Đã giao hàng</v-stepper-step
+              >
             </v-stepper-header>
           </v-stepper>
         </v-card-text>
@@ -381,12 +389,12 @@ import { IShippingInfo } from "@/entity/shipping-info";
 import { getShippingInfosByCombined } from "@/api/shipping-info";
 import { getInboundByContainer } from "@/api/inbound";
 import { getCombined } from "@/api/combined";
-import { getPorts } from "@/api/port";
 import { IPort } from "@/entity/port";
 import GoogleMapLoader from "@/components/googlemaps/GoogleMapLoader.vue";
 import GoogleMapDirection from "@/components/googlemaps/GoogleMapDirection.vue";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { getBiddingDocumentByCombined } from "@/api/bidding-document";
+import { google } from "google-maps";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -399,7 +407,7 @@ import { getBiddingDocumentByCombined } from "@/api/bidding-document";
   }
 })
 export default class DetailCombined extends Vue {
-  style = { width: "inherit", height: "250px" };
+  style = { width: "400px", height: "250px" };
   combined = null as ICombined | null;
   shippingInfos: Array<IShippingInfo> = [];
   shippingInfo = null as IShippingInfo | null;
@@ -408,9 +416,10 @@ export default class DetailCombined extends Vue {
   inbound = null as IInbound | null;
   contract = null as IContract | null;
   biddingDocument = null as IBiddingDocument | null;
-  ports: Array<IPort> = [];
   loading = false;
   stepper = 1;
+  stepper2 = 1;
+  router = null as google.maps.DirectionsRequest | null;
   exception = true;
   dialogDetail = false;
   dialogAddEvidence = false;
@@ -483,31 +492,52 @@ export default class DetailCombined extends Vue {
     }
   ];
 
-  async loadInboundByContainer(containerId: number) {
-    const _res = await getInboundByContainer(containerId);
-    if (_res.data) {
-      const _inbound = _res.data;
-      this.inbound = _inbound;
-    }
-  }
-
   processShippingInfo(item: IShippingInfo) {
-    switch (item.status) {
-      case "INFO_RECEIVED":
-        this.stepper = 1;
-        break;
-      case "SHIPPING":
-        this.stepper = 2;
-        break;
-      case "DELIVERED":
-        this.stepper = 3;
-        break;
-      case "EXCEPTION":
-        this.stepper = 2;
-        this.exception = false;
-        break;
-      default:
-        break;
+    if (this.shippingInfo && this.inbound) {
+      const _returnStation = this.inbound.returnStation;
+      const _packingStation = this.shippingInfo.outbound.packingStation;
+      const _portOfDelivery = this.inbound.billOfLading.portOfDelivery as IPort;
+      const _portOfLoading = this.shippingInfo.outbound.booking
+        .portOfLoading as IPort;
+      switch (item.status) {
+        case "PENDING":
+          this.stepper = 0;
+          this.stepper2 = 1;
+          this.router = {
+            origin: _portOfDelivery.address,
+            destination: _returnStation
+          };
+          break;
+        case "INFO_RECEIVED":
+          this.stepper = 1;
+          this.stepper2 = 2;
+          this.router = {
+            origin: _returnStation,
+            destination: _packingStation
+          };
+          break;
+        case "SHIPPING":
+          this.stepper = 2;
+          this.stepper2 = 3;
+          break;
+        case "DELIVERED":
+          this.stepper = 3;
+          this.stepper2 = 4;
+          break;
+        case "EXCEPTION":
+          this.stepper = 2;
+          this.stepper2 = 3;
+          this.exception = false;
+          break;
+        default:
+          break;
+      }
+      if (["SHIPPING", "DELIVERED", "EXCEPTION"].includes(item.status)) {
+        this.router = {
+          origin: _packingStation,
+          destination: _portOfLoading.address
+        };
+      }
     }
   }
 
@@ -526,10 +556,7 @@ export default class DetailCombined extends Vue {
         this.shippingInfoServerSideOptions.totalItems = _res.data.totalElements;
         if (this.shippingInfos.length > 0) {
           this.shippingInfo = this.shippingInfos[0];
-          // TODO: view detail first shippingInfo
-          await this.loadInboundByContainer(
-            this.shippingInfo.container.id as number
-          );
+          await this.openDetailRouter(this.shippingInfo);
         }
       }
     }
@@ -558,8 +585,12 @@ export default class DetailCombined extends Vue {
 
   async openDetailRouter(item: IShippingInfo) {
     this.shippingInfo = item;
+    const _res = await getInboundByContainer(item.container.id as number);
+    if (_res.data) {
+      const _inbound = _res.data;
+      this.inbound = _inbound;
+    }
     this.processShippingInfo(item);
-    await this.loadInboundByContainer(item.container.id as number);
   }
 
   openDetailEvidence(item: IEvidence) {
@@ -610,26 +641,6 @@ export default class DetailCombined extends Vue {
 
   get apiKey() {
     return process.env.VUE_APP_GMAP_KEY;
-  }
-
-  getPortAddress(portCode: string) {
-    if (portCode.length > 0) {
-      const list = this.ports.filter(x => x.nameCode == portCode);
-      if (list.length > 0) return list[0].address;
-      return undefined;
-    }
-    return undefined;
-  }
-
-  async created() {
-    const _res = await getPorts({
-      page: 0,
-      limit: 100
-    });
-    if (_res.data) {
-      const _ports = _res.data.data;
-      this.ports = _ports;
-    }
   }
 }
 </script>

@@ -28,8 +28,9 @@
             <v-col cols="12" md="11">
               <v-select
                 v-model="roleLocal.permissions"
-                :items="permissionsToString"
-                :loading="loading"
+                :items="permissions"
+                item-text="name"
+                item-value="name"
                 no-data-text="Danh sách vai trò rỗng."
                 open-on-clear
                 deletable-chips
@@ -39,16 +40,6 @@
                 multiple
                 prepend-icon="enhanced_encryption"
               >
-                <v-btn
-                  text
-                  small
-                  color="primary"
-                  v-if="seeMore"
-                  slot="append-item"
-                  style="margin-left:190px;"
-                  @click="loadMorePermissions()"
-                  >Xem thêm</v-btn
-                >
               </v-select>
             </v-col>
           </v-row>
@@ -89,80 +80,31 @@ export default class CreateRole extends Vue {
   @Prop(Object) role!: IRole;
 
   permissions: Array<IPermission> = [];
-  limit = 5;
-  loading = false;
   valid = false;
-  seeMore = true;
   roleLocal = {
     name: "",
     permissions: []
   } as IRole;
-  async getPermissions(limit: number) {
-    this.loading = true;
-    this.permissions = [] as Array<IPermission>;
-    const _res = await getPermissions({
-      page: 0,
-      limit: limit + 1
-    });
-    if (_res.data) {
-      const _permissions = _res.data.data;
-      if (!this.update) {
-        _permissions.forEach((x: IPermission, index: number) => {
-          if (index != limit) {
-            this.permissions.push(x);
-          }
-        });
-      } else {
-        _permissions.forEach((x: IPermission) => {
-          for (let i = 0; i < this.roleLocal.permissions.length; i++) {
-            if (x.name == this.roleLocal.permissions[i]) {
-              this.permissions.push(x);
-            }
-          }
-        });
-        if (this.permissions.length > this.limit) {
-          this.limit = this.permissions.length;
-        } else {
-          if (this.permissions.length < this.limit) {
-            _permissions.forEach((x: IPermission) => {
-              let check = false;
-              for (let i = 0; i < this.permissions.length; i++) {
-                if (x.name == this.permissions[i].name) {
-                  check = true;
-                }
-              }
-              if (check == false && this.permissions.length < this.limit) {
-                this.permissions.push(x);
-              }
-            });
-          }
-        }
-      }
-      if (!_permissions.data || _permissions.data.length <= this.limit) {
-        this.seeMore = false;
-      }
-    }
-    this.loading = false;
-  }
-  async loadMorePermissions() {
-    this.limit += 5;
-    await this.getPermissions(this.limit);
-  }
+
   async created() {
     if (this.update) {
       this.roleLocal = Object.assign({}, this.role);
-      await this.getPermissions(100);
-    } else {
-      await this.getPermissions(50);
+    }
+    const _res = await getPermissions({
+      page: 0,
+      limit: 100
+    });
+    if (_res.data) {
+      const _permissions = _res.data.data;
+      this.permissions = _permissions;
     }
   }
-  get permissionsToString() {
-    return this.permissions.map(x => x.name);
-  }
+
   async remove(item: string) {
     const permissions = this.roleLocal.permissions.filter(x => x != item);
     this.roleLocal.permissions = permissions;
   }
+
   async createRole() {
     if (this.roleLocal) {
       const _res = await createRole(this.roleLocal);

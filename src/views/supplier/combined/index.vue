@@ -167,24 +167,13 @@ export default class Combined extends Vue {
     }
   ];
 
-  async loadCombineds(biddingDocumentId: number, option: DataOptions) {
-    const _res = await getCombinedsByBiddingDocument(biddingDocumentId, {
-      page: option.page - 1,
-      limit: option.itemsPerPage
-    });
-    if (_res.data) {
-      const _combineds = _res.data.data;
-      this.combineds = _combineds;
-      this.combinedServerSideOptions.totalItems = _res.data.totalElements;
-    }
-  }
-
   async clicked(value: IBiddingDocument) {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
         this.biddingDocument = null;
       } else {
+        this.combinedOptions.page = 1;
         if (this.expanded.length > 0) {
           this.expanded.splice(0, this.expanded.length);
           this.expanded.push(value);
@@ -195,8 +184,6 @@ export default class Combined extends Vue {
         }
       }
     }
-    this.combinedOptions.page = 1;
-    await this.loadCombineds(value.id as number, this.combinedOptions);
   }
 
   @Watch("options")
@@ -216,7 +203,7 @@ export default class Combined extends Vue {
     }
   }
 
-  @Watch("combinedOptions")
+  @Watch("combinedOptions", { deep: true })
   async onCombinedOptionsChange(val: DataOptions) {
     if (typeof val != "undefined" && this.biddingDocument) {
       this.loading = true;

@@ -126,24 +126,13 @@ export default class BorrowNotify extends Vue {
     }
   ];
 
-  async loadShippingInfosByCombined(combinedId: number, option: DataOptions) {
-    const _res = await getShippingInfosByCombined(combinedId, {
-      page: option.page - 1,
-      limit: option.itemsPerPage
-    });
-    if (_res.data) {
-      const _shippingInfos = _res.data.data;
-      this.shippingInfos = _shippingInfos;
-      this.shippingInfoServerSideOptions.totalItems = _res.data.totalElements;
-    }
-  }
-
   async clicked(value: IShippingLineNotification) {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded.splice(0, this.expanded.length);
         this.shippingLineNotification = null;
       } else {
+        this.shippingInfoOptions.page = 1;
         if (this.expanded.length > 0) {
           this.expanded.splice(0, this.expanded.length);
           this.expanded.push(value);
@@ -154,11 +143,6 @@ export default class BorrowNotify extends Vue {
         }
       }
     }
-    this.shippingInfoOptions.page = 1;
-    await this.loadShippingInfosByCombined(
-      value.relatedResource.id as number,
-      this.shippingInfoOptions
-    );
   }
 
   @Watch("options")
@@ -178,14 +162,22 @@ export default class BorrowNotify extends Vue {
     }
   }
 
-  @Watch("shippingInfoOptions")
+  @Watch("shippingInfoOptions", { deep: true })
   async onShippingInfoOptionsChange(val: DataOptions) {
     if (typeof val != "undefined" && this.shippingLineNotification) {
       this.loading = true;
-      await this.loadShippingInfosByCombined(
+      const _res = await getShippingInfosByCombined(
         this.shippingLineNotification.relatedResource.id as number,
-        val
+        {
+          page: val.page - 1,
+          limit: val.itemsPerPage
+        }
       );
+      if (_res.data) {
+        const _shippingInfos = _res.data.data;
+        this.shippingInfos = _shippingInfos;
+        this.shippingInfoServerSideOptions.totalItems = _res.data.totalElements;
+      }
       this.loading = false;
     }
   }

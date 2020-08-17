@@ -23,7 +23,7 @@
           :style="{ width: '600px' }"
         >
           <v-list three-line subheader width="inherit">
-            <v-stepper v-model="stepper" vertical>
+            <v-stepper v-model="stepper" vertical class="elevation-0">
               <v-stepper-step
                 :complete="stepper > 1"
                 step="1"
@@ -41,44 +41,25 @@
                       <v-select
                         v-model="inboundLocal.shippingLine"
                         prepend-icon="directions_boat"
-                        :items="shippingLinesToString"
-                        :loading="loadingShippingLines"
+                        :items="shippingLines"
+                        item-text="companyName"
+                        item-value="companyCode"
                         :rules="[required('hãng tàu')]"
                         no-data-text="Danh sách hãng tàu rỗng."
                         label="Hãng tàu*"
-                        ><v-btn
-                          text
-                          small
-                          color="primary"
-                          v-if="seeMoreShippingLines"
-                          slot="append-item"
-                          style="margin-left:60px;"
-                          @click="loadMoreShippingLines()"
-                          >Xem thêm</v-btn
-                        ></v-select
-                      > </v-col
+                      ></v-select> </v-col
                     ><v-col cols="12" sm="6">
                       <v-select
                         v-model="inboundLocal.containerType"
                         prepend-icon="directions_bus"
-                        :loading="loadingContainerTypes"
-                        :items="containerTypesToString"
+                        :items="containerTypes"
+                        item-text="name"
+                        item-value="name"
                         :rules="[required('loại Container')]"
                         label="Loại container*"
                         no-data-text="Danh sách loại Cont rỗng."
-                        ><v-btn
-                          text
-                          small
-                          color="primary"
-                          v-if="seeMoreContainerTypes"
-                          slot="append-item"
-                          style="margin-left:60px;"
-                          @click="loadMoreContainerTypes()"
-                          >Xem thêm</v-btn
-                        ></v-select
-                      >
-                    </v-col></v-row
-                  >
+                      ></v-select> </v-col
+                  ></v-row>
                   <v-row
                     ><v-col cols="12">
                       <label class="place-label">Nơi trả hàng</label>
@@ -144,24 +125,14 @@
                       <v-select
                         v-model="inboundLocal.billOfLading.portOfDelivery"
                         prepend-icon="flag"
-                        :loading="loadingPorts"
-                        :items="portsToString"
+                        :items="ports"
+                        item-text="fullname"
+                        return-object
                         :rules="[required('cảng lấy Container đặc')]"
                         no-data-text="Danh sách cảng rỗng."
                         label="Cảng lấy cont đặc*"
-                        ><v-btn
-                          text
-                          small
-                          color="primary"
-                          v-if="seeMorePorts"
-                          slot="append-item"
-                          style="margin-left:60px;"
-                          @click="loadMorePorts()"
-                          >Xem thêm</v-btn
-                        ></v-select
-                      >
-                    </v-col></v-row
-                  >
+                      ></v-select> </v-col
+                  ></v-row>
                   <v-row
                     ><v-col cols="12">
                       <DatetimePicker
@@ -227,9 +198,8 @@
                     v-if="origin && inboundLocal.billOfLading.portOfDelivery"
                     :router="{
                       origin: origin.geometry.location,
-                      destination: getPortAddress(
-                        inboundLocal.billOfLading.portOfDelivery
-                      ),
+                      destination:
+                        inboundLocal.billOfLading.portOfDelivery.address,
                       travelMode: 'DRIVING'
                     }"
                     :google="google"
@@ -302,7 +272,7 @@
             </v-stepper-step>
             <v-stepper-content step="1"></v-stepper-content>
             <v-stepper-step step="2"
-              >{{ getPortAddress(inboundLocal.billOfLading.portOfDelivery) }}
+              >{{ inboundLocal.billOfLading.portOfDelivery.address }}
               <small class="mt-1"
                 >Đến (khoảng):
                 {{ formatDatetime(inboundLocal.emptyTime) }}</small
@@ -330,7 +300,7 @@ import FormValidate from "@/mixin/form-validate";
 import { IPort } from "@/entity/port";
 import { IShippingLine } from "@/entity/shipping-line";
 import { IContainerType } from "@/entity/container-type";
-import { addTimeToDate, isEmptyObject, addMinutesToDate } from "@/utils/tool";
+import { addTimeToDate, addMinutesToDate } from "@/utils/tool";
 import { editInbound } from "@/api/inbound";
 import { getPorts } from "@/api/port";
 import { getContainerTypes } from "@/api/container-type";
@@ -345,6 +315,7 @@ import GoogleMapDistanceMatrix from "@/components/googlemaps/GoogleMapDistanceMa
 import { DistanceMatrix } from "@/components/googlemaps/map-interface";
 import Utils from "@/mixin/utils";
 import DatetimePicker from "@/components/DatetimePicker.vue";
+import { IBillOfLading } from "@/entity/bill-of-lading";
 
 @Component({
   components: {
@@ -378,18 +349,6 @@ export default class UpdateInbound extends Vue {
   ports: Array<IPort> = [];
   shippingLines: Array<IShippingLine> = [];
   containerTypes: Array<IContainerType> = [];
-  loadingShippingLines = false;
-  seeMoreShippingLines = true;
-  limitShippingLines = 5;
-  loadingContainerTypes = false;
-  seeMoreContainerTypes = true;
-  limitContainerTypes = 5;
-  loadingPorts = false;
-  seeMorePorts = true;
-  limitPorts = 5;
-  shippingLine = "";
-  containerType = "";
-  port = "";
 
   // Inbound Update
   estimateTimeTravel() {
@@ -412,191 +371,67 @@ export default class UpdateInbound extends Vue {
 
   @Watch("dialogEditSync")
   async onDialogEditSyncChange(val: boolean) {
-    if (val == true) {
-      if (!isEmptyObject(this.inbound)) {
-        this.inboundLocal = Object.assign({}, this.inbound);
-        this.$nextTick(() => {
-          this.inputAddress1.value = this.inbound.returnStation;
-        });
-        this.shippingLine = this.inboundLocal.shippingLine;
-        this.containerType = this.inboundLocal.containerType;
-        this.port = this.inboundLocal.billOfLading.portOfDelivery;
-      }
-      // API GET Ports
-      await this.getShippingLines(100);
-      await this.getContainerTypes(100);
-      await this.getPorts(100);
+    if (val == true && this.inbound) {
+      this.inboundLocal = Object.assign({}, this.inbound);
+      // REFACTOR SUPPLY
+      const _shippingLine = this.inboundLocal.shippingLine as IShippingLine;
+      const _containerType = this.inboundLocal.containerType as IContainerType;
+
+      this.inboundLocal.shippingLine = _shippingLine.companyCode;
+      this.inboundLocal.containerType = _containerType.name;
+      // END
+      this.$nextTick(() => {
+        this.inputAddress1.value = this.inbound.returnStation;
+      });
     } else {
       this.stepper = 1;
     }
   }
 
   async updateInbound() {
-    if (this.inboundLocal) {
-      const _res = await editInbound(
-        this.inbound.id as number,
-        this.inboundLocal
-      );
-      if (_res.data) {
-        const _inbound = _res.data.data;
-        const index = this.inboundsSync.findIndex(x => x.id == _inbound.id);
-        this.inboundsSync.splice(index, 1, _inbound);
-        this.inboundLocal = _inbound;
-        this.stepper = 2;
-      }
+    // API UPDATE INBOUND
+    const _res = await editInbound(
+      this.inbound.id as number,
+      this.inboundLocal as IInbound
+    );
+    if (_res.data && this.inboundLocal) {
+      const _inbound = _res.data.data as IInbound;
+      const index = this.inboundsSync.findIndex(x => x.id == _inbound.id);
+      this.inboundsSync.splice(index, 1, _inbound);
+      this.inboundLocal = Object.assign({}, _inbound);
+      this.stepper = 2;
+      // REFACTOR SUPPLY
+      const _shippingLine = this.inboundLocal.shippingLine as IShippingLine;
+      const _containerType = this.inboundLocal.containerType as IContainerType;
+
+      this.inboundLocal.shippingLine = _shippingLine.companyCode;
+      this.inboundLocal.containerType = _containerType.name;
+      // END
     }
   }
 
   async updateBillOfLading() {
-    if (this.inboundLocal && this.inboundLocal.billOfLading.id) {
+    if (this.inboundLocal && this.inboundLocal.billOfLading) {
+      const _portOfDelivery = this.inboundLocal.billOfLading
+        .portOfDelivery as IPort;
+      this.inboundLocal.billOfLading.portOfDelivery = _portOfDelivery.nameCode;
+      // API UPDATE BILLOFLADING
       const _res = await editBillOfLading(
-        this.inboundLocal.billOfLading.id,
+        this.inboundLocal.billOfLading.id as number,
         this.inboundLocal.billOfLading
       );
       if (_res.data) {
-        const _billOfLading = _res.data.data;
+        const _billOfLading = _res.data.data as IBillOfLading;
         const index = this.inboundsSync.findIndex(
           x => x.id === this.inbound.id
         );
+        this.inboundsSync.splice(index, 1, {
+          ...this.inboundsSync[index],
+          billOfLading: _billOfLading
+        });
         this.inboundLocal.billOfLading = _billOfLading;
-        this.inboundsSync.splice(index, 1, this.inboundLocal);
       }
     }
-    return undefined;
-  }
-
-  getPortAddress(portCode: string) {
-    if (portCode.length > 0) {
-      const list = this.ports.filter(x => x.nameCode == portCode);
-      if (list.length > 0) return list[0].address;
-      return undefined;
-    }
-    return undefined;
-  }
-
-  async getShippingLines(limit: number) {
-    this.loadingShippingLines = true;
-    this.shippingLines = [] as Array<IShippingLine>;
-    const _res = await getShippingLines({
-      page: 0,
-      limit: limit + 1
-    });
-    if (_res.data) {
-      const _shippingLines = _res.data.data;
-      _shippingLines.forEach((x: IShippingLine) => {
-        if (x.companyCode == this.shippingLine) {
-          this.shippingLines.push(x);
-        }
-      });
-      _shippingLines.forEach((x: IShippingLine) => {
-        let check = false;
-        if (x.companyCode == this.shippingLine) {
-          check = true;
-        }
-        if (
-          check == false &&
-          this.shippingLines.length < this.limitShippingLines
-        ) {
-          this.shippingLines.push(x);
-        }
-      });
-      if (!_shippingLines || _shippingLines.length <= this.limitShippingLines) {
-        this.seeMoreShippingLines = false;
-      }
-    }
-    this.loadingShippingLines = false;
-  }
-
-  async loadMoreShippingLines() {
-    this.limitShippingLines += 5;
-    await this.getShippingLines(this.limitShippingLines);
-  }
-
-  async getContainerTypes(limit: number) {
-    this.loadingContainerTypes = true;
-    this.containerTypes = [] as Array<IContainerType>;
-    const _res = await getContainerTypes({
-      page: 0,
-      limit: limit + 1
-    });
-    if (_res.data) {
-      const _containerTypes = _res.data.data;
-      _containerTypes.forEach((x: IContainerType) => {
-        if (x.name == this.containerType) {
-          this.containerTypes.push(x);
-        }
-      });
-      _containerTypes.forEach((x: IContainerType) => {
-        let check = false;
-        if (x.name == this.containerType) {
-          check = true;
-        }
-        if (
-          check == false &&
-          this.containerTypes.length < this.limitContainerTypes
-        ) {
-          this.containerTypes.push(x);
-        }
-      });
-      if (
-        !_containerTypes ||
-        _containerTypes.length <= this.limitContainerTypes
-      ) {
-        this.seeMoreContainerTypes = false;
-      }
-    }
-    this.loadingContainerTypes = false;
-  }
-
-  async loadMoreContainerTypes() {
-    this.limitContainerTypes += 5;
-    await this.getContainerTypes(this.limitContainerTypes);
-  }
-
-  async getPorts(limit: number) {
-    this.loadingPorts = true;
-    this.ports = [] as Array<IPort>;
-    const _res = await getPorts({
-      page: 0,
-      limit: limit + 1
-    });
-    if (_res.data) {
-      const _ports = _res.data.data;
-      _ports.forEach((x: IPort) => {
-        if (x.nameCode == this.port) {
-          this.ports.push(x);
-        }
-      });
-      _ports.forEach((x: IPort) => {
-        let check = false;
-        if (x.nameCode == this.port) {
-          check = true;
-        }
-        if (check == false && this.ports.length < this.limitPorts) {
-          this.ports.push(x);
-        }
-      });
-      if (!_ports || _ports.length <= this.limitPorts) {
-        this.seeMorePorts = false;
-      }
-    }
-    this.loadingPorts = false;
-  }
-  async loadMorePorts() {
-    this.limitPorts += 5;
-    await this.getPorts(this.limitPorts);
-  }
-
-  get portsToString() {
-    return this.ports.map(x => x.nameCode);
-  }
-
-  get shippingLinesToString() {
-    return this.shippingLines.map(x => x.companyCode);
-  }
-
-  get containerTypesToString() {
-    return this.containerTypes.map(x => x.name);
   }
 
   get mapConfig() {
@@ -619,8 +454,35 @@ export default class UpdateInbound extends Vue {
     return process.env.VUE_APP_GMAP_KEY;
   }
 
-  mounted() {
+  async created() {
     console.log("UpdateInbound");
+    // API GET ShippingLines
+    const _resS = await getShippingLines({
+      page: 0,
+      limit: 100
+    });
+    if (_resS.data) {
+      const _shippingLines = _resS.data.data;
+      this.shippingLines = _shippingLines;
+    }
+    // API GET ContainerTypes
+    const _resC = await getContainerTypes({
+      page: 0,
+      limit: 100
+    });
+    if (_resC.data) {
+      const _containerTypes = _resC.data.data;
+      this.containerTypes = _containerTypes;
+    }
+    // API GET Ports
+    const _resP = await getPorts({
+      page: 0,
+      limit: 100
+    });
+    if (_resP.data) {
+      const _ports = _resP.data.data;
+      this.ports = _ports;
+    }
   }
 
   beforeDestroy() {

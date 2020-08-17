@@ -20,7 +20,7 @@
       </v-toolbar>
       <!-- START CONTENT -->
       <v-list three-line subheader>
-        <v-stepper v-model="stepper" vertical>
+        <v-stepper v-model="stepper" vertical class="elevation-0">
           <v-stepper-step :complete="stepper > 1" step="1" :editable="editable">
             Thêm mới hãng tàu
             <small>Thông tin chung</small>

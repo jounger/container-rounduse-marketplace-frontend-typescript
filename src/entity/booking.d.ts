@@ -1,9 +1,10 @@
+import { IPort } from './port';
 export interface IBooking {
   id?: number;
   number: string;
   unit: number;
   cutOffTime: string;
   isFcl: boolean;
-  portOfLoading: string; // nameCode
+  portOfLoading: IPort | string;
   isSelected?: boolean;
 }

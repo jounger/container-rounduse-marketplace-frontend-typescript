@@ -36,7 +36,7 @@
       </v-toolbar>
       <!-- START CONTENT -->
       <v-list three-line subheader>
-        <v-stepper v-model="stepper" vertical>
+        <v-stepper v-model="stepper" vertical class="elevation-0">
           <v-stepper-step :complete="stepper > 1" step="1" :editable="editable">
             Chọn HSMT
             <small>Thông tin bắt buộc</small>

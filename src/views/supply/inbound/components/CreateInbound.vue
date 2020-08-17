@@ -45,7 +45,7 @@
           :style="{ width: '600px' }"
         >
           <v-list three-line subheader width="inherit">
-            <v-stepper v-model="stepper" vertical>
+            <v-stepper v-model="stepper" vertical class="elevation-0">
               <v-stepper-step
                 :complete="stepper > 1"
                 step="1"
@@ -63,44 +63,25 @@
                       <v-select
                         v-model="inboundLocal.shippingLine"
                         prepend-icon="directions_boat"
-                        :items="shippingLinesToString"
-                        :loading="loadingShippingLines"
+                        :items="shippingLines"
+                        item-text="companyName"
+                        item-value="companyCode"
                         :rules="[required('hãng tàu')]"
                         no-data-text="Danh sách hãng tàu rỗng."
                         label="Hãng tàu*"
-                        ><v-btn
-                          text
-                          small
-                          color="primary"
-                          v-if="seeMoreShippingLines"
-                          slot="append-item"
-                          style="margin-left:60px;"
-                          @click="loadMoreShippingLines()"
-                          >Xem thêm</v-btn
-                        ></v-select
-                      > </v-col
+                      ></v-select> </v-col
                     ><v-col cols="12" sm="6">
                       <v-select
                         v-model="inboundLocal.containerType"
                         prepend-icon="directions_bus"
-                        :loading="loadingContainerTypes"
-                        :items="containerTypesToString"
+                        :items="containerTypes"
+                        item-text="name"
+                        item-value="name"
                         :rules="[required('loại Container')]"
                         label="Loại container*"
                         no-data-text="Danh sách loại Cont rỗng."
-                        ><v-btn
-                          text
-                          small
-                          color="primary"
-                          v-if="seeMoreContainerTypes"
-                          slot="append-item"
-                          style="margin-left:60px;"
-                          @click="loadMoreContainerTypes()"
-                          >Xem thêm</v-btn
-                        ></v-select
-                      >
-                    </v-col></v-row
-                  >
+                      ></v-select> </v-col
+                  ></v-row>
                   <v-row
                     ><v-col cols="12">
                       <label class="place-label">Nơi trả hàng</label>
@@ -161,24 +142,14 @@
                       <v-select
                         v-model="inboundLocal.billOfLading.portOfDelivery"
                         prepend-icon="flag"
-                        :loading="loadingPorts"
-                        :items="portsToString"
+                        :items="ports"
+                        item-text="fullname"
+                        return-object
                         :rules="[required('cảng lấy Container đặc')]"
                         no-data-text="Danh sách cảng rỗng."
                         label="Cảng lấy cont đặc*"
-                        ><v-btn
-                          text
-                          small
-                          color="primary"
-                          v-if="seeMorePorts"
-                          slot="append-item"
-                          style="margin-left:60px;"
-                          @click="loadMorePorts()"
-                          >Xem thêm</v-btn
-                        ></v-select
-                      >
-                    </v-col></v-row
-                  >
+                      ></v-select> </v-col
+                  ></v-row>
                   <v-row
                     ><v-col cols="12">
                       <DatetimePicker
@@ -306,7 +277,6 @@
                 <v-btn color="primary" @click="dialogAddSync = false"
                   >Hoàn tất</v-btn
                 >
-                <v-btn text @click="stepper = 3">Quay lại</v-btn>
               </v-stepper-content>
             </v-stepper>
           </v-list>
@@ -341,9 +311,8 @@
                     v-if="origin && inboundLocal.billOfLading.portOfDelivery"
                     :router="{
                       origin: origin.geometry.location,
-                      destination: getPortAddress(
-                        inboundLocal.billOfLading.portOfDelivery
-                      ),
+                      destination:
+                        inboundLocal.billOfLading.portOfDelivery.address,
                       travelMode: 'DRIVING'
                     }"
                     :google="google"
@@ -463,15 +432,6 @@ export default class CreateInbound extends Vue {
   style = { width: "600px", height: "500px" };
   origin = null as google.maps.places.PlaceResult | null;
   dateInit = addTimeToDate(new Date().toString());
-  loadingShippingLines = false;
-  seeMoreShippingLines = true;
-  limitShippingLines = 5;
-  loadingContainerTypes = false;
-  seeMoreContainerTypes = true;
-  limitContainerTypes = 5;
-  loadingPorts = false;
-  seeMorePorts = true;
-  limitPorts = 5;
   loading = false;
   inboundLocal = {
     code: "",
@@ -643,6 +603,10 @@ export default class CreateInbound extends Vue {
     /* TODO: Calculate Empty Time:
      * emptyTime = (duration: portOfDelivery -> returnStation) + pickupTime (+ bias)
      */
+    const _portOfDelivery = this.inboundLocal.billOfLading
+      .portOfDelivery as IPort;
+    this.inboundLocal.billOfLading.portOfDelivery = _portOfDelivery.nameCode;
+    // API CREATE INBOUND
     const _res = await createInbound(this.inboundLocal);
     if (_res.data) {
       const _inbound = _res.data.data;
@@ -651,27 +615,6 @@ export default class CreateInbound extends Vue {
       this.totalItemsSync += 1;
       this.stepper = 4;
     }
-  }
-
-  getPortAddress(portCode: string) {
-    if (portCode.length > 0) {
-      const list = this.ports.filter(x => x.nameCode == portCode);
-      if (list.length > 0) return list[0].address;
-      return undefined;
-    }
-    return undefined;
-  }
-
-  get portsToString() {
-    return this.ports.map(x => x.nameCode);
-  }
-
-  get shippingLinesToString() {
-    return this.shippingLines.map(x => x.companyCode);
-  }
-
-  get containerTypesToString() {
-    return this.containerTypes.map(x => x.name);
   }
 
   get mapConfig() {
@@ -694,92 +637,38 @@ export default class CreateInbound extends Vue {
     return process.env.VUE_APP_GMAP_KEY;
   }
 
-  async getShippingLines(limit: number) {
-    this.loadingShippingLines = true;
-    this.shippingLines = [] as Array<IShippingLine>;
-    const _res = await getShippingLines({
-      page: 0,
-      limit: limit + 1
-    });
-    if (_res.data) {
-      const _shippingLines = _res.data.data;
-      _shippingLines.forEach((x: IShippingLine, index: number) => {
-        if (index != limit) {
-          this.shippingLines.push(x);
-        }
-      });
-      if (!_shippingLines || _shippingLines.length <= limit) {
-        this.seeMoreShippingLines = false;
-      }
-    }
-    this.loadingShippingLines = false;
-  }
-
-  async loadMoreShippingLines() {
-    this.limitShippingLines += 5;
-    await this.getShippingLines(this.limitShippingLines);
-  }
-
-  async getContainerTypes(limit: number) {
-    this.loadingContainerTypes = true;
-    this.containerTypes = [] as Array<IContainerType>;
-    const _res = await getContainerTypes({
-      page: 0,
-      limit: limit + 1
-    });
-    if (_res.data) {
-      const _containerTypes = _res.data.data;
-      _containerTypes.forEach((x: IContainerType, index: number) => {
-        if (index != limit) {
-          this.containerTypes.push(x);
-        }
-      });
-      if (!_containerTypes || _containerTypes.length <= limit) {
-        this.seeMoreContainerTypes = false;
-      }
-    }
-    this.loadingContainerTypes = false;
-  }
-
-  async loadMoreContainerTypes() {
-    this.limitContainerTypes += 5;
-    await this.getContainerTypes(this.limitContainerTypes);
-  }
-
-  async getPorts(limit: number) {
-    this.loadingPorts = true;
-    this.ports = [] as Array<IPort>;
-    const _res = await getPorts({
-      page: 0,
-      limit: limit + 1
-    });
-    if (_res.data) {
-      const _ports = _res.data.data;
-      _ports.forEach((x: IPort, index: number) => {
-        if (index != limit) {
-          this.ports.push(x);
-        }
-      });
-      if (!_ports || _ports.length <= limit) {
-        this.seeMorePorts = false;
-      }
-    }
-    this.loadingPorts = false;
-  }
-
-  async loadMorePorts() {
-    this.limitPorts += 5;
-    await this.getPorts(this.limitPorts);
-  }
-
   async created() {
-    await this.getShippingLines(50);
-    await this.getContainerTypes(50);
-    await this.getPorts(50);
     const _res = await getSupplier(this.$auth.user().username);
     if (_res.data) {
       const _supplier = _res.data;
       this.supplier = _supplier;
+    }
+    // API GET ShippingLines
+    const _resS = await getShippingLines({
+      page: 0,
+      limit: 100
+    });
+    if (_resS.data) {
+      const _shippingLines = _resS.data.data;
+      this.shippingLines = _shippingLines;
+    }
+    // API GET ContainerTypes
+    const _resC = await getContainerTypes({
+      page: 0,
+      limit: 100
+    });
+    if (_resC.data) {
+      const _containerTypes = _resC.data.data;
+      this.containerTypes = _containerTypes;
+    }
+    // API GET Ports
+    const _resP = await getPorts({
+      page: 0,
+      limit: 100
+    });
+    if (_resP.data) {
+      const _ports = _resP.data.data;
+      this.ports = _ports;
     }
   }
 

@@ -576,26 +576,16 @@ export default class DetailBiddingDocument extends Vue {
         this.expanded.splice(0, this.expanded.length);
         this.bid = null;
       } else {
+        this.containerOptions.page = 1;
         if (this.expanded.length > 0) {
           this.expanded.splice(0, this.expanded.length);
           this.expanded.push(value);
           this.bid = value;
           this.containerOptions.page = 1;
-          await this.loadContainersByBid(
-            value.id as number,
-            this.containerOptions
-          );
         } else {
           this.expanded.push(value);
           this.bid = value;
         }
-      }
-    } else {
-      const index = this.expanded.findIndex(x => x.id === value.id);
-      if (index === -1) {
-        this.expanded.push(value);
-      } else {
-        this.expanded.splice(index, 1);
       }
     }
   }
@@ -609,24 +599,18 @@ export default class DetailBiddingDocument extends Vue {
     }
   }
 
-  async loadContainersByBid(bidId: number, option: DataOptions) {
-    const _res = await getContainersByBid(bidId, {
-      page: option.page - 1,
-      limit: option.itemsPerPage
-    });
-    if (_res.data) {
-      const _containers = _res.data.data;
-      this.containers = _containers;
-      this.containerServerSideOptions.totalItems = _res.data.totalElements;
-    }
-  }
-
-  @Watch("containerOptions")
+  @Watch("containerOptions", { deep: true })
   async onContainerOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined") {
+    if (typeof val != "undefined" && this.bid) {
       this.loading = true;
-      if (this.bid) {
-        await this.loadContainersByBid(this.bid.id as number, val);
+      const _res = await getContainersByBid(this.bid.id as number, {
+        page: val.page - 1,
+        limit: val.itemsPerPage
+      });
+      if (_res.data) {
+        const _containers = _res.data.data;
+        this.containers = _containers;
+        this.containerServerSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }
