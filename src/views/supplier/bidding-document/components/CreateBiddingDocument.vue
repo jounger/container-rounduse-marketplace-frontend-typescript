@@ -126,13 +126,6 @@
                       )
                     "
                     prepend-icon="local_atm"
-                    :rules="[
-                      maxNumber(
-                        'Giá sàn',
-                        parseInt(biddingDocumentLocal.bidPackagePrice)
-                      ),
-                      minNumber('Giá sàn', 0)
-                    ]"
                     type="number"
                     label="Giá sàn"
                   ></v-text-field

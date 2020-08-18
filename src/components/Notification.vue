@@ -132,8 +132,8 @@ export default class Notification extends Vue {
   messageCount = 0;
 
   connected = false;
-  socket = {} as WebSocket;
-  stompClient = {} as Client;
+  socket = null as WebSocket | null;
+  stompClient = null as Client | null;
 
   async gotoNotification(item: INotification) {
     let ROUTER = "";

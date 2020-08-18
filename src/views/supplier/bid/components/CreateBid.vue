@@ -37,18 +37,15 @@
               no-data-text="Danh sách HSMT nhận được rỗng."
               disable-sort
               class="elevation-0 mb-1"
+              v-model="biddingDocumentsSelected"
+              single-select
+              show-select
             >
               <template v-slot:top>
                 <v-toolbar flat color="white">
                   <v-toolbar-title>HSMT nhận được</v-toolbar-title>
                   <v-divider class="mx-4" inset vertical></v-divider>
                 </v-toolbar>
-              </template>
-              <template v-slot:item.actions="{ item }">
-                <v-switch
-                  v-model="biddingDocumentSelected"
-                  :value="item"
-                ></v-switch>
               </template>
               <template v-slot:item.unit="{ item }">
                 {{
@@ -69,11 +66,19 @@
               <template v-slot:item.bidFloorPrice="{ item }">
                 {{ currencyFormatter(item.bidFloorPrice) }}
               </template>
+              <template v-slot:item.actions="{ item }">
+                <v-switch
+                  v-model="biddingDocumentsSelected[0]"
+                  :value="item"
+                  light
+                  dense
+                ></v-switch>
+              </template>
             </v-data-table>
             <v-btn
               color="primary"
               @click="stepper = 2"
-              :disabled="!biddingDocumentSelected"
+              :disabled="!biddingDocumentsSelected[0]"
               >Tiếp tục</v-btn
             >
           </v-stepper-content>
@@ -87,16 +92,16 @@
                 v-model="bidLocal.bidPrice"
                 :hint="currencyFormatter(bidLocal.bidPrice)"
                 prepend-icon="monetization_on"
-                v-if="biddingDocumentSelected"
+                v-if="biddingDocumentsSelected[0]"
                 type="number"
                 :rules="[
                   minNumber(
                     'Giá gửi thầu',
-                    biddingDocumentSelected.bidFloorPrice
+                    biddingDocumentsSelected[0].bidFloorPrice
                   ),
                   maxNumber(
                     'Giá gửi thầu',
-                    biddingDocumentSelected.bidPackagePrice
+                    biddingDocumentsSelected[0].bidPackagePrice
                   )
                 ]"
                 label="Giá gửi thầu"
@@ -193,8 +198,8 @@
             </v-tabs>
             <v-btn
               v-if="
-                biddingDocumentSelected &&
-                  biddingDocumentSelected.isMultipleAward
+                biddingDocumentsSelected[0] &&
+                  biddingDocumentsSelected[0].isMultipleAward
               "
               color="primary"
               @click="stepper = 4"
@@ -203,12 +208,15 @@
             >
             <v-btn
               v-if="
-                biddingDocumentSelected &&
-                  biddingDocumentSelected.isMultipleAward == false
+                biddingDocumentsSelected[0] &&
+                  biddingDocumentsSelected[0].isMultipleAward == false
               "
               color="primary"
               @click="stepper = 4"
-              :disabled="containersSelected.length < unit"
+              :disabled="
+                containersSelected.length <
+                  biddingDocumentsSelected[0].outbound.booking.unit
+              "
               >Tiếp tục</v-btn
             >
             <v-btn text @click="stepper = 2">Quay lại</v-btn>
@@ -242,7 +250,7 @@ import Utils from "@/mixin/utils";
 import { getInboundsByOutboundAndForwarder } from "@/api/inbound";
 import { createBid } from "@/api/bid";
 import { IBiddingDocument } from "@/entity/bidding-document";
-import { isEmptyObject, addTimeToDate } from "@/utils/tool";
+import { addTimeToDate } from "@/utils/tool";
 import { getBiddingNotificationsByUser } from "@/api/notification";
 import { IBiddingNotification } from "@/entity/bidding-notification";
 import { IOutbound } from "@/entity/outbound";
@@ -255,16 +263,15 @@ import { IBillOfLading } from "@/entity/bill-of-lading";
 })
 export default class CreateBid extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("totalItems", { type: Number }) totalItemsSync?: number;
-  @PropSync("bids", { type: Array }) bidsSync?: Array<IBid>;
-  @PropSync("biddingDocument", { type: Object })
-  biddingDocumentSync?: IBiddingDocument;
+  @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
+  @PropSync("bids", { type: Array }) bidsSync!: Array<IBid>;
   @PropSync("biddingNotifications", { type: Array })
-  biddingNotificationsSync?: Array<IBiddingNotification>;
-  @Prop(Object) biddingNotification?: IBiddingNotification;
+  biddingNotificationsSync!: Array<IBiddingNotification>;
+  @Prop(Object) biddingNotification!: IBiddingNotification;
+  @Prop() biddingDocument!: IBiddingDocument;
 
   biddingDocuments: Array<IBiddingDocument> = [];
-  biddingDocumentSelected = null as IBiddingDocument | null;
+  biddingDocumentsSelected: Array<IBiddingDocument> = [];
   expanded: Array<IInbound> = [];
   singleExpand = true;
   dateInit = addTimeToDate(new Date().toString());
@@ -317,7 +324,6 @@ export default class CreateBid extends Vue {
   // Form validate
   checkbox = false;
   editable = false;
-  unit = 0;
   stepper = 1;
   valid = true;
   // Inbound
@@ -331,6 +337,7 @@ export default class CreateBid extends Vue {
       sortable: false,
       value: "id"
     },
+    { text: "Bên mời thầu", value: "offeree.companyName" },
     { text: "Hãng tàu", value: "outbound.shippingLine.companyName" },
     { text: "Số cont", value: "unit" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
@@ -395,8 +402,7 @@ export default class CreateBid extends Vue {
   ];
 
   async createBid() {
-    // TODO: API create bid
-    if (this.biddingDocumentSelected && this.biddingDocumentSelected.id) {
+    if (this.biddingDocumentsSelected[0]) {
       this.bidLocal.containers = this.containersSelected.reduce(function(
         pV: Array<number>,
         cV: IContainer
@@ -407,25 +413,20 @@ export default class CreateBid extends Vue {
         return pV;
       },
       []);
+      // API CREATE BID
       const _res = await createBid(
-        this.biddingDocumentSelected.id,
+        this.biddingDocumentsSelected[0].id as number,
         this.bidLocal
       );
       if (_res.data) {
         const _bid = _res.data.data;
         if (this.bidsSync) {
           this.bidsSync.unshift(_bid);
-        }
-        if (typeof this.totalItemsSync != "undefined") {
           this.totalItemsSync += 1;
         }
-        if (
-          typeof this.biddingNotification !== "undefined" &&
-          typeof this.biddingNotificationsSync !== "undefined"
-        ) {
-          const id = this.biddingNotification.id;
+        if (this.biddingNotification && this.biddingNotificationsSync) {
           const index = this.biddingNotificationsSync.findIndex(
-            x => x.id === id
+            x => x.id === this.biddingNotification.id
           );
           this.biddingNotificationsSync.splice(index, 1);
         }
@@ -437,17 +438,15 @@ export default class CreateBid extends Vue {
   async clicked(value: IInbound) {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
-        this.expanded.splice(0, this.expanded.length);
+        this.expanded = [];
       } else {
-        this.containerOptions.page = 1;
-        if (this.expanded.length > 0) {
-          this.expanded.splice(0, this.expanded.length);
-          this.expanded.push(value);
-          this.inbound = value;
-        } else {
-          this.expanded.push(value);
-          this.inbound = value;
-        }
+        if (this.expanded.length > 0) this.expanded = [];
+        this.expanded.push(value);
+        this.inbound = value;
+        await this.loadMoreContainers({
+          ...this.containerOptions,
+          page: 1
+        });
       }
     }
   }
@@ -455,26 +454,23 @@ export default class CreateBid extends Vue {
   @Watch("biddingDocumentOptions")
   async onBiddingDocumentOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
-      this.loading = true;
-      this.biddingDocuments = [] as Array<IBiddingDocument>;
-      if (
-        this.biddingDocumentSync &&
-        !isEmptyObject(this.biddingDocumentSync)
-      ) {
-        this.biddingDocuments.push(this.biddingDocumentSync);
-        this.biddingDocumentSelected = this.biddingDocumentSync;
+      if (this.biddingDocument) {
+        this.biddingDocuments = [];
+        this.biddingDocuments.push(this.biddingDocument);
+        this.biddingDocumentsSelected.push(this.biddingDocument);
         this.biddingDocumentServerSideOptions.totalItems = 1;
         this.loading = false;
       } else {
+        this.loading = true;
         const _res = await getBiddingNotificationsByUser({
           page: val.page - 1,
           limit: val.itemsPerPage
         });
         this.loading = false;
         if (_res.data) {
-          const _biddingNotificationsByUsers = _res.data
+          const _biddingNotifications = _res.data
             .data as IBiddingNotification[];
-          this.biddingDocuments = _biddingNotificationsByUsers
+          this.biddingDocuments = _biddingNotifications
             .filter(x => x.action == "ADDED")
             .reduce(function(
               pV: Array<IBiddingDocument>,
@@ -487,8 +483,25 @@ export default class CreateBid extends Vue {
           this.biddingDocumentServerSideOptions.totalItems =
             _res.data.totalElements;
         }
+        this.loading = false;
       }
-      this.loading = false;
+    }
+  }
+
+  async loadMoreContainers(val: DataOptions) {
+    if (this.inbound) {
+      const _res = await getContainersByInbound(this.inbound.id as number, {
+        page: val.page - 1,
+        limit: val.itemsPerPage
+      });
+      if (_res.data) {
+        const _containers = _res.data.data;
+        this.containers = _containers;
+        this.containers = _containers.filter(
+          (x: IContainer) => x.status == "CREATED"
+        );
+        this.containerServerSideOptions.totalItems = _res.data.totalElements;
+      }
     }
   }
 
@@ -497,16 +510,18 @@ export default class CreateBid extends Vue {
     if (typeof val != "undefined") {
       this.loading = true;
       if (
-        this.biddingDocumentSelected &&
-        this.biddingDocumentSelected.outbound
+        this.biddingDocumentsSelected[0] &&
+        this.biddingDocumentsSelected[0].outbound
       ) {
-        const _outbound = this.biddingDocumentSelected.outbound as IOutbound;
-        this.unit = _outbound.booking.unit;
-        const _outboundId = _outbound.id as number;
-        const _res = await getInboundsByOutboundAndForwarder(_outboundId, {
-          page: val.page - 1,
-          limit: val.itemsPerPage
-        });
+        const _outbound = this.biddingDocumentsSelected[0]
+          .outbound as IOutbound;
+        const _res = await getInboundsByOutboundAndForwarder(
+          _outbound.id as number,
+          {
+            page: val.page - 1,
+            limit: val.itemsPerPage
+          }
+        );
         this.loading = false;
         if (_res.data) {
           const _inbounds = _res.data.data;
@@ -518,21 +533,11 @@ export default class CreateBid extends Vue {
   }
 
   @Watch("containerOptions", { deep: true })
-  async onContainerOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined" && this.inbound) {
+  async onContainerOptionsChange(val: DataOptions, oldVal: DataOptions) {
+    if (typeof val != "undefined" && val.page != oldVal.page) {
       this.loading = true;
-      const _res = await getContainersByInbound(this.inbound.id as number, {
-        page: val.page - 1,
-        limit: val.itemsPerPage
-      });
-      if (_res.data) {
-        const _containers = _res.data.data;
-        this.containers = _containers.filter(
-          (x: IContainer) => x.status == "CREATED"
-        );
-        this.containerServerSideOptions.totalItems = _res.data.totalElements;
-        this.loading = false;
-      }
+      await this.loadMoreContainers(val);
+      this.loading = false;
     }
   }
 }

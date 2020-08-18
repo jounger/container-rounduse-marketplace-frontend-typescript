@@ -58,6 +58,7 @@
                   combinedServerSideOptions.itemsPerPageItems
               }"
               :actions-append="combinedOptions.page"
+              hide-default-footer
               disable-sort
               dense
               dark
@@ -191,15 +192,30 @@ export default class Combined extends Vue {
         this.expanded.splice(0, this.expanded.length);
         this.biddingDocument = null;
       } else {
-        this.combinedOptions.page = 1;
-        if (this.expanded.length > 0) {
-          this.expanded.splice(0, this.expanded.length);
-          this.expanded.push(value);
-          this.biddingDocument = value;
-        } else {
-          this.expanded.push(value);
-          this.biddingDocument = value;
+        if (this.expanded.length > 0) this.expanded = [];
+        this.expanded.push(value);
+        this.biddingDocument = value;
+        await this.loadMoreCombineds({
+          ...this.combinedOptions,
+          page: 1
+        });
+      }
+    }
+  }
+
+  async loadMoreCombineds(val: DataOptions) {
+    if (this.biddingDocument) {
+      const _res = await getCombinedsByBiddingDocument(
+        this.biddingDocument.id as number,
+        {
+          page: val.page - 1,
+          limit: val.itemsPerPage
         }
+      );
+      if (_res.data) {
+        const _combineds = _res.data.data;
+        this.combineds = _combineds;
+        this.combinedServerSideOptions.totalItems = _res.data.totalElements;
       }
     }
   }
@@ -222,21 +238,10 @@ export default class Combined extends Vue {
   }
 
   @Watch("combinedOptions", { deep: true })
-  async onCombinedOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined" && this.biddingDocument) {
+  async onCombinedOptionsChange(val: DataOptions, oldVal: DataOptions) {
+    if (typeof val != "undefined" && val.page != oldVal.page) {
       this.loading = true;
-      const _res = await getCombinedsByBiddingDocument(
-        this.biddingDocument.id as number,
-        {
-          page: val.page - 1,
-          limit: val.itemsPerPage
-        }
-      );
-      if (_res.data) {
-        const _combineds = _res.data.data;
-        this.combineds = _combineds;
-        this.combinedServerSideOptions.totalItems = _res.data.totalElements;
-      }
+      await this.loadMoreCombineds(val);
       this.loading = false;
     }
   }

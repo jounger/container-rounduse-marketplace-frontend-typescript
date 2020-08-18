@@ -487,18 +487,17 @@ export default class CreateInbound extends Vue {
     itemsPerPageItems: [5, 10, 20, 50]
   };
   containers = [] as Array<IContainer>;
-  container = {} as IContainer;
+  container = null as IContainer | null;
   dialogAddCont = false;
   dialogDelCont = false;
 
   openCreateContainer() {
     this.update = false;
-    this.container = {} as IContainer;
+    this.container = null;
     this.dialogAddCont = true;
   }
 
   openUpdateContainer(item: IContainer) {
-    // TODO
     this.update = true;
     this.container = item;
     this.dialogAddCont = true;

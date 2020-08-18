@@ -141,7 +141,7 @@ import { DataOptions } from "vuetify";
 })
 export default class Outbound extends Vue {
   outbounds: Array<IOutbound> = [];
-  outbound = {} as IOutbound;
+  outbound = null as IOutbound | null;
   dialogAdd = false;
   dialogEdit = false;
   dialogDel = false;

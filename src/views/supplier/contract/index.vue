@@ -319,9 +319,16 @@ export default class Contract extends Vue {
   }
 
   @Watch("evidenceOptions")
-  async onEvidenceOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined" && this.contract) {
+  async onEvidenceOptionsChange(val: DataOptions, oldVal: DataOptions) {
+    if (typeof val != "undefined" && val.page != oldVal.page) {
       this.loading = true;
+      await this.loadMoreEvidences(val);
+      this.loading = false;
+    }
+  }
+
+  async loadMoreEvidences(val: DataOptions) {
+    if (this.contract) {
       const _res = await getEvidencesByContract(this.contract.id as number, {
         page: val.page - 1,
         limit: val.itemsPerPage
@@ -331,30 +338,22 @@ export default class Contract extends Vue {
         this.evidences = _evidences;
         this.evidenceServerSideOptions.totalItems = _res.data.totalElements;
       }
-      this.loading = false;
     }
   }
 
   async clicked(value: ICombined) {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
-        this.expanded.splice(0, this.expanded.length);
-        this.contract = {} as IContract;
+        this.expanded = [];
+        this.contract = null;
       } else {
-        if (this.expanded.length > 0) {
-          this.expanded.splice(0, this.expanded.length);
-          if (value.contract) {
-            this.expanded.push(value);
-            this.contract = value.contract;
-            this.evidenceOptions.page = 1;
-            await this.onEvidenceOptionsChange(this.evidenceOptions);
-          }
-        } else {
-          if (value.contract) {
-            this.expanded.push(value);
-            this.contract = value.contract;
-          }
-        }
+        if (this.expanded.length > 0) this.expanded = [];
+        this.expanded.push(value);
+        this.contract = value.contract as IContract;
+        await this.loadMoreEvidences({
+          ...this.evidenceOptions,
+          page: 1
+        });
       }
     }
   }

@@ -313,7 +313,7 @@
           :items="bids"
           :single-expand="singleExpand"
           :expanded.sync="expanded"
-          :show-expand="true"
+          show-expand
           @click:row="clicked"
           item-key="id"
           :loading="loading"
@@ -326,6 +326,7 @@
           no-data-text="Danh sách Hồ sơ dự thầu rỗng."
           disable-sort
           class="elevation-0"
+          :hide-default-footer="$auth.check('ROLE_FORWARDER')"
         >
           <template v-slot:item.bidDate="{ item }">
             {{ formatDatetime(item.bidDate) }}
@@ -395,9 +396,8 @@
                 }"
                 :actions-append="containerOptions.page"
                 v-model="containerSelected"
-                show-select
+                :show-select="$auth.check('ROLE_MODERATOR')"
                 @item-selected="selectContainer"
-                @toggle-select-all="selectAllContainer"
                 disable-sort
                 dark
                 dense
@@ -562,13 +562,13 @@ export default class DetailBiddingDocument extends Vue {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  selectAllContainer(select: any) {
-    const _items = select.items as IContainer[];
-    _items.forEach(x => (x.isSelected = select.value));
-    if (this.bid) {
-      this.bid.containers.splice(0, this.bid.containers.length, ..._items);
-    }
-  }
+  // selectAllContainer(select: any) {
+  //   const _items = select.items as IContainer[];
+  //   _items.forEach(x => (x.isSelected = select.value));
+  //   if (this.bid) {
+  //     this.bid.containers.splice(0, this.bid.containers.length, ..._items);
+  //   }
+  // }
 
   async clicked(value: IBid) {
     if (this.singleExpand) {
@@ -576,16 +576,13 @@ export default class DetailBiddingDocument extends Vue {
         this.expanded.splice(0, this.expanded.length);
         this.bid = null;
       } else {
-        this.containerOptions.page = 1;
-        if (this.expanded.length > 0) {
-          this.expanded.splice(0, this.expanded.length);
-          this.expanded.push(value);
-          this.bid = value;
-          this.containerOptions.page = 1;
-        } else {
-          this.expanded.push(value);
-          this.bid = value;
-        }
+        if (this.expanded.length > 0) this.expanded = [];
+        this.expanded.push(value);
+        this.bid = value;
+        await this.loadMoreContainers({
+          ...this.containerOptions,
+          page: 1
+        });
       }
     }
   }
@@ -599,10 +596,8 @@ export default class DetailBiddingDocument extends Vue {
     }
   }
 
-  @Watch("containerOptions", { deep: true })
-  async onContainerOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined" && this.bid) {
-      this.loading = true;
+  async loadMoreContainers(val: DataOptions) {
+    if (this.bid) {
       const _res = await getContainersByBid(this.bid.id as number, {
         page: val.page - 1,
         limit: val.itemsPerPage
@@ -612,6 +607,14 @@ export default class DetailBiddingDocument extends Vue {
         this.containers = _containers;
         this.containerServerSideOptions.totalItems = _res.data.totalElements;
       }
+    }
+  }
+
+  @Watch("containerOptions", { deep: true })
+  async onContainerOptionsChange(val: DataOptions, oldVal: DataOptions) {
+    if (typeof val != "undefined" && val.page != oldVal.page) {
+      this.loading = true;
+      await this.loadMoreContainers(val);
       this.loading = false;
     }
   }

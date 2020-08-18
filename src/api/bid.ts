@@ -31,8 +31,8 @@ export function createBid(id: number, bid: IBid) {
   return Vue.axios.post(`/bid/bidding-document/${id}`, bid);
 }
 
-export function addContainer(id: number, contId: number) {
-  return Vue.axios.post(`/bid/${id}/container/${contId}`);
+export function addContainers(id: number, request: object) {
+  return Vue.axios.post(`/bid/${id}/container`, request);
 }
 
 export function removeContainer(id: number, contId: number) {

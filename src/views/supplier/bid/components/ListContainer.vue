@@ -2,13 +2,13 @@
   <v-dialog v-model="dialogContainerSync">
     <v-card>
       <v-card-title class="headline">Danh sách Container</v-card-title>
-
+      <v-divider></v-divider>
       <v-card-text>
         <v-tabs background-color="white" color="deep-purple accent-4" left>
           <v-tab>Danh sách Inbound</v-tab>
-          <v-tab
+          <v-tab v-if="action == 'ADD'"
             >Danh sách Containers đã chọn ({{
-              selectedContainers.length
+              containersSelected.length
             }})</v-tab
           >
 
@@ -37,45 +37,40 @@
                 <template v-slot:item.pickUpTime="{ item }">
                   {{ formatDatetime(item.pickupTime) }}
                 </template>
-                <!-- Show containers expened -->
+                <!-- Show containerList expened -->
                 <template v-slot:expanded-item="{ headers }">
                   <td :colspan="headers.length" class="px-0">
                     <v-data-table
                       :headers="containerHeaders"
-                      :items="containers"
+                      :items="containerList"
                       item-key="id"
                       :loading="loading"
-                      :options.sync="options"
-                      no-data-text="Danh sách Container khả dụng rỗng."
-                      :server-items-length="serverSideOptions.totalItems"
+                      :options.sync="containerOptions"
+                      :server-items-length="
+                        containerServerSideOptions.totalItems
+                      "
                       :footer-props="{
                         'items-per-page-options':
-                          serverSideOptions.itemsPerPageItems
+                          containerServerSideOptions.itemsPerPageItems
                       }"
-                      :actions-append="options.page"
-                      disable-sort
+                      :actions-append="containerOptions.page"
+                      no-data-text="Danh sách Container khả dụng rỗng."
+                      v-model="containersSelected"
+                      :show-select="action == 'ADD'"
+                      @item-selected="selectContainer"
                       dark
                       dense
                     >
                       <template v-slot:item.actions="{ item }">
-                        <v-switch
-                          v-if="action == 'ADD'"
-                          v-model="selectedContainers"
-                          :value="item"
-                          @change="changeContainerServerSideOptions(item)"
-                          :loading="loading"
-                          light
-                        ></v-switch>
                         <v-btn
-                          class="ma-1"
-                          tile
+                          v-if="action == 'CHANGE' && container.id != item.id"
                           outlined
-                          color="primary"
+                          color="warning"
                           @click.stop="changeContainerBid(item)"
-                          small
-                          v-if="action == 'CHANGE'"
+                          dark
+                          x-small
                         >
-                          <v-icon left>add</v-icon> Đổi Cont
+                          <v-icon left dense>add</v-icon> Đổi Cont
                         </v-btn>
                       </template>
                     </v-data-table>
@@ -84,33 +79,19 @@
               </v-data-table>
             </v-container>
           </v-tab-item>
-          <v-tab-item>
+          <v-tab-item v-if="action == 'ADD'">
             <v-container fluid>
               <v-data-table
                 :headers="containerSelectedHeaders"
-                :items="selectedContainersList"
+                :items="containersSelected"
                 item-key="id"
-                :loading="loading"
-                :options.sync="containerOptions"
-                :server-items-length="containerServerSideOptions.totalItems"
-                :footer-props="{
-                  'items-per-page-options':
-                    containerServerSideOptions.itemsPerPageItems
-                }"
-                :actions-append="containerOptions.page"
+                hide-default-footer
+                no-data-text="Danh sách Container đã chọn rỗng."
                 disable-sort
+                v-model="containersSelected"
+                show-select
+                single-select
               >
-                <template v-slot:item.actions="{ item }">
-                  <v-switch
-                    v-model="selectedContainers"
-                    :value="item"
-                    :loading="loading"
-                    @change="
-                      changeContainerServerSideOptions(item);
-                      onContainerOptionsChange(containerOptions);
-                    "
-                  ></v-switch>
-                </template>
               </v-data-table>
             </v-container>
           </v-tab-item>
@@ -119,10 +100,10 @@
       <v-card-actions class="justify-space-between">
         <v-btn @click="dialogContainerSync = false">Trở về</v-btn>
         <v-btn
-          @click="dialogContainerSync = false"
+          @click="addContainersBid()"
           color="primary"
           v-if="action == 'ADD'"
-          >Hoàn tất</v-btn
+          >Thêm containers và Hoàn tất</v-btn
         >
       </v-card-actions>
     </v-card>
@@ -130,8 +111,6 @@
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync, Prop, Watch } from "vue-property-decorator";
-
-import { IBiddingDocument } from "@/entity/bidding-document";
 import { getContainersByInbound } from "@/api/container";
 import { getInboundsByOutboundAndForwarder } from "@/api/inbound";
 import { IContainer } from "@/entity/container";
@@ -139,7 +118,7 @@ import { IInbound } from "@/entity/inbound";
 import { IOutbound } from "@/entity/outbound";
 import { DataOptions } from "vuetify";
 import Utils from "@/mixin/utils";
-import { addContainer, replaceContainer, removeContainer } from "@/api/bid";
+import { addContainers, replaceContainer, removeContainer } from "@/api/bid";
 import { IBid } from "@/entity/bid";
 
 @Component({
@@ -147,33 +126,22 @@ import { IBid } from "@/entity/bid";
 })
 export default class ListContainer extends Vue {
   @PropSync("dialogContainer", { type: Boolean }) dialogContainerSync!: boolean;
-  @Prop(Object) biddingDocumentSelected!: IBiddingDocument;
+  @Prop(Object) outbound!: IOutbound;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
-  @PropSync("containersSelected", { type: Array })
-  containersSelectedSync!: Array<IContainer>;
-  @PropSync("listContainersSelected", { type: Array })
-  listContainersSelectedSync!: Array<IContainer>;
+  @PropSync("containers", { type: Array }) containersSync!: IContainer[];
   @Prop(String) action!: string;
   @Prop(Object) container!: IContainer;
   @Prop(Object) bid!: IBid;
+
   expanded: Array<IInbound> = [];
   singleExpand = true;
   unit = 0;
   selectedNumber = 0;
   inbounds: Array<IInbound> = [];
-  containers: Array<IContainer> = [];
-  selectedContainers: Array<IContainer> = [];
-  selectedContainersList: Array<IContainer> = [];
+  containerList: Array<IContainer> = [];
+  containersSelected: Array<IContainer> = [];
   inbound = null as IInbound | null;
   loading = true;
-  options = {
-    page: 1,
-    itemsPerPage: 5
-  } as DataOptions;
-  serverSideOptions = {
-    totalItems: 0,
-    itemsPerPageItems: [5, 10, 20, 50]
-  };
   inboundOptions = {
     page: 1,
     itemsPerPage: 5
@@ -197,19 +165,24 @@ export default class ListContainer extends Vue {
       sortable: false,
       value: "id"
     },
+    { text: "B/L No.", value: "billOfLading.number" },
     { text: "Hãng tàu", value: "shippingLine.companyName" },
     { text: "Loại cont", value: "containerType.name" },
-    { text: "Time lấy cont", value: "pickUpTime" },
-    { text: "B/L No.", value: "billOfLading.number" },
+    { text: "Thời gian lấy cont", value: "pickUpTime" },
     { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery.fullname" },
-    { text: "Số lượng cont đăng ký", value: "billOfLading.unit" }
+    { text: "Số cont đăng ký", value: "billOfLading.unit" }
   ];
   // Container form
   containerHeaders = [
     {
-      text: "Container No.",
+      text: "Mã",
       align: "start",
       sortable: false,
+      value: "id",
+      class: "elevation-1 primary"
+    },
+    {
+      text: "Container No.",
       value: "number",
       class: "elevation-1 primary"
     },
@@ -224,9 +197,16 @@ export default class ListContainer extends Vue {
       value: "tractor.licensePlate",
       class: "elevation-1 primary"
     },
+    { text: "Trạng thái", value: "status", class: "elevation-1 primary" },
     { text: "Hành động", value: "actions", class: "elevation-1 primary" }
   ];
   containerSelectedHeaders = [
+    {
+      text: "Mã",
+      align: "start",
+      sortable: false,
+      value: "id"
+    },
     {
       text: "Container No.",
       align: "start",
@@ -241,212 +221,139 @@ export default class ListContainer extends Vue {
     {
       text: "Đầu kéo",
       value: "tractor.licensePlate"
-    },
-    { text: "Chọn Cont", value: "actions" }
+    }
   ];
 
-  created() {
-    this.selectedContainers = this.listContainersSelectedSync;
-    this.selectedNumber = this.listContainersSelectedSync.length;
-    this.containerServerSideOptions.totalItems = this.listContainersSelectedSync.length;
-  }
-
-  async clicked(value: IInbound) {
-    if (this.singleExpand) {
-      if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
-        this.expanded.splice(0, this.expanded.length);
-        this.containers = [] as Array<IContainer>;
-      } else {
-        if (this.expanded.length > 0) {
-          this.expanded.splice(0, this.expanded.length);
-          this.containers = [] as Array<IContainer>;
-          this.expanded.push(value);
-          this.inbound = value;
-          this.onOptionsChange(this.options);
-        } else {
-          this.expanded.push(value);
-          this.inbound = value;
-        }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  selectContainer(select: any) {
+    select.item.isSelected = select.value;
+    if (this.bid && select.item.status == "CREATED") {
+      const _container = this.bid.containers as IContainer[];
+      const index = _container.findIndex(
+        (x: IContainer) => x.id === select.item.id
+      );
+      if (select.value == false && index != -1) {
+        this.bid.containers.splice(index, 1);
+      } else if (select.value && index == -1) {
+        this.bid.containers.push(select.item);
+      } else if (select.value && index != -1) {
+        this.bid.containers.splice(index, 1, select.item);
       }
     }
   }
 
-  async changeContainerServerSideOptions(item: IContainer) {
-    if (this.selectedContainers.length > this.selectedNumber) {
-      let check = false;
-      this.selectedContainers.forEach((x: IContainer) => {
-        if (x === item) {
-          check = true;
-        }
-      });
-      if (check === false) {
-        await this.removeContainer(item);
-      } else {
-        await this.createContainerBid(item);
-      }
-    } else {
-      await this.removeContainer(item);
-    }
-    this.onContainerOptionsChange(this.containerOptions);
-  }
-
-  async createContainerBid(item: IContainer) {
-    this.loading = true;
-    if (this.bid.id && item.id) {
-      const _res = await addContainer(this.bid.id, item.id);
-      if (_res.data) {
-        const _bid = _res.data.data;
-        const _containers: Array<IContainer> = _bid.containers as Array<
-          IContainer
-        >;
-        _containers.forEach((x: IContainer) => {
-          if (x.id == item.id) {
-            this.containersSelectedSync.unshift(x);
-            this.listContainersSelectedSync.unshift(x);
-          }
-        });
-        this.selectedContainers.forEach((x: IContainer) => {
-          if (x.id == item.id) {
-            x.status = "BIDDING";
-          }
-        });
-        this.containers.forEach((x: IContainer) => {
-          if (x.id == item.id) {
-            x.status = "BIDDING";
-          }
-        });
-        this.containerServerSideOptions.totalItems += 1;
-        this.totalItemsSync += 1;
-      } else {
-        const index = this.selectedContainers.findIndex(
-          (x: IContainer) => x.id == item.id
-        );
-        this.selectedContainers.splice(index, 1);
-      }
-    }
-    this.loading = false;
-  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // selectAllContainer(select: any) {
+  //   const _items = select.items as IContainer[];
+  //   _items.forEach(x => (x.isSelected = select.value));
+  //   if (this.bid) {
+  //     this.bid.containers.splice(0, this.bid.containers.length, ..._items);
+  //   }
+  // }
 
   async changeContainerBid(item: IContainer) {
-    if (this.bid.id && item.id) {
-      const _res = await replaceContainer(this.bid.id, {
+    if (this.bid) {
+      const _res = await replaceContainer(this.bid.id as number, {
         oldContainerId: this.container.id,
         newContainerId: item.id
       });
       if (_res.data) {
-        const _bid = _res.data.data;
-        const _containers: Array<IContainer> = _bid.containers as Array<
-          IContainer
-        >;
-        const index = this.containersSelectedSync.findIndex(
-          (x: IContainer) => x.id == this.container.id
-        );
-        const indexList = this.listContainersSelectedSync.findIndex(
-          (x: IContainer) => x.id == this.container.id
-        );
-        _containers.forEach((x: IContainer) => {
-          if (x.id == item.id) {
-            this.containersSelectedSync.splice(index, 1, x);
-            this.listContainersSelectedSync.splice(indexList, 1, x);
-          }
+        const index = this.containersSync.findIndex(x => x.id === item.id);
+        this.containersSync.splice(index, 1, {
+          ...item,
+          status: "BIDDING"
         });
         this.dialogContainerSync = false;
       }
     }
   }
 
-  async removeContainer(item: IContainer) {
-    this.loading = true;
-    if (item.id && this.bid.id) {
-      const _res = await removeContainer(this.bid.id, item.id);
+  async addContainersBid() {
+    if (this.bid) {
+      const _containers = this.bid.containers as IContainer[];
+      const _containersId = _containers.map(x => x.id) as number[];
+      const _res = await addContainers(this.bid.id as number, {
+        containers: _containersId
+      });
       if (_res.data) {
-        const _container = _res.data.data;
-        const index = this.containersSelectedSync.findIndex(
-          (x: IContainer) => x.id == item.id
-        );
-        this.containersSelectedSync.splice(index, 1);
-        const indexList = this.listContainersSelectedSync.findIndex(
-          (x: IContainer) => x.id == _container.id
-        );
-        this.listContainersSelectedSync.splice(indexList, 1);
+        _containers.forEach((x: IContainer) => this.containersSync.unshift(x));
+        this.totalItemsSync += _containers.length;
+        this.dialogContainerSync = false;
+      }
+    }
+  }
+
+  async removeContainer(item: IContainer) {
+    if (this.bid) {
+      const _res = await removeContainer(
+        this.bid.id as number,
+        item.id as number
+      );
+      if (_res.data) {
+        const index = this.containersSync.findIndex(x => x.id === item.id);
+        this.containersSync.splice(index, 1);
         this.totalItemsSync -= 1;
-        this.containerServerSideOptions.totalItems -= 1;
-      } else {
-        this.selectedContainers.push(item);
       }
     }
-    this.loading = false;
   }
 
-  @Watch("inboundOptions")
+  @Watch("inboundOptions", { immediate: true })
   async onInboundOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined") {
+    if (typeof val != "undefined" && this.outbound) {
       this.loading = true;
-      if (
-        this.biddingDocumentSelected &&
-        this.biddingDocumentSelected.outbound
-      ) {
-        const _outbound = this.biddingDocumentSelected.outbound as IOutbound;
-        this.unit = _outbound.booking.unit;
-        const _outboundId = _outbound.id as number;
-        const _res = await getInboundsByOutboundAndForwarder(_outboundId, {
+      const _res = await getInboundsByOutboundAndForwarder(
+        this.outbound.id as number,
+        {
           page: val.page - 1,
           limit: val.itemsPerPage
-        });
-        if (_res.data) {
-          const _inbounds = _res.data.data;
-          this.inbounds = _inbounds;
-          this.inboundServerSideOptions.totalItems = _res.data.totalElements;
         }
-        this.loading = false;
-      }
-    }
-  }
-
-  @Watch("options")
-  async onOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined") {
-      this.loading = true;
-      this.containers = [] as Array<IContainer>;
-      if (this.inbound && this.inbound.id) {
-        const _res = await getContainersByInbound(this.inbound.id, {
-          page: val.page - 1,
-          limit: val.itemsPerPage
-        });
-        if (_res.data) {
-          const _containers = _res.data.data;
-          _containers.forEach((x: IContainer) => {
-            if (x.status == "CREATED") {
-              this.containers.push(x);
-            } else {
-              this.selectedContainers.forEach((item: IContainer) => {
-                if (item.id == x.id) {
-                  this.containers.push(x);
-                }
-              });
-            }
-          });
-          this.serverSideOptions.totalItems = this.containers.length;
-        }
+      );
+      if (_res.data) {
+        const _inbounds = _res.data.data;
+        this.inbounds = _inbounds;
+        this.inboundServerSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }
   }
 
   @Watch("containerOptions")
-  async onContainerOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined") {
-      this.selectedContainersList = [] as Array<IContainer>;
+  async onContainerOptionsChange(val: DataOptions, oldVal: DataOptions) {
+    if (typeof val != "undefined" && val.page != oldVal.page) {
       this.loading = true;
-      const start = (val.page - 1) * val.itemsPerPage;
-      let end = start + val.itemsPerPage - 1;
-      if (end > this.selectedContainers.length - 1) {
-        end = this.selectedContainers.length - 1;
-      }
-      for (let i = start; i <= end; i++) {
-        this.selectedContainersList.push(this.selectedContainers[i]);
-      }
+      await this.loadMoreContainers(val);
       this.loading = false;
+    }
+  }
+
+  async clicked(value: IInbound) {
+    if (this.singleExpand) {
+      if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
+        this.expanded = [];
+        this.inbound = null;
+      } else {
+        if (this.expanded.length > 0) this.expanded = [];
+        this.expanded.push(value);
+        this.inbound = value;
+        await this.loadMoreContainers({
+          ...this.containerOptions,
+          page: 1
+        });
+      }
+    }
+  }
+
+  async loadMoreContainers(val: DataOptions) {
+    if (this.inbound) {
+      const _res = await getContainersByInbound(this.inbound.id as number, {
+        page: val.page - 1,
+        limit: val.itemsPerPage
+      });
+      if (_res.data) {
+        const _containers = _res.data.data;
+        this.containerList = _containers;
+        this.containerServerSideOptions.totalItems = _res.data.totalElements;
+      }
     }
   }
 }

@@ -129,18 +129,33 @@ export default class BorrowNotify extends Vue {
   async clicked(value: IShippingLineNotification) {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
-        this.expanded.splice(0, this.expanded.length);
+        this.expanded = [];
         this.shippingLineNotification = null;
       } else {
-        this.shippingInfoOptions.page = 1;
-        if (this.expanded.length > 0) {
-          this.expanded.splice(0, this.expanded.length);
-          this.expanded.push(value);
-          this.shippingLineNotification = value;
-        } else {
-          this.expanded.push(value);
-          this.shippingLineNotification = value;
+        if (this.expanded.length > 0) this.expanded = [];
+        this.expanded.push(value);
+        this.shippingLineNotification = value;
+        await this.loadMoreShippingInfo({
+          ...this.shippingInfoOptions,
+          page: 1
+        });
+      }
+    }
+  }
+
+  async loadMoreShippingInfo(val: DataOptions) {
+    if (this.shippingLineNotification) {
+      const _res = await getShippingInfosByCombined(
+        this.shippingLineNotification.relatedResource.id as number,
+        {
+          page: val.page - 1,
+          limit: val.itemsPerPage
         }
+      );
+      if (_res.data) {
+        const _shippingInfos = _res.data.data;
+        this.shippingInfos = _shippingInfos;
+        this.shippingInfoServerSideOptions.totalItems = _res.data.totalElements;
       }
     }
   }
@@ -163,21 +178,10 @@ export default class BorrowNotify extends Vue {
   }
 
   @Watch("shippingInfoOptions", { deep: true })
-  async onShippingInfoOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined" && this.shippingLineNotification) {
+  async onShippingInfoOptionsChange(val: DataOptions, oldVal: DataOptions) {
+    if (typeof val != "undefined" && val.page != oldVal.page) {
       this.loading = true;
-      const _res = await getShippingInfosByCombined(
-        this.shippingLineNotification.relatedResource.id as number,
-        {
-          page: val.page - 1,
-          limit: val.itemsPerPage
-        }
-      );
-      if (_res.data) {
-        const _shippingInfos = _res.data.data;
-        this.shippingInfos = _shippingInfos;
-        this.shippingInfoServerSideOptions.totalItems = _res.data.totalElements;
-      }
+      await this.loadMoreShippingInfo(val);
       this.loading = false;
     }
   }

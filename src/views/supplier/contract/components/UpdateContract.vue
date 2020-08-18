@@ -90,19 +90,19 @@ export default class UpdateContract extends Vue {
   @Prop(String) merchant!: string;
   @Prop(Object) combined!: ICombined;
 
-  contractLocal = {} as IContract;
+  contractLocal = null as IContract | null;
   valid = false;
 
   created() {
-    if (typeof this.contractSync != "undefined") {
+    if (this.contractSync) {
       this.contractLocal = Object.assign({}, this.contractSync);
     }
   }
 
   async updateContract() {
-    if (this.contractLocal.id) {
+    if (this.contractLocal) {
       const _res = await editContract(
-        this.contractLocal.id,
+        this.contractSync.id as number,
         this.contractLocal
       );
       if (_res.data) {

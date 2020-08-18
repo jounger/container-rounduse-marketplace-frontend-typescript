@@ -3,7 +3,7 @@
     <v-card class="ma-5">
       <CreateBid
         v-if="dialogAdd"
-        :biddingDocument.sync="biddingDocument"
+        :biddingDocument="biddingDocument"
         :dialogAdd.sync="dialogAdd"
         :biddingNotification="biddingNotification"
         :biddingNotifications.sync="biddingNotifications"
@@ -13,7 +13,6 @@
         :dialogConfirm.sync="dialogConfirm"
         :biddingNotifications.sync="biddingNotifications"
         :totalItems.sync="serverSideOptions.totalItems"
-        :biddingDocument="biddingDocument"
         :biddingNotification="biddingNotification"
       />
       <v-data-table
@@ -106,8 +105,8 @@ import ConfirmBid from "./ConfirmBid.vue";
 })
 export default class InvitedNotify extends Vue {
   biddingNotifications: Array<IBiddingNotification> = [];
-  biddingNotification = {} as IBiddingNotification;
-  biddingDocument = {} as IBiddingDocument;
+  biddingNotification = null as IBiddingNotification | null;
+  biddingDocument = null as IBiddingDocument | null;
   dialogAdd = false;
   dialogConfirm = false;
   loading = true;

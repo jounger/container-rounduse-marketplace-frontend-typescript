@@ -3,7 +3,6 @@
     <v-card class="ma-5">
       <CreateBid
         v-if="dialogAdd"
-        :bid.sync="bid"
         :biddingDocument.sync="biddingDocument"
         :bids.sync="bids"
         :dialogAdd.sync="dialogAdd"
@@ -11,9 +10,8 @@
       />
       <UpdateBid
         v-if="dialogEdit"
-        :bid.sync="bid"
-        :bids.sync="bids"
-        :biddingDocument.sync="biddingDocument"
+        :bid="bid"
+        :biddingDocument="biddingDocument"
         :dialogEdit.sync="dialogEdit"
       />
       <v-row justify="center">
@@ -70,6 +68,9 @@
         <template v-slot:item.bidFloorPrice="{ item }">
           {{ currencyFormatter(item.bidFloorPrice) }}
         </template>
+        <template v-slot:item.isMultipleAward="{ item }">
+          {{ item.isMultipleAward ? "Có" : "Không" }}
+        </template>
         <template v-slot:item.actions="{ item }">
           <v-btn
             class="ma-1"
@@ -88,8 +89,14 @@
             <v-data-table
               :headers="bidHeaders"
               :items="bids"
-              :hide-default-footer="true"
+              :loading="loading"
               no-data-text="Danh sách Hồ sơ dự thầu rỗng."
+              :options.sync="bidOptions"
+              :server-items-length="bidServerSideOptions.totalItems"
+              :footer-props="{
+                'items-per-page-options': bidServerSideOptions.itemsPerPageItems
+              }"
+              hide-default-footer
               disable-sort
               dense
               dark
@@ -101,20 +108,7 @@
                 {{ formatDatetime(item.bidValidityPeriod) }}
               </template>
               <template v-slot:item.status="{ item }">
-                <v-chip
-                  :style="
-                    item.status == 'ACCEPTED'
-                      ? 'background-color:green'
-                      : item.status == 'REJECTED'
-                      ? 'background-color:red'
-                      : item.status == 'EXPIRED'
-                      ? 'background-color:gray'
-                      : 'background-color:blue'
-                  "
-                  dark
-                  x-small
-                  >{{ item.status }}</v-chip
-                >
+                <v-chip dark x-small>{{ item.status }}</v-chip>
               </template>
               <template v-slot:item.actions="{ item }">
                 <v-icon
@@ -182,6 +176,14 @@ export default class Bid extends Vue {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
+  bidOptions = {
+    page: 1,
+    itemsPerPage: 5
+  } as DataOptions;
+  bidServerSideOptions = {
+    totalItems: 0,
+    itemsPerPageItems: [5, 10, 20, 50]
+  };
   headers = [
     {
       text: "Mã",
@@ -237,40 +239,42 @@ export default class Bid extends Vue {
     });
   }
 
-  async getBids(item: IBiddingDocument) {
-    this.loading = true;
-    const _res = await getBidsByBiddingDocument(item.id as number, {
-      page: 0,
-      limit: 10
-    });
-    if (_res.data) {
-      const _bids = _res.data.data;
-      if (this.bids.length == 0) {
-        this.bids.push(_bids[0]);
-      } else {
-        this.bids.splice(0, 1, _bids[0]);
+  async loadMoreBids(val: DataOptions) {
+    if (this.biddingDocument) {
+      const _res = await getBidsByBiddingDocument(
+        this.biddingDocument.id as number,
+        {
+          page: val.page - 1,
+          limit: val.itemsPerPage
+        }
+      );
+      if (_res.data) {
+        const _bids = _res.data.data;
+        this.bids = _bids;
+        this.bidServerSideOptions.totalItems = _res.data.totalElements;
       }
     }
-    this.loading = false;
-    return this.bids;
   }
 
   async clicked(value: IBiddingDocument) {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
-        this.expanded.splice(0, this.expanded.length);
-        this.biddingDocument = {} as IBiddingDocument;
+        this.expanded = [];
+        this.biddingDocument = null;
       } else {
-        this.expanded.splice(0, this.expanded.length);
-        await this.getBids(value);
+        if (this.expanded.length > 0) this.expanded = [];
         this.expanded.push(value);
         this.biddingDocument = value;
+        await this.loadMoreBids({
+          ...this.bidOptions,
+          page: 1
+        });
       }
     }
   }
 
   openCreateDialog() {
-    this.biddingDocument = {} as IBiddingDocument;
+    this.biddingDocument = null;
     this.dialogAdd = true;
   }
 
@@ -285,6 +289,15 @@ export default class Bid extends Vue {
     if (new Date().getTime() - new Date(item.bidValidityPeriod).getTime() > 0) {
       this.bid = item;
       this.dialogCancel = true;
+    }
+  }
+
+  @Watch("bidOptions")
+  async onBidOptionsChange(val: DataOptions, oldVal: DataOptions) {
+    if (typeof val != "undefined" && val.page != oldVal.page) {
+      this.loading = true;
+      await this.loadMoreBids(val);
+      this.loading = false;
     }
   }
 

@@ -218,7 +218,7 @@ export default class Inbound extends Vue {
     itemsPerPageItems: [5, 10, 20, 50]
   };
   containerOptions = {
-    page: 0,
+    page: 1,
     itemsPerPage: 5
   } as DataOptions;
   containerServerSideOptions = {
@@ -300,10 +300,8 @@ export default class Inbound extends Vue {
     this.dialogDelCont = true;
   }
 
-  @Watch("containerOptions", { deep: true })
-  async onContainerOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined" && this.inbound) {
-      this.loading = true;
+  async loadMoreContainers(val: DataOptions) {
+    if (this.inbound) {
       const _res = await getContainersByInbound(this.inbound.id as number, {
         page: val.page - 1,
         limit: val.itemsPerPage
@@ -313,6 +311,14 @@ export default class Inbound extends Vue {
         this.containers = _containers;
         this.containerServerSideOptions.totalItems = _res.data.totalElements;
       }
+    }
+  }
+
+  @Watch("containerOptions")
+  async onContainerOptionsChange(val: DataOptions, oldVal: DataOptions) {
+    if (typeof val != "undefined" && val.page != oldVal.page) {
+      this.loading = true;
+      await this.loadMoreContainers(val);
       this.loading = false;
     }
   }
@@ -337,18 +343,16 @@ export default class Inbound extends Vue {
   async clicked(value: IInbound) {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
-        this.expanded.splice(0, this.expanded.length);
+        this.expanded = [];
         this.inbound = null;
       } else {
-        this.containerOptions.page = 1;
-        if (this.expanded.length > 0) {
-          this.expanded.splice(0, this.expanded.length);
-          this.expanded.push(value);
-          this.inbound = value;
-        } else {
-          this.expanded.push(value);
-          this.inbound = value;
-        }
+        if (this.expanded.length > 0) this.expanded = [];
+        this.expanded.push(value);
+        this.inbound = value;
+        await this.loadMoreContainers({
+          ...this.containerOptions,
+          page: 1
+        });
       }
     }
   }

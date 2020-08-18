@@ -10,22 +10,20 @@
       <ListContainer
         v-if="dialogContainer"
         :dialogContainer.sync="dialogContainer"
-        :biddingDocumentSelected="biddingDocumentSelected"
-        :bid.sync="bidSync"
+        :outbound="biddingDocument.outbound"
+        :bid.sync="bid"
         :action="action"
         :container="container"
-        :containersSelected.sync="containersSelected"
+        :containers.sync="containers"
         :totalItems.sync="containerServerSideOptions.totalItems"
-        :listContainersSelected.sync="containers"
       />
       <ConfirmContainer
         v-if="dialogConfirm"
         :dialogConfirm.sync="dialogConfirm"
+        :bid.sync="bid"
         :container="container"
-        :bid.sync="bidSync"
-        :containersSelected.sync="containersSelected"
+        :containers.sync="containers"
         :totalItems.sync="containerServerSideOptions.totalItems"
-        :listContainersSelected.sync="containers"
       />
       <!-- TITLE -->
       <v-toolbar dark color="primary">
@@ -43,17 +41,9 @@
           </v-stepper-step>
           <v-stepper-content step="1">
             <v-data-table
-              :headers="headers"
+              :headers="biddingDocumentHeaders"
               :items="biddingDocuments"
               item-key="id"
-              :loading="loading"
-              :options.sync="biddingDocumentOptions"
-              :server-items-length="biddingDocumentServerSideOptions.totalItems"
-              :footer-props="{
-                'items-per-page-options':
-                  biddingDocumentServerSideOptions.itemsPerPageItems
-              }"
-              :actions-append="biddingDocumentOptions.page"
               no-data-text="Danh sách HSMT đã chọn rỗng."
               disable-sort
               class="elevation-0 mb-1"
@@ -84,22 +74,21 @@
             <small>Thông tin chung</small>
           </v-stepper-step>
           <v-stepper-content step="2">
-            <v-form ref="bidForm" v-model="valid" lazy-validation>
+            <v-form
+              ref="bidForm"
+              v-model="valid"
+              lazy-validation
+              v-if="bidLocal"
+            >
               <v-text-field
                 v-model="bidLocal.bidPrice"
                 :hint="currencyFormatter(bidLocal.bidPrice)"
                 prepend-icon="monetization_on"
-                v-if="biddingDocumentSelected"
+                v-if="biddingDocument"
                 type="number"
                 :rules="[
-                  minNumber(
-                    'Giá gửi thầu',
-                    biddingDocumentSelected.bidFloorPrice
-                  ),
-                  maxNumber(
-                    'Giá gửi thầu',
-                    biddingDocumentSelected.bidPackagePrice
-                  )
+                  minNumber('Giá gửi thầu', biddingDocument.bidFloorPrice),
+                  maxNumber('Giá gửi thầu', biddingDocument.bidPackagePrice)
                 ]"
                 label="Giá gửi thầu"
               ></v-text-field>
@@ -119,7 +108,7 @@
             <v-container fluid>
               <v-data-table
                 :headers="containerSelectedHeaders"
-                :items="containersSelected"
+                :items="containers"
                 item-key="id"
                 :loading="loading"
                 :options.sync="containerOptions"
@@ -142,9 +131,10 @@
                     <v-spacer></v-spacer>
                     <v-btn
                       v-if="
-                        biddingDocumentSelected &&
-                          biddingDocumentSelected.isMultipleAward &&
-                          containerServerSideOptions.totalItems < unit
+                        biddingDocument &&
+                          biddingDocument.isMultipleAward &&
+                          containerServerSideOptions.totalItems <
+                            biddingDocument.outbound.booking.unit
                       "
                       color="primary"
                       dark
@@ -168,7 +158,7 @@
                         <v-icon>mdi-dots-vertical</v-icon>
                       </v-btn>
                     </template>
-                    <v-list>
+                    <v-list dense>
                       <v-list-item @click="openChangeDialog(item)">
                         <v-list-item-icon>
                           <v-icon small>edit</v-icon>
@@ -180,7 +170,7 @@
                       <v-list-item
                         @click="openDeleteDialog(item)"
                         v-if="
-                          biddingDocumentSelected.isMultipleAward &&
+                          biddingDocument.isMultipleAward &&
                             containers.length > 0
                         "
                       >
@@ -199,23 +189,19 @@
               </v-data-table>
             </v-container>
             <v-btn
-              v-if="
-                biddingDocumentSelected &&
-                  biddingDocumentSelected.isMultipleAward
-              "
+              v-if="biddingDocument && biddingDocument.isMultipleAward"
               color="primary"
               @click="dialogEditSync = false"
               :disabled="containers.length == 0"
               >Hoàn tất</v-btn
             >
             <v-btn
-              v-if="
-                biddingDocumentSelected &&
-                  !biddingDocumentSelected.isMultipleAward
-              "
+              v-if="biddingDocument && biddingDocument.isMultipleAward == false"
               color="primary"
               @click="dialogEditSync = false"
-              :disabled="containers.length < unit"
+              :disabled="
+                containers.length < biddingDocument.outbound.booking.unit
+              "
               >Hoàn tất</v-btn
             >
             <v-btn text @click="stepper = 2">Quay lại</v-btn>
@@ -227,19 +213,19 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync, Watch } from "vue-property-decorator";
+import { Component, Vue, PropSync, Watch, Prop } from "vue-property-decorator";
 import { IBid } from "@/entity/bid";
 import { IContainer } from "@/entity/container";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
 import { IBiddingDocument } from "@/entity/bidding-document";
-import { isEmptyObject, addTimeToDate } from "@/utils/tool";
+import { addTimeToDate } from "@/utils/tool";
 
 import { DataOptions } from "vuetify";
 import ListContainer from "./ListContainer.vue";
 import { editBid } from "@/api/bid";
 import ConfirmContainer from "./ConfirmContainer.vue";
-import { IOutbound } from "@/entity/outbound";
+import { getContainersByBid } from "@/api/container";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -248,30 +234,19 @@ import { IOutbound } from "@/entity/outbound";
     ConfirmContainer
   }
 })
-export default class Update extends Vue {
+export default class UpdateBid extends Vue {
   @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
-  @PropSync("biddingDocument", { type: Object })
-  biddingDocumentSync!: IBiddingDocument;
-  @PropSync("bids", { type: Array }) bidsSync!: Array<IBid>;
-  @PropSync("bid", { type: Object }) bidSync!: IBid;
+  @Prop() biddingDocument!: IBiddingDocument;
+  @Prop() bid!: IBid;
 
   biddingDocuments: Array<IBiddingDocument> = [];
-  biddingDocumentSelected = null as IBiddingDocument | null;
   container = null as IContainer | null;
   action = "";
   dialogConfirm = false;
   dateInit = addTimeToDate(new Date().toString());
-  bidLocal = {} as IBid;
+  bidLocal = null as IBid | null;
   dialogContainer = false;
   loading = true;
-  biddingDocumentOptions = {
-    page: 1,
-    itemsPerPage: 5
-  } as DataOptions;
-  biddingDocumentServerSideOptions = {
-    totalItems: 0,
-    itemsPerPageItems: [5, 10, 20, 50]
-  };
   containerOptions = {
     page: 1,
     itemsPerPage: 5
@@ -282,19 +257,18 @@ export default class Update extends Vue {
   };
   // Form validate
   editable = true;
-  unit = 0;
   stepper = 1;
   valid = true;
   // Inbound
   containers: Array<IContainer> = [];
-  containersSelected: Array<IContainer> = [];
-  headers = [
+  biddingDocumentHeaders = [
     {
       text: "Mã",
       align: "start",
       sortable: false,
       value: "id"
     },
+    { text: "Bên mời thầu", value: "offeree.companyName" },
     { text: "Hãng tàu", value: "outbound.shippingLine.companyName" },
     { text: "Loại cont", value: "outbound.containerType.name" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
@@ -305,9 +279,13 @@ export default class Update extends Vue {
   ];
   containerSelectedHeaders = [
     {
-      text: "Container No.",
+      text: "Mã",
       align: "start",
       sortable: false,
+      value: "id"
+    },
+    {
+      text: "Container No.",
       value: "number"
     },
     { text: "Tài xế", value: "driver.fullname" },
@@ -318,6 +296,10 @@ export default class Update extends Vue {
     {
       text: "Đầu kéo",
       value: "tractor.licensePlate"
+    },
+    {
+      text: "Trạng thái",
+      value: "status"
     },
     { text: "Hành động", value: "actions" }
   ];
@@ -338,61 +320,39 @@ export default class Update extends Vue {
     this.dialogConfirm = true;
   }
 
-  @Watch("biddingDocumentOptions")
-  async onBiddingDocumentOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined") {
-      this.loading = true;
-      this.biddingDocuments = [] as Array<IBiddingDocument>;
-      if (
-        this.biddingDocumentSync &&
-        !isEmptyObject(this.biddingDocumentSync)
-      ) {
-        this.biddingDocuments.push(this.biddingDocumentSync);
-        this.biddingDocumentSelected = this.biddingDocumentSync;
-        const _outbound = this.biddingDocumentSelected.outbound as IOutbound;
-        this.unit = _outbound.booking.unit;
-        this.biddingDocumentServerSideOptions.totalItems = 1;
-        this.loading = false;
-      }
-      this.loading = false;
-    }
-  }
-
-  @Watch("containerOptions")
+  @Watch("containerOptions", { immediate: true })
   async onContainerOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined") {
-      this.containersSelected = [] as Array<IContainer>;
+    if (typeof val != "undefined" && this.bid) {
       this.loading = true;
-      const start = (val.page - 1) * val.itemsPerPage;
-      let end = start + val.itemsPerPage - 1;
-      if (end > this.containers.length - 1) {
-        end = this.containers.length - 1;
+      const _res = await getContainersByBid(this.bid.id as number, {
+        page: val.page - 1,
+        limit: val.itemsPerPage
+      });
+      if (_res.data) {
+        const _containers = _res.data.data;
+        this.containers = _containers;
+        this.containerServerSideOptions.totalItems = _res.data.totalElements;
       }
-      for (let i = start; i <= end; i++) {
-        this.containersSelected.push(this.containers[i]);
-      }
-
       this.loading = false;
     }
-  }
-
-  created() {
-    this.bidLocal = Object.assign({}, this.bidSync);
-    this.containers = this.bidLocal.containers as Array<IContainer>;
-    this.containerServerSideOptions.totalItems = this.bidLocal.containers.length;
   }
 
   async updateBid() {
-    if (this.bidSync.id) {
-      const _res = await editBid(this.bidSync.id, {
+    if (this.bid && this.bidLocal) {
+      const _res = await editBid(this.bid.id as number, {
         bidPrice: this.bidLocal.bidPrice
       });
       if (_res.data) {
         const _bid = _res.data.data;
-        this.bidSync = _bid;
+        this.bid = _bid;
         this.stepper = 3;
       }
     }
+  }
+
+  mounted() {
+    this.bidLocal = Object.assign({}, this.bid);
+    this.biddingDocuments.push(this.biddingDocument);
   }
 }
 </script>

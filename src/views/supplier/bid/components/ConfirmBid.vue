@@ -14,7 +14,7 @@
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title>{{
-                    biddingDocument.id
+                    biddingNotification.relatedResource.id
                   }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -40,16 +40,18 @@ import { editBiddingNotifications } from "@/api/notification";
 export default class ConfirmBid extends Vue {
   @PropSync("dialogConfirm", { type: Boolean }) dialogConfirmSync!: boolean;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
-  @Prop(Object) biddingDocument!: IBiddingDocument;
   @Prop(Object) biddingNotification!: IBiddingNotification;
   @PropSync("biddingNotifications", { type: Array })
   biddingNotificationsSync!: Array<IBiddingDocument>;
 
   async confirmBid() {
-    if (this.biddingNotification.id) {
-      const _res = await editBiddingNotifications(this.biddingNotification.id, {
-        isHide: true
-      });
+    if (this.biddingNotification) {
+      const _res = await editBiddingNotifications(
+        this.biddingNotification.id as number,
+        {
+          isHide: true
+        }
+      );
       if (_res.data) {
         const _biddingNofitication = _res.data.data;
         const index = this.biddingNotificationsSync.findIndex(
