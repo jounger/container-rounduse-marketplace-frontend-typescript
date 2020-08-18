@@ -84,6 +84,16 @@
                 </v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item>
+              <v-list-item-icon>
+                <v-icon>lock</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>{{
+                  "Nhiều thầu thắng: " + biddingDocument.isMultipleAward
+                }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
           </v-list>
 
           <v-list dense>
@@ -344,13 +354,9 @@
               tile
               outlined
               color="success"
-              @click="openConfirmBid(item, true)"
+              @click.stop="openConfirmBid(item, true)"
               v-if="item.status == 'PENDING' && $auth.check('ROLE_MERCHANT')"
-              :disabled="
-                biddingDocument.isMultipleAward &&
-                  bid &&
-                  bid.containers.filter(x => x.isSelected).length <= 0
-              "
+              :disabled="isDisableConfirm(item)"
             >
               <v-icon left dense>library_add_check </v-icon>Đồng ý
             </v-btn>
@@ -400,6 +406,7 @@
                 dark
                 dense
               >
+                <template v-slot:header.data-table-select> </template>
                 <template v-slot:item.status="{ item }">
                   <v-chip
                     :color="item.status == 'COMBINED' ? 'success' : 'info'"
@@ -535,6 +542,19 @@ export default class DetailBiddingDocument extends Vue {
     { text: "Trạng thái", value: "status", class: "primary" }
   ];
 
+  isDisableConfirm(item: IBid) {
+    if (this.biddingDocument) {
+      if (this.biddingDocument.isMultipleAward) {
+        if (this.bid == null) return true;
+        if (this.bid.id != item.id) return true;
+        const _containers = this.bid.containers as IContainer[];
+        return _containers.filter(x => x.isSelected).length <= 0;
+      }
+      return false;
+    }
+    return true;
+  }
+
   openConfirmBid(item: IBid, accept: boolean) {
     this.bid = item;
     if (accept) this.dialogAddCombined = true;
@@ -572,8 +592,12 @@ export default class DetailBiddingDocument extends Vue {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
         this.expanded = [];
+        this.bid = null;
       } else {
-        if (this.expanded.length > 0) this.expanded = [];
+        if (this.expanded.length > 0) {
+          this.expanded = [];
+          this.bid = null;
+        }
         this.expanded.push(value);
         this.bid = value;
         await this.loadMoreContainers({

@@ -61,6 +61,7 @@
                       dark
                       dense
                     >
+                      <template v-slot:header.data-table-select> </template>
                       <template v-slot:item.actions="{ item }">
                         <v-btn
                           v-if="action == 'CHANGE' && container.id != item.id"
