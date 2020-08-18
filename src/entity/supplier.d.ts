@@ -5,6 +5,7 @@ export interface ISupplier extends IUser {
   companyCode: string;
   companyDescription?: string;
   companyAddress: string;
+  brcScanPath?: string;
   tin: string;
   fax: string;
   ratingValue?: number;

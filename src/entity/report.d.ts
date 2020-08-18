@@ -1,9 +1,9 @@
 import { IBiddingDocument } from "./bidding-document";
-import { IUser } from "./user";
+import { ISupplier } from './supplier';
 export interface IReport {
   id?: number;
-  sender: IUser | string;
-  report: number | IBiddingDocument;
+  sender: ISupplier | string;
+  report: IBiddingDocument | number;
   title: string;
   detail: string;
   status: string;

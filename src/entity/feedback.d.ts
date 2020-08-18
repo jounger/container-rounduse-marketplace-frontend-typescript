@@ -1,7 +1,8 @@
+import { IUser } from './user';
 export interface IFeedback {
   id?: number;
-  sender: string;
-  recipient: string;
+  sender: IUser | string;
+  recipient: IUser | string;
   message: string;
   satisfactionPoints: number;
   sendDate: string;

@@ -344,14 +344,12 @@
               tile
               outlined
               color="success"
-              @click.stop="openConfirmBid(item, true)"
+              @click="openConfirmBid(item, true)"
               v-if="item.status == 'PENDING' && $auth.check('ROLE_MERCHANT')"
               :disabled="
                 biddingDocument.isMultipleAward &&
-                  (bid == null ||
-                    (bid &&
-                      (bid.containers.filter(x => x.isSelected).length <= 0 ||
-                        bid.id != item.id)))
+                  bid &&
+                  bid.containers.filter(x => x.isSelected).length <= 0
               "
             >
               <v-icon left dense>library_add_check </v-icon>Đồng ý
@@ -396,7 +394,7 @@
                 }"
                 :actions-append="containerOptions.page"
                 v-model="containerSelected"
-                :show-select="$auth.check('ROLE_MODERATOR')"
+                :show-select="$auth.check('ROLE_MERCHANT')"
                 @item-selected="selectContainer"
                 disable-sort
                 dark
@@ -424,6 +422,7 @@
                     containerServerSideOptions.itemsPerPageItems
                 }"
                 :actions-append="containerOptions.page"
+                :show-select="biddingDocument.isMultipleAward"
                 disable-sort
                 dark
                 dense
@@ -509,7 +508,6 @@ export default class DetailBiddingDocument extends Vue {
       value: "id"
     },
     { text: "Đối tác", value: "bidder.companyName" },
-    { text: "Cont qty", value: "containers.length" },
     { text: "Giá thầu", value: "bidPrice" },
     { text: "Ngày thầu", value: "bidDate" },
     { text: "Hành động", value: "actions" }
@@ -573,8 +571,7 @@ export default class DetailBiddingDocument extends Vue {
   async clicked(value: IBid) {
     if (this.singleExpand) {
       if (this.expanded.length > 0 && this.expanded[0].id === value.id) {
-        this.expanded.splice(0, this.expanded.length);
-        this.bid = null;
+        this.expanded = [];
       } else {
         if (this.expanded.length > 0) this.expanded = [];
         this.expanded.push(value);

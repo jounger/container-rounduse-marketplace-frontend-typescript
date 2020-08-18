@@ -95,7 +95,9 @@
               <v-btn color="primary" @click="stepper = 3" :disabled="!valid"
                 >Tiếp tục</v-btn
               >
-              <v-btn text @click="stepper = 1">Quay lại</v-btn>
+              <v-btn text @click="stepper = 1" v-if="isMultipleAward"
+                >Quay lại</v-btn
+              >
             </v-form>
           </v-stepper-content>
           <!-- FINISH -->
@@ -257,9 +259,9 @@ export default class CreateCombined extends Vue {
   }
 
   created() {
-    // TODO: API get Outbound
     this.merchant = this.$auth.user().fullname;
     this.forwarder = this.bidSync.bidder as IForwarder;
+    this.stepper = this.isMultipleAward ? 1 : 2;
   }
 }
 </script>
