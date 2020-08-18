@@ -228,11 +228,13 @@ export default class Notification extends Vue {
     this.connected = true;
     console.log("onConnected", frame);
     this.notificationSubscribe.forEach(x => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      this.stompClient.subscribe(`/user${x}`, (tick: any) => {
-        this.notifications.unshift(JSON.parse(tick.body));
-        this.messageCount += 1;
-      });
+      if (this.stompClient) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this.stompClient.subscribe(`/user${x}`, (tick: any) => {
+          this.notifications.unshift(JSON.parse(tick.body));
+          this.messageCount += 1;
+        });
+      }
     });
   }
 
