@@ -1,10 +1,8 @@
 <template>
-  <v-app-bar app>
+  <v-app-bar app color="primary" dark>
     <v-app-bar-nav-icon @click.stop="changeDrawer()"></v-app-bar-nav-icon>
-    <router-link to="/" class="home"
-      ><v-toolbar-title
-        >Container Round-use Marketplace</v-toolbar-title
-      ></router-link
+    <v-btn text to="/"
+      ><v-toolbar-title>Container Round-use Marketplace</v-toolbar-title></v-btn
     >
     <v-spacer></v-spacer>
     <Notification />
@@ -12,7 +10,7 @@
       <template v-slot:activator="{ on, attrs }">
         <v-btn text v-bind="attrs" v-on="on" color="rgba(0,0,0,0)">
           <v-list-item dense>
-            <v-list-item-avatar color="indigo">
+            <v-list-item-avatar color="tertiary">
               <v-img
                 v-if="$auth.user().profileImagePath"
                 :src="$auth.user().profileImagePath"
@@ -38,6 +36,7 @@
           :key="item.title"
           :to="item.link"
           link
+          color="primary"
         >
           <v-list-item-icon>
             <v-icon small>{{ item.icon }}</v-icon>
@@ -86,11 +85,3 @@ export default class Appbar extends Vue {
   }
 }
 </script>
-<style lang="css" scopedSlots>
-.home {
-  text-decoration: none;
-}
-.home div {
-  color: #000 !important;
-}
-</style>

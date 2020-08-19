@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialogAddSync" max-width="600">
     <v-card>
-      <v-card-title class="headline">Thêm mới Chứng cứ</v-card-title>
+      <v-card-title class="headline">Tải lên file hợp đồng</v-card-title>
       <v-card-text>
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>

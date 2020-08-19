@@ -80,7 +80,7 @@
             @click.stop="openBiddingDocumentDetail(item)"
             small
           >
-            <v-icon left dense>details</v-icon> Chi tiết
+            <v-icon left dense>remove_red_eye</v-icon> Chi tiết
           </v-btn>
         </template>
         <!-- Show Bids expened -->
@@ -99,7 +99,6 @@
               hide-default-footer
               disable-sort
               dense
-              dark
             >
               <template v-slot:item.bidDate="{ item }">
                 {{ formatDatetime(item.bidDate) }}
@@ -108,7 +107,7 @@
                 {{ formatDatetime(item.bidValidityPeriod) }}
               </template>
               <template v-slot:item.status="{ item }">
-                <v-chip dark x-small>{{ item.status }}</v-chip>
+                <ChipStatus :status="item.status" :sub="true" />
               </template>
               <template v-slot:item.actions="{ item }">
                 <v-icon
@@ -148,13 +147,15 @@ import UpdateBid from "./components/UpdateBid.vue";
 import CancelBid from "./components/CancelBid.vue";
 import { DataOptions } from "vuetify";
 import { getBidsByBiddingDocument } from "@/api/bid";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
   mixins: [Utils],
   components: {
     CreateBid,
     UpdateBid,
-    CancelBid
+    CancelBid,
+    ChipStatus
   }
 })
 export default class Bid extends Vue {
@@ -210,27 +211,22 @@ export default class Bid extends Vue {
       align: "start",
       sortable: false,
       value: "id",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
     {
       text: "Số lượng Cont",
       value: "containers.length",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
-    { text: "Giá thầu", value: "bidPrice", class: "elevation-1 primary" },
-    { text: "Ngày thầu", value: "bidDate", class: "elevation-1 primary" },
+    { text: "Giá thầu", value: "bidPrice", class: "tertiary" },
+    { text: "Ngày thầu", value: "bidDate", class: "tertiary" },
     {
       text: "Hiệu lực",
       value: "bidValidityPeriod",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
-    { text: "Trạng thái", value: "status", class: "elevation-1 primary" },
-    {
-      text: "Hành động",
-      value: "actions",
-      sortable: false,
-      class: "elevation-1 primary"
-    }
+    { text: "Trạng thái", value: "status", class: "tertiary" },
+    { text: "Hành động", value: "actions" }
   ];
 
   openBiddingDocumentDetail(value: IBiddingDocument) {

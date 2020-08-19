@@ -30,9 +30,10 @@
           :key="i"
           link
           :to="child.link"
+          color="primary"
         >
           <v-list-item-action v-if="child.icon">
-            <v-icon>{{ child.icon }}</v-icon>
+            <v-icon color="primary">{{ child.icon }}</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>
@@ -41,9 +42,15 @@
           </v-list-item-content>
         </v-list-item>
       </v-list-group>
-      <v-list-item v-else :key="item.title" link :to="item.link">
+      <v-list-item
+        v-else
+        :key="item.title"
+        link
+        :to="item.link"
+        color="primary"
+      >
         <v-list-item-action>
-          <v-icon>{{ item.icon }}</v-icon>
+          <v-icon color="primary">{{ item.icon }}</v-icon>
         </v-list-item-action>
         <v-list-item-content>
           <v-list-item-title>

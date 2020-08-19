@@ -48,9 +48,7 @@
           </v-toolbar>
         </template>
         <template v-slot:item.status="{ item }">
-          <v-chip :color="item.status == 'ACTIVE' ? 'success' : 'error'" dark>{{
-            item.status
-          }}</v-chip>
+          <ChipStatus :status="item.status" />
         </template>
         <template v-slot:item.actions="{ item }">
           <v-menu :close-on-click="true">
@@ -102,11 +100,13 @@ import DeleteDriver from "./components/DeleteDriver.vue";
 import CreateDriver from "./components/CreateDriver.vue";
 import { getDriversByForwarder } from "@/api/driver";
 import { DataOptions } from "vuetify";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
   components: {
     CreateDriver,
-    DeleteDriver
+    DeleteDriver,
+    ChipStatus
   }
 })
 export default class Driver extends Vue {

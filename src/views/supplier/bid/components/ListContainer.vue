@@ -58,7 +58,6 @@
                       v-model="containersSelected"
                       :show-select="action == 'ADD'"
                       @item-selected="selectContainer"
-                      dark
                       dense
                     >
                       <template v-slot:header.data-table-select> </template>
@@ -180,26 +179,26 @@ export default class ListContainer extends Vue {
       align: "start",
       sortable: false,
       value: "id",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
     {
       text: "Container No.",
       value: "number",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
-    { text: "Tài xế", value: "driver.fullname", class: "elevation-1 primary" },
+    { text: "Tài xế", value: "driver.fullname", class: "tertiary" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
     {
       text: "Đầu kéo",
       value: "tractor.licensePlate",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
-    { text: "Trạng thái", value: "status", class: "elevation-1 primary" },
-    { text: "Hành động", value: "actions", class: "elevation-1 primary" }
+    { text: "Trạng thái", value: "status", class: "tertiary" },
+    { text: "Hành động", value: "actions", class: "tertiary" }
   ];
   containerSelectedHeaders = [
     {
@@ -210,8 +209,6 @@ export default class ListContainer extends Vue {
     },
     {
       text: "Container No.",
-      align: "start",
-      sortable: false,
       value: "number"
     },
     { text: "Tài xế", value: "driver.fullname" },

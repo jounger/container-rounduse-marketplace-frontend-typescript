@@ -48,9 +48,7 @@
           </v-toolbar>
         </template>
         <template v-slot:item.status="{ item }">
-          <v-chip :color="item.status == 'ACTIVE' ? 'success' : 'error'" dark>{{
-            item.status
-          }}</v-chip>
+          <ChipStatus :status="item.status" />
         </template>
         <template v-slot:item.actions="{ item }">
           <v-menu :close-on-click="true">
@@ -91,12 +89,14 @@ import CreateShippingLine from "./components/CreateShippingLine.vue";
 import DeleteShippingLine from "./components/DeleteShippingLine.vue";
 import UpdateShippingLine from "./components/UpdateShippingLine.vue";
 import { DataOptions } from "vuetify";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
   components: {
     CreateShippingLine,
     DeleteShippingLine,
-    UpdateShippingLine
+    UpdateShippingLine,
+    ChipStatus
   }
 })
 export default class ShippingLine extends Vue {
@@ -132,12 +132,7 @@ export default class ShippingLine extends Vue {
     { text: "Mã số thuế", value: "tin" },
     { text: "Trang web", value: "website" },
     { text: "Trạng thái", value: "status" },
-    {
-      text: "Hành động",
-      value: "actions",
-      sortable: false,
-      align: "center"
-    }
+    { text: "Hành động", value: "actions" }
   ];
   openUpdateDialog(item: IShippingLine) {
     this.shippingLine = item;

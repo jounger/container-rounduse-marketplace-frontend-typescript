@@ -171,7 +171,6 @@
                           no-data-text="Danh sách Container rỗng."
                           v-model="containersSelected"
                           show-select
-                          dark
                           dense
                         >
                         </v-data-table>
@@ -367,20 +366,20 @@ export default class CreateBid extends Vue {
       align: "start",
       sortable: false,
       value: "number",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
-    { text: "Tài xế", value: "driver.fullname", class: "elevation-1 primary" },
+    { text: "Tài xế", value: "driver.fullname", class: "tertiary" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
     {
       text: "Đầu kéo",
       value: "tractor.licensePlate",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
-    { text: "Trạng thái", value: "status", class: "elevation-1 primary" }
+    { text: "Trạng thái", value: "status", class: "tertiary" }
   ];
   containerSelectedHeaders = [
     {

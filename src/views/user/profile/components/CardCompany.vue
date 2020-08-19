@@ -7,7 +7,7 @@
         <v-col cols="12" md="6">
           <v-list-item>
             <v-list-item-icon>
-              <v-icon color="indigo">verified_user</v-icon>
+              <v-icon color="tertiary">verified_user</v-icon>
             </v-list-item-icon>
 
             <v-list-item-content>
@@ -21,7 +21,7 @@
         <v-col cols="12" md="6">
           <v-list-item>
             <v-list-item-icon>
-              <v-icon color="indigo">contacts</v-icon>
+              <v-icon color="tertiary">contacts</v-icon>
             </v-list-item-icon>
             <v-list-item-content>
               <v-list-item-subtitle>Tên Công ty</v-list-item-subtitle>
@@ -36,7 +36,7 @@
         <v-col cols="12" md="6">
           <v-list-item>
             <v-list-item-icon>
-              <v-icon color="indigo">copyright</v-icon>
+              <v-icon color="tertiary">copyright</v-icon>
             </v-list-item-icon>
             <v-list-item-content>
               <v-list-item-subtitle>Website</v-list-item-subtitle>
@@ -49,7 +49,7 @@
         <v-col cols="12" md="6">
           <v-list-item>
             <v-list-item-icon>
-              <v-icon color="indigo">location_city</v-icon>
+              <v-icon color="tertiary">location_city</v-icon>
             </v-list-item-icon>
             <v-list-item-content>
               <v-list-item-subtitle>Địa chỉ công ty</v-list-item-subtitle>
@@ -64,7 +64,7 @@
         <v-col cols="12" md="6">
           <v-list-item>
             <v-list-item-icon>
-              <v-icon color="indigo">card_travel</v-icon>
+              <v-icon color="tertiary">card_travel</v-icon>
             </v-list-item-icon>
             <v-list-item-content>
               <v-list-item-subtitle>Mã số thuế</v-list-item-subtitle>
@@ -75,7 +75,7 @@
         <v-col cols="12" md="6">
           <v-list-item>
             <v-list-item-icon>
-              <v-icon color="indigo">perm_phone_msg</v-icon>
+              <v-icon color="tertiary">perm_phone_msg</v-icon>
             </v-list-item-icon>
             <v-list-item-content>
               <v-list-item-subtitle>Fax</v-list-item-subtitle>
@@ -88,7 +88,7 @@
         <v-col cols="12" md="6"
           ><v-list-item>
             <v-list-item-icon>
-              <v-icon color="indigo">description</v-icon>
+              <v-icon color="tertiary">description</v-icon>
             </v-list-item-icon>
             <v-list-item-content>
               <v-list-item-subtitle>Mô tả</v-list-item-subtitle>

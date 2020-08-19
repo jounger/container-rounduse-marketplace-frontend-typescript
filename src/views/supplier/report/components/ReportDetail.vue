@@ -5,7 +5,7 @@
         <v-row>
           <v-col cols="12" md="11">
             <v-list-item two-line>
-              <v-list-item-avatar color="indigo">
+              <v-list-item-avatar color="tertiary">
                 <v-img
                   v-if="report.sender.profileImagePath"
                   :src="report.sender.profileImagePath"
@@ -109,7 +109,7 @@
             :disabled="loading"
             @click.stop="seeMore()"
             outlined
-            color="indigo"
+            color="tertiary"
             small
             >Xem thêm...</v-btn
           >
@@ -121,7 +121,7 @@
             v-for="item in feedbacks"
             :key="item.id"
           >
-            <v-list-item-avatar color="indigo">
+            <v-list-item-avatar color="tertiary">
               <v-img
                 v-if="item.sender.profileImagePath"
                 :src="item.sender.profileImagePath"
@@ -194,7 +194,7 @@
         >
           <v-col cols="12" md="1">
             <v-list-item two-line>
-              <v-list-item-avatar color="indigo">
+              <v-list-item-avatar color="tertiary">
                 <v-img
                   v-if="$auth.user().profileImagePath"
                   :src="$auth.user().profileImagePath"

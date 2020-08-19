@@ -64,7 +64,7 @@
             @click.stop="openBiddingDocumentDetail(item)"
             x-small
           >
-            <v-icon left dense>details</v-icon> Chi tiết
+            <v-icon left dense>remove_red_eye</v-icon> Chi tiết
           </v-btn>
         </template>
         <template v-slot:item.bidOpening="{ item }">
