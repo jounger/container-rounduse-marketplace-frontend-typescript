@@ -6,8 +6,31 @@
       ></router-link
     >
     <v-spacer></v-spacer>
-    <v-menu left bottom :offset-y="true">
-      <template v-slot:activator="{ on, attrs }">
+    <v-menu bottom offset-y>
+      <template v-slot:activator="{ on, attrs }" v-if="$auth.user()">
+        <v-btn text v-bind="attrs" v-on="on" color="rgba(0,0,0,0)">
+          <v-list-item dense>
+            <v-list-item-avatar color="indigo">
+              <v-img
+                v-if="$auth.user().profileImagePath"
+                :src="$auth.user().profileImagePath"
+              ></v-img>
+              <span v-else class="white--text headline">{{
+                $auth.user().username
+                  ? $auth
+                      .user()
+                      .username.substring(0, 1)
+                      .toUpperCase()
+                  : ""
+              }}</span>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title>{{ $auth.user().fullname }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-btn>
+      </template>
+      <template v-slot:activator="{ on, attrs }" v-else>
         <v-btn color="primary" icon outlined v-bind="attrs" v-on="on">
           <v-icon>mdi-dots-vertical</v-icon>
         </v-btn>

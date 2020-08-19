@@ -1,10 +1,10 @@
 <template>
-  <v-content>
-    <v-container class="d-flex justify-space-around align-start">
+  <v-container fluid>
+    <v-card class="d-flex justify-space-around align-start elevation-0" width="fit-content">
       <CardProfile />
       <CardCompany v-if="isSupplier" />
-    </v-container>
-  </v-content>
+    </v-card>
+  </v-container>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
@@ -22,8 +22,7 @@ export default class Profile extends Vue {
     return this.$auth.check([
       "ROLE_FORWARDER",
       "ROLE_MERCHANT",
-      "ROLE_SHIPPINGLINE",
-      "ROLE_DRIVER"
+      "ROLE_SHIPPINGLINE"
     ]);
   }
 }

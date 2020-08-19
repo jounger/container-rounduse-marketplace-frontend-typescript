@@ -1,14 +1,14 @@
 <template>
   <v-navigation-drawer
-    v-model="drawerSync"
-    :expand-on-hover="mini"
-    permanent
     app
-    clipped
+    :mini-variant="drawerSync"
+    :expand-on-hover="drawerSync"
+    permanent
+    clipped-left
     v-if="$auth.user()"
   >
     <v-list dense nav>
-      <v-list-item two-line :class="mini && 'px-0'">
+      <v-list-item two-line :class="drawerSync && 'px-0'">
         <v-list-item-avatar color="indigo">
           <v-img
             v-if="$auth.user().profileImagePath"
@@ -33,9 +33,6 @@
             {{ getUserRole }}</v-list-item-subtitle
           >
         </v-list-item-content>
-        <v-btn icon @click.stop="mini = !mini">
-          <v-icon>{{ `mdi-chevron-${mini ? "right" : "left"}` }}</v-icon>
-        </v-btn>
       </v-list-item>
     </v-list>
     <v-divider></v-divider>
@@ -58,7 +55,7 @@
     </v-list>
     <template v-slot:append>
       <div class="pa-2" v-if="$auth.user()">
-        <v-btn block to="/logout" v-if="!mini">Đăng xuất</v-btn>
+        <v-btn block to="/logout" v-if="!drawerSync">Đăng xuất</v-btn>
       </div>
     </template>
   </v-navigation-drawer>
@@ -77,8 +74,6 @@ import NavigationSupplier from "./NavigationSupplier.vue";
 })
 export default class Navigation extends Vue {
   @PropSync("drawer", { type: Boolean, default: true }) drawerSync!: boolean;
-
-  mini = false;
 
   protected navigation: object = NavigationSupplier;
   protected generalNavigation = [

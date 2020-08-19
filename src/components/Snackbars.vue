@@ -1,19 +1,20 @@
 <template>
   <v-snackbar
     v-model="display"
-    :bottom="false"
-    :color="snackbarInfo.color"
-    :left="false"
-    :multi-line="false"
-    :right="true"
-    :timeout="snackbarInfo.timeout"
     :top="true"
+    :left="false"
+    :bottom="false"
+    :right="true"
     :vertical="false"
-    style="position: absolute; top: 70px;"
+    :multi-line="true"
+    :color="snackbarInfo.color"
+    :timeout="snackbarInfo.timeout"
     >{{ snackbarInfo.text }}
-    <v-btn dark text @click="closeSnackbar()">
-      Close
-    </v-btn>
+    <template v-slot:action="{ attrs }">
+      <v-btn dark text @click="closeSnackbar()" v-bind="attrs">
+        Close
+      </v-btn>
+    </template>
   </v-snackbar>
 </template>
 <script lang="ts">

@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-container fluid>
     <v-row justify="center">
       <CreateReport
         v-if="dialogReport"
@@ -28,15 +28,16 @@
       :bids.sync="bids"
       :totalItems.sync="serverSideOptions.totalItems"
     />
-    <v-container
-      class="d-flex justify-space-around align-start"
+    <v-card
+      class="d-flex justify-space-around align-start elevation-0"
       v-if="biddingDocument"
+      width="fit-content"
     >
       <!-- OUTOUNBD -->
-      <v-card class="order-0 flex-grow-0 mx-auto mr-5 my-5" max-width="380">
+      <v-card class="order-0 flex-grow-0 mx-auto mr-5" max-width="500">
         <v-img
           height="100"
-          max-width="380"
+          width="420px"
           src="@/assets/images/biddingdocument.jpg"
         ></v-img>
         <v-card-title>Hồ sơ Mời thầu</v-card-title>
@@ -170,7 +171,7 @@
           </v-list>
         </v-card-text>
       </v-card>
-      <v-card class="order-1 flex-grow-1 mx-auto my-5">
+      <v-card class="order-1 flex-grow-1 mx-auto">
         <v-card-title
           >Thông tin đấu thầu
           <v-spacer></v-spacer>
@@ -447,8 +448,8 @@
           </template>
         </v-data-table>
       </v-card>
-    </v-container>
-  </v-content>
+    </v-card>
+  </v-container>
 </template>
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
@@ -515,8 +516,11 @@ export default class DetailBiddingDocument extends Vue {
       value: "id"
     },
     { text: "Đối tác", value: "bidder.companyName" },
+    { text: "SĐT liên hệ", value: "bidder.phone" },
     { text: "Giá thầu", value: "bidPrice" },
     { text: "Ngày thầu", value: "bidDate" },
+    { text: "Hiệu lực đến", value: "bidValidityPeriod" },
+    { text: "Trạng thái", value: "status" },
     { text: "Hành động", value: "actions" }
   ];
 

@@ -1,8 +1,8 @@
 <template>
-  <div class="mt-12">
-    <v-row justify="center" class="mt-12">
-      <slot />
-    </v-row>
+  <div class="mt-15">
+    <v-main>
+      <router-view></router-view>
+    </v-main>
   </div>
 </template>
 <script lang="ts">

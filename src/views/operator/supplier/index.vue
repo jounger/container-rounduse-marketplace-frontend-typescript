@@ -1,6 +1,6 @@
 <template>
-  <v-content>
-    <v-card class="ma-5">
+  <v-container fluid>
+    <v-card>
       <v-row justify="center">
         <SupplierDetail
           v-if="dialogDetail"
@@ -94,7 +94,7 @@
         </template>
       </v-data-table>
     </v-card>
-  </v-content>
+  </v-container>
 </template>
 <script lang="ts">
 import { Component, Watch, Vue } from "vue-property-decorator";

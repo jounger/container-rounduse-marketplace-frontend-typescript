@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-container fluid>
     <v-row justify="center">
       <DeletePermission
         v-if="dialogDel"
@@ -19,7 +19,7 @@
         :update="update"
       />
     </v-row>
-    <v-card class="ma-5">
+    <v-card>
       <v-data-table
         :headers="headers"
         :items="permissions"
@@ -76,7 +76,7 @@
         </template>
       </v-data-table>
     </v-card>
-  </v-content>
+  </v-container>
 </template>
 <script lang="ts">
 import { Component, Watch, Vue } from "vue-property-decorator";

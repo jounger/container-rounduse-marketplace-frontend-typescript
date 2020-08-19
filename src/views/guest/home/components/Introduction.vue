@@ -1,5 +1,5 @@
 <template>
-  <v-content> </v-content>
+  <v-container fluid> </v-container>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";

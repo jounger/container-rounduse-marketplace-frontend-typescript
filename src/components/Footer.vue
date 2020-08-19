@@ -1,5 +1,5 @@
 <template>
-  <v-footer app style="margin-top:20px;">
+  <v-footer app>
     <span>Container Round-use Marketplace &copy; 2020</span>
   </v-footer>
 </template>

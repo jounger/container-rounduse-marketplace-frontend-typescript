@@ -4,7 +4,10 @@
       <v-card-title class="headline">Thêm mới cảng</v-card-title>
       <v-divider></v-divider>
       <v-card-text>
-        <v-container class="d-flex justify-space-around align-start">
+        <v-card
+          class="d-flex justify-space-around align-start elevation-0"
+          width="fit-content"
+        >
           <div
             class="order-0 flex-grow-0 mx-auto mr-5 my-5"
             :style="{ width: '600px' }"
@@ -89,7 +92,7 @@
               </template>
             </GoogleMapLoader>
           </v-card>
-        </v-container>
+        </v-card>
       </v-card-text>
       <v-card-actions class="justify-space-between">
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>

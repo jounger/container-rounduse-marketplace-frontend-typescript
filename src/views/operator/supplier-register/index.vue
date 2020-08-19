@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-container fluid>
     <v-row justify="center">
       <ConfirmReviewSupplier
         v-if="dialogConfirm"
@@ -14,7 +14,7 @@
         :supplier="supplier"
       />
     </v-row>
-    <v-card class="ma-5">
+    <v-card>
       <v-card-title>
         Danh sách đơn đăng ký
       </v-card-title>
@@ -80,7 +80,7 @@
         </template>
       </v-data-table>
     </v-card>
-  </v-content>
+  </v-container>
 </template>
 <script lang="ts">
 import { Component, Watch, Vue } from "vue-property-decorator";

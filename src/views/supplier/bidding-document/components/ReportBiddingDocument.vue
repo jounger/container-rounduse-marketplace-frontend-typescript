@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-container fluid>
     <v-dialog v-model="dialogDetailSync" max-width="600">
       <v-card>
         <v-container v-if="biddingDocument">
@@ -136,7 +136,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-content>
+  </v-container>
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, PropSync } from "vue-property-decorator";

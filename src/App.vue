@@ -2,11 +2,9 @@
   <v-app>
     <Loading />
     <Snackbars />
-    <component :is="layout">
-      <transition mode="out-in">
-        <router-view></router-view>
-      </transition>
-    </component>
+    <transition mode="out-in">
+      <component :is="layout"> </component>
+    </transition>
   </v-app>
 </template>
 <script lang="ts">
