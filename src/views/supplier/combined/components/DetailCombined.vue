@@ -15,7 +15,11 @@
       :totalItems.sync="evidenceServerSideOptions.totalItems"
       :contract="contract"
     />
-    <v-card class="d-flex justify-space-around align-start elevation-0" v-if="combined">
+    <v-card
+      class="d-flex justify-space-around align-start elevation-0"
+      v-if="combined"
+      width="100%"
+    >
       <!-- OUTOUNBD -->
       <v-card class="order-0 flex-grow-0 mx-auto mr-5" max-width="500">
         <v-tabs

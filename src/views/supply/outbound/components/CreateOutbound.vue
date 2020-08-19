@@ -21,7 +21,7 @@
       <!-- START CONTENT -->
       <v-card
         class="d-flex justify-space-around align-start elevation-0"
-        width="fit-content"
+        width="100%"
       >
         <div
           class="order-0 flex-grow-0 mx-auto mr-5"

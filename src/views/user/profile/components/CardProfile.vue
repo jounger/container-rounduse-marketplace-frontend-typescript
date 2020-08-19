@@ -1,7 +1,8 @@
 <template>
-  <v-card class="order-0 flex-grow-0 mx-auto mr-5" max-width="434" tile>
+  <v-card class="order-0 flex-grow-1 mx-auto mr-5" max-width="434" tile>
     <v-card-text>
       <v-img
+        width="434"
         height="100%"
         src="https://cdn.vuetifyjs.com/images/cards/server-room.jpg"
       >

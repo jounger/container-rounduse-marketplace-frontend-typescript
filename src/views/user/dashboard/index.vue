@@ -4,7 +4,7 @@
       <v-row style="margin-left: 30px;">
         <v-card
           class="d-flex flex-row mb-6"
-          width="fit-content"
+          width="100%"
           color="lighten-2"
           flat
           tile

@@ -18,7 +18,7 @@
       <!-- START CONTENT -->
       <v-card
         class="d-flex justify-space-around align-start elevation-0"
-        width="fit-content"
+        width="100%"
       >
         <div
           v-if="outboundLocal"
