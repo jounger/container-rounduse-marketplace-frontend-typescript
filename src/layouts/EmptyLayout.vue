@@ -1,10 +1,10 @@
 <template>
   <div>
     <GuestHeader :drawer.sync="drawer" />
-    <slot />
-    <div style="margin-top:30px;">
-      <GuestFooter />
-    </div>
+    <v-main>
+      <router-view></router-view>
+    </v-main>
+    <GuestFooter />
   </div>
 </template>
 <script lang="ts">

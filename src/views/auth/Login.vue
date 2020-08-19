@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-layout wrap>
       <v-flex sm12 md6 offset-md3>
         <v-card width="550" height="fit-content" class="mt-12 ma-2 mx-auto">

@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-container fluid>
     <v-container class="fill-height" fluid>
       <v-row align="center" justify="center">
         <v-col class="text-center">
@@ -21,7 +21,7 @@
         :supplier="supplier"
       />
     </v-row>
-  </v-content>
+  </v-container>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";

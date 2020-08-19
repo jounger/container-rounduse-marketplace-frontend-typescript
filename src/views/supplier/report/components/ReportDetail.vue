@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-container fluid>
     <v-row justify="center">
       <v-card class="mx-12 my-5" width="800" v-if="report">
         <v-row>
@@ -255,7 +255,7 @@
         :feedback="feedback"
         :feedbacks.sync="feedbacks"
       /> </v-row
-  ></v-content>
+  ></v-container>
 </template>
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";

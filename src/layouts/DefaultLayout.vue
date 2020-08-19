@@ -1,7 +1,9 @@
 <template>
   <div>
     <Menubar />
-    <slot />
+    <v-main>
+      <router-view></router-view>
+    </v-main>
   </div>
 </template>
 <script lang="ts">

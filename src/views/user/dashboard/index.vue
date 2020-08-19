@@ -1,8 +1,14 @@
 <template>
-  <v-content>
+  <v-container fluid>
     <v-container class="fill-height" fluid>
       <v-row style="margin-left: 30px;">
-        <v-card class="d-flex flex-row mb-6" color="lighten-2" flat tile>
+        <v-card
+          class="d-flex flex-row mb-6"
+          width="100%"
+          color="lighten-2"
+          flat
+          tile
+        >
           <v-card
             v-for="n in items"
             :key="n.name"
@@ -104,7 +110,7 @@
         </v-card>
       </v-row>
     </v-container>
-  </v-content>
+  </v-container>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";

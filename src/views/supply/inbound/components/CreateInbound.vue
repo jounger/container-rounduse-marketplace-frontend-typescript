@@ -39,9 +39,12 @@
         </v-toolbar-items>
       </v-toolbar>
       <!-- START CONTENT -->
-      <v-container class="d-flex justify-space-around align-start">
+      <v-card
+        class="d-flex justify-space-around align-start elevation-0"
+        width="100%"
+      >
         <div
-          class="order-0 flex-grow-0 mx-auto mr-5 my-5"
+          class="order-0 flex-grow-0 mx-auto mr-5"
           :style="{ width: '600px' }"
         >
           <v-list three-line subheader width="inherit">
@@ -281,7 +284,7 @@
             </v-stepper>
           </v-list>
         </div>
-        <v-card class="order-1 flex-shrink-1 mx-auto my-5">
+        <v-card class="order-1 flex-shrink-1 mx-auto">
           <GoogleMapLoader
             :options="mapConfig"
             :apiKey="apiKey"
@@ -373,7 +376,7 @@
             <v-stepper-content step="2"></v-stepper-content>
           </v-stepper>
         </v-card>
-      </v-container>
+      </v-card>
       <!-- END CONTENT -->
     </v-card>
   </v-dialog>

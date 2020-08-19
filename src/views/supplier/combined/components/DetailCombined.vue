@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-container fluid>
     <DetailEvidence
       v-if="dialogDetail"
       :dialogDetail.sync="dialogDetail"
@@ -15,12 +15,13 @@
       :totalItems.sync="evidenceServerSideOptions.totalItems"
       :contract="contract"
     />
-    <v-container
-      class="d-flex justify-space-around align-start"
+    <v-card
+      class="d-flex justify-space-around align-start elevation-0"
       v-if="combined"
+      width="100%"
     >
       <!-- OUTOUNBD -->
-      <v-card class="order-0 flex-grow-0 mx-auto mr-5 my-5" max-width="500">
+      <v-card class="order-0 flex-grow-0 mx-auto mr-5" max-width="500">
         <v-tabs
           background-color="white"
           color="deep-purple accent-4"
@@ -116,7 +117,7 @@
               <v-card class="elevation-0" v-if="shippingInfo">
                 <v-img
                   height="100"
-                  max-width="400"
+                  max-width="420"
                   src="@/assets/images/biddingdocument.jpg"
                 ></v-img>
 
@@ -208,7 +209,7 @@
               <v-card class="elevation-0" v-if="combined">
                 <v-img
                   height="100"
-                  max-width="400"
+                  max-width="420"
                   src="@/assets/images/biddingdocument.jpg"
                 ></v-img>
                 <v-card-title>Thông tin Hợp đồng</v-card-title>
@@ -306,7 +307,7 @@
           </v-tab-item>
         </v-tabs>
       </v-card>
-      <v-card class="order-1 flex-grow-1 mx-auto my-5">
+      <v-card class="order-1 flex-grow-1 mx-auto">
         <v-card-title v-if="shippingInfo">
           Thông tin vận chuyển: {{ "#" + shippingInfo.id }}
         </v-card-title>
@@ -363,8 +364,8 @@
           </template>
         </v-data-table>
       </v-card>
-    </v-container>
-  </v-content>
+    </v-card>
+  </v-container>
 </template>
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
@@ -401,7 +402,7 @@ import { google } from "google-maps";
   }
 })
 export default class DetailCombined extends Vue {
-  style = { width: "400px", height: "250px" };
+  style = { "min-width": "430px", height: "250px" };
   combined = null as ICombined | null;
   shippingInfos: Array<IShippingInfo> = [];
   shippingInfo = null as IShippingInfo | null;

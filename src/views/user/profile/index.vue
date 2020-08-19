@@ -1,10 +1,13 @@
 <template>
-  <v-content>
-    <v-container class="d-flex justify-space-around align-start">
+  <v-container fluid>
+    <v-card
+      class="d-flex justify-space-around align-start elevation-0"
+      width="100%"
+    >
       <CardProfile />
-      <CardCompany v-if="isSupplier" />
-    </v-container>
-  </v-content>
+      <CardCompany />
+    </v-card>
+  </v-container>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
@@ -17,14 +20,5 @@ import CardCompany from "./components/CardCompany.vue";
     CardCompany
   }
 })
-export default class Profile extends Vue {
-  get isSupplier() {
-    return this.$auth.check([
-      "ROLE_FORWARDER",
-      "ROLE_MERCHANT",
-      "ROLE_SHIPPINGLINE",
-      "ROLE_DRIVER"
-    ]);
-  }
-}
+export default class Profile extends Vue {}
 </script>

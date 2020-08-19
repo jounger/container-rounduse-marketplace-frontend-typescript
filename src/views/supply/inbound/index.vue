@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-container fluid>
     <CreateInbound
       :dialogAdd.sync="dialogAdd"
       :inbounds.sync="inbounds"
@@ -37,7 +37,7 @@
         :totalItems.sync="containerServerSideOptions.totalItems"
       />
     </v-row>
-    <v-card class="ma-5">
+    <v-card>
       <v-data-table
         :headers="headers"
         :items="inbounds"
@@ -167,7 +167,7 @@
         </template>
       </v-data-table>
     </v-card>
-  </v-content>
+  </v-container>
 </template>
 <script lang="ts">
 import { Component, Watch, Vue } from "vue-property-decorator";

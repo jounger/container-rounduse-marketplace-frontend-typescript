@@ -2,10 +2,10 @@
   <div v-if="isUser">
     <Navigation :drawer.sync="drawer" />
     <Appbar :drawer.sync="drawer" />
-    <slot />
-    <div style="margin-top:30px;">
-      <Footer />
-    </div>
+    <v-main>
+      <router-view></router-view>
+    </v-main>
+    <Footer />
   </div>
 </template>
 <script lang="ts">
