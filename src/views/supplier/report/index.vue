@@ -44,21 +44,7 @@
           {{ formatDatetime(item.sendDate) }}
         </template>
         <template v-slot:item.status="{ item }">
-          <v-chip
-            :style="
-              item.status == 'PENDING'
-                ? 'background-color:blue'
-                : item.status == 'RESOLVED'
-                ? 'background-color:green'
-                : item.status == 'REJECTED'
-                ? 'background-color:red'
-                : item.status == 'UPDATED'
-                ? 'background-color:orange'
-                : 'background-color:blue'
-            "
-            dark
-            >{{ item.status }}</v-chip
-          >
+          <ChipStatus :status="item.status" :sub="true" />
         </template>
         <template v-slot:item.actions="{ item }">
           <v-menu :close-on-click="true">
@@ -70,13 +56,16 @@
             <v-list dense>
               <v-list-item :to="`/report/${item.id}`">
                 <v-list-item-icon>
-                  <v-icon small>details</v-icon>
+                  <v-icon small>remove_red_eye</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>Xem chi tiết</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item @click="openUpdateDialog(item)">
+              <v-list-item
+                @click="openUpdateDialog(item)"
+                v-if="$auth.check('ROLE_FORWARDER')"
+              >
                 <v-list-item-icon>
                   <v-icon small>edit</v-icon>
                 </v-list-item-icon>
@@ -84,7 +73,10 @@
                   <v-list-item-title>Chỉnh sửa</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item @click="openDeleteDialog(item)">
+              <v-list-item
+                @click="openDeleteDialog(item)"
+                v-if="$auth.check('ROLE_FORWARDER')"
+              >
                 <v-list-item-icon>
                   <v-icon small>delete</v-icon>
                 </v-list-item-icon>
@@ -132,6 +124,7 @@ import { DataOptions } from "vuetify";
 import ReportBiddingDocument from "../bidding-document/components/ReportBiddingDocument.vue";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import Utils from "@/mixin/utils";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
   mixins: [Utils],
@@ -139,7 +132,8 @@ import Utils from "@/mixin/utils";
     CreateReport,
     DeleteReport,
     UpdateReport,
-    ReportBiddingDocument
+    ReportBiddingDocument,
+    ChipStatus
   }
 })
 export default class Report extends Vue {
@@ -174,12 +168,7 @@ export default class Report extends Vue {
     { text: "Nội dung", value: "detail" },
     { text: "Ngày gửi", value: "sendDate" },
     { text: "Trạng thái", value: "status" },
-    {
-      text: "Hành động",
-      value: "actions",
-      sortable: false,
-      align: "center"
-    }
+    { text: "Hành động", value: "actions" }
   ];
 
   openUpdateDialog(item: IReport) {

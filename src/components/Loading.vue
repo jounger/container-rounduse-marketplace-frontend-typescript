@@ -1,7 +1,7 @@
 <template>
   <div class="text-center">
     <v-dialog v-model="loading" :overlay-opacity="0.1" persistent width="300">
-      <v-card color="primary" dark>
+      <v-card color="tertiary" dark>
         <v-card-text>
           {{ loadingInfo.text }}
           <v-progress-linear
@@ -29,3 +29,8 @@ export default class Loading extends Vue {
   }
 }
 </script>
+<style lang="css">
+.v-progress-linear__buffer {
+  background: #fff;
+}
+</style>

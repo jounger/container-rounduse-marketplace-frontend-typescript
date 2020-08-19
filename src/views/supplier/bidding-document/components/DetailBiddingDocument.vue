@@ -348,6 +348,9 @@
           <template v-slot:item.bidValidityPeriod="{ item }">
             {{ formatDatetime(item.bidValidityPeriod) }}
           </template>
+          <template v-slot:item.status="{ item }">
+            <ChipStatus :status="item.status" />
+          </template>
           <template v-slot:item.actions="{ item }">
             <v-btn
               class="ma-1"
@@ -372,17 +375,6 @@
             >
               <v-icon left dense>remove_circle</v-icon>Từ chối
             </v-btn>
-            <span style="color: red;" v-if="item.status == 'REJECTED'">{{
-              item.status
-            }}</span>
-            <span style="color: green;" v-if="item.status == 'ACCEPTED'">{{
-              item.status
-            }}</span>
-            <span
-              style="color: yellowgreen;"
-              v-if="item.status == 'PENDING' && $auth.check('ROLE_FORWARDER')"
-              >{{ item.status }}</span
-            >
           </template>
 
           <template v-slot:expanded-item="{ headers }">
@@ -404,17 +396,11 @@
                 :show-select="$auth.check('ROLE_MERCHANT')"
                 @item-selected="selectContainer"
                 disable-sort
-                dark
                 dense
               >
                 <template v-slot:header.data-table-select> </template>
                 <template v-slot:item.status="{ item }">
-                  <v-chip
-                    :color="item.status == 'COMBINED' ? 'success' : 'info'"
-                    dark
-                    x-small
-                    >{{ item.status }}</v-chip
-                  >
+                  <ChipStatus :status="item.status" :sub="true" />
                 </template>
               </v-data-table>
               <v-data-table
@@ -432,16 +418,10 @@
                 :actions-append="containerOptions.page"
                 :show-select="biddingDocument.isMultipleAward"
                 disable-sort
-                dark
                 dense
               >
                 <template v-slot:item.status="{ item }">
-                  <v-chip
-                    :color="item.status == 'COMBINED' ? 'success' : 'info'"
-                    dark
-                    x-small
-                    >{{ item.status }}</v-chip
-                  >
+                  <ChipStatus :status="item.status" :sub="true" />
                 </template>
               </v-data-table>
             </td>
@@ -467,6 +447,7 @@ import { getContainersByBid } from "@/api/container";
 import CreateCombined from "../../combined/components/CreateCombined.vue";
 import { getBidsByBiddingDocument } from "@/api/bid";
 import ConfirmBid from "./ConfirmBid.vue";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -475,7 +456,8 @@ import ConfirmBid from "./ConfirmBid.vue";
     CreateBid,
     CreateReport,
     SupplierRating,
-    ConfirmBid
+    ConfirmBid,
+    ChipStatus
   }
 })
 export default class DetailBiddingDocument extends Vue {
@@ -530,20 +512,20 @@ export default class DetailBiddingDocument extends Vue {
       align: "start",
       sortable: false,
       value: "number",
-      class: "primary"
+      class: "tertiary"
     },
-    { text: "Tài xế", value: "driver.fullname", class: "primary" },
+    { text: "Tài xế", value: "driver.fullname", class: "tertiary" },
     {
       text: "Rơ moóc",
       value: "trailer.licensePlate",
-      class: "primary"
+      class: "tertiary"
     },
     {
       text: "Đầu kéo",
       value: "tractor.licensePlate",
-      class: "primary"
+      class: "tertiary"
     },
-    { text: "Trạng thái", value: "status", class: "primary" }
+    { text: "Trạng thái", value: "status", class: "tertiary" }
   ];
 
   isDisableConfirm(item: IBid) {

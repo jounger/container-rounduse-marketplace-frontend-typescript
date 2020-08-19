@@ -11,7 +11,7 @@
             <v-hover v-slot:default="{ hover }" open-delay="200">
               <v-avatar
                 size="200"
-                color="indigo"
+                color="tertiary"
                 :class="{ 'opacity-hover': hover }"
               >
                 <v-img
@@ -65,7 +65,7 @@
     <v-list two-line>
       <v-list-item>
         <v-list-item-icon>
-          <v-icon color="indigo">bookmarks</v-icon>
+          <v-icon color="tertiary">bookmarks</v-icon>
         </v-list-item-icon>
 
         <v-list-item-content>
@@ -79,7 +79,7 @@
       <v-divider></v-divider>
       <v-list-item>
         <v-list-item-icon>
-          <v-icon color="indigo">mdi-phone</v-icon>
+          <v-icon color="tertiary">mdi-phone</v-icon>
         </v-list-item-icon>
 
         <v-list-item-content>
@@ -94,7 +94,7 @@
 
       <v-list-item>
         <v-list-item-icon>
-          <v-icon color="indigo">mdi-email</v-icon>
+          <v-icon color="tertiary">mdi-email</v-icon>
         </v-list-item-icon>
 
         <v-list-item-content>

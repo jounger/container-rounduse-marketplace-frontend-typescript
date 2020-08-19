@@ -6,10 +6,11 @@
     permanent
     clipped-left
     v-if="$auth.user()"
+    class="nav-custom"
   >
     <v-list dense nav>
       <v-list-item two-line :class="drawerSync && 'px-0'">
-        <v-list-item-avatar color="indigo">
+        <v-list-item-avatar color="tertiary">
           <v-img
             v-if="$auth.user().profileImagePath"
             :src="$auth.user().profileImagePath"
@@ -43,9 +44,10 @@
         :key="item.title"
         :to="item.link"
         link
+        color="primary"
       >
         <v-list-item-icon>
-          <v-icon>{{ item.icon }}</v-icon>
+          <v-icon color="primary">{{ item.icon }}</v-icon>
         </v-list-item-icon>
 
         <v-list-item-content>
@@ -106,4 +108,25 @@ export default class Navigation extends Vue {
   }
 }
 </script>
-<style></style>
+<style scopedSlots>
+/* width */
+.nav-custom ::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+.nav-custom ::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+.nav-custom ::-webkit-scrollbar-thumb {
+  background: rgb(204, 204, 204);
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+.nav-custom ::-webkit-scrollbar-thumb:hover {
+  background: rgb(151, 151, 151);
+}
+</style>

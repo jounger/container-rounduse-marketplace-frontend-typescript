@@ -10,7 +10,7 @@
       <template v-slot:activator="{ on, attrs }" v-if="$auth.user()">
         <v-btn text v-bind="attrs" v-on="on" color="rgba(0,0,0,0)">
           <v-list-item dense>
-            <v-list-item-avatar color="indigo">
+            <v-list-item-avatar color="tertiary">
               <v-img
                 v-if="$auth.user().profileImagePath"
                 :src="$auth.user().profileImagePath"

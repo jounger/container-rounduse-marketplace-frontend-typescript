@@ -94,7 +94,7 @@
                 v-if="$auth.check('ROLE_FORWARDER')"
               >
                 <v-list-item-icon>
-                  <v-icon small>details</v-icon>
+                  <v-icon small>remove_red_eye</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>Xem chi tiết</v-list-item-title>
@@ -135,17 +135,16 @@
               :actions-append="evidenceOptions.page"
               disable-sort
               dense
-              dark
               ><template v-slot:item.actions="{ item }">
                 <v-btn
                   class="ma-1"
                   x-small
                   tile
                   outlined
-                  color="success"
+                  color="info"
                   @click.stop="openDetailEvidence(item)"
                 >
-                  <v-icon left dense>details </v-icon>Chi tiết
+                  <v-icon left dense>remove_red_eye </v-icon>Chi tiết
                 </v-btn>
               </template>
               <template v-slot:item.documentPath="{ item }">
@@ -157,7 +156,7 @@
                 }}
               </template>
               <template v-slot:item.status="{ item }">
-                <v-chip dark x-small>{{ item.status }}</v-chip>
+                <ChipStatus :status="item.status" :sub="true" />
               </template>
             </v-data-table>
           </td>
@@ -179,6 +178,7 @@ import UpdateContract from "./components/UpdateContract.vue";
 import CreatePayment from "../payment/components/CreatePayment.vue";
 import CreateEvidence from "../combined/components/CreateEvidence.vue";
 import Utils from "@/mixin/utils";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
   mixins: [Utils],
@@ -186,7 +186,8 @@ import Utils from "@/mixin/utils";
     DetailEvidence,
     UpdateContract,
     CreatePayment,
-    CreateEvidence
+    CreateEvidence,
+    ChipStatus
   }
 })
 export default class Contract extends Vue {
@@ -248,21 +249,16 @@ export default class Contract extends Vue {
       text: "Mã",
       align: "start",
       value: "id",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
-    { text: "Chứng cớ", value: "documentPath", class: "elevation-1 primary" },
+    { text: "File hợp đồng", value: "documentPath", class: "tertiary" },
     {
       text: "Bên gửi hợp đồng",
       value: "sender.companyName",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
-    { text: "Hợp lệ", value: "status", class: "elevation-1 primary" },
-    {
-      text: "Hành động",
-      value: "actions",
-      sortable: false,
-      class: "elevation-1 primary"
-    }
+    { text: "Hợp lệ", value: "status", class: "tertiary" },
+    { text: "Hành động", value: "actions", class: "tertiary"}
   ];
 
   openCreatePayment(item: ICombined) {

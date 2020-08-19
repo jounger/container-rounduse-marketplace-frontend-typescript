@@ -15,9 +15,6 @@
       />
     </v-row>
     <v-card>
-      <v-card-title>
-        Danh sách đơn đăng ký
-      </v-card-title>
       <v-data-table
         :headers="headers"
         :items="suppliers"
@@ -33,8 +30,13 @@
         disable-sort
         class="elevation-1"
       >
+        <template v-slot:top>
+          <v-toolbar flat color="white">
+            <v-toolbar-title>Danh sách đơn đăng ký</v-toolbar-title>
+          </v-toolbar>
+        </template>
         <template v-slot:item.status="{ item }">
-          <v-chip color="info" dark>{{ item.status }}</v-chip>
+          <ChipStatus :status="item.status" />
         </template>
         <template v-slot:item.actions="{ item }">
           <v-menu :loading="item.createloading" :disabled="item.createloading">
@@ -53,7 +55,7 @@
             <v-list dense>
               <v-list-item @click="openDetailDialog(item)">
                 <v-list-item-icon>
-                  <v-icon small>details</v-icon>
+                  <v-icon small>remove_red_eye</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>Xem chi tiết</v-list-item-title>
@@ -89,11 +91,13 @@ import { getSuppliersByStatus } from "@/api/supplier";
 import { DataOptions } from "vuetify";
 import ConfirmReviewSupplier from "./components/ConfirmReviewSupplier.vue";
 import SupplierDetail from "../supplier/components/SupplierDetail.vue";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
   components: {
     SupplierDetail,
-    ConfirmReviewSupplier
+    ConfirmReviewSupplier,
+    ChipStatus
   }
 })
 export default class Supplier extends Vue {
@@ -129,12 +133,7 @@ export default class Supplier extends Vue {
     { text: "Trang web", value: "website" },
     { text: "Vai trò", value: "roles" },
     { text: "Trạng thái", value: "status" },
-    {
-      text: "Hành động",
-      value: "actions",
-      sortable: false,
-      align: "center"
-    }
+    { text: "Hành động", value: "actions" }
   ];
 
   openDetailDialog(item: ISupplier) {

@@ -4,7 +4,7 @@
       <v-card-title class="headline">{{
         update ? "Cập nhật Container" : "Thêm mới Container"
       }}</v-card-title>
-
+      <v-divider></v-divider>
       <v-card-text>
         <v-form v-model="valid" validation>
           <v-container>

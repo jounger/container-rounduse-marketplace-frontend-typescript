@@ -1,6 +1,6 @@
 <template>
   <v-row align="center" class="mx-0" v-if="supplier">
-    <div class="grey--text mr-4">{{ supplier.fullname }}</div>
+    <div class="primary--text mr-4">{{ supplier.fullname }}</div>
     <v-rating
       :value="supplier.ratingValue"
       color="amber"
@@ -19,6 +19,6 @@ import { ISupplier } from "@/entity/supplier";
 
 @Component
 export default class SupplierRating extends Vue {
-  @Prop() supplier!: ISupplier; // username
+  @Prop() supplier!: ISupplier;
 }
 </script>

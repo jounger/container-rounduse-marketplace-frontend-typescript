@@ -33,7 +33,7 @@
           <v-tab>Hợp đồng</v-tab>
 
           <v-tab-item>
-            <v-container fluid>
+            <v-container>
               <v-card class="elevation-0" v-if="shippingInfo && inbound">
                 <v-row justify="center"> </v-row>
                 <GoogleMapLoader
@@ -113,7 +113,7 @@
           </v-tab-item>
 
           <v-tab-item>
-            <v-container fluid>
+            <v-container>
               <v-card class="elevation-0" v-if="shippingInfo">
                 <v-img
                   height="100"
@@ -205,7 +205,7 @@
             </v-container>
           </v-tab-item>
           <v-tab-item>
-            <v-container fluid>
+            <v-container>
               <v-card class="elevation-0" v-if="combined">
                 <v-img
                   height="100"
@@ -267,7 +267,7 @@
                         evidenceServerSideOptions.itemsPerPageItems
                     }"
                     :actions-append="evidenceOptions.page"
-                    no-data-text="Danh sách Chứng cứ rỗng."
+                    no-data-text="Danh sách file Hợp đồng rỗng."
                     disable-sort
                     class="elevation-0"
                   >
@@ -294,10 +294,10 @@
                         x-small
                         tile
                         outlined
-                        color="success"
+                        color="info"
                         @click.stop="openDetailEvidence(item)"
                       >
-                        <v-icon left>details </v-icon>Chi tiết
+                        <v-icon left>remove_red_eye </v-icon>Chi tiết
                       </v-btn>
                     </template>
                   </v-data-table>
@@ -353,13 +353,13 @@
           <template v-slot:item.actions="{ item }">
             <v-btn
               class="ma-1"
-              x-small
+              small
               tile
               :outlined="shippingInfo.id !== item.id"
               :color="shippingInfo.id == item.id ? 'info' : 'gray'"
               @click.stop="openDetailRouter(item)"
             >
-              <v-icon left dense>details </v-icon>Lịch trình
+              <v-icon left dense>location_on </v-icon>Lịch trình
             </v-btn>
           </template>
         </v-data-table>
@@ -446,8 +446,6 @@ export default class DetailCombined extends Vue {
     },
     {
       text: "Container No.",
-      align: "start",
-      sortable: false,
       value: "container.number"
     },
     { text: "Tài xế", value: "container.driver.fullname" },
@@ -479,11 +477,7 @@ export default class DetailCombined extends Vue {
     },
     { text: "Người gửi", value: "sender.companyName" },
     { text: "Trạng thái", value: "status" },
-    {
-      text: "Hành động",
-      value: "actions",
-      sortable: false
-    }
+    { text: "Hành động", value: "actions" }
   ];
 
   processShippingInfo(item: IShippingInfo) {

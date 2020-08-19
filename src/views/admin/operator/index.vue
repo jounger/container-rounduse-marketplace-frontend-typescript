@@ -47,7 +47,7 @@
           </v-toolbar>
         </template>
         <template v-slot:item.avatar="{ item }">
-          <v-avatar size="35" color="indigo">
+          <v-avatar size="35" color="tertiary">
             <v-img
               v-if="item.profileImagePath"
               :src="item.profileImagePath"
@@ -58,9 +58,7 @@
           </v-avatar>
         </template>
         <template v-slot:item.status="{ item }">
-          <v-chip :color="item.status == 'ACTIVE' ? 'success' : 'error'" dark>{{
-            item.status
-          }}</v-chip>
+          <ChipStatus :status="item.status" />
         </template>
         <template v-slot:item.actions="{ item }">
           <v-menu :close-on-click="true">
@@ -100,11 +98,13 @@ import CreateOperator from "./components/CreateOperator.vue";
 import DeleteOperator from "./components/DeleteOperator.vue";
 import { getOperators } from "@/api/operator";
 import { DataOptions } from "vuetify";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
   components: {
     CreateOperator,
-    DeleteOperator
+    DeleteOperator,
+    ChipStatus
   }
 })
 export default class Operator extends Vue {
@@ -148,11 +148,7 @@ export default class Operator extends Vue {
       value: "roles"
     },
     { text: "Trạng thái", value: "status" },
-    {
-      text: "Hành động",
-      value: "actions",
-      sortable: false
-    }
+    { text: "Hành động", value: "actions" }
   ];
 
   openCreateDialog() {

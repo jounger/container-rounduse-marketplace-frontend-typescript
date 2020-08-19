@@ -1,7 +1,8 @@
 <template>
   <v-dialog v-model="dialogDetailSync" max-width="400">
     <v-card>
-      <v-card-title class="headline">Chi tiết Chứng cứ</v-card-title>
+      <v-card-title class="headline">Chi tiết file Hợp đồng</v-card-title>
+      <v-divider></v-divider>
       <v-card-text>
         <v-form>
           <v-row>
@@ -19,7 +20,7 @@
           <v-row v-if="evidence">
             <v-col cols="12" md="8">
               <v-text-field
-                label="Chứng cứ"
+                label="File Hợp đồng"
                 name="evidence"
                 prepend-icon="picture_as_pdf"
                 disabled

@@ -127,23 +127,9 @@
               :actions-append="containerOptions.page"
               disable-sort
               dense
-              dark
             >
               <template v-slot:item.status="{ item }">
-                <v-chip
-                  :style="
-                    item.status == 'CREATED'
-                      ? 'background-color:orange'
-                      : item.status == 'BIDDING'
-                      ? 'background-color:blue'
-                      : item.status == 'COMBINED'
-                      ? 'background-color:green'
-                      : 'background-color:orange'
-                  "
-                  dark
-                  x-small
-                  >{{ item.status }}</v-chip
-                >
+                <ChipStatus :status="item.status" :sub="true" />
               </template>
               <template v-slot:item.actions="{ item }">
                 <v-icon
@@ -182,6 +168,7 @@ import { getContainersByInbound } from "@/api/container";
 import DeleteContainer from "./components/DeleteContainer.vue";
 import CreateContainer from "./components/CreateContainer.vue";
 import { DataOptions } from "vuetify";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
   mixins: [Utils],
@@ -190,7 +177,8 @@ import { DataOptions } from "vuetify";
     UpdateInbound,
     DeleteInbound,
     DeleteContainer,
-    CreateContainer
+    CreateContainer,
+    ChipStatus
   }
 })
 export default class Inbound extends Vue {
@@ -250,26 +238,26 @@ export default class Inbound extends Vue {
       align: "start",
       sortable: false,
       value: "id",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
     {
       text: "Container No.",
       value: "number",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
-    { text: "Tài xế", value: "driver.fullname", class: "elevation-1 primary" },
+    { text: "Tài xế", value: "driver.fullname", class: "tertiary" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
     {
       text: "Đầu kéo",
       value: "tractor.licensePlate",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
-    { text: "Trạng thái", value: "status", class: "elevation-1 primary" },
-    { text: "Hành động", value: "actions", class: "elevation-1 primary" }
+    { text: "Trạng thái", value: "status", class: "tertiary" },
+    { text: "Hành động", value: "actions", class: "tertiary" }
   ];
 
   openUpdateDialog(item: IInbound) {

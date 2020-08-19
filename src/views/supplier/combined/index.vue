@@ -61,7 +61,6 @@
               hide-default-footer
               disable-sort
               dense
-              dark
             >
               <template v-slot:item.contract.required="{ item }">
                 {{ item.contract.required ? "Có" : "Không" }}
@@ -70,16 +69,10 @@
                 {{ currencyFormatter(item.bid.bidPrice) }}
               </template>
               <template v-slot:item.isCanceled="{ item }">
-                <v-chip
-                  :style="
-                    item.isCanceled
-                      ? 'background-color:red'
-                      : 'background-color:green'
-                  "
-                  dark
-                  x-small
-                  >{{ item.isCanceled ? "Đã hủy" : "Đã ghép" }}</v-chip
-                >
+                <ChipStatus
+                  :status="item.isCanceled ? 'CANCELED' : 'COMBINED'"
+                  :sub="true"
+                />
               </template>
               <template v-slot:item.actions="{ item }">
                 <v-btn
@@ -90,7 +83,7 @@
                   x-small
                   :to="`/combined/${item.id}`"
                 >
-                  <v-icon left dense>details</v-icon> Chi tiết
+                  <v-icon left dense>remove_red_eye</v-icon> Chi tiết
                 </v-btn>
               </template>
             </v-data-table>
@@ -108,9 +101,13 @@ import Utils from "@/mixin/utils";
 import { getBiddingDocumentsByExistCombined } from "@/api/bidding-document";
 import { DataOptions } from "vuetify";
 import { getCombinedsByBiddingDocument } from "@/api/combined";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
-  mixins: [Utils]
+  mixins: [Utils],
+  components: {
+    ChipStatus
+  }
 })
 export default class Combined extends Vue {
   biddingDocuments: Array<IBiddingDocument> = [];
@@ -156,33 +153,33 @@ export default class Combined extends Vue {
       align: "start",
       sortable: false,
       value: "id",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
     {
       text: "Nhà thầu",
       value: "bid.bidder.companyName",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
     {
       text: "Ngày trúng thầu",
       value: "bid.dateOfDecision",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
     {
       text: "Giá trúng thầu",
       value: "bid.bidPrice",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
     {
       text: "Y/c hợp đồng",
       value: "contract.required",
-      class: "elevation-1 primary"
+      class: "tertiary"
     },
-    { text: "Trạng thái", value: "isCanceled", class: "elevation-1 primary" },
+    { text: "Trạng thái", value: "isCanceled", class: "tertiary" },
     {
       text: "Hành động",
       value: "actions",
-      class: "elevation-1 primary"
+      class: "tertiary"
     }
   ];
 

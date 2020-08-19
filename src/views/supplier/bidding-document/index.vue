@@ -65,17 +65,7 @@
           }}
         </template>
         <template v-slot:item.status="{ item }">
-          <v-chip
-            :style="
-              item.status == 'BIDDING'
-                ? 'background-color:blue'
-                : item.status == 'COMBINED'
-                ? 'background-color:green'
-                : 'background-color:blue'
-            "
-            dark
-            >{{ item.status }}</v-chip
-          >
+          <ChipStatus :status="item.status" />
         </template>
         <template v-slot:item.actions="{ item }">
           <v-menu :close-on-click="true">
@@ -98,10 +88,10 @@
               </v-list-item>
               <v-list-item @click.stop="openDetailDialog(item)">
                 <v-list-item-icon>
-                  <v-icon small>details</v-icon>
+                  <v-icon small>remove_red_eye</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
-                  <v-list-item-title>Chi tiết</v-list-item-title>
+                  <v-list-item-title>Xem chi tiết</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
               <v-list-item
@@ -160,6 +150,7 @@ import { getShippingLines } from "@/api/shipping-line";
 import { IShippingLine } from "@/entity/shipping-line";
 import { IPort } from "@/entity/port";
 import { addTimeToDate } from "@/utils/tool";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
   mixins: [Utils],
@@ -167,7 +158,8 @@ import { addTimeToDate } from "@/utils/tool";
     CreateBiddingDocument,
     UpdateBiddingDocument,
     DeleteBiddingDocument,
-    CancelBiddingDocument
+    CancelBiddingDocument,
+    ChipStatus
   }
 })
 export default class BiddingDocument extends Vue {

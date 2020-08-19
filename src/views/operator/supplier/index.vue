@@ -35,7 +35,7 @@
         class="elevation-1"
       >
         <template v-slot:item.avatar="{ item }">
-          <v-avatar size="35" color="indigo">
+          <v-avatar size="35" color="tertiary">
             <v-img
               v-if="item.profileImagePath"
               :src="item.profileImagePath"
@@ -46,9 +46,7 @@
           </v-avatar>
         </template>
         <template v-slot:item.status="{ item }">
-          <v-chip :color="item.status == 'ACTIVE' ? 'success' : 'error'" dark>{{
-            item.status
-          }}</v-chip>
+          <ChipStatus :status="item.status" />
         </template>
         <template v-slot:item.actions="{ item }">
           <v-menu :loading="item.createloading" :disabled="item.createloading">
@@ -103,11 +101,13 @@ import { getSuppliers } from "@/api/supplier";
 import ReviewSupplier from "./components/ReviewSupplier.vue";
 import SupplierDetail from "./components/SupplierDetail.vue";
 import { DataOptions } from "vuetify";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
   components: {
     ReviewSupplier,
-    SupplierDetail
+    SupplierDetail,
+    ChipStatus
   }
 })
 export default class Supplier extends Vue {
@@ -147,12 +147,7 @@ export default class Supplier extends Vue {
     { text: "Trang web", value: "website" },
     { text: "Vai trò", value: "roles" },
     { text: "Trạng thái", value: "status" },
-    {
-      text: "Hành động",
-      value: "actions",
-      sortable: false,
-      align: "center"
-    }
+    { text: "Hành động", value: "actions" }
   ];
 
   openDetailDialog(item: ISupplier) {

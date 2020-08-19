@@ -26,7 +26,7 @@
           </v-toolbar>
         </template>
         <template v-slot:item.action="{ item }">
-          <v-chip style="background-color:blue" dark>{{ item.action }}</v-chip>
+          <ChipStatus :status="item.action" :sub="true" />
         </template>
         <template v-slot:item.sendDate="{ item }">
           {{ formatDatetime(item.sendDate) }}
@@ -46,7 +46,6 @@
               :actions-append="shippingInfoOptions.page"
               disable-sort
               dense
-              dark
             >
             </v-data-table>
           </td>
@@ -63,9 +62,13 @@ import { DataOptions } from "vuetify";
 import { getShippingInfosByCombined } from "@/api/shipping-info";
 import { IShippingLineNotification } from "@/entity/notification";
 import { getShippingLineNotifications } from "@/api/notification";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
-  mixins: [Utils]
+  mixins: [Utils],
+  components: {
+    ChipStatus
+  }
 })
 export default class BorrowNotify extends Vue {
   shippingLineNotifications: Array<IShippingLineNotification> = [];
@@ -97,7 +100,7 @@ export default class BorrowNotify extends Vue {
       sortable: false,
       value: "id"
     },
-    { text: "Bên mượn", value: "relatedResource.bid.bidder" },
+    { text: "Bên mượn", value: "relatedResource.bid.bidder.companyName" },
     { text: "Nội dung", value: "title" },
     { text: "Ngày gửi y/c", value: "sendDate" },
     { text: "Loại yêu cầu", value: "action" }
@@ -111,11 +114,9 @@ export default class BorrowNotify extends Vue {
     },
     {
       text: "Container No.",
-      align: "start",
-      sortable: false,
       value: "container.number"
     },
-    { text: "Tài xế", value: "container.driver" },
+    { text: "Tài xế", value: "container.driver.fullname" },
     {
       text: "Rơ mọt",
       value: "container.trailer.licensePlate"

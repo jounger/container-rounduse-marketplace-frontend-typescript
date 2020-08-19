@@ -49,3 +49,31 @@ export default class NavLayout extends Vue {
   }
 }
 </script>
+<style lang="css">
+.v-application--wrap {
+  background-color: #f2f4f7;
+}
+.container.container--fluid > div {
+  background-color: #f2f4f7;
+}
+.v-dialog .v-card__title,
+.container.container--fluid .v-card__title,
+.container.container--fluid .v-toolbar__title {
+  font-weight: bolder;
+  color: #00532f;
+}
+.v-list.v-sheet.theme--light.v-list--dense .v-list-item__icon .v-icon {
+  color: #005caf;
+}
+th.text-start {
+  background: #00532f;
+  color: #fff !important;
+}
+.v-data-table__expanded .v-data-table.v-data-table--dense.theme--light {
+  background: #f2f4f7;
+}
+.v-data-table__expanded th.text-start {
+  background: #005caf !important;
+  color: #fff !important;
+}
+</style>

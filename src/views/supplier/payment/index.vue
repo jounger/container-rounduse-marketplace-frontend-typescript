@@ -51,9 +51,7 @@
           </v-toolbar>
         </template>
         <template v-slot:item.status="{ item }">
-          <v-chip :color="item.isPaid ? 'success' : 'error'" dark>{{
-            item.isPaid ? "Đã xác nhận" : "Chưa xác nhận"
-          }}</v-chip>
+          <ChipStatus :status="item.isPaid ? 'PAID' : 'PENDING'" />
         </template>
         <template v-slot:item.paymentDate="{ item }">
           {{ formatDatetime(item.paymentDate) }}
@@ -74,7 +72,7 @@
             <v-list dense>
               <v-list-item @click="openDetailDialog(item)">
                 <v-list-item-icon>
-                  <v-icon small>details</v-icon>
+                  <v-icon small>remove_red_eye</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>Xem chi tiết</v-list-item-title>
@@ -132,6 +130,7 @@ import { getPaymentsByUser } from "@/api/payment";
 import { DataOptions } from "vuetify";
 import ConfirmPayment from "./components/ConfirmPayment.vue";
 import UpdatePayment from "./components/UpdatePayment.vue";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
   mixins: [Utils],
@@ -139,7 +138,8 @@ import UpdatePayment from "./components/UpdatePayment.vue";
     CreatePayment,
     UpdatePayment,
     DeletePayment,
-    ConfirmPayment
+    ConfirmPayment,
+    ChipStatus
   }
 })
 export default class Payment extends Vue {

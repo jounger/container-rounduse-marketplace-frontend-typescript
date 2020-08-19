@@ -51,19 +51,7 @@
           </v-toolbar>
         </template>
         <template v-slot:item.status="{ item }">
-          <v-chip
-            :style="
-              item.status == 'CREATED'
-                ? 'background-color:orange'
-                : item.status == 'BIDDING'
-                ? 'background-color:blue'
-                : item.status == 'COMBINED'
-                ? 'background-color:green'
-                : 'background-color:blue'
-            "
-            dark
-            >{{ item.status }}</v-chip
-          >
+          <ChipStatus :status="item.status" />
         </template>
         <template v-slot:item.packingTime="{ item }">
           {{ formatDatetime(item.packingTime) }}
@@ -129,6 +117,7 @@ import { getOutboundByMerchant } from "@/api/outbound";
 import Utils from "@/mixin/utils";
 import CreateBiddingDocument from "../../supplier/bidding-document/components/CreateBiddingDocument.vue";
 import { DataOptions } from "vuetify";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
   mixins: [Utils],
@@ -136,7 +125,8 @@ import { DataOptions } from "vuetify";
     CreateOutbound,
     UpdateOutbound,
     DeleteOutbound,
-    CreateBiddingDocument
+    CreateBiddingDocument,
+    ChipStatus
   }
 })
 export default class Outbound extends Vue {

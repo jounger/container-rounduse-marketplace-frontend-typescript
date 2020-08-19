@@ -1,32 +1,34 @@
 <template>
-  <v-card width="550" height="fit-content" class="mt-12">
-    <v-toolbar color="primary" light flat>
-      <v-toolbar-title
-        ><span style="color: white">Quên mật khẩu</span></v-toolbar-title
-      >
-    </v-toolbar>
-    <v-card-text v-if="message">
-      {{ message }}
-    </v-card-text>
-    <v-card-text v-if="!message">
-      <v-form v-model="valid" validation>
-        <v-text-field
-          label="Địa chỉ email"
-          name="email"
-          prepend-icon="mdi-email"
-          type="text"
-          v-model="emailAddress"
-          :rules="[required('email'), email('email')]"
-        ></v-text-field>
-      </v-form>
-    </v-card-text>
-    <v-card-actions class="justify-space-between">
-      <v-btn text small to="/login">Đã nhớ mật khẩu?</v-btn>
-      <v-btn @click.stop="forgotPassword()" color="primary" v-if="!message"
-        >Gửi vào email</v-btn
-      >
-    </v-card-actions>
-  </v-card>
+  <v-container fluid>
+    <v-card width="550" height="fit-content" class="mt-12 mx-auto">
+      <v-toolbar color="primary" light flat>
+        <v-toolbar-title
+          ><span style="color: white">Quên mật khẩu</span></v-toolbar-title
+        >
+      </v-toolbar>
+      <v-card-text v-if="message">
+        {{ message }}
+      </v-card-text>
+      <v-card-text v-if="!message">
+        <v-form v-model="valid" validation>
+          <v-text-field
+            label="Địa chỉ email"
+            name="email"
+            prepend-icon="mdi-email"
+            type="text"
+            v-model="emailAddress"
+            :rules="[required('email'), email('email')]"
+          ></v-text-field>
+        </v-form>
+      </v-card-text>
+      <v-card-actions class="justify-space-between">
+        <v-btn text small to="/login">Đã nhớ mật khẩu?</v-btn>
+        <v-btn @click.stop="forgotPassword()" color="primary" v-if="!message"
+          >Gửi vào email</v-btn
+        >
+      </v-card-actions>
+    </v-card>
+  </v-container>
 </template>
 
 <script lang="ts">

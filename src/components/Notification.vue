@@ -4,13 +4,14 @@
     :close-on-click="true"
     :close-on-content-click="false"
     max-height="500"
+    max-width="400"
   >
     <template v-slot:activator="{ on, attrs }">
       <v-btn icon v-bind="attrs" v-on="on">
         <v-badge
           :value="messageCount"
           :content="messageCount"
-          color="green"
+          color="secondary"
           overlap
         >
           <v-icon dark> notifications_active</v-icon>
@@ -51,15 +52,19 @@
               gotoNotification(item);
             "
           >
-            <v-list-item-avatar color="green">
-              <span class="white--text headline">
-                {{ item.id }}
-              </span>
+            <v-list-item-avatar color="primary">
+              <v-btn class="ma-2" outlined fab color="white">
+                <v-icon>error_outline</v-icon>
+              </v-btn>
             </v-list-item-avatar>
 
             <v-list-item-content>
               <v-list-item-title v-html="item.message"></v-list-item-title>
-              <v-list-item-subtitle v-html="item.type"></v-list-item-subtitle
+              <v-list-item-subtitle>
+                <ChipStatus
+                  :status="item.type"
+                  :sub="true"
+                  type="type"/></v-list-item-subtitle
               ><small>{{ formatDatetime(item.sendDate) }}</small>
             </v-list-item-content>
 
@@ -88,7 +93,7 @@
           :disabled="loading"
           @click.stop="seeMore()"
           outlined
-          color="indigo"
+          color="tertiary"
           small
           >Xem thêm...</v-btn
         >
@@ -111,9 +116,13 @@ import {
 } from "@/api/notification";
 import { INotification } from "@/entity/notification";
 import Utils from "@/mixin/utils";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
-  mixins: [Utils]
+  mixins: [Utils],
+  components: {
+    ChipStatus
+  }
 })
 export default class Notification extends Vue {
   notifications: Array<INotification> = [];
