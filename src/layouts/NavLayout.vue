@@ -23,7 +23,7 @@ import Footer from "@/components/Footer.vue";
   }
 })
 export default class NavLayout extends Vue {
-  public drawer = true;
+  public drawer = false;
 
   get isUser() {
     return this.$auth.check([

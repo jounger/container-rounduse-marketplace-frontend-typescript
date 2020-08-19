@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar app color="primary" dark>
+  <v-app-bar app color="#fff" light>
     <v-app-bar-nav-icon @click.stop="changeDrawer()"></v-app-bar-nav-icon>
     <v-btn text to="/"
       ><v-toolbar-title>Container Round-use Marketplace</v-toolbar-title></v-btn
