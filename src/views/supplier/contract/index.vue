@@ -258,7 +258,7 @@ export default class Contract extends Vue {
       class: "tertiary"
     },
     { text: "Hợp lệ", value: "status", class: "tertiary" },
-    { text: "Hành động", value: "actions", class: "tertiary"}
+    { text: "Hành động", value: "actions", class: "tertiary" }
   ];
 
   openCreatePayment(item: ICombined) {
