@@ -2,7 +2,6 @@ import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 
 Vue.use(VueRouter);
-
 // DIVICE BY PERMISSION
 const routes: Array<RouteConfig> = [
   // ERROR
@@ -63,6 +62,14 @@ const routes: Array<RouteConfig> = [
       layout: "DefaultLayout"
     },
     component: () => import("@/views/Home.vue")
+  },
+  {
+    path: "/homepage",
+    name: "HomePage",
+    meta: {
+      layout: "EmptyLayout"
+    },
+    component: () => import("@/views/guest/home/index.vue")
   },
   {
     path: "/profile",
@@ -349,7 +356,6 @@ const routes: Array<RouteConfig> = [
   // 404 page must be placed at the end !!!
   { path: "*", redirect: "/404" }
 ];
-
 const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
