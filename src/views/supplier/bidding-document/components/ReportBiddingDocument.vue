@@ -7,7 +7,7 @@
           max-width="600"
           src="@/assets/images/background-cover.jpg"
         ></v-img>
-        <v-card-title>Hồ sơ Mời thầu</v-card-title>
+        <v-card-title>Hồ sơ mời thầu</v-card-title>
         <v-card-text>
           Chủ hàng xuất:
           <SupplierRating :supplier="biddingDocument.offeree" />

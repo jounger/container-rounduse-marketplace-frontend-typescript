@@ -49,7 +49,7 @@
           'items-per-page-options': serverSideOptions.itemsPerPageItems
         }"
         :actions-append="options.page"
-        no-data-text="Danh sách Hợp đồng rỗng."
+        no-data-text="Danh sách hợp đồng rỗng."
         disable-sort
         class="elevation-1"
       >
@@ -154,12 +154,19 @@
                 </v-btn>
               </template>
               <template v-slot:item.documentPath="{ item }">
-                <v-icon>picture_as_pdf</v-icon>
-                {{
-                  item.documentPath
-                    ? item.documentPath.split("/")[4].substring(14)
-                    : "N/A"
-                }}
+                <v-btn
+                  text
+                  tile
+                  color="primary"
+                  @click="openDetailContractDocument(item)"
+                >
+                  <v-icon>picture_as_pdf</v-icon>
+                  {{
+                    item.documentPath
+                      ? item.documentPath.split("/")[4].substring(14)
+                      : "N/A"
+                  }}
+                </v-btn>
               </template>
               <template v-slot:item.status="{ item }">
                 <ChipStatus :status="item.status" :sub="true" />

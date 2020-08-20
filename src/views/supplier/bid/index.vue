@@ -97,7 +97,7 @@
               :footer-props="{
                 'items-per-page-options': bidServerSideOptions.itemsPerPageItems
               }"
-              hide-default-footer
+              :hide-default-footer="$auth.check('ROLE_FORWARDER')"
               disable-sort
               dense
             >

@@ -17,20 +17,20 @@ export interface INotification {
 
 export interface IBiddingNotification extends INotification {
   relatedResource: IBiddingDocument;
-  actions: string;
+  action: string;
 }
 
 export interface IReportNotification extends INotification {
   relatedResource: IReport;
-  actions: string;
+  action: string;
 }
 
 export interface IDriverNotification extends INotification {
   relatedResource: IShippingInfo;
-  actions: string;
+  action: string;
 }
 
 export interface IShippingLineNotification extends INotification {
   relatedResource: ICombined;
-  actions: string;
+  action: string;
 }

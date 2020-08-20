@@ -76,4 +76,7 @@ th.text-start {
   background: #005caf !important;
   color: #fff !important;
 }
+.v-data-table__expanded .v-data-footer__select .v-select {
+  margin: 5px 0 5px 34px !important;
+}
 </style>
