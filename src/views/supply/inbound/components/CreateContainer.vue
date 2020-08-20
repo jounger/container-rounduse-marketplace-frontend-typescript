@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogAddContSync" max-width="500px">
+  <v-dialog v-model="dialogAddContSync" max-width="600">
     <v-card>
       <v-card-title class="headline">{{
         update ? "Cập nhật Container" : "Thêm mới Container"
@@ -9,62 +9,54 @@
         <v-form v-model="valid" validation>
           <v-container>
             <small>*Dấu sao là trường bắt buộc</small>
-            <v-layout row>
-              <v-layout col>
-                <v-flex xs10>
-                  <v-text-field
-                    v-model="containerLocal.number"
-                    prepend-icon="directions_bus"
-                    :rules="[required('mã Container')]"
-                    label="Container No.*"
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
-              <v-layout col>
-                <v-flex xs10>
-                  <v-select
-                    v-model="containerLocal.driver"
-                    prepend-icon="airline_seat_recline_normal"
-                    :items="drivers"
-                    :rules="[required('lái xe')]"
-                    item-text="fullname"
-                    item-value="username"
-                    no-data-text="Danh sách lái xe rỗng."
-                    label="Lái xe*"
-                  ></v-select>
-                </v-flex>
-              </v-layout>
-            </v-layout>
-            <v-layout row>
-              <v-layout col>
-                <v-flex xs10>
-                  <v-select
-                    v-model="containerLocal.tractor"
-                    prepend-icon="tram"
-                    :items="tractors"
-                    :rules="[required('đầu kéo')]"
-                    item-text="licensePlate"
-                    item-value="licensePlate"
-                    no-data-text="Danh sách đầu kéo rỗng."
-                    label="Chọn đầu kéo*"
-                  ></v-select>
-                </v-flex>
-              </v-layout>
-              <v-layout col>
-                <v-flex xs10>
-                  <v-select
-                    v-model="containerLocal.trailer"
-                    prepend-icon="format_strikethrough"
-                    :items="trailers"
-                    :rules="[required('rơ moóc')]"
-                    item-text="licensePlate"
-                    item-value="licensePlate"
-                    no-data-text="Danh sách rơ moóc rỗng."
-                    label="Chọn rơ moóc*"
-                  ></v-select>
-                </v-flex>
-              </v-layout>
-            </v-layout>
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="containerLocal.number"
+                  prepend-icon="directions_bus"
+                  :rules="[required('mã Container')]"
+                  label="Container No.*"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-select
+                  v-model="containerLocal.driver"
+                  prepend-icon="airline_seat_recline_normal"
+                  :items="drivers"
+                  :rules="[required('lái xe')]"
+                  item-text="fullname"
+                  item-value="username"
+                  no-data-text="Danh sách lái xe rỗng."
+                  label="Lái xe*"
+                ></v-select>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-select
+                  v-model="containerLocal.tractor"
+                  prepend-icon="tram"
+                  :items="tractors"
+                  :rules="[required('đầu kéo')]"
+                  item-text="licensePlate"
+                  item-value="licensePlate"
+                  no-data-text="Danh sách đầu kéo rỗng."
+                  label="Chọn đầu kéo*"
+                ></v-select>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-select
+                  v-model="containerLocal.trailer"
+                  prepend-icon="format_strikethrough"
+                  :items="trailers"
+                  :rules="[required('rơ moóc')]"
+                  item-text="licensePlate"
+                  item-value="licensePlate"
+                  no-data-text="Danh sách rơ moóc rỗng."
+                  label="Chọn rơ moóc*"
+                ></v-select>
+              </v-col>
+            </v-row>
           </v-container>
         </v-form>
       </v-card-text>

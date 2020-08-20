@@ -26,6 +26,15 @@ export function getBiddingDocumentByCombined(id: number) {
   return Vue.axios.get(`/bidding-document/combined/${id}`);
 }
 
+export function getBiddingDocumentByInbound(
+  id: number,
+  paging: PaginationRequest
+) {
+  return Vue.axios.get(`/bidding-document/inbound/${id}`, {
+    params: paging
+  });
+}
+
 export function createBiddingDocument(biddingDocument: IBiddingDocument) {
   return Vue.axios.post("/bidding-document", biddingDocument);
 }

@@ -110,7 +110,7 @@ import { DataOptions } from "vuetify";
 import { NOTIFICATION_LINK } from "@/utils/constants";
 import {
   getBiddingNotification,
-  getNotificationsByUser,
+  getNotifications,
   getReportNotification,
   editNotification
 } from "@/api/notification";
@@ -208,7 +208,7 @@ export default class Notification extends Vue {
       ])
     ) {
       this.loading = true;
-      const _res = await getNotificationsByUser({
+      const _res = await getNotifications({
         page: val.page - 1,
         limit: val.itemsPerPage
       });
