@@ -120,7 +120,7 @@ import { IInvoice } from "@/entity/invoice";
 import CreateInvoice from "./components/CreateInvoice.vue";
 import DeleteInvoice from "./components/DeleteInvoice.vue";
 import Utils from "@/mixin/utils";
-import { getInvoicesByUser } from "@/api/invoice";
+import { getInvoices } from "@/api/invoice";
 import { DataOptions } from "vuetify";
 import ConfirmInvoice from "./components/ConfirmInvoice.vue";
 import UpdateInvoice from "./components/UpdateInvoice.vue";
@@ -201,7 +201,7 @@ export default class Invoice extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _res = await getInvoicesByUser({
+      const _res = await getInvoices({
         page: val.page - 1,
         limit: val.itemsPerPage
       });

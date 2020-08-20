@@ -213,7 +213,7 @@
                 max-width="480"
                 src="@/assets/images/background-cover.jpg"
               ></v-img>
-              <v-card-title>Thông tin Hợp đồng</v-card-title>
+              <v-card-title>Thông tin hợp đồng</v-card-title>
               <v-card-text>
                 Thông tin Chủ xe:
                 <SupplierRating :supplier="combined.bid.bidder" />
@@ -270,7 +270,7 @@
                       contractDocumentServerSideOptions.itemsPerPageItems
                   }"
                   :actions-append="contractDocumentOptions.page"
-                  no-data-text="Danh sách file Hợp đồng rỗng."
+                  no-data-text="Danh sách file hợp đồng rỗng."
                   disable-sort
                   class="elevation-0"
                 >
@@ -309,8 +309,11 @@
       </v-card>
       <v-card class="order-1 flex-grow-1 mx-auto">
         <v-card-title v-if="shippingInfo">
-          Thông tin vận chuyển: {{ "#" + shippingInfo.id }}
+          Mã đơn vận chuyển: {{ "#" + shippingInfo.id }}
         </v-card-title>
+        <v-card-subtitle class="text-h7 text-no-wrap font-weight-bold"
+          >Mã hàng ghép: #{{ getRouterId }}</v-card-subtitle
+        >
         <v-card-text>
           <v-stepper :value="stepper" alt-labels class="elevation-0">
             <v-stepper-header>
@@ -322,7 +325,7 @@
                 step="2"
                 :complete="stepper >= 2"
                 :rules="[() => exception]"
-                color="deep-purple"
+                color="warning"
                 >Đang vận chuyển
                 <small v-if="exception == false">Đã có lỗi xảy ra</small>
               </v-stepper-step>
@@ -362,7 +365,7 @@
             <v-btn
               class="ma-1"
               small
-              tile
+              rounded
               :outlined="shippingInfo.id !== item.id"
               :color="shippingInfo.id == item.id ? 'info' : 'gray'"
               @click.stop="openDetailRouter(item)"

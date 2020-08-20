@@ -102,7 +102,7 @@ export function convertTime(input: string) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getErrorMessage(error: any) {
-  // Error 😨
+  // Error
   console.log("Error", error);
   if (error.response) {
     /*

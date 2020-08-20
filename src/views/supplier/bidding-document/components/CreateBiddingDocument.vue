@@ -12,7 +12,7 @@
         <v-btn icon dark @click="dialogAddSync = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title>Thêm mới</v-toolbar-title>
+        <v-toolbar-title>Thêm mới HSMT</v-toolbar-title>
       </v-toolbar>
       <!-- START CONTENT -->
       <v-list three-line subheader>

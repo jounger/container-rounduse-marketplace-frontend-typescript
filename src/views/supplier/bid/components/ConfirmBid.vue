@@ -2,7 +2,7 @@
   <v-dialog v-model="dialogConfirmSync" max-width="400">
     <v-card>
       <v-card-title class="headline"
-        >Xác nhận Từ chối tham gia thầu</v-card-title
+        >Xác nhận từ chối tham gia thầu</v-card-title
       >
 
       <v-card-text>

@@ -10,6 +10,11 @@
       :dialogEdit.sync="dialogEdit"
       :inbounds="inbounds"
     />
+    <CreateBid
+      v-if="dialogAddBid"
+      :dialogAdd.sync="dialogAddBid"
+      :inbound="inbound"
+    />
     <v-row justify="center">
       <DeleteInbound
         v-if="dialogDel"
@@ -85,6 +90,14 @@
               </v-btn>
             </template>
             <v-list dense>
+              <v-list-item @click="openCreateBidDialog(item)">
+                <v-list-item-icon>
+                  <v-icon small>add</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Tìm thầu</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
               <v-list-item @click="openUpdateDialog(item)">
                 <v-list-item-icon>
                   <v-icon small>edit</v-icon>
@@ -173,6 +186,7 @@ import DeleteContainer from "./components/DeleteContainer.vue";
 import CreateContainer from "./components/CreateContainer.vue";
 import { DataOptions } from "vuetify";
 import ChipStatus from "@/components/ChipStatus.vue";
+import CreateBid from "../../supplier/bid/components/CreateBid.vue";
 
 @Component({
   mixins: [Utils],
@@ -182,7 +196,8 @@ import ChipStatus from "@/components/ChipStatus.vue";
     DeleteInbound,
     DeleteContainer,
     CreateContainer,
-    ChipStatus
+    ChipStatus,
+    CreateBid
   }
 })
 export default class Inbound extends Vue {
@@ -190,6 +205,7 @@ export default class Inbound extends Vue {
   inbound = null as IInbound | null;
   containers: Array<IContainer> = [];
   container = null as IContainer | null;
+  dialogAddBid = false;
   dialogAddCont = false;
   dialogDelCont = false;
   dialogAdd = false;
@@ -263,6 +279,11 @@ export default class Inbound extends Vue {
     { text: "Trạng thái", value: "status", class: "tertiary" },
     { text: "Hành động", value: "actions", class: "tertiary" }
   ];
+
+  openCreateBidDialog(item: IInbound) {
+    this.inbound = item;
+    this.dialogAddBid = true;
+  }
 
   openUpdateDialog(item: IInbound) {
     this.inbound = item;

@@ -1,12 +1,12 @@
 <template>
   <v-dialog v-model="dialogDetailSync" max-width="400">
     <v-card>
-      <v-card-title class="headline">Chi tiết file Hợp đồng</v-card-title>
+      <v-card-title class="headline">Chi tiết file hợp đồng</v-card-title>
       <v-divider></v-divider>
       <v-card-text>
         <v-form>
           <v-row>
-            <v-col cols="12" md="11">
+            <v-col cols="12" md="12">
               <v-text-field
                 label="Bên gửi"
                 name="sender"
@@ -18,7 +18,7 @@
             </v-col>
           </v-row>
           <v-row v-if="contractDocument">
-            <v-col cols="12" md="8">
+            <v-col cols="12" md="9">
               <v-text-field
                 label="File Hợp đồng"
                 name="contractDocument"
@@ -27,7 +27,7 @@
                 v-model="documentPath"
               ></v-text-field>
             </v-col>
-            <v-col cols="12" md="4" class="mt-3">
+            <v-col cols="12" md="3" class="mt-3">
               <v-btn color="primary" @click.stop="downLoad(contractDocument)"
                 ><v-icon>cloud_download</v-icon></v-btn
               >
@@ -37,6 +37,7 @@
       </v-card-text>
       <v-card-actions class="justify-space-between">
         <v-btn @click="dialogDetailSync = false">Trở về</v-btn>
+        <v-spacer></v-spacer>
         <v-btn
           @click="reviewContractDocument(false)"
           color="error"

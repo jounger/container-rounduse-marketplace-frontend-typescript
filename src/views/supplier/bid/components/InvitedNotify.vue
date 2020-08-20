@@ -61,7 +61,7 @@
             tile
             outlined
             color="info"
-            @click.stop="openBiddingDocumentDetail(item)"
+            :to="`/bidding-document/${item.relatedResource.id}`"
             x-small
           >
             <v-icon left dense>remove_red_eye</v-icon> Chi tiết
@@ -91,7 +91,7 @@ import { Component, Watch, Vue } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import CreateBid from "./CreateBid.vue";
 import { IBiddingNotification } from "@/entity/bidding-notification";
-import { getBiddingNotificationsByUser } from "@/api/notification";
+import { getBiddingNotifications } from "@/api/notification";
 import Utils from "@/mixin/utils";
 import { DataOptions } from "vuetify";
 import ConfirmBid from "./ConfirmBid.vue";
@@ -168,26 +168,18 @@ export default class InvitedNotify extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _res = await getBiddingNotificationsByUser({
+      const _res = await getBiddingNotifications({
         page: val.page - 1,
-        limit: val.itemsPerPage
+        limit: val.itemsPerPage,
+        status: "BIDDING_INVITED"
       });
       if (_res.data) {
         const _biddingNotifications = _res.data.data as IBiddingNotification[];
-        this.biddingNotifications = _biddingNotifications.filter(
-          x => x.action == "ADDED" && x.isHide == false
-        );
-        this.serverSideOptions.totalItems = _biddingNotifications.filter(
-          x => x.action == "ADDED" && x.isHide == false
-        ).length;
+        this.biddingNotifications = _biddingNotifications;
+        this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
     }
-  }
-  openBiddingDocumentDetail(value: IBiddingNotification) {
-    this.$router.push({
-      path: `/bidding-document/${value.relatedResource.id}`
-    });
   }
 }
 </script>

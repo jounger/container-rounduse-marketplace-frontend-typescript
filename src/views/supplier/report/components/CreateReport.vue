@@ -146,7 +146,7 @@ import { IBiddingDocument } from "@/entity/bidding-document";
 import { isEmptyObject } from "@/utils/tool";
 import { IReport } from "@/entity/report";
 import { IBiddingNotification } from "@/entity/bidding-notification";
-import { getBiddingNotificationsByUser } from "@/api/notification";
+import { getBiddingNotifications } from "@/api/notification";
 import { createReport } from "@/api/report";
 import { DataOptions } from "vuetify";
 
@@ -225,7 +225,7 @@ export default class CreateReport extends Vue {
       this.serverSideOptions.totalItems = 1;
       this.loading = false;
     } else {
-      const _res = await getBiddingNotificationsByUser({
+      const _res = await getBiddingNotifications({
         page: 0,
         limit: 100
       });

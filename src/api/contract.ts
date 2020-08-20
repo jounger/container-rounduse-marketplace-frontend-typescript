@@ -8,7 +8,7 @@ export function searchContracts(paging: PaginationRequest, search: string) {
   });
 }
 
-export function getContractsByUser(paging: PaginationRequest) {
+export function getContracts(paging: PaginationRequest) {
   return Vue.axios.get("/contract/user", {
     params: paging
   });

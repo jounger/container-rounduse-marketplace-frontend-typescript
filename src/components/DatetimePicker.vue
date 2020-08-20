@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col cols="12" sm="8" class="pa-0">
+    <v-col cols="12" sm="8" class="pr-0 py-0">
       <v-menu
         ref="dateTimePicker"
         v-model="dateTimePicker"

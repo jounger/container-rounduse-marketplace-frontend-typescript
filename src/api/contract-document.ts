@@ -10,7 +10,7 @@ export function getContractDocumentsByContract(
   });
 }
 
-export function getContractDocumentsByUser(paging: PaginationRequest) {
+export function getContractDocuments(paging: PaginationRequest) {
   return Vue.axios.get("/contract-document/user", {
     params: paging
   });

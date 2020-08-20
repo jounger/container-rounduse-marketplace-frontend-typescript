@@ -11,7 +11,7 @@
         <v-badge
           :value="messageCount"
           :content="messageCount"
-          color="secondary"
+          color="warning"
           overlap
         >
           <v-icon dark> notifications_active</v-icon>
@@ -110,11 +110,11 @@ import { DataOptions } from "vuetify";
 import { NOTIFICATION_LINK } from "@/utils/constants";
 import {
   getBiddingNotification,
-  getNotificationsByUser,
+  getNotifications,
   getReportNotification,
   editNotification
 } from "@/api/notification";
-import { INotification } from "@/entity/notification";
+import { INotification, IBiddingNotification } from "@/entity/notification";
 import Utils from "@/mixin/utils";
 import ChipStatus from "@/components/ChipStatus.vue";
 
@@ -148,12 +148,16 @@ export default class Notification extends Vue {
     let ROUTER = "";
     if (item.type == "BIDDING") {
       const _res = await getBiddingNotification(item.id as number);
-      if (_res.data)
-        ROUTER = `/bidding-document/${_res.data.relatedResource.id}`;
+      if (_res.data) {
+        const _biddingNotification = _res.data as IBiddingNotification;
+        if (_biddingNotification.action.includes("CONTRACT")) {
+          ROUTER = "/contract";
+        } else ROUTER = `/bidding-document/${_res.data.relatedResource.id}`;
+      }
     } else if (item.type == "REPORT") {
       const _res = await getReportNotification(item.id as number);
       if (_res.data) ROUTER = `/report/${_res.data.relatedResource.id}`;
-    } else if (item.type == "SHIPPING_LINE") {
+    } else if (item.type == "SHIPPINGLINE") {
       ROUTER = "/borrow-notify";
     }
     if (location.pathname == ROUTER) {
@@ -204,7 +208,7 @@ export default class Notification extends Vue {
       ])
     ) {
       this.loading = true;
-      const _res = await getNotificationsByUser({
+      const _res = await getNotifications({
         page: val.page - 1,
         limit: val.itemsPerPage
       });

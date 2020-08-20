@@ -8,7 +8,7 @@ export function searchInvoices(paging: PaginationRequest, search: string) {
   });
 }
 
-export function getInvoicesByUser(paging: PaginationRequest) {
+export function getInvoices(paging: PaginationRequest) {
   return Vue.axios.get("/invoice/user", {
     params: paging
   });

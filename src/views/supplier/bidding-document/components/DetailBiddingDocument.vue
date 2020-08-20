@@ -40,7 +40,7 @@
           max-width="400"
           src="@/assets/images/background-cover.jpg"
         ></v-img>
-        <v-card-title>Hồ sơ Mời thầu</v-card-title>
+        <v-card-title>Hồ sơ mời thầu (HSMT): #{{ getRouterId }}</v-card-title>
         <v-card-text>
           Chủ hàng xuất:
           <SupplierRating :supplier="biddingDocument.offeree" />
@@ -196,6 +196,9 @@
             <span>Báo cáo HSMT</span>
           </v-tooltip>
         </v-card-title>
+        <v-card-subtitle class="text-h7 text-no-wrap font-weight-bold"
+          >Mã hồ sơ mời thầu: #{{ getRouterId }}</v-card-subtitle
+        >
         <v-card-text>
           <v-row>
             <v-col cols="12" sm="6">
@@ -616,6 +619,14 @@ export default class DetailBiddingDocument extends Vue {
         const _bids = _res.data.data;
         this.bids = _bids;
         this.serverSideOptions.totalItems = _res.data.totalElements;
+        if (this.$auth.check("ROLE_FORWARDER")) {
+          this.bid = _bids[0];
+          this.expanded.push(_bids[0]);
+          await this.loadMoreContainers({
+            ...this.containerOptions,
+            page: 1
+          });
+        }
       }
       // COUNT NUM OF ACCEPTED BIDS
       if (this.$auth.check("ROLE_MERCHANT")) {

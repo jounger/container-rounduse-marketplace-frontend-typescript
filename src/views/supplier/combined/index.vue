@@ -62,7 +62,7 @@
                   combinedServerSideOptions.itemsPerPageItems
               }"
               :actions-append="combinedOptions.page"
-              hide-default-footer
+              :hide-default-footer="$auth.check('ROLE_FORWARDER')"
               disable-sort
               dense
             >

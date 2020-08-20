@@ -7,6 +7,7 @@ export function getReportsByUser(paging: PaginationRequest) {
     params: paging
   });
 }
+
 export function getReports(paging: PaginationRequest) {
   return Vue.axios.get("/report", {
     params: paging
