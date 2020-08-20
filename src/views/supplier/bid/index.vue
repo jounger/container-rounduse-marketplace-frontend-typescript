@@ -114,25 +114,34 @@
                 <ChipStatus :status="item.status" :sub="true" />
               </template>
               <template v-slot:item.actions="{ item }">
-                <v-icon
-                  small
-                  class="mr-2"
-                  @click="openEditDialog(item)"
+                <div
                   v-if="
                     ['PENDING', 'EXPIRED', 'CANCELED'].includes(item.status)
                   "
                 >
-                  mdi-pencil
-                </v-icon>
-                <v-icon
-                  small
-                  @click="openCancelDialog(item)"
-                  v-if="
-                    ['PENDING', 'EXPIRED', 'CANCELED'].includes(item.status)
-                  "
-                >
-                  close
-                </v-icon>
+                  <v-btn
+                    class="ma-1"
+                    tile
+                    outlined
+                    color="success"
+                    :disabled="isFreezing(item)"
+                    @click.stop="openEditDialog(item)"
+                    x-small
+                  >
+                    <v-icon left small>edit</v-icon> Sửa
+                  </v-btn>
+                  <v-btn
+                    class="ma-1"
+                    tile
+                    outlined
+                    color="error"
+                    :disabled="isFreezing(item)"
+                    @click.stop="openCancelDialog(item)"
+                    x-small
+                  >
+                    <v-icon left small>close</v-icon> Hủy
+                  </v-btn>
+                </div>
               </template>
               <template v-slot:item.bidPrice="{ item }">
                 {{ currencyFormatter(item.bidPrice) }}
@@ -285,23 +294,23 @@ export default class Bid extends Vue {
     this.dialogAdd = true;
   }
 
-  openEditDialog(item: IBid) {
+  isFreezing(item: IBid) {
     const _freezeTime = item.freezeTime
       ? new Date(item.freezeTime)
       : new Date();
-    const _isValid = new Date(_freezeTime).getTime() - new Date().getTime();
-    if (_isValid <= 0) {
+    const _isFreezing = new Date(_freezeTime).getTime() - new Date().getTime();
+    return _isFreezing > 0 ? true : false;
+  }
+
+  openEditDialog(item: IBid) {
+    if (this.isFreezing(item) == false) {
       this.bid = item;
       this.dialogEdit = true;
     }
   }
 
   openCancelDialog(item: IBid) {
-    const _freezeTime = item.freezeTime
-      ? new Date(item.freezeTime)
-      : new Date();
-    const _isValid = new Date(_freezeTime).getTime() - new Date().getTime();
-    if (_isValid <= 0) {
+    if (this.isFreezing(item) == false) {
       this.bid = item;
       this.dialogCancel = true;
     }

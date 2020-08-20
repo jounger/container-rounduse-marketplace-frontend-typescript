@@ -266,6 +266,7 @@ export default class Inbound extends Vue {
       class: "tertiary"
     },
     { text: "Lái xe", value: "driver.fullname", class: "tertiary" },
+    { text: "SĐT liên hệ", value: "driver.phone", class: "tertiary" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate",

@@ -474,6 +474,7 @@ export default class CreateInbound extends Vue {
       value: "number"
     },
     { text: "Lái xe", value: "driver.fullname" },
+    { text: "SĐT liên hệ", value: "driver.phone" },
     { text: "Rơ mọt", value: "trailer" },
     { text: "Đầu kéo", value: "tractor" },
     {

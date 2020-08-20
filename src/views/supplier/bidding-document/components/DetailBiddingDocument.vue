@@ -13,7 +13,20 @@
         :isAccept="false"
         :bid="bid"
       />
+      <CancelBid
+        v-if="dialogCancelBid"
+        :dialogCancel.sync="dialogCancelBid"
+        :bid="bid"
+        :bids.sync="bids"
+      />
     </v-row>
+    <UpdateBid
+      v-if="dialogEditBid"
+      :bid="bid"
+      :bids.sync="bids"
+      :biddingDocument="biddingDocument"
+      :dialogEdit.sync="dialogEditBid"
+    />
     <CreateCombined
       v-if="bid && dialogAddCombined"
       :dialogAdd.sync="dialogAddCombined"
@@ -325,29 +338,60 @@
             <ChipStatus :status="item.status" />
           </template>
           <template v-slot:item.actions="{ item }">
-            <v-btn
-              class="ma-1"
-              x-small
-              tile
-              outlined
-              color="success"
-              @click.stop="openConfirmBid(item, true)"
-              v-if="item.status == 'PENDING' && $auth.check('ROLE_MERCHANT')"
-              :disabled="isDisableConfirm(item)"
-            >
-              <v-icon left dense>library_add_check </v-icon>Đồng ý
-            </v-btn>
-            <v-btn
-              class="ma-1"
-              x-small
-              tile
-              outlined
-              color="error"
-              @click.stop="openConfirmBid(item, false)"
+            <div
               v-if="item.status == 'PENDING' && $auth.check('ROLE_MERCHANT')"
             >
-              <v-icon left dense>remove_circle</v-icon>Từ chối
-            </v-btn>
+              <v-btn
+                class="ma-1"
+                x-small
+                tile
+                outlined
+                color="success"
+                @click.stop="openConfirmBid(item, true)"
+                :disabled="isDisableConfirm(item)"
+              >
+                <v-icon left dense>library_add_check </v-icon>Đồng ý
+              </v-btn>
+              <v-btn
+                class="ma-1"
+                x-small
+                tile
+                outlined
+                color="error"
+                @click.stop="openConfirmBid(item, false)"
+              >
+                <v-icon left dense>remove_circle</v-icon>Từ chối
+              </v-btn>
+            </div>
+            <div
+              v-if="
+                ['PENDING', 'EXPIRED', 'CANCELED'].includes(item.status) &&
+                  $auth.check('ROLE_FORWARDER')
+              "
+            >
+              <v-btn
+                class="ma-1"
+                tile
+                outlined
+                color="success"
+                @click.stop="openEditBidDialog(item)"
+                :disabled="isFreezing(item)"
+                x-small
+              >
+                <v-icon left small>edit</v-icon> Sửa
+              </v-btn>
+              <v-btn
+                class="ma-1"
+                tile
+                outlined
+                color="error"
+                :disabled="isFreezing(item)"
+                @click.stop="openCancelBidDialog(item)"
+                x-small
+              >
+                <v-icon left small>close</v-icon> Hủy
+              </v-btn>
+            </div>
           </template>
 
           <template v-slot:expanded-item="{ headers }">
@@ -425,12 +469,16 @@ import CreateCombined from "../../combined/components/CreateCombined.vue";
 import { getBidsByBiddingDocument } from "@/api/bid";
 import ConfirmBid from "./ConfirmBid.vue";
 import ChipStatus from "@/components/ChipStatus.vue";
+import UpdateBid from "../../bid/components/UpdateBid.vue";
+import CancelBid from "../../bid/components/CancelBid.vue";
 
 @Component({
   mixins: [FormValidate, Utils],
   components: {
     CreateCombined,
     CreateBid,
+    UpdateBid,
+    CancelBid,
     CreateReport,
     SupplierRating,
     ConfirmBid,
@@ -446,6 +494,8 @@ export default class DetailBiddingDocument extends Vue {
   dialogRejectBid = false;
   dialogReport = false;
   dialogBid = false;
+  dialogEditBid = false;
+  dialogCancelBid = false;
   bid = null as IBid | null;
   expanded: Array<IBid> = [];
   singleExpand = true;
@@ -492,6 +542,7 @@ export default class DetailBiddingDocument extends Vue {
       class: "tertiary"
     },
     { text: "Lái xe", value: "driver.fullname", class: "tertiary" },
+    { text: "SĐT liên hệ", value: "driver.phone", class: "tertiary" },
     {
       text: "Rơ moóc",
       value: "trailer.licensePlate",
@@ -522,6 +573,28 @@ export default class DetailBiddingDocument extends Vue {
     this.bid = item;
     if (accept) this.dialogAddCombined = true;
     else this.dialogRejectBid = true;
+  }
+
+  isFreezing(item: IBid) {
+    const _freezeTime = item.freezeTime
+      ? new Date(item.freezeTime)
+      : new Date();
+    const _isFreezing = new Date(_freezeTime).getTime() - new Date().getTime();
+    return _isFreezing > 0 ? true : false;
+  }
+
+  openEditBidDialog(item: IBid) {
+    if (this.isFreezing(item) == false) {
+      this.bid = item;
+      this.dialogEditBid = true;
+    }
+  }
+
+  openCancelBidDialog(item: IBid) {
+    if (this.isFreezing(item) == false) {
+      this.bid = item;
+      this.dialogCancelBid = true;
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

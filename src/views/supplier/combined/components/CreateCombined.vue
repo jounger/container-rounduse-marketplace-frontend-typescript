@@ -39,6 +39,9 @@
               disable-sort
               class="elevation-0"
             >
+              <template v-slot:item.status="{ item }">
+                <ChipStatus :status="item.status" :sub="true" />
+              </template>
               <template v-slot:item.bid="{ item }">
                 {{ getBidFromContainer(item).id }}
               </template>
@@ -134,9 +137,13 @@ import { IContract } from "@/entity/contract";
 import { DataOptions } from "vuetify";
 import { IContainer } from "@/entity/container";
 import { IForwarder } from "@/entity/forwarder";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
-  mixins: [FormValidate, Utils]
+  mixins: [FormValidate, Utils],
+  components: {
+    ChipStatus
+  }
 })
 export default class CreateCombined extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
@@ -187,6 +194,7 @@ export default class CreateCombined extends Vue {
     },
     { text: "HSDT", value: "bid" },
     { text: "Lái xe", value: "driver.fullname" },
+    { text: "SĐT liên hệ", value: "driver.phone" },
     {
       text: "Rơ moóc",
       value: "trailer.licensePlate"

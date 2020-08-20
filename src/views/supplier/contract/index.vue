@@ -58,8 +58,6 @@
             <v-toolbar-title style="font-weight:bold; font-size: 25px;"
               >Danh sách Hợp đồng</v-toolbar-title
             >
-            <v-divider class="mx-4" inset vertical></v-divider>
-            <v-spacer></v-spacer>
           </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
@@ -154,19 +152,14 @@
                 </v-btn>
               </template>
               <template v-slot:item.documentPath="{ item }">
-                <v-btn
-                  text
-                  tile
-                  color="primary"
-                  @click="openDetailContractDocument(item)"
-                >
+                <div @click="openDetailContractDocument(item)">
                   <v-icon>picture_as_pdf</v-icon>
                   {{
                     item.documentPath
                       ? item.documentPath.split("/")[4].substring(14)
                       : "N/A"
                   }}
-                </v-btn>
+                </div>
               </template>
               <template v-slot:item.status="{ item }">
                 <ChipStatus :status="item.status" :sub="true" />
