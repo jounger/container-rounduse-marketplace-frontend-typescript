@@ -1,28 +1,6 @@
 <template>
   <v-container fluid>
     <v-card>
-      <v-row justify="center">
-        <DeletePort
-          v-if="dialogDel"
-          :dialogDel.sync="dialogDel"
-          :totalItems.sync="serverSideOptions.totalItems"
-          :port="port"
-          :ports.sync="ports"
-        />
-      </v-row>
-      <v-row justify="center">
-        <CreatePort
-          :totalItems.sync="serverSideOptions.totalItems"
-          :port="port"
-          :ports.sync="ports"
-          :dialogAdd.sync="dialogAdd"
-        />
-        <UpdatePort
-          :port="port"
-          :ports.sync="ports"
-          :dialogEdit.sync="dialogEdit"
-        />
-      </v-row>
       <v-data-table
         :headers="headers"
         :items="ports"
@@ -79,6 +57,26 @@
         </template>
       </v-data-table>
     </v-card>
+    <v-row justify="center">
+      <DeletePort
+        v-if="dialogDel"
+        :dialogDel.sync="dialogDel"
+        :totalItems.sync="serverSideOptions.totalItems"
+        :port="port"
+        :ports.sync="ports"
+      />
+      <CreatePort
+        :totalItems.sync="serverSideOptions.totalItems"
+        :port="port"
+        :ports.sync="ports"
+        :dialogAdd.sync="dialogAdd"
+      />
+      <UpdatePort
+        :port="port"
+        :ports.sync="ports"
+        :dialogEdit.sync="dialogEdit"
+      />
+    </v-row>
   </v-container>
 </template>
 <script lang="ts">

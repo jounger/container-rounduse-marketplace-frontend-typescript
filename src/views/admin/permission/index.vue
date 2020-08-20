@@ -1,24 +1,5 @@
 <template>
   <v-container fluid>
-    <v-row justify="center">
-      <DeletePermission
-        v-if="dialogDel"
-        :dialogDel.sync="dialogDel"
-        :permission="permission"
-        :totalItems.sync="serverSideOptions.totalItems"
-        :permissions.sync="permissions"
-      />
-    </v-row>
-    <v-row justify="center">
-      <CreatePermission
-        v-if="dialogAdd"
-        :permission="permission"
-        :permissions.sync="permissions"
-        :dialogAdd.sync="dialogAdd"
-        :totalItems.sync="serverSideOptions.totalItems"
-        :update="update"
-      />
-    </v-row>
     <v-card>
       <v-data-table
         :headers="headers"
@@ -76,6 +57,23 @@
         </template>
       </v-data-table>
     </v-card>
+    <v-row justify="center">
+      <DeletePermission
+        v-if="dialogDel"
+        :dialogDel.sync="dialogDel"
+        :permission="permission"
+        :totalItems.sync="serverSideOptions.totalItems"
+        :permissions.sync="permissions"
+      />
+      <CreatePermission
+        v-if="dialogAdd"
+        :permission="permission"
+        :permissions.sync="permissions"
+        :dialogAdd.sync="dialogAdd"
+        :totalItems.sync="serverSideOptions.totalItems"
+        :update="update"
+      />
+    </v-row>
   </v-container>
 </template>
 <script lang="ts">

@@ -1,47 +1,5 @@
 <template>
   <v-container fluid>
-    <CreateInbound
-      :dialogAdd.sync="dialogAdd"
-      :inbounds.sync="inbounds"
-      :totalItems.sync="serverSideOptions.totalItems"
-    />
-    <UpdateInbound
-      :inbound="inbound"
-      :dialogEdit.sync="dialogEdit"
-      :inbounds="inbounds"
-    />
-    <CreateBid
-      v-if="dialogAddBid"
-      :dialogAdd.sync="dialogAddBid"
-      :inbound="inbound"
-    />
-    <v-row justify="center">
-      <DeleteInbound
-        v-if="dialogDel"
-        :dialogDel.sync="dialogDel"
-        :inbound="inbound"
-        :inbounds.sync="inbounds"
-        :totalItems.sync="serverSideOptions.totalItems"
-      />
-    </v-row>
-    <v-row justify="center">
-      <CreateContainer
-        v-if="dialogAddCont && inbound"
-        :container="container"
-        :containers.sync="containers"
-        :dialogAddCont.sync="dialogAddCont"
-        :billOfLading="inbound.billOfLading"
-        :totalItems.sync="containerServerSideOptions.totalItems"
-        :update="update"
-      />
-      <DeleteContainer
-        v-if="dialogDelCont && container"
-        :dialogDelCont.sync="dialogDelCont"
-        :container="container"
-        :containers.sync="containers"
-        :totalItems.sync="containerServerSideOptions.totalItems"
-      />
-    </v-row>
     <v-card>
       <v-data-table
         :headers="headers"
@@ -170,6 +128,46 @@
         </template>
       </v-data-table>
     </v-card>
+    <CreateInbound
+      :dialogAdd.sync="dialogAdd"
+      :inbounds.sync="inbounds"
+      :totalItems.sync="serverSideOptions.totalItems"
+    />
+    <UpdateInbound
+      :inbound="inbound"
+      :dialogEdit.sync="dialogEdit"
+      :inbounds="inbounds"
+    />
+    <CreateBid
+      v-if="dialogAddBid"
+      :dialogAdd.sync="dialogAddBid"
+      :inbound="inbound"
+    />
+    <v-row justify="center">
+      <DeleteInbound
+        v-if="dialogDel"
+        :dialogDel.sync="dialogDel"
+        :inbound="inbound"
+        :inbounds.sync="inbounds"
+        :totalItems.sync="serverSideOptions.totalItems"
+      />
+      <CreateContainer
+        v-if="dialogAddCont && inbound"
+        :container="container"
+        :containers.sync="containers"
+        :dialogAddCont.sync="dialogAddCont"
+        :billOfLading="inbound.billOfLading"
+        :totalItems.sync="containerServerSideOptions.totalItems"
+        :update="update"
+      />
+      <DeleteContainer
+        v-if="dialogDelCont && container"
+        :dialogDelCont.sync="dialogDelCont"
+        :container="container"
+        :containers.sync="containers"
+        :totalItems.sync="containerServerSideOptions.totalItems"
+      />
+    </v-row>
   </v-container>
 </template>
 <script lang="ts">
@@ -246,7 +244,7 @@ export default class Inbound extends Vue {
     { text: "Thời gian lấy cont", value: "pickUpTime" },
     { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery.fullname" },
     { text: "Nơi bốc dỡ hàng", value: "returnStation" },
-    { text: "Thời gian được thuê cont", value: "freetime" },
+    { text: "Thời gian mượn cont", value: "freetime" },
     {
       text: "Hành động",
       value: "actions"

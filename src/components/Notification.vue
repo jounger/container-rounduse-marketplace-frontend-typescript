@@ -14,7 +14,11 @@
           color="warning"
           overlap
         >
-          <v-icon dark> notifications_active</v-icon>
+          <v-icon dark>
+            {{
+              messageCount > 0 ? "notifications_active" : "notifications"
+            }}</v-icon
+          >
         </v-badge>
       </v-btn>
     </template>

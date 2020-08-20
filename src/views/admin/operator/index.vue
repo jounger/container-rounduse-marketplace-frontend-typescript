@@ -1,24 +1,5 @@
 <template>
   <v-container fluid>
-    <v-row justify="center">
-      <DeleteOperator
-        v-if="dialogDel"
-        :dialogDel.sync="dialogDel"
-        :operator="operator"
-        :operators.sync="operators"
-        :totalItems.sync="serverSideOptions.totalItems"
-      />
-    </v-row>
-    <v-row justify="center">
-      <CreateOperator
-        v-if="dialogAdd"
-        :operator="operator"
-        :operators.sync="operators"
-        :dialogAdd.sync="dialogAdd"
-        :totalItems.sync="serverSideOptions.totalItems"
-        :update="update"
-      />
-    </v-row>
     <v-card>
       <v-data-table
         :headers="headers"
@@ -89,6 +70,23 @@
         </template>
       </v-data-table>
     </v-card>
+    <v-row justify="center">
+      <DeleteOperator
+        v-if="dialogDel"
+        :dialogDel.sync="dialogDel"
+        :operator="operator"
+        :operators.sync="operators"
+        :totalItems.sync="serverSideOptions.totalItems"
+      />
+      <CreateOperator
+        v-if="dialogAdd"
+        :operator="operator"
+        :operators.sync="operators"
+        :dialogAdd.sync="dialogAdd"
+        :totalItems.sync="serverSideOptions.totalItems"
+        :update="update"
+      />
+    </v-row>
   </v-container>
 </template>
 <script lang="ts">

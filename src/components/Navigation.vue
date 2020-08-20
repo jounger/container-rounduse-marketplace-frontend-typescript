@@ -30,8 +30,10 @@
             $auth.user().fullname
           }}</v-list-item-title>
           <v-list-item-subtitle>
-            <v-icon small color="success">security</v-icon>
-            {{ getUserRole }}</v-list-item-subtitle
+            <v-icon small color="success">
+              {{ getUserRole.icon || "account_circle" }}</v-icon
+            >
+            {{ getUserRole.vi }}</v-list-item-subtitle
           >
         </v-list-item-content>
       </v-list-item>
@@ -67,6 +69,7 @@
 import { Vue, Component, PropSync } from "vue-property-decorator";
 import NavigationOperator from "./NavigationOperator.vue";
 import NavigationSupplier from "./NavigationSupplier.vue";
+import { Matching } from "./ChipStatus.vue";
 
 @Component({
   components: {
@@ -77,20 +80,56 @@ import NavigationSupplier from "./NavigationSupplier.vue";
 export default class Navigation extends Vue {
   @PropSync("drawer", { type: Boolean, default: true }) drawerSync!: boolean;
 
+  roleMatching = [
+    {
+      en: "ROLE_ADMIN",
+      vi: "Quản trị viên",
+      color: "primary",
+      icon: "security"
+    },
+    {
+      en: "ROLE_MODERATOR",
+      vi: "Người điều hành",
+      color: "secondary",
+      icon: "supervised_user_circle"
+    },
+    {
+      en: "ROLE_FORWARDER",
+      vi: "Chủ xe",
+      color: "warning",
+      icon: "verified_user"
+    },
+    {
+      en: "ROLE_MERCHANT",
+      vi: "Chủ hàng",
+      color: "warning",
+      icon: "verified_user"
+    },
+    {
+      en: "ROLE_SHIPPINGLINE",
+      vi: "Hãng tàu",
+      color: "info",
+      icon: "directions_boat"
+    },
+    {
+      en: "ROLE_DRIVER",
+      vi: "Lái xe",
+      color: "success",
+      icon: "account_circle"
+    }
+  ] as Matching[];
+
   protected navigation: object = NavigationSupplier;
   protected generalNavigation = [
     { title: "Trang cá nhân", icon: "account_circle", link: "/profile" }
   ];
 
   get getUserRole() {
-    const roles = this.$auth.user().roles;
-    if (this.$auth.user() && roles && roles.length > 0) {
-      return this.$auth
-        .user()
-        .roles[0].toLowerCase()
-        .substring(5);
-    }
-    return "";
+    const _role = this.roleMatching.filter(
+      x => x.en == this.$auth.user().roles
+    )[0];
+    if (_role) return _role;
+    else return "";
   }
 
   get getNavigation() {

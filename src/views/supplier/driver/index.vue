@@ -1,25 +1,6 @@
 <template>
   <v-container fluid>
     <v-card>
-      <v-row justify="center">
-        <DeleteDriver
-          v-if="dialogDel"
-          :dialogDel.sync="dialogDel"
-          :totalItems.sync="serverSideOptions.totalItems"
-          :driver="driver"
-          :drivers.sync="drivers"
-        />
-      </v-row>
-      <v-row justify="center">
-        <CreateDriver
-          v-if="dialogAdd"
-          :driver="driver"
-          :drivers.sync="drivers"
-          :totalItems.sync="serverSideOptions.totalItems"
-          :dialogAdd.sync="dialogAdd"
-          :update="update"
-        />
-      </v-row>
       <v-data-table
         :headers="headers"
         :items="drivers"
@@ -91,6 +72,23 @@
         </template>
       </v-data-table>
     </v-card>
+    <v-row justify="center">
+      <DeleteDriver
+        v-if="dialogDel"
+        :dialogDel.sync="dialogDel"
+        :totalItems.sync="serverSideOptions.totalItems"
+        :driver="driver"
+        :drivers.sync="drivers"
+      />
+      <CreateDriver
+        v-if="dialogAdd"
+        :driver="driver"
+        :drivers.sync="drivers"
+        :totalItems.sync="serverSideOptions.totalItems"
+        :dialogAdd.sync="dialogAdd"
+        :update="update"
+      />
+    </v-row>
   </v-container>
 </template>
 <script lang="ts">

@@ -1,39 +1,6 @@
 <template>
   <v-container fluid>
     <v-card>
-      <DetailContractDocument
-        v-if="dialogDetail"
-        :dialogDetail.sync="dialogDetail"
-        :contractDocuments.sync="contractDocuments"
-        :checkValid.sync="checkValid"
-        :contractDocument="contractDocument"
-      />
-      <CreateContractDocument
-        v-if="dialogAddContractDocument"
-        :dialogAdd.sync="dialogAddContractDocument"
-        :contractDocuments.sync="contractDocuments"
-        :totalItems.sync="contractDocumentServerSideOptions.totalItems"
-        :contract="contract"
-      />
-      <CreateInvoice
-        v-if="dialogAddInvoice"
-        :dialogAdd.sync="dialogAddInvoice"
-        :combined="combined"
-        :merchant="merchant"
-        :update="false"
-        :readonly="false"
-      />
-      <v-row justify="center">
-        <UpdateContract
-          v-if="dialogAdd"
-          :combined="combined"
-          :contract.sync="contract"
-          :dialogAdd.sync="dialogAdd"
-          :readonly="readonly"
-          :merchant="merchant"
-          :totalItems.sync="serverSideOptions.totalItems"
-        />
-      </v-row>
       <v-data-table
         :headers="headers"
         :items="combineds"
@@ -118,6 +85,9 @@
         <template v-slot:item.contract.required="{ item }">
           {{ item.contract.required ? "Có" : "Không" }}
         </template>
+        <template v-slot:item.contract.creationDate="{ item }">
+          {{ formatDatetime(item.contract.creationDate) }}
+        </template>
         <template v-slot:expanded-item="{ headers }">
           <td
             :colspan="headers.length"
@@ -169,6 +139,39 @@
         </template>
       </v-data-table>
     </v-card>
+    <DetailContractDocument
+      v-if="dialogDetail"
+      :dialogDetail.sync="dialogDetail"
+      :contractDocuments.sync="contractDocuments"
+      :checkValid.sync="checkValid"
+      :contractDocument="contractDocument"
+    />
+    <CreateContractDocument
+      v-if="dialogAddContractDocument"
+      :dialogAdd.sync="dialogAddContractDocument"
+      :contractDocuments.sync="contractDocuments"
+      :totalItems.sync="contractDocumentServerSideOptions.totalItems"
+      :contract="contract"
+    />
+    <CreateInvoice
+      v-if="dialogAddInvoice"
+      :dialogAdd.sync="dialogAddInvoice"
+      :combined="combined"
+      :merchant="merchant"
+      :update="false"
+      :readonly="false"
+    />
+    <v-row justify="center">
+      <UpdateContract
+        v-if="dialogAdd"
+        :combined="combined"
+        :contract.sync="contract"
+        :dialogAdd.sync="dialogAdd"
+        :readonly="readonly"
+        :merchant="merchant"
+        :totalItems.sync="serverSideOptions.totalItems"
+      />
+    </v-row>
   </v-container>
 </template>
 <script lang="ts">
@@ -244,10 +247,10 @@ export default class Contract extends Vue {
       text: "% Tiền phạt",
       value: "contract.finesAgainstContractViolation"
     },
+    { text: "Ngày tạo hợp đồng", value: "contract.creationDate" },
     {
       text: "Hành động",
-      value: "actions",
-      sortable: false
+      value: "actions"
     }
   ];
   contractDocumentHeaders = [

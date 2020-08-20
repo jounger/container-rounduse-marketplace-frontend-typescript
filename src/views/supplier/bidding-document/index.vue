@@ -1,36 +1,5 @@
 <template>
   <v-container fluid>
-    <v-row justify="center">
-      <DeleteBiddingDocument
-        v-if="dialogDel"
-        :dialogDel.sync="dialogDel"
-        :biddingDocument="biddingDocument"
-        :biddingDocuments.sync="biddingDocuments"
-        :totalItems.sync="serverSideOptions.totalItems"
-      />
-    </v-row>
-    <v-row justify="center">
-      <CancelBiddingDocument
-        v-if="dialogCancel"
-        :dialogCancel.sync="dialogCancel"
-        :biddingDocument="biddingDocument"
-        :biddingDocuments.sync="biddingDocuments"
-      />
-    </v-row>
-    <CreateBiddingDocument
-      v-if="dialogAdd"
-      :biddingDocuments.sync="biddingDocuments"
-      :outbounds.sync="outbounds"
-      :dialogAdd.sync="dialogAdd"
-      :totalItems.sync="serverSideOptions.totalItems"
-    />
-    <UpdateBiddingDocument
-      v-if="dialogEdit"
-      :biddingDocument="biddingDocument"
-      :biddingDocuments.sync="biddingDocuments"
-      :dialogEdit.sync="dialogEdit"
-    />
-
     <v-card>
       <v-data-table
         :headers="headers"
@@ -133,6 +102,34 @@
         </template>
       </v-data-table>
     </v-card>
+    <v-row justify="center">
+      <DeleteBiddingDocument
+        v-if="dialogDel"
+        :dialogDel.sync="dialogDel"
+        :biddingDocument="biddingDocument"
+        :biddingDocuments.sync="biddingDocuments"
+        :totalItems.sync="serverSideOptions.totalItems"
+      />
+      <CancelBiddingDocument
+        v-if="dialogCancel"
+        :dialogCancel.sync="dialogCancel"
+        :biddingDocument="biddingDocument"
+        :biddingDocuments.sync="biddingDocuments"
+      />
+    </v-row>
+    <CreateBiddingDocument
+      v-if="dialogAdd"
+      :biddingDocuments.sync="biddingDocuments"
+      :outbounds.sync="outbounds"
+      :dialogAdd.sync="dialogAdd"
+      :totalItems.sync="serverSideOptions.totalItems"
+    />
+    <UpdateBiddingDocument
+      v-if="dialogEdit"
+      :biddingDocument="biddingDocument"
+      :biddingDocuments.sync="biddingDocuments"
+      :dialogEdit.sync="dialogEdit"
+    />
   </v-container>
 </template>
 <script lang="ts">

@@ -2,11 +2,12 @@
   <v-dialog v-model="dialogAddSync" max-width="600">
     <v-card>
       <v-card-title class="headline">Tải lên file hợp đồng</v-card-title>
+      <v-divider></v-divider>
       <v-card-text>
         <v-form v-model="valid" validation>
           <small>*Dấu sao là trường bắt buộc</small>
           <v-row>
-            <v-col cols="12" md="11">
+            <v-col cols="12" md="12">
               <v-text-field
                 label="Người gửi*"
                 name="sender"

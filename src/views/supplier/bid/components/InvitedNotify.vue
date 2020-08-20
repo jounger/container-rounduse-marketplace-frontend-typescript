@@ -55,7 +55,12 @@
           </v-btn>
         </template>
         <template v-slot:item.actions="{ item }">
-          <div v-if="['BIDDING'].includes(item.relatedResource.status)">
+          <div
+            v-if="
+              ['BIDDING'].includes(item.relatedResource.status) &&
+                item.isHide == false
+            "
+          >
             <v-btn
               class="ma-1"
               tile
@@ -137,7 +142,7 @@ export default class InvitedNotify extends Vue {
       value: "relatedResource.id"
     },
     {
-      text: "Bên gửi thầu",
+      text: "Bên gửi HSMT",
       value: "relatedResource.offeree.companyName"
     },
     {
