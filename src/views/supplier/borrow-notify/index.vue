@@ -121,6 +121,7 @@ export default class BorrowNotify extends Vue {
       value: "container.number"
     },
     { text: "Lái xe", value: "container.driver.fullname" },
+    { text: "SĐT liên hệ", value: "container.driver.phone", class: "tertiary" },
     {
       text: "Rơ mọt",
       value: "container.trailer.licensePlate"

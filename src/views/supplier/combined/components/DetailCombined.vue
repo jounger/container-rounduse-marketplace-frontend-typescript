@@ -289,6 +289,9 @@
                       </v-btn>
                     </v-toolbar>
                   </template>
+                  <template v-slot:item.status="{ item }">
+                    <ChipStatus :status="item.status" :sub="true" />
+                  </template>
                   <template v-slot:item.actions="{ item }">
                     <v-btn
                       class="ma-1"
@@ -383,7 +386,17 @@
                   <v-icon>mdi-dots-vertical</v-icon>
                 </v-btn>
               </template>
-              <v-list dense>
+              <v-list
+                dense
+                v-if="
+                  [
+                    'INFO_RECEIVED',
+                    'SHIPPING',
+                    'DELIVERED',
+                    'EXCEPTION'
+                  ].includes(item.status)
+                "
+              >
                 <v-list-item @click="openUpdateDialog(item)">
                   <v-list-item-icon>
                     <v-icon small>location_on</v-icon>
@@ -487,7 +500,7 @@ export default class DetailCombined extends Vue {
       value: "container.number"
     },
     { text: "Lái xe", value: "container.driver.fullname" },
-    { text: "SĐT Lái xe", value: "container.driver.phone" },
+    { text: "SĐT liên hệ", value: "container.driver.phone" },
     {
       text: "Đầu kéo",
       value: "container.tractor.licensePlate"

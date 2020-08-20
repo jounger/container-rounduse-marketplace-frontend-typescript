@@ -66,6 +66,9 @@
               disable-sort
               dense
             >
+              <template v-slot:item.bid.dateOfDecision="{ item }">
+                {{ formatDatetime(item.bid.dateOfDecision) }}
+              </template>
               <template v-slot:item.contract.required="{ item }">
                 {{ item.contract.required ? "Có" : "Không" }}
               </template>

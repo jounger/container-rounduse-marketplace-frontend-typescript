@@ -389,6 +389,7 @@ export default class CreateBid extends Vue {
       class: "tertiary"
     },
     { text: "Lái xe", value: "driver.fullname", class: "tertiary" },
+    { text: "SĐT liên hệ", value: "driver.phone", class: "tertiary" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate",
@@ -409,6 +410,7 @@ export default class CreateBid extends Vue {
       value: "number"
     },
     { text: "Lái xe", value: "driver.fullname" },
+    { text: "SĐT liên hệ", value: "driver.phone" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate"

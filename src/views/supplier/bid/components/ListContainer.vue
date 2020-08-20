@@ -62,17 +62,23 @@
                     dense
                   >
                     <template v-slot:header.data-table-select> </template>
+                    <template v-slot:item.status="{ item }">
+                      <ChipStatus :status="item.status" :sub="true" />
+                    </template>
                     <template v-slot:item.actions="{ item }">
                       <v-btn
-                        v-if="action == 'CHANGE' && container.id != item.id"
-                        outlined
+                        v-if="
+                          action == 'CHANGE' &&
+                            container.id != item.id &&
+                            ['CREATED'].includes(item.status)
+                        "
                         color="warning"
                         @click.stop="changeContainerBid(item)"
                         dark
                         x-small
                       >
-                        <v-icon left dense>add</v-icon> Đổi Cont
-                      </v-btn>
+                        <v-icon left small>check_circle</v-icon>Đổi sang</v-btn
+                      >
                     </template>
                   </v-data-table>
                 </td>
@@ -91,6 +97,9 @@
               show-select
               single-select
             >
+              <template v-slot:item.status="{ item }">
+                <ChipStatus :status="item.status" :sub="true" />
+              </template>
             </v-data-table>
           </v-tab-item>
         </v-tabs>
@@ -118,9 +127,13 @@ import { DataOptions } from "vuetify";
 import Utils from "@/mixin/utils";
 import { addContainers, replaceContainer, removeContainer } from "@/api/bid";
 import { IBid } from "@/entity/bid";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
-  mixins: [Utils]
+  mixins: [Utils],
+  components: {
+    ChipStatus
+  }
 })
 export default class ListContainer extends Vue {
   @PropSync("dialogContainer", { type: Boolean }) dialogContainerSync!: boolean;
@@ -185,6 +198,7 @@ export default class ListContainer extends Vue {
       class: "tertiary"
     },
     { text: "Lái xe", value: "driver.fullname", class: "tertiary" },
+    { text: "SĐT liên hệ", value: "driver.phone", class: "tertiary" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate",
@@ -210,6 +224,7 @@ export default class ListContainer extends Vue {
       value: "number"
     },
     { text: "Lái xe", value: "driver.fullname" },
+    { text: "SĐT liên hệ", value: "driver.phone" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate"
@@ -272,7 +287,12 @@ export default class ListContainer extends Vue {
         containers: _containersId
       });
       if (_res.data) {
-        _containers.forEach((x: IContainer) => this.containersSync.unshift(x));
+        _containers.forEach((x: IContainer) =>
+          this.containersSync.unshift({
+            ...x,
+            status: "BIDDING"
+          })
+        );
         this.totalItemsSync += _containers.length;
         this.dialogContainerSync = false;
       }

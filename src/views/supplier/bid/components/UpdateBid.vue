@@ -154,6 +154,9 @@
                   </v-btn>
                 </v-toolbar>
               </template>
+              <template v-slot:item.status="{ item }">
+                <ChipStatus :status="item.status" :sub="true" />
+              </template>
               <template v-slot:item.actions="{ item }">
                 <v-menu :close-on-click="true">
                   <template v-slot:activator="{ on, attrs }">
@@ -232,13 +235,15 @@ import { editBid } from "@/api/bid";
 import ConfirmContainer from "./ConfirmContainer.vue";
 import { getContainersByBid } from "@/api/container";
 import DatetimePicker from "@/components/DatetimePicker.vue";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
   mixins: [FormValidate, Utils],
   components: {
     ListContainer,
     ConfirmContainer,
-    DatetimePicker
+    DatetimePicker,
+    ChipStatus
   }
 })
 export default class UpdateBid extends Vue {
@@ -297,6 +302,7 @@ export default class UpdateBid extends Vue {
       value: "number"
     },
     { text: "Lái xe", value: "driver.fullname" },
+    { text: "SĐT liên hệ", value: "driver.phone" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate"

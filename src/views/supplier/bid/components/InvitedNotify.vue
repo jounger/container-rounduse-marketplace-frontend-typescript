@@ -35,37 +35,48 @@
             <v-toolbar-title>HSMT nhận được</v-toolbar-title>
           </v-toolbar>
         </template>
-        <template v-slot:item.actions="{ item }">
-          <v-btn
-            class="ma-1"
-            tile
-            outlined
-            color="success"
-            @click.stop="openAddDialog(item)"
-            x-small
-          >
-            <v-icon left dense>add</v-icon> Đồng ý
-          </v-btn>
-          <v-btn
-            class="ma-1"
-            tile
-            outlined
-            color="error"
-            @click.stop="openConfirmDialog(item)"
-            x-small
-          >
-            <v-icon left dense>clear</v-icon> Từ chối
-          </v-btn>
+        <template v-slot:item.unit="{ item }">
+          {{
+            item.relatedResource.outbound.booking.unit +
+              " x " +
+              item.relatedResource.outbound.containerType.name
+          }}
+        </template>
+        <template v-slot:item.detail="{ item }">
           <v-btn
             class="ma-1"
             tile
             outlined
             color="info"
             :to="`/bidding-document/${item.relatedResource.id}`"
-            x-small
+            small
           >
             <v-icon left dense>remove_red_eye</v-icon> Chi tiết
           </v-btn>
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <div v-if="['BIDDING'].includes(item.relatedResource.status)">
+            <v-btn
+              class="ma-1"
+              tile
+              outlined
+              color="success"
+              @click.stop="openAddDialog(item)"
+              x-small
+            >
+              <v-icon left dense>add</v-icon> Đồng ý
+            </v-btn>
+            <v-btn
+              class="ma-1"
+              tile
+              outlined
+              color="error"
+              @click.stop="openConfirmDialog(item)"
+              x-small
+            >
+              <v-icon left dense>clear</v-icon> Từ chối
+            </v-btn>
+          </div>
         </template>
         <template v-slot:item.bidOpening="{ item }">
           {{ formatDatetime(item.relatedResource.bidOpening) }}
@@ -126,15 +137,20 @@ export default class InvitedNotify extends Vue {
       value: "relatedResource.id"
     },
     {
+      text: "Bên gửi thầu",
+      value: "relatedResource.offeree.companyName"
+    },
+    {
       text: "Hãng tàu",
       value: "relatedResource.outbound.shippingLine.companyName"
     },
-    { text: "Loại cont", value: "relatedResource.outbound.containerType.name" },
+    { text: "Số cont", value: "unit" },
     { text: "Giá gói thầu", value: "relatedResource.bidPackagePrice" },
     { text: "Giá sàn", value: "relatedResource.bidFloorPrice" },
     { text: "Mở thầu", value: "bidOpening" },
     { text: "Đóng thầu", value: "bidClosing" },
     { text: "Nhiều thầu thắng", value: "isMultipleAward" },
+    { text: "Chi tiết HSDT", value: "detail" },
     { text: "Hành động", value: "actions" }
   ];
 
