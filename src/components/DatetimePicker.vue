@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col cols="12" sm="8">
+    <v-col cols="12" sm="8" class="pa-0">
       <v-menu
         ref="dateTimePicker"
         v-model="dateTimePicker"
@@ -31,7 +31,7 @@
         </v-date-picker>
       </v-menu>
     </v-col>
-    <v-col cols="12" sm="4">
+    <v-col cols="12" sm="4" class="py-0">
       <v-text-field
         :label="timelabel"
         name="time"

@@ -80,23 +80,35 @@
               lazy-validation
               v-if="bidLocal"
             >
-              <v-text-field
-                v-model="bidLocal.bidPrice"
-                :hint="currencyFormatter(bidLocal.bidPrice)"
-                prepend-icon="monetization_on"
-                v-if="biddingDocument"
-                type="number"
-                :rules="[
-                  minNumber('Giá gửi thầu', biddingDocument.bidFloorPrice),
-                  maxNumber('Giá gửi thầu', biddingDocument.bidPackagePrice)
-                ]"
-                label="Giá gửi thầu"
-              ></v-text-field>
-              <v-btn color="primary" @click="updateBid()" :disabled="!valid"
-                >Lưu và Tiếp tục</v-btn
-              >
-              <v-btn text @click="stepper = 1">Quay lại</v-btn>
+              <v-row>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="bidLocal.bidPrice"
+                    :hint="currencyFormatter(bidLocal.bidPrice)"
+                    prepend-icon="monetization_on"
+                    v-if="biddingDocument"
+                    type="number"
+                    :rules="[
+                      minNumber('Giá gửi thầu', biddingDocument.bidFloorPrice),
+                      maxNumber('Giá gửi thầu', biddingDocument.bidPackagePrice)
+                    ]"
+                    label="Giá gửi thầu"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <DatetimePicker
+                    :datetime="bidLocal.validityPeriod"
+                    :return-value.sync="bidLocal.validityPeriod"
+                    dateicon="update"
+                    datelabel="Ngày hiệu lực"
+                    timelabel="Giờ hiệu lực"
+                  /> </v-col
+              ></v-row>
             </v-form>
+            <v-btn color="primary" @click="updateBid()" :disabled="!valid"
+              >Lưu và Tiếp tục</v-btn
+            >
+            <v-btn text @click="stepper = 1">Quay lại</v-btn>
           </v-stepper-content>
           <v-stepper-step :complete="stepper > 3" step="3" :editable="editable"
             >Danh sách Container<small
@@ -105,89 +117,82 @@
           >
           <!-- SELECT CONTAINER -->
           <v-stepper-content step="3">
-            <v-container fluid>
-              <v-data-table
-                :headers="containerSelectedHeaders"
-                :items="containers"
-                item-key="id"
-                :loading="loading"
-                :options.sync="containerOptions"
-                no-data-text="Danh sách Container đã chọn rỗng."
-                :server-items-length="containerServerSideOptions.totalItems"
-                :footer-props="{
-                  'items-per-page-options':
-                    containerServerSideOptions.itemsPerPageItems
-                }"
-                :actions-append="containerOptions.page"
-                disable-sort
-                class="elevation-0 mb-1"
-              >
-                <template v-slot:top>
-                  <v-toolbar flat color="white">
-                    <v-toolbar-title
-                      >Danh sách Container đã chọn</v-toolbar-title
-                    >
-                    <v-divider class="mx-4" inset vertical></v-divider>
-                    <v-spacer></v-spacer>
+            <v-data-table
+              :headers="containerSelectedHeaders"
+              :items="containers"
+              item-key="id"
+              :loading="loading"
+              :options.sync="containerOptions"
+              no-data-text="Danh sách Container đã chọn rỗng."
+              :server-items-length="containerServerSideOptions.totalItems"
+              :footer-props="{
+                'items-per-page-options':
+                  containerServerSideOptions.itemsPerPageItems
+              }"
+              :actions-append="containerOptions.page"
+              disable-sort
+              class="elevation-0 mb-1"
+            >
+              <template v-slot:top>
+                <v-toolbar flat color="white">
+                  <v-toolbar-title>Danh sách Container đã chọn</v-toolbar-title>
+                  <v-divider class="mx-4" inset vertical></v-divider>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    v-if="
+                      biddingDocument &&
+                        biddingDocument.isMultipleAward &&
+                        containerServerSideOptions.totalItems <
+                          biddingDocument.outbound.booking.unit
+                    "
+                    color="primary"
+                    dark
+                    class="mb-2"
+                    @click="openCreateContainerBid()"
+                  >
+                    Thêm Container
+                  </v-btn>
+                </v-toolbar>
+              </template>
+              <template v-slot:item.actions="{ item }">
+                <v-menu :close-on-click="true">
+                  <template v-slot:activator="{ on, attrs }">
                     <v-btn
-                      v-if="
-                        biddingDocument &&
-                          biddingDocument.isMultipleAward &&
-                          containerServerSideOptions.totalItems <
-                            biddingDocument.outbound.booking.unit
-                      "
                       color="primary"
-                      dark
-                      class="mb-2"
-                      @click="openCreateContainerBid()"
+                      icon
+                      outlined
+                      v-bind="attrs"
+                      v-on="on"
                     >
-                      Thêm Container
+                      <v-icon>mdi-dots-vertical</v-icon>
                     </v-btn>
-                  </v-toolbar>
-                </template>
-                <template v-slot:item.actions="{ item }">
-                  <v-menu :close-on-click="true">
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-btn
-                        color="primary"
-                        icon
-                        outlined
-                        v-bind="attrs"
-                        v-on="on"
-                      >
-                        <v-icon>mdi-dots-vertical</v-icon>
-                      </v-btn>
-                    </template>
-                    <v-list dense>
-                      <v-list-item @click="openChangeDialog(item)">
-                        <v-list-item-icon>
-                          <v-icon small>edit</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-content>
-                          <v-list-item-title>Đổi Container</v-list-item-title>
-                        </v-list-item-content>
-                      </v-list-item>
-                      <v-list-item
-                        @click="openDeleteDialog(item)"
-                        v-if="
-                          biddingDocument.isMultipleAward &&
-                            containers.length > 0
-                        "
-                      >
-                        <v-list-item-icon>
-                          <v-icon small>delete</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-content>
-                          <v-list-item-title
-                            >Bỏ chọn Container</v-list-item-title
-                          >
-                        </v-list-item-content>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </template>
-              </v-data-table>
-            </v-container>
+                  </template>
+                  <v-list dense>
+                    <v-list-item @click="openChangeDialog(item)">
+                      <v-list-item-icon>
+                        <v-icon small>edit</v-icon>
+                      </v-list-item-icon>
+                      <v-list-item-content>
+                        <v-list-item-title>Đổi Container</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item
+                      @click="openDeleteDialog(item)"
+                      v-if="
+                        biddingDocument.isMultipleAward && containers.length > 0
+                      "
+                    >
+                      <v-list-item-icon>
+                        <v-icon small>delete</v-icon>
+                      </v-list-item-icon>
+                      <v-list-item-content>
+                        <v-list-item-title>Bỏ chọn Container</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </template>
+            </v-data-table>
             <v-btn
               v-if="biddingDocument && biddingDocument.isMultipleAward"
               color="primary"
@@ -226,12 +231,14 @@ import ListContainer from "./ListContainer.vue";
 import { editBid } from "@/api/bid";
 import ConfirmContainer from "./ConfirmContainer.vue";
 import { getContainersByBid } from "@/api/container";
+import DatetimePicker from "@/components/DatetimePicker.vue";
 
 @Component({
   mixins: [FormValidate, Utils],
   components: {
     ListContainer,
-    ConfirmContainer
+    ConfirmContainer,
+    DatetimePicker
   }
 })
 export default class UpdateBid extends Vue {
