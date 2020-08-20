@@ -323,14 +323,13 @@ export default class Contract extends Vue {
   @Watch("contractDocumentOptions")
   async onContractDocumentOptionsChange(val: DataOptions, oldVal: DataOptions) {
     if (typeof val != "undefined" && val.page != oldVal.page) {
-      this.loading = true;
       await this.loadMoreContractDocuments(val);
-      this.loading = false;
     }
   }
 
   async loadMoreContractDocuments(val: DataOptions) {
     if (this.contract) {
+      this.loading = true;
       const _res = await getContractDocumentsByContract(
         this.contract.id as number,
         {
@@ -344,6 +343,7 @@ export default class Contract extends Vue {
         this.contractDocumentServerSideOptions.totalItems =
           _res.data.totalElements;
       }
+      this.loading = false;
     }
   }
 

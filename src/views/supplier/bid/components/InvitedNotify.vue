@@ -71,7 +71,7 @@
           {{ formatDatetime(item.relatedResource.bidOpening) }}
         </template>
         <template v-slot:item.isMultipleAward="{ item }">
-          {{ item.relatedResource.isMultipleAward ? "Có" : "Không" }}
+          {{ item.relatedResource.isMultipleAward ? "Đúng" : "Không" }}
         </template>
         <template v-slot:item.bidClosing="{ item }">
           {{ formatDatetime(item.relatedResource.bidClosing) }}

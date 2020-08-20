@@ -244,6 +244,7 @@ import DatetimePicker from "@/components/DatetimePicker.vue";
 export default class UpdateBid extends Vue {
   @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
   @Prop() biddingDocument!: IBiddingDocument;
+  @PropSync("bids", { type: Array }) bidsSync!: Array<IBid>;
   @Prop() bid!: IBid;
 
   biddingDocuments: Array<IBiddingDocument> = [];
@@ -351,15 +352,19 @@ export default class UpdateBid extends Vue {
       });
       if (_res.data) {
         const _bid = _res.data.data;
-        this.bid = _bid;
+        this.bid.status = _bid.status;
+        const index = this.bidsSync.findIndex(x => x.id === _bid.id);
+        this.bidsSync.splice(index, 1, _bid);
         this.stepper = 3;
       }
     }
   }
 
   mounted() {
-    this.bidLocal = Object.assign({}, this.bid);
     this.biddingDocuments.push(this.biddingDocument);
+    if (this.bid) {
+      this.bidLocal = Object.assign({}, this.bid);
+    }
   }
 }
 </script>

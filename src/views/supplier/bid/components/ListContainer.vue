@@ -316,9 +316,7 @@ export default class ListContainer extends Vue {
   @Watch("containerOptions")
   async onContainerOptionsChange(val: DataOptions, oldVal: DataOptions) {
     if (typeof val != "undefined" && val.page != oldVal.page) {
-      this.loading = true;
       await this.loadMoreContainers(val);
-      this.loading = false;
     }
   }
 
@@ -341,6 +339,7 @@ export default class ListContainer extends Vue {
 
   async loadMoreContainers(val: DataOptions) {
     if (this.inbound) {
+      this.loading = true;
       const _res = await getContainersByInbound(this.inbound.id as number, {
         page: val.page - 1,
         limit: val.itemsPerPage
@@ -350,6 +349,7 @@ export default class ListContainer extends Vue {
         this.containerList = _containers;
         this.containerServerSideOptions.totalItems = _res.data.totalElements;
       }
+      this.loading = false;
     }
   }
 }

@@ -11,6 +11,7 @@
       <UpdateBid
         v-if="dialogEdit"
         :bid="bid"
+        :bids.sync="bids"
         :biddingDocument="biddingDocument"
         :dialogEdit.sync="dialogEdit"
       />
@@ -69,7 +70,7 @@
           {{ currencyFormatter(item.bidFloorPrice) }}
         </template>
         <template v-slot:item.isMultipleAward="{ item }">
-          {{ item.isMultipleAward ? "Có" : "Không" }}
+          {{ item.isMultipleAward ? "Đúng" : "Không" }}
         </template>
         <template v-slot:item.actions="{ item }">
           <v-btn
@@ -245,6 +246,7 @@ export default class Bid extends Vue {
 
   async loadMoreBids(val: DataOptions) {
     if (this.biddingDocument) {
+      this.loading = true;
       const _res = await getBidsByBiddingDocument(
         this.biddingDocument.id as number,
         {
@@ -257,6 +259,7 @@ export default class Bid extends Vue {
         this.bids = _bids;
         this.bidServerSideOptions.totalItems = _res.data.totalElements;
       }
+      this.loading = false;
     }
   }
 
@@ -286,7 +289,8 @@ export default class Bid extends Vue {
     const _freezeTime = item.freezeTime
       ? new Date(item.freezeTime)
       : new Date();
-    if (new Date(_freezeTime).getTime() - new Date().getTime() >= 0) {
+    const _isValid = new Date(_freezeTime).getTime() - new Date().getTime();
+    if (_isValid <= 0) {
       this.bid = item;
       this.dialogEdit = true;
     }
@@ -296,7 +300,8 @@ export default class Bid extends Vue {
     const _freezeTime = item.freezeTime
       ? new Date(item.freezeTime)
       : new Date();
-    if (new Date(_freezeTime).getTime() - new Date().getTime() >= 0) {
+    const _isValid = new Date(_freezeTime).getTime() - new Date().getTime();
+    if (_isValid <= 0) {
       this.bid = item;
       this.dialogCancel = true;
     }
@@ -305,9 +310,7 @@ export default class Bid extends Vue {
   @Watch("bidOptions")
   async onBidOptionsChange(val: DataOptions, oldVal: DataOptions) {
     if (typeof val != "undefined" && val.page != oldVal.page) {
-      this.loading = true;
       await this.loadMoreBids(val);
-      this.loading = false;
     }
   }
 

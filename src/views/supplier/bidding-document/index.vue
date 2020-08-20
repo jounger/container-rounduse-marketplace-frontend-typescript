@@ -128,6 +128,9 @@
         <template v-slot:item.bidPackagePrice="{ item }">
           {{ currencyFormatter(item.bidPackagePrice) }}
         </template>
+        <template v-slot:item.isMultipleAward="{ item }">
+          {{ item.isMultipleAward ? "Đúng" : "Không" }}
+        </template>
       </v-data-table>
     </v-card>
   </v-container>

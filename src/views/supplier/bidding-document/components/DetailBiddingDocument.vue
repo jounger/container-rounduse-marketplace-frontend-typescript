@@ -34,10 +34,10 @@
       width="100%"
     >
       <!-- OUTOUNBD -->
-      <v-card class="order-0 flex-grow-0 mx-auto mr-5" max-width="480" tile>
+      <v-card class="order-0 flex-grow-0 mx-auto mr-5" max-width="400" tile>
         <v-img
           height="100"
-          max-width="480"
+          max-width="400"
           src="@/assets/images/background-cover.jpg"
         ></v-img>
         <v-card-title>Hồ sơ Mời thầu</v-card-title>
@@ -90,9 +90,12 @@
                 <v-icon>lock</v-icon>
               </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title>{{
-                  "Nhiều thầu thắng: " + biddingDocument.isMultipleAward
-                }}</v-list-item-title>
+                <v-list-item-title
+                  >Nhiều thầu thắng:
+                  {{
+                    biddingDocument.isMultipleAward ? "Đúng" : "Không"
+                  }}</v-list-item-title
+                >
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -173,7 +176,16 @@
       </v-card>
       <v-card class="order-1 flex-grow-1 mx-auto">
         <v-card-title
-          >Thông tin đấu thầu
+          ><div class="text-h4 text-no-wrap font-weight-bold">
+            Giá dẫn đầu:
+            {{
+              currencyFormatter(
+                biddingDocument.priceLeadership,
+                biddingDocument.currencyOfInvoice
+              )
+            }}
+            <v-icon color="success" large>check_circle_outline</v-icon>
+          </div>
           <v-spacer></v-spacer>
           <v-tooltip left v-if="$auth.check('ROLE_FORWARDER')">
             <template v-slot:activator="{ on, attrs }">
@@ -184,37 +196,28 @@
             <span>Báo cáo HSMT</span>
           </v-tooltip>
         </v-card-title>
-
         <v-card-text>
           <v-row>
-            <v-col cols="12" sm="6" md="4">
+            <v-col cols="12" sm="6">
               <v-list dense>
                 <v-list-item>
                   <v-list-item-icon>
                     <v-icon>attach_money</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
-                    <v-list-item-title>{{
-                      "Giá dẫn đầu: " +
-                        currencyFormatter(
-                          biddingDocument.priceLeadership,
-                          biddingDocument.currencyOfInvoice
-                        )
-                    }}</v-list-item-title>
+                    <v-list-item-title
+                      >Tham gia: {{ serverSideOptions.totalItems }} đối
+                      tác</v-list-item-title
+                    >
                     <v-list-item-subtitle>
-                      {{
-                        "Giá sàn: " +
-                          currencyFormatter(
-                            biddingDocument.bidFloorPrice,
-                            biddingDocument.currencyOfInvoice
-                          )
-                      }}
+                      Số thầu thắng:
+                      {{ numberWinner + "/" + serverSideOptions.totalItems }}
                     </v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
             </v-col>
-            <v-col cols="12" sm="6" md="4">
+            <v-col cols="12" sm="6">
               <v-list dense>
                 <v-list-item v-if="biddingDocument.status == 'BIDDING'">
                   <v-list-item-icon>
@@ -222,13 +225,7 @@
                   </v-list-item-icon>
                   <v-list-item-content>
                     <v-list-item-title
-                      >Đóng:
-                      {{
-                        formatDatetime(biddingDocument.bidClosing)
-                      }}</v-list-item-title
-                    >
-                    <v-list-item-subtitle>
-                      {{
+                      >{{
                         new Date(this.biddingDocument.bidClosing).getTime() -
                           new Date() >
                         0
@@ -243,7 +240,15 @@
                             " giờ"
                           : "Đã hết hạn"
                       }}
-                    </v-list-item-subtitle>
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item v-if="biddingDocument.status == 'EXPIRED'">
+                  <v-list-item-icon>
+                    <v-icon>mood_bad</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>Thầu đã hết hạn</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item v-if="biddingDocument.status == 'CANCELED'">
@@ -252,7 +257,7 @@
                   </v-list-item-icon>
                   <v-list-item-content>
                     <v-list-item-title style="color:red;"
-                      >Thầu đã hủy</v-list-item-title
+                      >Thầu đã bị hủy</v-list-item-title
                     >
                   </v-list-item-content>
                 </v-list-item>
@@ -268,43 +273,8 @@
                 </v-list-item>
               </v-list>
             </v-col>
-            <v-col cols="12" sm="6" md="4" v-if="$auth.check('ROLE_MERCHANT')">
-              <v-list dense>
-                <v-list-item>
-                  <v-list-item-icon>
-                    <v-icon>people</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>{{
-                      "Số lượng tham gia: " + serverSideOptions.totalItems
-                    }}</v-list-item-title>
-                    <v-list-item-subtitle>
-                      Số thầu thắng:
-                      {{ numberWinner + "/" + serverSideOptions.totalItems }}
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" v-if="$auth.check('ROLE_FORWARDER')">
-              <v-list dense>
-                <v-list-item>
-                  <v-list-item-icon>
-                    <v-icon>people</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>{{
-                      biddingDocument.isMultipleAward
-                        ? "Nhiều thầu thắng"
-                        : "Một thầu thắng"
-                    }}</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </v-col>
           </v-row>
         </v-card-text>
-
         <v-divider class="mx-1"></v-divider>
 
         <v-card-title
@@ -314,7 +284,7 @@
             dark
             class="mb-2"
             @click="openCreateBidDialog()"
-            v-if="$auth.check('ROLE_FORWARDER')"
+            v-if="$auth.check('ROLE_FORWARDER') && bids.length < 1"
           >
             Thêm mới
           </v-btn></v-card-title
@@ -501,7 +471,7 @@ export default class DetailBiddingDocument extends Vue {
       sortable: false,
       value: "id"
     },
-    { text: "Đối tác", value: "bidder.companyName" },
+    { text: "Bên gửi thầu", value: "bidder.companyName" },
     { text: "SĐT liên hệ", value: "bidder.phone" },
     { text: "Giá thầu", value: "bidPrice" },
     { text: "Ngày thầu", value: "bidDate" },
@@ -609,6 +579,7 @@ export default class DetailBiddingDocument extends Vue {
 
   async loadMoreContainers(val: DataOptions) {
     if (this.bid) {
+      this.loading = true;
       const _res = await getContainersByBid(this.bid.id as number, {
         page: val.page - 1,
         limit: val.itemsPerPage
@@ -618,15 +589,14 @@ export default class DetailBiddingDocument extends Vue {
         this.containers = _containers;
         this.containerServerSideOptions.totalItems = _res.data.totalElements;
       }
+      this.loading = false;
     }
   }
 
   @Watch("containerOptions", { deep: true })
   async onContainerOptionsChange(val: DataOptions, oldVal: DataOptions) {
     if (typeof val != "undefined" && val.page != oldVal.page) {
-      this.loading = true;
       await this.loadMoreContainers(val);
-      this.loading = false;
     }
   }
 

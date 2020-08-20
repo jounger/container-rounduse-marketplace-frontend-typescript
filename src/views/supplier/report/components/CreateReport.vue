@@ -54,6 +54,9 @@
               <template v-slot:item.bidFloorPrice="{ item }">
                 {{ currencyFormatter(item.bidFloorPrice) }}
               </template>
+              <template v-slot:item.isMultipleAward="{ item }">
+                {{ item.isMultipleAward ? "Đúng" : "Không" }}
+              </template>
               <template v-slot:item.actions="{ item }">
                 <v-switch
                   v-model="biddingDocumentSelected"

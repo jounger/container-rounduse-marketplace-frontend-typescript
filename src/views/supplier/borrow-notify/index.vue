@@ -150,6 +150,7 @@ export default class BorrowNotify extends Vue {
 
   async loadMoreShippingInfo(val: DataOptions) {
     if (this.shippingLineNotification) {
+      this.loading = true;
       const _res = await getShippingInfosByCombined(
         this.shippingLineNotification.relatedResource.id as number,
         {
@@ -162,6 +163,7 @@ export default class BorrowNotify extends Vue {
         this.shippingInfos = _shippingInfos;
         this.shippingInfoServerSideOptions.totalItems = _res.data.totalElements;
       }
+      this.loading = false;
     }
   }
 
@@ -185,9 +187,7 @@ export default class BorrowNotify extends Vue {
   @Watch("shippingInfoOptions", { deep: true })
   async onShippingInfoOptionsChange(val: DataOptions, oldVal: DataOptions) {
     if (typeof val != "undefined" && val.page != oldVal.page) {
-      this.loading = true;
       await this.loadMoreShippingInfo(val);
-      this.loading = false;
     }
   }
 }
