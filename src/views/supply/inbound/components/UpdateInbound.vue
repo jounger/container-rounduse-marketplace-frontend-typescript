@@ -171,7 +171,7 @@
             </v-stepper>
           </v-list>
         </div>
-        <v-card class="order-1 flex-shrink-1 mx-auto">
+        <v-card class="order-1 flex-shrink-1 mx-auto my-5">
           <GoogleMapLoader
             :options="mapConfig"
             :apiKey="apiKey"
@@ -243,15 +243,16 @@
             v-if="distanceMatrixResult"
             vertical
             class="elevation-0 pb-0"
+            :value="stepper2"
           >
-            <v-stepper-step step="1"
+            <v-stepper-step step="1" complete
               >{{ distanceMatrixResult.originAddress }}
               <small class="mt-1"
                 >Đi lúc: {{ formatDatetime(inboundLocal.pickupTime) }}</small
               >
             </v-stepper-step>
             <v-stepper-content step="1"></v-stepper-content>
-            <v-stepper-step step="2"
+            <v-stepper-step step="2" :complete="stepper2 >= 2"
               >{{ distanceMatrixResult.destinationAddress }}
               <small class="mt-1"
                 >Đến (khoảng): {{ formatDatetime(estimateTimeTravel()) }}</small
@@ -266,15 +267,16 @@
             v-if="!distanceMatrixResult && inboundLocal"
             vertical
             class="elevation-0 pb-0"
+            :value="stepper2"
           >
-            <v-stepper-step step="1"
+            <v-stepper-step step="1" complete
               >{{ inboundLocal.returnStation }}
               <small class="mt-1"
                 >Đi lúc: {{ formatDatetime(inboundLocal.pickupTime) }}</small
               >
             </v-stepper-step>
             <v-stepper-content step="1"></v-stepper-content>
-            <v-stepper-step step="2"
+            <v-stepper-step step="2" :complete="stepper2 >= 2"
               >{{ inboundLocal.billOfLading.portOfDelivery.address }}
               <small class="mt-1"
                 >Đến (khoảng):
@@ -346,6 +348,7 @@ export default class UpdateInbound extends Vue {
   checkbox = false;
   editable = true;
   stepper = 1;
+  stepper2 = 1;
   valid = true;
   valid2 = true;
   // API list
@@ -386,6 +389,11 @@ export default class UpdateInbound extends Vue {
       this.$nextTick(() => {
         this.inputAddress1.value = this.inbound.returnStation;
       });
+      const _isEmpty =
+        new Date().getTime() - new Date(this.inbound.emptyTime).getTime();
+      if (_isEmpty > 0) {
+        this.stepper2 = 2;
+      }
     } else {
       this.stepper = 1;
     }

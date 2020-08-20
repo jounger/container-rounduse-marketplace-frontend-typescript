@@ -143,7 +143,7 @@
                     ><v-col cols="12" sm="6">
                       <v-text-field
                         v-model="outboundLocal.booking.number"
-                        prepend-icon="child_friendly"
+                        prepend-icon="import_export"
                         :rules="[required('Số booking')]"
                         type="text"
                         label="Số Booking*"
@@ -236,7 +236,7 @@
           </v-list>
         </div>
 
-        <v-card class="order-1 flex-shrink-1 mx-auto">
+        <v-card class="order-1 flex-shrink-1 mx-auto my-5">
           <GoogleMapLoader
             :options="mapConfig"
             :apiKey="apiKey"

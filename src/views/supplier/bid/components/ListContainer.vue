@@ -13,87 +13,85 @@
           >
 
           <v-tab-item>
-            <v-container fluid>
-              <v-data-table
-                :headers="inboundHeaders"
-                :items="inbounds"
-                :single-expand="true"
-                :expanded.sync="expanded"
-                show-expand
-                @click:row="clicked"
-                item-key="id"
-                :loading="loading"
-                :options.sync="inboundOptions"
-                :server-items-length="inboundServerSideOptions.totalItems"
-                :footer-props="{
-                  'items-per-page-options':
-                    inboundServerSideOptions.itemsPerPageItems
-                }"
-                no-data-text="Danh sách hàng nhập rỗng."
-                :actions-append="inboundOptions.page"
-                disable-sort
-                class="elevation-0 mb-1"
-              >
-                <template v-slot:item.pickUpTime="{ item }">
-                  {{ formatDatetime(item.pickupTime) }}
-                </template>
-                <!-- Show containerList expened -->
-                <template v-slot:expanded-item="{ headers }">
-                  <td :colspan="headers.length" class="px-0">
-                    <v-data-table
-                      :headers="containerHeaders"
-                      :items="containerList"
-                      item-key="id"
-                      :loading="loading"
-                      :options.sync="containerOptions"
-                      :server-items-length="
-                        containerServerSideOptions.totalItems
-                      "
-                      :footer-props="{
-                        'items-per-page-options':
-                          containerServerSideOptions.itemsPerPageItems
-                      }"
-                      :actions-append="containerOptions.page"
-                      no-data-text="Danh sách Container khả dụng rỗng."
-                      v-model="containersSelected"
-                      :show-select="action == 'ADD'"
-                      @item-selected="selectContainer"
-                      dense
-                    >
-                      <template v-slot:header.data-table-select> </template>
-                      <template v-slot:item.actions="{ item }">
-                        <v-btn
-                          v-if="action == 'CHANGE' && container.id != item.id"
-                          outlined
-                          color="warning"
-                          @click.stop="changeContainerBid(item)"
-                          dark
-                          x-small
-                        >
-                          <v-icon left dense>add</v-icon> Đổi Cont
-                        </v-btn>
-                      </template>
-                    </v-data-table>
-                  </td>
-                </template>
-              </v-data-table>
-            </v-container>
+            <v-data-table
+              :headers="inboundHeaders"
+              :items="inbounds"
+              :single-expand="true"
+              :expanded.sync="expanded"
+              show-expand
+              @click:row="clicked"
+              item-key="id"
+              :loading="loading"
+              :options.sync="inboundOptions"
+              :server-items-length="inboundServerSideOptions.totalItems"
+              :footer-props="{
+                'items-per-page-options':
+                  inboundServerSideOptions.itemsPerPageItems
+              }"
+              no-data-text="Danh sách hàng nhập rỗng."
+              :actions-append="inboundOptions.page"
+              disable-sort
+              class="elevation-0 mb-1"
+            >
+              <template v-slot:item.pickUpTime="{ item }">
+                {{ formatDatetime(item.pickupTime) }}
+              </template>
+              <!-- Show containerList expened -->
+              <template v-slot:expanded-item="{ headers }">
+                <td
+                  :colspan="headers.length"
+                  class="px-0"
+                  v-if="containerList.length > 0"
+                >
+                  <v-data-table
+                    :headers="containerHeaders"
+                    :items="containerList"
+                    item-key="id"
+                    :loading="loading"
+                    :options.sync="containerOptions"
+                    :server-items-length="containerServerSideOptions.totalItems"
+                    :footer-props="{
+                      'items-per-page-options':
+                        containerServerSideOptions.itemsPerPageItems
+                    }"
+                    :actions-append="containerOptions.page"
+                    no-data-text="Danh sách Container khả dụng rỗng."
+                    v-model="containersSelected"
+                    :show-select="action == 'ADD'"
+                    @item-selected="selectContainer"
+                    dense
+                  >
+                    <template v-slot:header.data-table-select> </template>
+                    <template v-slot:item.actions="{ item }">
+                      <v-btn
+                        v-if="action == 'CHANGE' && container.id != item.id"
+                        outlined
+                        color="warning"
+                        @click.stop="changeContainerBid(item)"
+                        dark
+                        x-small
+                      >
+                        <v-icon left dense>add</v-icon> Đổi Cont
+                      </v-btn>
+                    </template>
+                  </v-data-table>
+                </td>
+              </template>
+            </v-data-table>
           </v-tab-item>
           <v-tab-item v-if="action == 'ADD'">
-            <v-container fluid>
-              <v-data-table
-                :headers="containerSelectedHeaders"
-                :items="containersSelected"
-                item-key="id"
-                hide-default-footer
-                no-data-text="Danh sách Container đã chọn rỗng."
-                disable-sort
-                v-model="containersSelected"
-                show-select
-                single-select
-              >
-              </v-data-table>
-            </v-container>
+            <v-data-table
+              :headers="containerSelectedHeaders"
+              :items="containersSelected"
+              item-key="id"
+              hide-default-footer
+              no-data-text="Danh sách Container đã chọn rỗng."
+              disable-sort
+              v-model="containersSelected"
+              show-select
+              single-select
+            >
+            </v-data-table>
           </v-tab-item>
         </v-tabs>
       </v-card-text>
@@ -186,7 +184,7 @@ export default class ListContainer extends Vue {
       value: "number",
       class: "tertiary"
     },
-    { text: "Tài xế", value: "driver.fullname", class: "tertiary" },
+    { text: "Lái xe", value: "driver.fullname", class: "tertiary" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate",
@@ -211,7 +209,7 @@ export default class ListContainer extends Vue {
       text: "Container No.",
       value: "number"
     },
-    { text: "Tài xế", value: "driver.fullname" },
+    { text: "Lái xe", value: "driver.fullname" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate"

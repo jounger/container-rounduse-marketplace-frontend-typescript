@@ -13,7 +13,7 @@
                 prepend-icon="person"
                 type="text"
                 disabled
-                v-model="evidenceLocal.sender"
+                v-model="contractDocumentLocal.sender"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -34,8 +34,11 @@
       </v-card-text>
       <v-card-actions class="justify-space-between">
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn @click="createEvidence()" color="primary" :disabled="!valid"
-          >Thêm mới</v-btn
+        <v-btn
+          @click="createContractDocument()"
+          color="primary"
+          :disabled="!valid"
+          >Gửi hợp đồng</v-btn
         >
       </v-card-actions>
     </v-card>
@@ -43,38 +46,40 @@
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
-import { IEvidence } from "@/entity/evidence";
+import { IContractDocument } from "@/entity/contract-document";
 import FormValidate from "@/mixin/form-validate";
-import { createEvidence } from "@/api/evidence";
+import { createContractDocument } from "@/api/contract-document";
 import { IContract } from "@/entity/contract";
 
 @Component({
   mixins: [FormValidate]
 })
-export default class CreateEvidence extends Vue {
+export default class CreateContractDocument extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("evidences", { type: Array }) evidencesSync!: Array<IEvidence>;
+  @PropSync("contractDocuments", { type: Array }) contractDocumentsSync!: Array<
+    IContractDocument
+  >;
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @PropSync("checkValid", { type: Boolean }) checkValidSync!: boolean;
   @Prop(Object) contract!: IContract;
 
   fileInput = null as Blob | null;
-  evidenceLocal = {
-    sender: this.$auth.user().username,
+  contractDocumentLocal = {
+    sender: this.$auth.user().fullname,
     documentPath: "",
     status: "PENDING"
-  } as IEvidence;
+  } as IContractDocument;
   valid = false;
 
-  async createEvidence() {
+  async createContractDocument() {
     if (this.contract.id && this.fileInput) {
       const formData = new FormData();
       formData.append("file", this.fileInput);
-      const _res = await createEvidence(this.contract.id, formData);
+      const _res = await createContractDocument(this.contract.id, formData);
       if (_res.data) {
-        const _evidence = _res.data.data;
-        if (this.evidencesSync) {
-          this.evidencesSync.unshift(_evidence);
+        const _contractDocument = _res.data.data;
+        if (this.contractDocumentsSync) {
+          this.contractDocumentsSync.unshift(_contractDocument);
           this.totalItemsSync += 1;
           this.checkValidSync = false;
         }

@@ -9,7 +9,8 @@ const routes: Array<RouteConfig> = [
     path: "/404",
     name: "NotFound",
     meta: {
-      layout: "EmptyLayout"
+      layout: "EmptyLayout",
+      title: "Không tìm thấy trang"
     },
     component: () => import("@/views/error-page/404.vue")
   },
@@ -17,7 +18,8 @@ const routes: Array<RouteConfig> = [
     path: "/401",
     name: "Unauthorized",
     meta: {
-      layout: "EmptyLayout"
+      layout: "EmptyLayout",
+      title: "Không có quyền truy cập"
     },
     component: () => import("@/views/error-page/401.vue")
   },
@@ -26,7 +28,8 @@ const routes: Array<RouteConfig> = [
     path: "/login",
     name: "Login",
     meta: {
-      layout: "AuthLayout"
+      layout: "AuthLayout",
+      title: "Đăng nhập"
     },
     component: () => import("@/views/auth/Login.vue")
   },
@@ -34,7 +37,8 @@ const routes: Array<RouteConfig> = [
     path: "/logout",
     name: "Logout",
     meta: {
-      auth: true
+      auth: true,
+      title: "Đăng xuất"
     },
     component: () => import("@/views/auth/Logout.vue")
   },
@@ -42,15 +46,17 @@ const routes: Array<RouteConfig> = [
     path: "/register",
     name: "Register",
     meta: {
-      layout: "EmptyLayout"
+      layout: "EmptyLayout",
+      title: "Đăng ký"
     },
     component: () => import("@/views/auth/Register.vue")
   },
   {
     path: "/forgot-password",
-    name: "Forgot Password",
+    name: "ForgotPassword",
     meta: {
-      layout: "AuthLayout"
+      layout: "AuthLayout",
+      title: "Quên mật khẩu"
     },
     component: () => import("@/views/user/password/ForgotPassword.vue")
   },
@@ -59,7 +65,8 @@ const routes: Array<RouteConfig> = [
     path: "/",
     name: "Home",
     meta: {
-      layout: "DefaultLayout"
+      layout: "DefaultLayout",
+      title: "Trang chủ"
     },
     component: () => import("@/views/Home.vue")
   },
@@ -77,24 +84,27 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/user/profile/index.vue"),
     meta: {
       auth: true,
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Trang cá nhân"
     }
   },
   {
     path: "/change-password",
-    name: "Change Password",
+    name: "ChangePassword",
     component: () => import("@/views/user/password/ChangePassword.vue"),
     meta: {
       auth: true,
-      layout: "AuthLayout"
+      layout: "AuthLayout",
+      title: "Đổi mật khẩu"
     }
   },
   {
     path: "/reset-password/:hash",
-    name: "Reset Password",
+    name: "ResetPassword",
     component: () => import("@/views/user/password/ResetPassword.vue"),
     meta: {
-      layout: "AuthLayout"
+      layout: "AuthLayout",
+      title: "Cài lại mật khẩu"
     }
   },
   {
@@ -103,7 +113,8 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/user/dashboard/index.vue"),
     meta: {
       auth: true,
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Bảng điều khiển"
     }
   },
   // ADMIN
@@ -113,7 +124,8 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/admin/role/index.vue"),
     meta: {
       auth: ["ROLE_ADMIN"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách vai trò"
     }
   },
   {
@@ -122,7 +134,8 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/admin/permission/index.vue"),
     meta: {
       auth: ["ROLE_ADMIN"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách quyền hạn"
     }
   },
   {
@@ -131,17 +144,19 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/admin/operator/index.vue"),
     meta: {
       auth: ["ROLE_ADMIN"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách quản trị viên"
     }
   },
   // MODERATOR
   {
     path: "/shipping-line",
-    name: "Shipping Line",
+    name: "ShippingLine",
     component: () => import("@/views/operator/shipping-line/index.vue"),
     meta: {
       auth: ["ROLE_MODERATOR"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách hãng tàu"
     }
   },
   {
@@ -150,7 +165,8 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/operator/supplier-register/index.vue"),
     meta: {
       auth: ["ROLE_MODERATOR"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách đơn đăng ký"
     }
   },
   {
@@ -159,25 +175,28 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/operator/port/index.vue"),
     meta: {
       auth: ["ROLE_MODERATOR"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách cảng"
     }
   },
   {
     path: "/container-type",
-    name: "Container Type",
+    name: "ContainerType",
     component: () => import("@/views/operator/container-type/index.vue"),
     meta: {
       auth: ["ROLE_MODERATOR"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách loại container"
     }
   },
   {
     path: "/discount",
-    name: "Mã giảm giá",
+    name: "Discount",
     component: () => import("@/views/operator/discount/index.vue"),
     meta: {
       auth: ["ROLE_MODERATOR"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách mã giảm giá"
     }
   },
   // SUPPLIER
@@ -187,7 +206,8 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/supplier/application/index.vue"),
     meta: {
       auth: ["ROLE_FORWARDER", "ROLE_MERCHANT"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách đơn đăng ký"
     }
   },
   {
@@ -196,39 +216,43 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/supplier/combined/index.vue"),
     meta: {
       auth: ["ROLE_FORWARDER", "ROLE_MERCHANT"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách hàng ghép"
     }
   },
   {
     path: "/bidding-document/:id",
-    name: "Bidding Document Detail",
+    name: "BiddingDocumentDetail",
     component: () =>
       import(
         "@/views/supplier/bidding-document/components/DetailBiddingDocument.vue"
       ),
     meta: {
       auth: ["ROLE_MERCHANT", "ROLE_FORWARDER"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Chi tiết đấu thầu"
     }
   },
   {
     path: "/combined/:id",
-    name: "Combined Detail",
+    name: "CombinedDetail",
     component: () =>
       import("@/views/supplier/combined/components/DetailCombined.vue"),
     meta: {
       auth: ["ROLE_MERCHANT", "ROLE_FORWARDER"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Chi tiết hàng ghép"
     }
   },
   {
     path: "/report/:id",
-    name: "Report Detail",
+    name: "ReportDetail",
     component: () =>
       import("@/views/supplier/report/components/ReportDetail.vue"),
     meta: {
       auth: ["ROLE_MODERATOR", "ROLE_FORWARDER"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Chi tiết báo cáo"
     }
   },
   // merchant
@@ -238,16 +262,18 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/supply/outbound/index.vue"),
     meta: {
       auth: ["ROLE_MERCHANT"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách hàng xuất"
     }
   },
   {
     path: "/bidding-document",
-    name: "Bidding Document",
+    name: "BiddingDocument",
     component: () => import("@/views/supplier/bidding-document/index.vue"),
     meta: {
       auth: ["ROLE_MERCHANT"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách đấu thầu"
     }
   },
   // forwarder
@@ -257,7 +283,8 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/supply/inbound/index.vue"),
     meta: {
       auth: ["ROLE_FORWARDER"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách hàng nhập"
     }
   },
   {
@@ -266,17 +293,19 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/supplier/bid/index.vue"),
     meta: {
       auth: ["ROLE_FORWARDER"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách đã gửi dự thầu"
     }
   },
   {
     path: "/invited-bidding",
-    name: "Invited Bidding Document",
+    name: "InvitedBiddingDocument",
     component: () =>
       import("@/views/supplier/bid/components/InvitedNotify.vue"),
     meta: {
       auth: ["ROLE_FORWARDER"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách đơn mời thầu"
     }
   },
   {
@@ -285,7 +314,8 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/supplier/driver/index.vue"),
     meta: {
       auth: ["ROLE_FORWARDER"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách lái xe"
     }
   },
   {
@@ -294,7 +324,8 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/operator/supplier/index.vue"),
     meta: {
       auth: ["ROLE_MODERATOR"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách nhà cung cấp"
     }
   },
   {
@@ -303,7 +334,8 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/supplier/trailer/index.vue"),
     meta: {
       auth: ["ROLE_FORWARDER"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách đầu kéo"
     }
   },
   {
@@ -312,7 +344,8 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/supplier/tractor/index.vue"),
     meta: {
       auth: ["ROLE_FORWARDER"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách rơ mooc"
     }
   },
   {
@@ -321,16 +354,18 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/supplier/contract/index.vue"),
     meta: {
       auth: ["ROLE_FORWARDER", "ROLE_MERCHANT"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách hợp đồng"
     }
   },
   {
-    path: "/payment",
-    name: "Payment",
-    component: () => import("@/views/supplier/payment/index.vue"),
+    path: "/invoice",
+    name: "Invoice",
+    component: () => import("@/views/supplier/invoice/index.vue"),
     meta: {
       auth: ["ROLE_FORWARDER", "ROLE_MERCHANT"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách hóa đơn"
     }
   },
   {
@@ -339,17 +374,19 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/supplier/report/index.vue"),
     meta: {
       auth: ["ROLE_MODERATOR", "ROLE_FORWARDER"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách báo cáo"
     }
   },
   // shipping line
   {
     path: "/borrow-notify",
-    name: "Borrow Notify",
+    name: "BorrowNotify",
     component: () => import("@/views/supplier/borrow-notify/index.vue"),
     meta: {
       auth: ["ROLE_SHIPPINGLINE"],
-      layout: "NavLayout"
+      layout: "NavLayout",
+      title: "Danh sách yêu cầu mượn vỏ container"
     }
   },
 

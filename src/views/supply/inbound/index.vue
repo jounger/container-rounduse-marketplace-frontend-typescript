@@ -113,7 +113,11 @@
           </v-menu>
         </template>
         <template v-slot:expanded-item="{ headers }">
-          <td :colspan="headers.length" class="px-0">
+          <td
+            :colspan="headers.length"
+            class="px-0"
+            v-if="containers.length > 0"
+          >
             <v-data-table
               :headers="containerHeaders"
               :items="containers"
@@ -245,7 +249,7 @@ export default class Inbound extends Vue {
       value: "number",
       class: "tertiary"
     },
-    { text: "Tài xế", value: "driver.fullname", class: "tertiary" },
+    { text: "Lái xe", value: "driver.fullname", class: "tertiary" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate",

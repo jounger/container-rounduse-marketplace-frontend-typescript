@@ -1,4 +1,4 @@
-export interface IEvidence {
+export interface IContractDocument {
   id?: number;
   sender: string;
   documentPath: string;

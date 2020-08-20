@@ -29,8 +29,3 @@ export default class Loading extends Vue {
   }
 }
 </script>
-<style lang="css">
-.v-progress-linear__buffer {
-  background: #fff;
-}
-</style>

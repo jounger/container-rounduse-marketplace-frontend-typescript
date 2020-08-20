@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { PaginationRequest } from "./payload";
+import { PaginationRequest } from "../entity/payload";
 
 export function getShippingInfos(paging: PaginationRequest) {
   return Vue.axios.get("/shipping-info", {

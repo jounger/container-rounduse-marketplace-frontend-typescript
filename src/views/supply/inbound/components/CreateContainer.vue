@@ -30,7 +30,7 @@
                     item-text="fullname"
                     item-value="username"
                     no-data-text="Danh sách lái xe rỗng."
-                    label="Tài xế*"
+                    label="Lái xe*"
                   ></v-select>
                 </v-flex>
               </v-layout>

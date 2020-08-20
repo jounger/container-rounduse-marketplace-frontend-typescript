@@ -34,11 +34,11 @@
       width="100%"
     >
       <!-- OUTOUNBD -->
-      <v-card class="order-0 flex-grow-0 mx-auto mr-5" max-width="500">
+      <v-card class="order-0 flex-grow-0 mx-auto mr-5" max-width="480" tile>
         <v-img
           height="100"
-          width="420px"
-          src="@/assets/images/biddingdocument.jpg"
+          max-width="480"
+          src="@/assets/images/background-cover.jpg"
         ></v-img>
         <v-card-title>Hồ sơ Mời thầu</v-card-title>
         <v-card-text>
@@ -56,7 +56,7 @@
                   "Giá gói thầu: " +
                     currencyFormatter(
                       biddingDocument.bidPackagePrice,
-                      biddingDocument.currencyOfPayment
+                      biddingDocument.currencyOfInvoice
                     )
                 }}</v-list-item-title>
                 <v-list-item-subtitle>
@@ -64,7 +64,7 @@
                     "Giá sàn: " +
                       currencyFormatter(
                         biddingDocument.bidFloorPrice,
-                        biddingDocument.currencyOfPayment
+                        biddingDocument.currencyOfInvoice
                       )
                   }}
                 </v-list-item-subtitle>
@@ -101,7 +101,7 @@
             <v-subheader>Thông tin Hàng Xuất</v-subheader>
             <v-list-item>
               <v-list-item-icon>
-                <v-icon>child_friendly</v-icon>
+                <v-icon>import_export</v-icon>
               </v-list-item-icon>
               <v-list-item-content>
                 <v-list-item-title>{{
@@ -198,7 +198,7 @@
                       "Giá dẫn đầu: " +
                         currencyFormatter(
                           biddingDocument.priceLeadership,
-                          biddingDocument.currencyOfPayment
+                          biddingDocument.currencyOfInvoice
                         )
                     }}</v-list-item-title>
                     <v-list-item-subtitle>
@@ -206,7 +206,7 @@
                         "Giá sàn: " +
                           currencyFormatter(
                             biddingDocument.bidFloorPrice,
-                            biddingDocument.currencyOfPayment
+                            biddingDocument.currencyOfInvoice
                           )
                       }}
                     </v-list-item-subtitle>
@@ -345,8 +345,8 @@
           <template v-slot:item.bidPrice="{ item }">
             {{ currencyFormatter(item.bidPrice) }}
           </template>
-          <template v-slot:item.bidValidityPeriod="{ item }">
-            {{ formatDatetime(item.bidValidityPeriod) }}
+          <template v-slot:item.validityPeriod="{ item }">
+            {{ formatDatetime(item.validityPeriod) }}
           </template>
           <template v-slot:item.status="{ item }">
             <ChipStatus :status="item.status" />
@@ -378,7 +378,11 @@
           </template>
 
           <template v-slot:expanded-item="{ headers }">
-            <td :colspan="headers.length" class="px-0">
+            <td
+              :colspan="headers.length"
+              class="px-0"
+              v-if="containers.length > 0"
+            >
               <v-data-table
                 v-if="biddingDocument.isMultipleAward"
                 :headers="containerHeaders"
@@ -501,7 +505,7 @@ export default class DetailBiddingDocument extends Vue {
     { text: "SĐT liên hệ", value: "bidder.phone" },
     { text: "Giá thầu", value: "bidPrice" },
     { text: "Ngày thầu", value: "bidDate" },
-    { text: "Hiệu lực đến", value: "bidValidityPeriod" },
+    { text: "Hiệu lực đến", value: "validityPeriod" },
     { text: "Trạng thái", value: "status" },
     { text: "Hành động", value: "actions" }
   ];
@@ -514,7 +518,7 @@ export default class DetailBiddingDocument extends Vue {
       value: "number",
       class: "tertiary"
     },
-    { text: "Tài xế", value: "driver.fullname", class: "tertiary" },
+    { text: "Lái xe", value: "driver.fullname", class: "tertiary" },
     {
       text: "Rơ moóc",
       value: "trailer.licensePlate",

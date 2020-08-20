@@ -1,35 +1,9 @@
 <template>
   <v-container fluid>
     <v-card>
-      <v-row justify="center">
-        <DeletePayment
-          v-if="dialogDel"
-          :dialogDel.sync="dialogDel"
-          :payment="payment"
-          :payments.sync="payments"
-          :totalItems.sync="serverSideOptions.totalItems"
-        />
-      </v-row>
-      <v-row justify="center">
-        <ConfirmPayment
-          v-if="dialogConfirm"
-          :dialogConfirm.sync="dialogConfirm"
-          :payment="payment"
-          :payments.sync="payments"
-        />
-      </v-row>
-      <v-row justify="center">
-        <UpdatePayment
-          v-if="dialogEdit"
-          :payment="payment"
-          :payments.sync="payments"
-          :dialogEdit.sync="dialogEdit"
-          :disabled="disabled"
-        />
-      </v-row>
       <v-data-table
         :headers="headers"
-        :items="payments"
+        :items="invoices"
         :loading="loading"
         :options.sync="options"
         :server-items-length="serverSideOptions.totalItems"
@@ -46,11 +20,9 @@
             <v-toolbar-title style="font-weight:bold; font-size: 25px;"
               >Danh sách Hóa đơn</v-toolbar-title
             >
-            <v-divider class="mx-4" inset vertical></v-divider>
-            <v-spacer></v-spacer>
           </v-toolbar>
         </template>
-        <template v-slot:item.status="{ item }">
+        <template v-slot:item.isPaid="{ item }">
           <ChipStatus :status="item.isPaid ? 'PAID' : 'PENDING'" />
         </template>
         <template v-slot:item.paymentDate="{ item }">
@@ -118,33 +90,55 @@
         </template>
       </v-data-table>
     </v-card>
+    <v-row justify="center">
+      <DeleteInvoice
+        v-if="dialogDel"
+        :dialogDel.sync="dialogDel"
+        :invoice="invoice"
+        :invoices.sync="invoices"
+        :totalItems.sync="serverSideOptions.totalItems"
+      />
+      <ConfirmInvoice
+        v-if="dialogConfirm"
+        :dialogConfirm.sync="dialogConfirm"
+        :invoice="invoice"
+        :invoices.sync="invoices"
+      />
+      <UpdateInvoice
+        v-if="dialogEdit"
+        :invoice="invoice"
+        :invoices.sync="invoices"
+        :dialogEdit.sync="dialogEdit"
+        :disabled="disabled"
+      />
+    </v-row>
   </v-container>
 </template>
 <script lang="ts">
 import { Component, Watch, Vue } from "vue-property-decorator";
-import { IPayment } from "@/entity/payment";
-import CreatePayment from "./components/CreatePayment.vue";
-import DeletePayment from "./components/DeletePayment.vue";
+import { IInvoice } from "@/entity/invoice";
+import CreateInvoice from "./components/CreateInvoice.vue";
+import DeleteInvoice from "./components/DeleteInvoice.vue";
 import Utils from "@/mixin/utils";
-import { getPaymentsByUser } from "@/api/payment";
+import { getInvoicesByUser } from "@/api/invoice";
 import { DataOptions } from "vuetify";
-import ConfirmPayment from "./components/ConfirmPayment.vue";
-import UpdatePayment from "./components/UpdatePayment.vue";
+import ConfirmInvoice from "./components/ConfirmInvoice.vue";
+import UpdateInvoice from "./components/UpdateInvoice.vue";
 import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
   mixins: [Utils],
   components: {
-    CreatePayment,
-    UpdatePayment,
-    DeletePayment,
-    ConfirmPayment,
+    CreateInvoice,
+    UpdateInvoice,
+    DeleteInvoice,
+    ConfirmInvoice,
     ChipStatus
   }
 })
-export default class Payment extends Vue {
-  payments: Array<IPayment> = [];
-  payment = null as IPayment | null;
+export default class Invoice extends Vue {
+  invoices: Array<IInvoice> = [];
+  invoice = null as IInvoice | null;
   dialogAdd = false;
   dialogEdit = false;
   dialogDel = false;
@@ -173,7 +167,7 @@ export default class Payment extends Vue {
     { text: "Số tiền", value: "amount" },
     { text: "Loại hóa đơn", value: "type" },
     { text: "Ngày thanh toán", value: "paymentDate" },
-    { text: "Trạng thái", value: "status" },
+    { text: "Trạng thái", value: "isPaid" },
     {
       text: "Hành động",
       value: "actions",
@@ -181,25 +175,25 @@ export default class Payment extends Vue {
     }
   ];
 
-  openUpdateDialog(item: IPayment) {
-    this.payment = item;
+  openUpdateDialog(item: IInvoice) {
+    this.invoice = item;
     this.disabled = false;
     this.dialogEdit = true;
   }
 
-  openDetailDialog(item: IPayment) {
-    this.payment = item;
+  openDetailDialog(item: IInvoice) {
+    this.invoice = item;
     this.disabled = true;
     this.dialogEdit = true;
   }
 
-  openDeleteDialog(item: IPayment) {
-    this.payment = item;
+  openDeleteDialog(item: IInvoice) {
+    this.invoice = item;
     this.dialogDel = true;
   }
 
-  openConfirmDialog(item: IPayment) {
-    this.payment = item;
+  openConfirmDialog(item: IInvoice) {
+    this.invoice = item;
     this.dialogConfirm = true;
   }
 
@@ -207,13 +201,13 @@ export default class Payment extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _res = await getPaymentsByUser({
+      const _res = await getInvoicesByUser({
         page: val.page - 1,
         limit: val.itemsPerPage
       });
       if (_res.data) {
-        const _payments = _res.data.data;
-        this.payments = _payments;
+        const _invoices = _res.data.data;
+        this.invoices = _invoices;
         this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;

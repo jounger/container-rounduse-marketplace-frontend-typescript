@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { PaginationRequest } from "./payload";
+import { PaginationRequest } from "../entity/payload";
 import { ICombined } from "@/entity/combined";
 
 export function getCombineds(paging: PaginationRequest) {

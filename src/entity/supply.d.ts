@@ -1,5 +1,5 @@
-import { IShippingLine } from './shipping-line';
-import { IContainerType } from './container-type';
+import { IShippingLine } from "./shipping-line";
+import { IContainerType } from "./container-type";
 export interface ISupply {
   id?: number;
   code: string;

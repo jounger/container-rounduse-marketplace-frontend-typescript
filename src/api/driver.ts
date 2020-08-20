@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { PaginationRequest } from "./payload";
+import { PaginationRequest } from "../entity/payload";
 import { IDriver } from "@/entity/driver";
 
 export function getDrivers(paging: PaginationRequest) {

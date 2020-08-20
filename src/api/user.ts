@@ -3,7 +3,7 @@ import {
   PaginationRequest,
   ChangePasswordRequest,
   ResetPasswordRequest
-} from "./payload";
+} from "../entity/payload";
 
 export function getProfile() {
   return Vue.axios.get("/auth/user");

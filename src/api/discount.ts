@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { PaginationRequest } from "./payload";
+import { PaginationRequest } from "../entity/payload";
 import { IDiscount } from "@/entity/discount";
 
 export function getDiscounts(paging: PaginationRequest) {

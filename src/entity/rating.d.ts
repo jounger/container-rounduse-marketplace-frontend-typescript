@@ -1,5 +1,5 @@
-import { IContract } from './contract';
-import { IUser } from './user';
+import { IContract } from "./contract";
+import { IUser } from "./user";
 export interface IRating {
   id?: number;
   sender: IUser | string;

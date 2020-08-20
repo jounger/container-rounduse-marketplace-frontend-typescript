@@ -56,7 +56,7 @@
               <v-text-field
                 label="Số bằng lái"
                 name="driverLocalLicense"
-                prepend-icon="payment"
+                prepend-icon="invoice"
                 type="text"
                 v-model="driverLocal.driverLicense"
                 :counter="50"

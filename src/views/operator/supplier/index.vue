@@ -1,28 +1,10 @@
 <template>
   <v-container fluid>
     <v-card>
-      <v-row justify="center">
-        <SupplierDetail
-          v-if="dialogDetail"
-          :dialogDetail.sync="dialogDetail"
-          :supplier="supplier"
-        />
-      </v-row>
-      <v-row justify="center">
-        <ReviewSupplier
-          v-if="dialogReview"
-          :dialogReview.sync="dialogReview"
-          :supplier="supplier"
-          :suppliers.sync="suppliers"
-        />
-      </v-row>
-      <v-card-title>
-        Danh sách Nhà cung cấp
-      </v-card-title>
       <v-data-table
         :headers="headers"
         :items="suppliers"
-        item-key="username"
+        item-key="id"
         :loading="loading"
         :options.sync="options"
         :server-items-length="serverSideOptions.totalItems"
@@ -34,6 +16,11 @@
         disable-sort
         class="elevation-1"
       >
+        <template v-slot:top>
+          <v-toolbar flat color="white">
+            <v-toolbar-title>Danh sách Nhà cung cấp</v-toolbar-title>
+          </v-toolbar>
+        </template>
         <template v-slot:item.avatar="{ item }">
           <v-avatar size="35" color="tertiary">
             <v-img
@@ -47,6 +34,9 @@
         </template>
         <template v-slot:item.status="{ item }">
           <ChipStatus :status="item.status" />
+        </template>
+        <template v-slot:item.roles="{ item }">
+          <ChipStatus :status="item.roles" type="roles" />
         </template>
         <template v-slot:item.actions="{ item }">
           <v-menu :loading="item.createloading" :disabled="item.createloading">
@@ -65,7 +55,7 @@
             <v-list dense>
               <v-list-item @click="openDetailDialog(item)">
                 <v-list-item-icon>
-                  <v-icon small>edit</v-icon>
+                  <v-icon small>remove_red_eye</v-icon>
                 </v-list-item-icon>
                 <v-list-item-title>Xem chi tiết</v-list-item-title>
               </v-list-item>
@@ -92,6 +82,19 @@
         </template>
       </v-data-table>
     </v-card>
+    <v-row justify="center">
+      <SupplierDetail
+        v-if="dialogDetail"
+        :dialogDetail.sync="dialogDetail"
+        :supplier="supplier"
+      />
+      <ReviewSupplier
+        v-if="dialogReview"
+        :dialogReview.sync="dialogReview"
+        :supplier="supplier"
+        :suppliers.sync="suppliers"
+      />
+    </v-row>
   </v-container>
 </template>
 <script lang="ts">

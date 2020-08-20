@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { PaginationRequest } from "./payload";
+import { PaginationRequest } from "../entity/payload";
 import { IContainerType } from "@/entity/container-type";
 
 export function getContainerTypes(paging: PaginationRequest) {

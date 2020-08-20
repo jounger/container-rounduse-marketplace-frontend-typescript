@@ -284,7 +284,7 @@
             </v-stepper>
           </v-list>
         </div>
-        <v-card class="order-1 flex-shrink-1 mx-auto">
+        <v-card class="order-1 flex-shrink-1 mx-auto my-5">
           <GoogleMapLoader
             :options="mapConfig"
             :apiKey="apiKey"
@@ -473,7 +473,7 @@ export default class CreateInbound extends Vue {
       sortable: false,
       value: "number"
     },
-    { text: "Tài xế", value: "driver.fullname" },
+    { text: "Lái xe", value: "driver.fullname" },
     { text: "Rơ mọt", value: "trailer" },
     { text: "Đầu kéo", value: "tractor" },
     {

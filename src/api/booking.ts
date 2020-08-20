@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { PaginationRequest } from "./payload";
+import { PaginationRequest } from "../entity/payload";
 
 export function getBookingsByOutbound(id: number, paging: PaginationRequest) {
   return Vue.axios.get(`/booking/outbound/${id}`, {

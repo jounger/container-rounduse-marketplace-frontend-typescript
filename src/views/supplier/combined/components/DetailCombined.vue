@@ -1,18 +1,18 @@
 <template>
   <v-container fluid>
-    <DetailEvidence
+    <DetailContractDocument
       v-if="dialogDetail"
       :dialogDetail.sync="dialogDetail"
-      :evidences.sync="evidences"
+      :contractDocuments.sync="contractDocuments"
       :status.sync="status"
-      :evidence="evidence"
+      :contractDocument="contractDocument"
     />
-    <CreateEvidence
-      v-if="dialogAddEvidence"
-      :dialogAdd.sync="dialogAddEvidence"
-      :evidences.sync="evidences"
+    <CreateContractDocument
+      v-if="dialogAddContractDocument"
+      :dialogAdd.sync="dialogAddContractDocument"
+      :contractDocuments.sync="contractDocuments"
       :status.sync="status"
-      :totalItems.sync="evidenceServerSideOptions.totalItems"
+      :totalItems.sync="contractDocumentServerSideOptions.totalItems"
       :contract="contract"
     />
     <v-card
@@ -21,7 +21,7 @@
       width="100%"
     >
       <!-- OUTOUNBD -->
-      <v-card class="order-0 flex-grow-0 mx-auto mr-5" max-width="500">
+      <v-card class="order-0 flex-grow-0 mx-auto mr-5" max-width="480">
         <v-tabs
           background-color="white"
           color="deep-purple accent-4"
@@ -113,197 +113,189 @@
           </v-tab-item>
 
           <v-tab-item>
-            <v-container>
-              <v-card class="elevation-0" v-if="shippingInfo">
-                <v-img
-                  height="100"
-                  max-width="420"
-                  src="@/assets/images/biddingdocument.jpg"
-                ></v-img>
+            <v-card class="elevation-0" v-if="shippingInfo" tile>
+              <v-img
+                height="100"
+                max-width="480"
+                src="@/assets/images/background-cover.jpg"
+              ></v-img>
 
-                <v-card-title>Thông tin hàng xuất</v-card-title>
+              <v-card-title>Thông tin hàng xuất</v-card-title>
 
-                <v-card-text>
-                  <v-list dense>
-                    <v-subheader>Thông tin chung</v-subheader>
-                    <v-list-item>
-                      <v-list-item-icon>
-                        <v-icon>child_friendly</v-icon>
-                      </v-list-item-icon>
-                      <v-list-item-content>
-                        <v-list-item-title>{{
-                          "Mã hàng xuất: " + shippingInfo.outbound.code
-                        }}</v-list-item-title>
-                        <v-list-item-subtitle>
-                          {{
-                            "Cảng bốc hàng: " +
-                              shippingInfo.outbound.booking.portOfLoading
-                                .fullname
-                          }}
-                        </v-list-item-subtitle>
-                      </v-list-item-content>
-                    </v-list-item>
-
-                    <v-list-item>
-                      <v-list-item-icon>
-                        <v-icon>directions_boat</v-icon>
-                      </v-list-item-icon>
-                      <v-list-item-content>
-                        <v-list-item-title>{{
-                          "Hãng tàu: " +
-                            shippingInfo.outbound.shippingLine.companyName
-                        }}</v-list-item-title>
-                        <v-list-item-subtitle>
-                          {{
-                            "Số lượng: " +
-                              shippingInfo.outbound.booking.unit +
-                              " x " +
-                              shippingInfo.outbound.containerType.name
-                          }}
-                        </v-list-item-subtitle>
-                      </v-list-item-content>
-                    </v-list-item>
-
-                    <v-list-item>
-                      <v-list-item-icon>
-                        <v-icon>location_on</v-icon>
-                      </v-list-item-icon>
-                      <v-list-item-content>
-                        <v-list-item-title>{{
-                          "Đóng hàng tại: " +
-                            shippingInfo.outbound.packingStation
-                        }}</v-list-item-title>
-                        <v-list-item-subtitle>
-                          {{
-                            "Thời gian: " +
-                              formatDatetime(shippingInfo.outbound.packingTime)
-                          }}
-                        </v-list-item-subtitle>
-                      </v-list-item-content>
-                    </v-list-item>
-
-                    <v-list-item>
-                      <v-list-item-icon>
-                        <v-icon>description</v-icon>
-                      </v-list-item-icon>
-                      <v-list-item-content>
-                        <v-list-item-title>{{
-                          "Khối lượng: " +
-                            shippingInfo.outbound.grossWeight +
-                            shippingInfo.outbound.unitOfMeasurement
-                        }}</v-list-item-title>
-                        <v-list-item-subtitle>
-                          {{
-                            "Mô tả: " + shippingInfo.outbound.goodsDescription
-                          }}
-                        </v-list-item-subtitle>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-card-text>
-              </v-card>
-            </v-container>
-          </v-tab-item>
-          <v-tab-item>
-            <v-container>
-              <v-card class="elevation-0" v-if="combined">
-                <v-img
-                  height="100"
-                  max-width="420"
-                  src="@/assets/images/biddingdocument.jpg"
-                ></v-img>
-                <v-card-title>Thông tin Hợp đồng</v-card-title>
-                <v-card-text>
-                  Thông tin Chủ xe:
-                  <SupplierRating :supplier="combined.bid.bidder" />
-                </v-card-text>
-
-                <v-subheader>Thông tin chung</v-subheader>
+              <v-card-text>
                 <v-list dense>
+                  <v-subheader>Thông tin chung</v-subheader>
                   <v-list-item>
                     <v-list-item-icon>
-                      <v-icon>monetization_on</v-icon>
+                      <v-icon>import_export</v-icon>
                     </v-list-item-icon>
                     <v-list-item-content>
-                      <v-list-item-title v-if="biddingDocument">{{
-                        "Bên chủ hàng: " + biddingDocument.offeree.companyName
+                      <v-list-item-title>{{
+                        "Mã hàng xuất: " + shippingInfo.outbound.code
                       }}</v-list-item-title>
                       <v-list-item-subtitle>
-                        {{ "Bên chủ xe: " + combined.bid.bidder.companyName }}
-                      </v-list-item-subtitle>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-icon>
-                      <v-icon>monetization_on</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-content>
-                      <v-list-item-title
-                        >Yêu cầu hợp đồng :
                         {{
-                          combined.contract.required ? "Có" : "Không"
-                        }}</v-list-item-title
-                      >
-                      <v-list-item-subtitle v-if="combined.contract.required">
-                        {{
-                          "Tiền phạt: " +
-                            combined.contract.finesAgainstContractViolation +
-                            "%"
+                          "Cảng bốc hàng: " +
+                            shippingInfo.outbound.booking.portOfLoading.fullname
                         }}
                       </v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
+
+                  <v-list-item>
+                    <v-list-item-icon>
+                      <v-icon>directions_boat</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title>{{
+                        "Hãng tàu: " +
+                          shippingInfo.outbound.shippingLine.companyName
+                      }}</v-list-item-title>
+                      <v-list-item-subtitle>
+                        {{
+                          "Số lượng: " +
+                            shippingInfo.outbound.booking.unit +
+                            " x " +
+                            shippingInfo.outbound.containerType.name
+                        }}
+                      </v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-list-item>
+
+                  <v-list-item>
+                    <v-list-item-icon>
+                      <v-icon>location_on</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title>{{
+                        "Đóng hàng tại: " + shippingInfo.outbound.packingStation
+                      }}</v-list-item-title>
+                      <v-list-item-subtitle>
+                        {{
+                          "Thời gian: " +
+                            formatDatetime(shippingInfo.outbound.packingTime)
+                        }}
+                      </v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-list-item>
+
+                  <v-list-item>
+                    <v-list-item-icon>
+                      <v-icon>description</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title>{{
+                        "Khối lượng: " +
+                          shippingInfo.outbound.grossWeight +
+                          shippingInfo.outbound.unitOfMeasurement
+                      }}</v-list-item-title>
+                      <v-list-item-subtitle>
+                        {{ "Mô tả: " + shippingInfo.outbound.goodsDescription }}
+                      </v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-list-item>
                 </v-list>
-                <v-list dense v-if="combined.contract.required">
-                  <v-data-table
-                    :headers="evidenceHeaders"
-                    :items="evidences"
-                    item-key="id"
-                    :loading="loading"
-                    :options.sync="evidenceOptions"
-                    :server-items-length="evidenceServerSideOptions.totalItems"
-                    :footer-props="{
-                      'items-per-page-options':
-                        evidenceServerSideOptions.itemsPerPageItems
-                    }"
-                    :actions-append="evidenceOptions.page"
-                    no-data-text="Danh sách file Hợp đồng rỗng."
-                    disable-sort
-                    class="elevation-0"
-                  >
-                    <template v-slot:top>
-                      <v-toolbar flat color="white">
-                        <v-toolbar-title
-                          >Danh sách file hợp đồng</v-toolbar-title
-                        >
-                        <v-divider class="mx-4" inset vertical></v-divider>
-                        <v-spacer></v-spacer>
-                        <v-btn
-                          color="primary"
-                          dark
-                          class="mb-2"
-                          @click="dialogAddEvidence = true"
-                        >
-                          Thêm mới
-                        </v-btn>
-                      </v-toolbar>
-                    </template>
-                    <template v-slot:item.actions="{ item }">
+              </v-card-text>
+            </v-card>
+          </v-tab-item>
+          <v-tab-item>
+            <v-card class="elevation-0" v-if="combined" tile>
+              <v-img
+                height="100"
+                max-width="480"
+                src="@/assets/images/background-cover.jpg"
+              ></v-img>
+              <v-card-title>Thông tin Hợp đồng</v-card-title>
+              <v-card-text>
+                Thông tin Chủ xe:
+                <SupplierRating :supplier="combined.bid.bidder" />
+              </v-card-text>
+
+              <v-subheader>Thông tin chung</v-subheader>
+              <v-list dense>
+                <v-list-item>
+                  <v-list-item-icon>
+                    <v-icon>monetization_on</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title v-if="biddingDocument">{{
+                      "Bên chủ hàng: " + biddingDocument.offeree.companyName
+                    }}</v-list-item-title>
+                    <v-list-item-subtitle>
+                      {{ "Bên chủ xe: " + combined.bid.bidder.companyName }}
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-icon>
+                    <v-icon>monetization_on</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title
+                      >Yêu cầu hợp đồng :
+                      {{
+                        combined.contract.required ? "Có" : "Không"
+                      }}</v-list-item-title
+                    >
+                    <v-list-item-subtitle v-if="combined.contract.required">
+                      {{
+                        "Tiền phạt: " +
+                          combined.contract.finesAgainstContractViolation +
+                          "%"
+                      }}
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+              <v-list dense v-if="combined.contract.required">
+                <v-data-table
+                  :headers="contractDocumentHeaders"
+                  :items="contractDocuments"
+                  item-key="id"
+                  :loading="loading"
+                  :options.sync="contractDocumentOptions"
+                  :server-items-length="
+                    contractDocumentServerSideOptions.totalItems
+                  "
+                  :footer-props="{
+                    'items-per-page-options':
+                      contractDocumentServerSideOptions.itemsPerPageItems
+                  }"
+                  :actions-append="contractDocumentOptions.page"
+                  no-data-text="Danh sách file Hợp đồng rỗng."
+                  disable-sort
+                  class="elevation-0"
+                >
+                  <template v-slot:top>
+                    <v-toolbar flat color="white">
+                      <v-toolbar-title>Danh sách file hợp đồng</v-toolbar-title>
+                      <v-divider class="mx-4" inset vertical></v-divider>
+                      <v-spacer></v-spacer>
                       <v-btn
-                        class="ma-1"
-                        x-small
-                        tile
-                        outlined
-                        color="info"
-                        @click.stop="openDetailEvidence(item)"
+                        color="primary"
+                        dark
+                        class="mb-2"
+                        @click="dialogAddContractDocument = true"
                       >
-                        <v-icon left>remove_red_eye </v-icon>Chi tiết
+                        Thêm mới
                       </v-btn>
-                    </template>
-                  </v-data-table>
-                </v-list>
-              </v-card>
-            </v-container>
+                    </v-toolbar>
+                  </template>
+                  <template v-slot:item.actions="{ item }">
+                    <v-btn
+                      class="ma-1"
+                      x-small
+                      tile
+                      outlined
+                      color="info"
+                      @click.stop="openDetailContractDocument(item)"
+                    >
+                      <v-icon left>remove_red_eye </v-icon>Chi tiết
+                    </v-btn>
+                  </template>
+                </v-data-table>
+              </v-list>
+            </v-card>
           </v-tab-item>
         </v-tabs>
       </v-card>
@@ -333,7 +325,6 @@
           </v-stepper>
         </v-card-text>
         <v-divider></v-divider>
-        <v-card-title>Danh sách vận chuyển</v-card-title>
         <v-data-table
           :headers="shippingInfoHeaders"
           :items="shippingInfos"
@@ -350,6 +341,14 @@
           disable-sort
           class="elevation-0"
         >
+          <template v-slot:top>
+            <v-toolbar flat color="white">
+              <v-toolbar-title>Danh sách vận chuyển</v-toolbar-title>
+            </v-toolbar>
+          </template>
+          <template v-slot:item.status="{ item }">
+            <ChipStatus :status="item.status" />
+          </template>
           <template v-slot:item.actions="{ item }">
             <v-btn
               class="ma-1"
@@ -372,10 +371,10 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
 import { ICombined } from "@/entity/combined";
-import { IEvidence } from "@/entity/evidence";
-import { getEvidencesByContract } from "@/api/evidence";
-import CreateEvidence from "./CreateEvidence.vue";
-import DetailEvidence from "./DetailEvidence.vue";
+import { IContractDocument } from "@/entity/contract-document";
+import { getContractDocumentsByContract } from "@/api/contract-document";
+import CreateContractDocument from "./CreateContractDocument.vue";
+import DetailContractDocument from "./DetailContractDocument.vue";
 import { IInbound } from "@/entity/inbound";
 import { DataOptions } from "vuetify";
 import SupplierRating from "../../bidding-document/components/SupplierRating.vue";
@@ -390,15 +389,17 @@ import GoogleMapDirection from "@/components/googlemaps/GoogleMapDirection.vue";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { getBiddingDocumentByCombined } from "@/api/bidding-document";
 import { google } from "google-maps";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
   mixins: [FormValidate, Utils],
   components: {
-    CreateEvidence,
-    DetailEvidence,
+    CreateContractDocument,
+    DetailContractDocument,
     SupplierRating,
     GoogleMapLoader,
-    GoogleMapDirection
+    GoogleMapDirection,
+    ChipStatus
   }
 })
 export default class DetailCombined extends Vue {
@@ -406,8 +407,8 @@ export default class DetailCombined extends Vue {
   combined = null as ICombined | null;
   shippingInfos: Array<IShippingInfo> = [];
   shippingInfo = null as IShippingInfo | null;
-  evidence = null as IEvidence | null;
-  evidences: Array<IEvidence> = [];
+  contractDocument = null as IContractDocument | null;
+  contractDocuments: Array<IContractDocument> = [];
   inbound = null as IInbound | null;
   contract = null as IContract | null;
   biddingDocument = null as IBiddingDocument | null;
@@ -417,7 +418,7 @@ export default class DetailCombined extends Vue {
   router = null as google.maps.DirectionsRequest | null;
   exception = true;
   dialogDetail = false;
-  dialogAddEvidence = false;
+  dialogAddContractDocument = false;
   status = false;
   shippingInfoOptions = {
     page: 1,
@@ -427,12 +428,12 @@ export default class DetailCombined extends Vue {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
-  // Evidence
-  evidenceOptions = {
+  // ContractDocument
+  contractDocumentOptions = {
     page: 1,
     itemsPerPage: 5
   } as DataOptions;
-  evidenceServerSideOptions = {
+  contractDocumentServerSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -448,8 +449,8 @@ export default class DetailCombined extends Vue {
       text: "Container No.",
       value: "container.number"
     },
-    { text: "Tài xế", value: "container.driver.fullname" },
-    { text: "SĐT Tài xế", value: "container.driver.phone" },
+    { text: "Lái xe", value: "container.driver.fullname" },
+    { text: "SĐT Lái xe", value: "container.driver.phone" },
     {
       text: "Rơ mọt",
       value: "container.trailer.licensePlate"
@@ -468,7 +469,7 @@ export default class DetailCombined extends Vue {
       sortable: false
     }
   ];
-  evidenceHeaders = [
+  contractDocumentHeaders = [
     {
       text: "Mã.",
       align: "start",
@@ -581,23 +582,27 @@ export default class DetailCombined extends Vue {
     this.processShippingInfo(item);
   }
 
-  openDetailEvidence(item: IEvidence) {
-    this.evidence = item;
+  openDetailContractDocument(item: IContractDocument) {
+    this.contractDocument = item;
     this.dialogDetail = true;
   }
 
-  @Watch("evidenceOptions", { immediate: true })
-  async onEvidenceOptionsChange(val: DataOptions) {
+  @Watch("contractDocumentOptions", { immediate: true })
+  async onContractDocumentOptionsChange(val: DataOptions) {
     if (typeof val != "undefined" && this.contract) {
       this.loading = true;
-      const _res = await getEvidencesByContract(this.contract.id as number, {
-        page: val.page - 1,
-        limit: val.itemsPerPage
-      });
+      const _res = await getContractDocumentsByContract(
+        this.contract.id as number,
+        {
+          page: val.page - 1,
+          limit: val.itemsPerPage
+        }
+      );
       if (_res.data) {
-        const _evidences = _res.data.data;
-        this.evidences = _evidences;
-        this.evidenceServerSideOptions.totalItems = _res.data.totalElements;
+        const _contractDocuments = _res.data.data;
+        this.contractDocuments = _contractDocuments;
+        this.contractDocumentServerSideOptions.totalItems =
+          _res.data.totalElements;
       }
       this.loading = false;
     }

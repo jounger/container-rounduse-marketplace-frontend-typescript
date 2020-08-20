@@ -35,7 +35,7 @@
               <DatetimePicker
                 :datetime="discountLocal.expiredDate"
                 :return-value.sync="discountLocal.expiredDate"
-                dateicon="remove_shopping_cart"
+                dateicon="update"
                 datelabel="Ngày hết hạn"
                 timelabel="Giờ hết hạn"
               />

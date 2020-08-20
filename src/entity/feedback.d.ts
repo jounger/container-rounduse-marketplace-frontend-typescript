@@ -1,4 +1,4 @@
-import { IUser } from './user';
+import { IUser } from "./user";
 export interface IFeedback {
   id?: number;
   sender: IUser | string;

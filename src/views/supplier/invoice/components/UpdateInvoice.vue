@@ -17,7 +17,7 @@
                 type="text"
                 disabled
                 :counter="20"
-                v-model="paymentLocal.sender.companyName"
+                v-model="invoiceLocal.sender.companyName"
               ></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
@@ -28,14 +28,14 @@
                 type="text"
                 disabled
                 :counter="20"
-                v-model="paymentLocal.recipient.companyName"
+                v-model="invoiceLocal.recipient.companyName"
               ></v-text-field>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12" md="6">
               <v-select
-                v-model="paymentLocal.type"
+                v-model="invoiceLocal.type"
                 prepend-icon="money"
                 disabled
                 :items="types"
@@ -51,16 +51,16 @@
                 type="number"
                 :disabled="disabled"
                 :rules="[required('số tiền')]"
-                :hint="currencyFormatter(paymentLocal.amount)"
-                v-model="paymentLocal.amount"
+                :hint="currencyFormatter(invoiceLocal.amount)"
+                v-model="invoiceLocal.amount"
               ></v-text-field>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12" md="12">
               <DatetimePicker
-                :datetime="paymentLocal.paymentDate"
-                :return-value.sync="paymentLocal.paymentDate"
+                :datetime="invoiceLocal.paymentDate"
+                :return-value.sync="invoiceLocal.paymentDate"
                 dateicon="event"
                 datelabel="Thời gian thanh toán*"
                 timelabel="Giờ thanh toán"
@@ -77,7 +77,7 @@
                 outlined
                 :disabled="disabled"
                 :rules="[required('nội dung hóa đơn')]"
-                v-model="paymentLocal.detail"
+                v-model="invoiceLocal.detail"
               ></v-textarea>
             </v-col>
           </v-row>
@@ -86,7 +86,7 @@
       <v-card-actions class="justify-space-between">
         <v-btn @click="dialogEditSync = false">Trở về</v-btn>
         <v-btn
-          @click="updatePayment()"
+          @click="updateInvoice()"
           color="primary"
           v-if="!disabled"
           :disabled="!valid"
@@ -98,9 +98,9 @@
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
-import { IPayment } from "@/entity/payment";
+import { IInvoice } from "@/entity/invoice";
 import FormValidate from "@/mixin/form-validate";
-import { editPayment } from "@/api/payment";
+import { editInvoice } from "@/api/invoice";
 import Utils from "@/mixin/utils";
 import DatetimePicker from "@/components/DatetimePicker.vue";
 import { addTimeToDate } from "@/utils/tool";
@@ -111,33 +111,33 @@ import { addTimeToDate } from "@/utils/tool";
     DatetimePicker
   }
 })
-export default class UpdatePayment extends Vue {
+export default class UpdateInvoice extends Vue {
   @PropSync("dialogEdit", { type: Boolean }) dialogEditSync!: boolean;
-  @PropSync("payments", { type: Array }) paymentsSync?: Array<IPayment>;
-  @Prop(Object) payment?: IPayment;
+  @PropSync("invoices", { type: Array }) invoicesSync?: Array<IInvoice>;
+  @Prop(Object) invoice?: IInvoice;
   @Prop(Boolean) disabled!: boolean;
 
   dateInit = addTimeToDate(new Date().toISOString());
-  paymentLocal = null as IPayment | null;
+  invoiceLocal = null as IInvoice | null;
 
   valid = false;
   types: Array<string> = ["FINES", "PAYMENT"];
 
   created() {
-    this.paymentLocal = Object.assign({}, this.payment);
-    this.paymentLocal = Object.assign({}, this.payment);
+    this.invoiceLocal = Object.assign({}, this.invoice);
+    this.invoiceLocal = Object.assign({}, this.invoice);
   }
 
-  async updatePayment() {
-    if (this.payment && this.paymentLocal) {
-      const _res = await editPayment(
-        this.payment.id as number,
-        this.paymentLocal
+  async updateInvoice() {
+    if (this.invoice && this.invoiceLocal) {
+      const _res = await editInvoice(
+        this.invoice.id as number,
+        this.invoiceLocal
       );
-      if (_res.data && this.paymentsSync) {
-        const _payment = _res.data.data;
-        const index = this.paymentsSync.findIndex(x => x.id == _payment.id);
-        this.paymentsSync.splice(index, 1, _payment);
+      if (_res.data && this.invoicesSync) {
+        const _invoice = _res.data.data;
+        const index = this.invoicesSync.findIndex(x => x.id == _invoice.id);
+        this.invoicesSync.splice(index, 1, _invoice);
       }
     }
   }

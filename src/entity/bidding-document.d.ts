@@ -10,7 +10,7 @@ export interface IBiddingDocument {
   bidOpening: string;
   bidClosing: string;
   dateOfDecision: string;
-  currencyOfPayment: string;
+  currencyOfInvoice: string;
   bidPackagePrice: number;
   bidFloorPrice: number;
   priceLeadership: number;

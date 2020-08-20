@@ -1,18 +1,16 @@
 <template>
   <v-container fluid>
     <v-dialog v-model="dialogDetailSync" max-width="600">
-      <v-card>
-        <v-container v-if="biddingDocument">
-          <v-img
-            height="100"
-            max-width="600"
-            src="@/assets/images/biddingdocument.jpg"
-          ></v-img>
-          <v-card-title>Hồ sơ Mời thầu</v-card-title>
-          <v-card-text>
-            Chủ hàng xuất:
-            <SupplierRating :supplier="biddingDocument.offeree" />
-          </v-card-text>
+      <v-card v-if="biddingDocument" class="elevation-0" tile>
+        <v-img
+          height="100"
+          max-width="600"
+          src="@/assets/images/background-cover.jpg"
+        ></v-img>
+        <v-card-title>Hồ sơ Mời thầu</v-card-title>
+        <v-card-text>
+          Chủ hàng xuất:
+          <SupplierRating :supplier="biddingDocument.offeree" />
 
           <v-list dense>
             <v-subheader>Thông tin HSMT</v-subheader>
@@ -25,7 +23,7 @@
                   "Giá gói thầu: " +
                     currencyFormatter(
                       biddingDocument.bidPackagePrice,
-                      biddingDocument.currencyOfPayment
+                      biddingDocument.currencyOfInvoice
                     )
                 }}</v-list-item-title>
                 <v-list-item-subtitle>
@@ -33,7 +31,7 @@
                     "Giá sàn: " +
                       currencyFormatter(
                         biddingDocument.bidFloorPrice,
-                        biddingDocument.currencyOfPayment
+                        biddingDocument.currencyOfInvoice
                       )
                   }}
                 </v-list-item-subtitle>
@@ -60,7 +58,7 @@
             <v-subheader>Thông tin Hàng Xuất</v-subheader>
             <v-list-item>
               <v-list-item-icon>
-                <v-icon>child_friendly</v-icon>
+                <v-icon>import_export</v-icon>
               </v-list-item-icon>
               <v-list-item-content>
                 <v-list-item-title>{{
@@ -128,9 +126,9 @@
               </v-list-item-content>
             </v-list-item>
           </v-list>
-        </v-container>
+        </v-card-text>
         <v-card-actions class="justify-space-between">
-          <v-btn text @click="dialogDetailSync = false">
+          <v-btn @click="dialogDetailSync = false">
             Trở vể
           </v-btn>
         </v-card-actions>

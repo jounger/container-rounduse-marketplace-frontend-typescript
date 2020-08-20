@@ -14,7 +14,7 @@ interface Matching {
   textColor?: string;
 }
 
-import { Component, Vue, Prop } from "vue-property-decorator";
+import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 @Component
 export default class ChipStatus extends Vue {
   @Prop() status!: string;
@@ -29,12 +29,12 @@ export default class ChipStatus extends Vue {
 
   statusMatching = [
     // PENDING
-    { en: "BIDDING", vi: "Đang đấu thầu", color: "primary" },
-    { en: "PENDING", vi: "Đang chờ", color: "primary" },
-    { en: "SHIPPING", vi: "Đang vận chuyển", color: "primary" },
-    { en: "CREATED", vi: "Đã tạo", color: "primary" },
+    { en: "BIDDING", vi: "Đang đấu thầu", color: "deep-purple" },
+    { en: "PENDING", vi: "Đang chờ", color: "deep-purple" },
+    { en: "SHIPPING", vi: "Đang vận chuyển", color: "deep-purple" },
+    { en: "CREATED", vi: "Đã tạo", color: "deep-purple" },
     // INFO
-    { en: "INFO_RECEIVED", vi: "Đã nhận thông tin", color: "info" },
+    { en: "INFO_RECEIVED", vi: "Đã nhận lệnh", color: "info" },
     { en: "UPDATED", vi: "Cập nhật", color: "info" },
     // SUCCESS
     { en: "ACCEPTED", vi: "Đã đồng ý", color: "success" },
@@ -51,8 +51,8 @@ export default class ChipStatus extends Vue {
     { en: "BANNED", vi: "Cấm", color: "error" },
     { en: "EXCEPTION", vi: "Có lỗi", color: "error" },
     // EXPIRED
-    { en: "EXPIRED", vi: "Hết hạn", color: "gray", textColor: "black" },
-    { en: "CLOSED", vi: "Đã đóng", color: "gray", textColor: "black" }
+    { en: "EXPIRED", vi: "Hết hạn", color: "expired" },
+    { en: "CLOSED", vi: "Đã đóng", color: "expired" }
   ] as Matching[];
 
   typeMatching = [
@@ -67,7 +67,7 @@ export default class ChipStatus extends Vue {
     {
       en: "BIDDING",
       vi: "Đấu thầu",
-      color: "primary",
+      color: "deep-purple",
       icon: "monetization_on"
     },
     {
@@ -98,11 +98,43 @@ export default class ChipStatus extends Vue {
     { en: "UPDATED", vi: "Cập nhật", color: "warning" },
     { en: "REJECTED", vi: "Từ chối giải quyết", color: "error" },
     { en: "ACCEPTED", vi: "Đã giải quyết", color: "success" },
-    { en: "CLOSED", vi: "Đóng", color: "gray", textColor: "black" },
+    { en: "CLOSED", vi: "Đóng", color: "expired" },
     // DRIVER + SHIPPINGLINE
+    { en: "REQUEST", vi: "Yêu cầu mượn", color: "info" },
     { en: "TASK", vi: "Giao việc", color: "primary" },
     { en: "CANCEL", vi: "Hủy yêu cầu", color: "error" }
   ] as Matching[];
+
+  roleMatching = [
+    { en: "ROLE_ADMIN", vi: "Quản trị viên", color: "primary" },
+    { en: "ROLE_MODERATOR", vi: "Người vận hành", color: "secondary" },
+    { en: "ROLE_FORWARDER", vi: "Chủ xe", color: "warning" },
+    { en: "ROLE_MERCHANT", vi: "Chủ hàng", color: "warning" },
+    { en: "ROLE_SHIPPINGLINE", vi: "Hãng tàu", color: "info" },
+    { en: "ROLE_DRIVER", vi: "Lái xe", color: "success" }
+  ] as Matching[];
+
+  convertProcess(status: string) {
+    const _status = this.listMatch.filter(x => x.en == status)[0];
+    if (_status) {
+      this.color = _status.color;
+      this.text = _status.vi;
+      if (typeof _status.textColor !== "undefined")
+        this.textColor = _status.textColor;
+      if (typeof _status.icon !== "undefined") this.icon = _status.icon;
+    } else {
+      this.color = "info";
+      this.text = status;
+    }
+  }
+
+  @Watch("status")
+  onStatusChange(val: string) {
+    if (typeof val !== "undefined") {
+      console.log("FFF", val);
+      this.convertProcess(val);
+    }
+  }
 
   created() {
     switch (this.type) {
@@ -115,21 +147,14 @@ export default class ChipStatus extends Vue {
       case "action":
         this.listMatch = this.actionMatching;
         break;
+      case "roles":
+        this.listMatch = this.roleMatching;
+        break;
       default:
         this.listMatch = this.statusMatching;
         break;
     }
-    const _status = this.listMatch.filter(x => x.en == this.status)[0];
-    if (_status) {
-      this.color = _status.color;
-      this.text = _status.vi;
-      if (typeof _status.textColor !== "undefined")
-        this.textColor = _status.textColor;
-      if (typeof _status.icon !== "undefined") this.icon = _status.icon;
-    } else {
-      this.color = "info";
-      this.text = this.status;
-    }
+    this.convertProcess(this.status);
   }
 }
 </script>

@@ -144,7 +144,7 @@
                     ><v-col cols="12" sm="6">
                       <v-text-field
                         v-model="outboundLocal.booking.number"
-                        prepend-icon="child_friendly"
+                        prepend-icon="import_export"
                         :rules="[required('Số booking')]"
                         type="text"
                         label="Số Booking*"
@@ -201,7 +201,7 @@
             </v-stepper>
           </v-list>
         </div>
-        <v-card class="order-1 flex-shrink-1 mx-auto">
+        <v-card class="order-1 flex-shrink-1 mx-auto my-5">
           <GoogleMapLoader
             :options="mapConfig"
             :apiKey="apiKey"
@@ -272,15 +272,16 @@
             v-if="distanceMatrixResult"
             vertical
             class="elevation-0 pb-0"
+            :value="stepper2"
           >
-            <v-stepper-step step="1"
+            <v-stepper-step step="1" complete
               >{{ distanceMatrixResult.originAddress }}
               <small class="mt-1"
                 >Đi lúc: {{ formatDatetime(outboundLocal.packingTime) }}</small
               >
             </v-stepper-step>
             <v-stepper-content step="1"></v-stepper-content>
-            <v-stepper-step step="2"
+            <v-stepper-step step="2" :complete="stepper2 >= 2"
               >{{ distanceMatrixResult.destinationAddress }}
               <small class="mt-1"
                 >Đến (khoảng): {{ formatDatetime(estimateTimeTravel()) }}</small
@@ -295,15 +296,16 @@
             v-if="!distanceMatrixResult && outboundLocal"
             vertical
             class="elevation-0 pb-0"
+            :value="stepper2"
           >
-            <v-stepper-step step="1"
+            <v-stepper-step step="1" complete
               >{{ outboundLocal.packingStation }}
               <small class="mt-1"
                 >Đi lúc: {{ formatDatetime(outboundLocal.packingTime) }}</small
               >
             </v-stepper-step>
             <v-stepper-content step="1"></v-stepper-content>
-            <v-stepper-step step="2"
+            <v-stepper-step step="2" :complete="stepper2 >= 2"
               >{{ outboundLocal.booking.portOfLoading.address }}
               <small class="mt-1"
                 >Đến (khoảng):
@@ -374,6 +376,7 @@ export default class UpdateOutbound extends Vue {
   checkbox = false;
   editable = true;
   stepper = 1;
+  stepper2 = 1;
   valid = true;
   valid2 = true;
   // API list
@@ -416,6 +419,11 @@ export default class UpdateOutbound extends Vue {
       this.$nextTick(() => {
         this.inputAddress1.value = this.outbound.packingStation;
       });
+      const _isDelivered =
+        new Date().getTime() - new Date(this.outbound.deliveryTime).getTime();
+      if (_isDelivered > 0) {
+        this.stepper2 = 2;
+      }
     } else {
       this.stepper = 1;
     }

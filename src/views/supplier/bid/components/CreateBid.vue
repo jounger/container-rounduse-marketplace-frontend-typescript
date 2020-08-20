@@ -152,7 +152,11 @@
                     </template>
                     <!-- Show containers expened -->
                     <template v-slot:expanded-item="{ headers }">
-                      <td :colspan="headers.length" class="px-0">
+                      <td
+                        :colspan="headers.length"
+                        class="px-0"
+                        v-if="containers.length > 0"
+                      >
                         <v-data-table
                           :headers="containerHeaders"
                           :items="containers"
@@ -279,7 +283,7 @@ export default class CreateBid extends Vue {
     containers: [] as Array<number>,
     bidPrice: 0,
     bidDate: this.dateInit,
-    bidValidityPeriod: this.dateInit.slice(0, 10),
+    validityPeriod: this.dateInit.slice(0, 10),
     status: "CREATED"
   };
   inbound = {
@@ -368,7 +372,7 @@ export default class CreateBid extends Vue {
       value: "number",
       class: "tertiary"
     },
-    { text: "Tài xế", value: "driver.fullname", class: "tertiary" },
+    { text: "Lái xe", value: "driver.fullname", class: "tertiary" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate",
@@ -388,7 +392,7 @@ export default class CreateBid extends Vue {
       sortable: false,
       value: "number"
     },
-    { text: "Tài xế", value: "driver.fullname" },
+    { text: "Lái xe", value: "driver.fullname" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate"

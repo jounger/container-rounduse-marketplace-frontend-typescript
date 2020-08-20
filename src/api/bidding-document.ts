@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { PaginationRequest } from "./payload";
+import { PaginationRequest } from "../entity/payload";
 import { IBiddingDocument } from "@/entity/bidding-document";
 
 export function getBiddingDocuments(paging: PaginationRequest) {

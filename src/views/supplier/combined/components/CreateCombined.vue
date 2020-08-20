@@ -186,7 +186,7 @@ export default class CreateCombined extends Vue {
       value: "number"
     },
     { text: "HSDT", value: "bid" },
-    { text: "Tài xế", value: "driver.fullname" },
+    { text: "Lái xe", value: "driver.fullname" },
     {
       text: "Rơ moóc",
       value: "trailer.licensePlate"

@@ -17,7 +17,8 @@ export default new Vuetify({
         tertiary: "#005CAF",
         accent: "#5CBBF6",
         success: "#128e17",
-        error: "#991f25"
+        error: "#991f25",
+        expired: "#404040"
       }
     }
   }

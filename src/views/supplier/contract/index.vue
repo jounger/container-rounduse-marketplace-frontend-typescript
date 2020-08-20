@@ -1,23 +1,23 @@
 <template>
   <v-container fluid>
     <v-card>
-      <DetailEvidence
+      <DetailContractDocument
         v-if="dialogDetail"
         :dialogDetail.sync="dialogDetail"
-        :evidences.sync="evidences"
+        :contractDocuments.sync="contractDocuments"
         :checkValid.sync="checkValid"
-        :evidence="evidence"
+        :contractDocument="contractDocument"
       />
-      <CreateEvidence
-        v-if="dialogAddEvidence"
-        :dialogAdd.sync="dialogAddEvidence"
-        :evidences.sync="evidences"
-        :totalItems.sync="evidenceServerSideOptions.totalItems"
+      <CreateContractDocument
+        v-if="dialogAddContractDocument"
+        :dialogAdd.sync="dialogAddContractDocument"
+        :contractDocuments.sync="contractDocuments"
+        :totalItems.sync="contractDocumentServerSideOptions.totalItems"
         :contract="contract"
       />
-      <CreatePayment
-        v-if="dialogAddPayment"
-        :dialogAdd.sync="dialogAddPayment"
+      <CreateInvoice
+        v-if="dialogAddInvoice"
+        :dialogAdd.sync="dialogAddInvoice"
         :combined="combined"
         :merchant="merchant"
         :update="false"
@@ -70,7 +70,7 @@
               </v-btn>
             </template>
             <v-list dense>
-              <v-list-item @click="openCreatePayment(item)">
+              <v-list-item @click="openCreateInvoice(item)">
                 <v-list-item-icon>
                   <v-icon small>add</v-icon>
                 </v-list-item-icon>
@@ -101,7 +101,7 @@
                 </v-list-item-content>
               </v-list-item>
               <v-list-item
-                @click="openCreateEvidence(item)"
+                @click="openCreateContractDocument(item)"
                 v-if="$auth.check('ROLE_FORWARDER')"
               >
                 <v-list-item-icon>
@@ -121,18 +121,24 @@
           {{ item.contract.required ? "Có" : "Không" }}
         </template>
         <template v-slot:expanded-item="{ headers }">
-          <td :colspan="headers.length" class="px-0">
+          <td
+            :colspan="headers.length"
+            class="px-0"
+            v-if="contractDocuments.length > 0"
+          >
             <v-data-table
-              :headers="evidenceHeaders"
-              :items="evidences"
+              :headers="contractDocumentHeaders"
+              :items="contractDocuments"
               :loading="loading"
-              :options.sync="evidenceOptions"
-              :server-items-length="evidenceServerSideOptions.totalItems"
+              :options.sync="contractDocumentOptions"
+              :server-items-length="
+                contractDocumentServerSideOptions.totalItems
+              "
               :footer-props="{
                 'items-per-page-options':
-                  evidenceServerSideOptions.itemsPerPageItems
+                  contractDocumentServerSideOptions.itemsPerPageItems
               }"
-              :actions-append="evidenceOptions.page"
+              :actions-append="contractDocumentOptions.page"
               disable-sort
               dense
               ><template v-slot:item.actions="{ item }">
@@ -142,7 +148,7 @@
                   tile
                   outlined
                   color="info"
-                  @click.stop="openDetailEvidence(item)"
+                  @click.stop="openDetailContractDocument(item)"
                 >
                   <v-icon left dense>remove_red_eye </v-icon>Chi tiết
                 </v-btn>
@@ -169,24 +175,24 @@
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { IContract } from "@/entity/contract";
 import { DataOptions } from "vuetify";
-import { IEvidence } from "@/entity/evidence";
-import { getEvidencesByContract } from "@/api/evidence";
+import { IContractDocument } from "@/entity/contract-document";
+import { getContractDocumentsByContract } from "@/api/contract-document";
 import { getCombineds } from "@/api/combined";
 import { ICombined } from "@/entity/combined";
-import DetailEvidence from "../combined/components/DetailEvidence.vue";
+import DetailContractDocument from "../combined/components/DetailContractDocument.vue";
 import UpdateContract from "./components/UpdateContract.vue";
-import CreatePayment from "../payment/components/CreatePayment.vue";
-import CreateEvidence from "../combined/components/CreateEvidence.vue";
+import CreateInvoice from "../invoice/components/CreateInvoice.vue";
+import CreateContractDocument from "../combined/components/CreateContractDocument.vue";
 import Utils from "@/mixin/utils";
 import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
   mixins: [Utils],
   components: {
-    DetailEvidence,
+    DetailContractDocument,
     UpdateContract,
-    CreatePayment,
-    CreateEvidence,
+    CreateInvoice,
+    CreateContractDocument,
     ChipStatus
   }
 })
@@ -196,17 +202,17 @@ export default class Contract extends Vue {
   combined = null as ICombined | null;
   dialogDetail = false;
   dialogAdd = false;
-  dialogAddPayment = false;
-  dialogAddEvidence = false;
+  dialogAddInvoice = false;
+  dialogAddContractDocument = false;
   loading = true;
   update = false;
   readonly = false;
   checkValid = false;
   expanded: Array<ICombined> = [];
-  evidences: Array<IEvidence> = [];
+  contractDocuments: Array<IContractDocument> = [];
   merchants: Array<string> = [];
   merchant = "";
-  evidence = null as IEvidence | null;
+  contractDocument = null as IContractDocument | null;
   singleExpand = true;
   options = {
     page: 1,
@@ -216,11 +222,11 @@ export default class Contract extends Vue {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
-  evidenceOptions = {
+  contractDocumentOptions = {
     page: 1,
     itemsPerPage: 5
   } as DataOptions;
-  evidenceServerSideOptions = {
+  contractDocumentServerSideOptions = {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
@@ -244,7 +250,7 @@ export default class Contract extends Vue {
       sortable: false
     }
   ];
-  evidenceHeaders = [
+  contractDocumentHeaders = [
     {
       text: "Mã",
       align: "start",
@@ -261,22 +267,22 @@ export default class Contract extends Vue {
     { text: "Hành động", value: "actions", class: "tertiary" }
   ];
 
-  openCreatePayment(item: ICombined) {
+  openCreateInvoice(item: ICombined) {
     this.contract = item.contract as IContract;
     this.combined = item;
     const index = this.combineds.findIndex((x: ICombined) => x.id == item.id);
     this.merchant = this.merchants[index];
-    this.dialogAddPayment = true;
+    this.dialogAddInvoice = true;
   }
 
-  openDetailEvidence(item: IEvidence) {
-    this.evidence = item;
+  openDetailContractDocument(item: IContractDocument) {
+    this.contractDocument = item;
     this.dialogDetail = true;
   }
 
-  openCreateEvidence(item: ICombined) {
+  openCreateContractDocument(item: ICombined) {
     this.contract = item.contract as IContract;
-    this.dialogAddEvidence = true;
+    this.dialogAddContractDocument = true;
   }
 
   openUpdateDialog(item: ICombined) {
@@ -314,25 +320,29 @@ export default class Contract extends Vue {
     }
   }
 
-  @Watch("evidenceOptions")
-  async onEvidenceOptionsChange(val: DataOptions, oldVal: DataOptions) {
+  @Watch("contractDocumentOptions")
+  async onContractDocumentOptionsChange(val: DataOptions, oldVal: DataOptions) {
     if (typeof val != "undefined" && val.page != oldVal.page) {
       this.loading = true;
-      await this.loadMoreEvidences(val);
+      await this.loadMoreContractDocuments(val);
       this.loading = false;
     }
   }
 
-  async loadMoreEvidences(val: DataOptions) {
+  async loadMoreContractDocuments(val: DataOptions) {
     if (this.contract) {
-      const _res = await getEvidencesByContract(this.contract.id as number, {
-        page: val.page - 1,
-        limit: val.itemsPerPage
-      });
+      const _res = await getContractDocumentsByContract(
+        this.contract.id as number,
+        {
+          page: val.page - 1,
+          limit: val.itemsPerPage
+        }
+      );
       if (_res.data) {
-        const _evidences = _res.data.data;
-        this.evidences = _evidences;
-        this.evidenceServerSideOptions.totalItems = _res.data.totalElements;
+        const _contractDocuments = _res.data.data;
+        this.contractDocuments = _contractDocuments;
+        this.contractDocumentServerSideOptions.totalItems =
+          _res.data.totalElements;
       }
     }
   }
@@ -346,8 +356,8 @@ export default class Contract extends Vue {
         if (this.expanded.length > 0) this.expanded = [];
         this.expanded.push(value);
         this.contract = value.contract as IContract;
-        await this.loadMoreEvidences({
-          ...this.evidenceOptions,
+        await this.loadMoreContractDocuments({
+          ...this.contractDocumentOptions,
           page: 1
         });
       }

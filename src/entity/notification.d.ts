@@ -1,8 +1,8 @@
 import { IBiddingDocument } from "./bidding-document";
 import { ICombined } from "./combined";
 import { IReport } from "./report";
-import { IUser } from './user';
-import { IShippingInfo } from './shipping-info';
+import { IUser } from "./user";
+import { IShippingInfo } from "./shipping-info";
 export interface INotification {
   id?: number;
   recipient: IUser | string;

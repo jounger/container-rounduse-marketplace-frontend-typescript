@@ -85,7 +85,7 @@
         </template>
         <!-- Show Bids expened -->
         <template v-slot:expanded-item="{ headers }">
-          <td :colspan="headers.length" class="px-0">
+          <td :colspan="headers.length" class="px-0" v-if="bids.length > 0">
             <v-data-table
               :headers="bidHeaders"
               :items="bids"
@@ -103,8 +103,11 @@
               <template v-slot:item.bidDate="{ item }">
                 {{ formatDatetime(item.bidDate) }}
               </template>
-              <template v-slot:item.bidValidityPeriod="{ item }">
-                {{ formatDatetime(item.bidValidityPeriod) }}
+              <template v-slot:item.validityPeriod="{ item }">
+                {{ formatDatetime(item.validityPeriod) }}
+              </template>
+              <template v-slot:item.freezeTime="{ item }">
+                {{ formatDatetime(item.freezeTime) }}
               </template>
               <template v-slot:item.status="{ item }">
                 <ChipStatus :status="item.status" :sub="true" />
@@ -114,14 +117,18 @@
                   small
                   class="mr-2"
                   @click="openEditDialog(item)"
-                  v-if="item.status == 'PENDING'"
+                  v-if="
+                    ['PENDING', 'EXPIRED', 'CANCELED'].includes(item.status)
+                  "
                 >
                   mdi-pencil
                 </v-icon>
                 <v-icon
                   small
                   @click="openCancelDialog(item)"
-                  v-if="item.status == 'PENDING'"
+                  v-if="
+                    ['PENDING', 'EXPIRED', 'CANCELED'].includes(item.status)
+                  "
                 >
                   close
                 </v-icon>
@@ -219,12 +226,13 @@ export default class Bid extends Vue {
       class: "tertiary"
     },
     { text: "Giá thầu", value: "bidPrice", class: "tertiary" },
-    { text: "Ngày thầu", value: "bidDate", class: "tertiary" },
+    { text: "Ngày gửi thầu", value: "bidDate", class: "tertiary" },
     {
-      text: "Hiệu lực",
-      value: "bidValidityPeriod",
+      text: "Hiệu lực HSDT tới",
+      value: "validityPeriod",
       class: "tertiary"
     },
+    { text: "Khóa chỉnh sửa tới", value: "freezeTime", class: "tertiary" },
     { text: "Trạng thái", value: "status", class: "tertiary" },
     { text: "Hành động", value: "actions" }
   ];
@@ -275,14 +283,20 @@ export default class Bid extends Vue {
   }
 
   openEditDialog(item: IBid) {
-    if (new Date().getTime() - new Date(item.bidValidityPeriod).getTime() > 0) {
+    const _freezeTime = item.freezeTime
+      ? new Date(item.freezeTime)
+      : new Date();
+    if (new Date(_freezeTime).getTime() - new Date().getTime() >= 0) {
       this.bid = item;
       this.dialogEdit = true;
     }
   }
 
   openCancelDialog(item: IBid) {
-    if (new Date().getTime() - new Date(item.bidValidityPeriod).getTime() > 0) {
+    const _freezeTime = item.freezeTime
+      ? new Date(item.freezeTime)
+      : new Date();
+    if (new Date(_freezeTime).getTime() - new Date().getTime() >= 0) {
       this.bid = item;
       this.dialogCancel = true;
     }

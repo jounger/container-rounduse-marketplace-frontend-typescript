@@ -6,7 +6,8 @@ export interface IBid {
   containers: Array<IContainer> | Array<number>;
   bidPrice: number | string;
   bidDate: string;
-  bidValidityPeriod: string;
+  validityPeriod: string;
+  freezeTime?: string;
   dateOfDecision?: string;
   status: string;
   isSelected?: boolean;
