@@ -15,6 +15,14 @@
       :totalItems.sync="contractDocumentServerSideOptions.totalItems"
       :contract="contract"
     />
+    <v-row justify="center">
+      <UpdateShippingInfo
+        v-if="shippingInfo"
+        :dialogEdit.sync="dialogEdit"
+        :shippingInfo="shippingInfo"
+        :shippingInfos.sync="shippingInfos"
+      />
+    </v-row>
     <v-card
       class="d-flex justify-space-around align-start elevation-0"
       v-if="combined"
@@ -306,7 +314,7 @@
         <v-card-text>
           <v-stepper :value="stepper" alt-labels class="elevation-0">
             <v-stepper-header>
-              <v-stepper-step step="1" :complete="stepper >= 1"
+              <v-stepper-step step="1" :complete="stepper >= 1" color="info"
                 >Nhận thông tin</v-stepper-step
               >
               <v-divider></v-divider>
@@ -314,11 +322,12 @@
                 step="2"
                 :complete="stepper >= 2"
                 :rules="[() => exception]"
+                color="deep-purple"
                 >Đang vận chuyển
                 <small v-if="exception == false">Đã có lỗi xảy ra</small>
               </v-stepper-step>
               <v-divider></v-divider>
-              <v-stepper-step step="3" :complete="stepper >= 3"
+              <v-stepper-step step="3" :complete="stepper >= 3" color="success"
                 >Đã giao hàng</v-stepper-step
               >
             </v-stepper-header>
@@ -349,7 +358,7 @@
           <template v-slot:item.status="{ item }">
             <ChipStatus :status="item.status" />
           </template>
-          <template v-slot:item.actions="{ item }">
+          <template v-slot:item.router="{ item }">
             <v-btn
               class="ma-1"
               small
@@ -358,8 +367,30 @@
               :color="shippingInfo.id == item.id ? 'info' : 'gray'"
               @click.stop="openDetailRouter(item)"
             >
-              <v-icon left dense>location_on </v-icon>Lịch trình
+              <v-icon left dense>location_on </v-icon>Xem
             </v-btn>
+          </template>
+          <template
+            v-slot:item.actions="{ item }"
+            v-if="$auth.check('ROLE_FORWARDER')"
+          >
+            <v-menu :close-on-click="true">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn color="primary" icon outlined v-bind="attrs" v-on="on">
+                  <v-icon>mdi-dots-vertical</v-icon>
+                </v-btn>
+              </template>
+              <v-list dense>
+                <v-list-item @click="openUpdateDialog(item)">
+                  <v-list-item-icon>
+                    <v-icon small>location_on</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>Cập nhật trạng thái</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </template>
         </v-data-table>
       </v-card>
@@ -390,6 +421,7 @@ import { IBiddingDocument } from "@/entity/bidding-document";
 import { getBiddingDocumentByCombined } from "@/api/bidding-document";
 import { google } from "google-maps";
 import ChipStatus from "@/components/ChipStatus.vue";
+import UpdateShippingInfo from "./UpdateShippingInfo.vue";
 
 @Component({
   mixins: [FormValidate, Utils],
@@ -399,6 +431,7 @@ import ChipStatus from "@/components/ChipStatus.vue";
     SupplierRating,
     GoogleMapLoader,
     GoogleMapDirection,
+    UpdateShippingInfo,
     ChipStatus
   }
 })
@@ -418,6 +451,7 @@ export default class DetailCombined extends Vue {
   router = null as google.maps.DirectionsRequest | null;
   exception = true;
   dialogDetail = false;
+  dialogEdit = false;
   dialogAddContractDocument = false;
   status = false;
   shippingInfoOptions = {
@@ -452,10 +486,6 @@ export default class DetailCombined extends Vue {
     { text: "Lái xe", value: "container.driver.fullname" },
     { text: "SĐT Lái xe", value: "container.driver.phone" },
     {
-      text: "Rơ mọt",
-      value: "container.trailer.licensePlate"
-    },
-    {
       text: "Đầu kéo",
       value: "container.tractor.licensePlate"
     },
@@ -464,9 +494,12 @@ export default class DetailCombined extends Vue {
       value: "status"
     },
     {
+      text: "Lịch trình",
+      value: "router"
+    },
+    {
       text: "Hành động",
-      value: "actions",
-      sortable: false
+      value: "actions"
     }
   ];
   contractDocumentHeaders = [
@@ -580,6 +613,11 @@ export default class DetailCombined extends Vue {
       this.inbound = _inbound;
     }
     this.processShippingInfo(item);
+  }
+
+  openUpdateDialog(item: IShippingInfo) {
+    this.shippingInfo = item;
+    this.dialogEdit = true;
   }
 
   openDetailContractDocument(item: IContractDocument) {

@@ -206,6 +206,7 @@ export default class Combined extends Vue {
 
   async loadMoreCombineds(val: DataOptions) {
     if (this.biddingDocument) {
+      this.loading = true;
       const _res = await getCombinedsByBiddingDocument(
         this.biddingDocument.id as number,
         {
@@ -218,6 +219,7 @@ export default class Combined extends Vue {
         this.combineds = _combineds;
         this.combinedServerSideOptions.totalItems = _res.data.totalElements;
       }
+      this.loading = false;
     }
   }
 
@@ -241,9 +243,7 @@ export default class Combined extends Vue {
   @Watch("combinedOptions", { deep: true })
   async onCombinedOptionsChange(val: DataOptions, oldVal: DataOptions) {
     if (typeof val != "undefined" && val.page != oldVal.page) {
-      this.loading = true;
       await this.loadMoreCombineds(val);
-      this.loading = false;
     }
   }
 }

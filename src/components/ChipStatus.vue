@@ -29,10 +29,10 @@ export default class ChipStatus extends Vue {
 
   statusMatching = [
     // PENDING
+    { en: "CREATED", vi: "Đã tạo", color: "indigo" },
     { en: "BIDDING", vi: "Đang đấu thầu", color: "deep-purple" },
     { en: "PENDING", vi: "Đang chờ", color: "deep-purple" },
     { en: "SHIPPING", vi: "Đang vận chuyển", color: "deep-purple" },
-    { en: "CREATED", vi: "Đã tạo", color: "deep-purple" },
     // INFO
     { en: "INFO_RECEIVED", vi: "Đã nhận lệnh", color: "info" },
     { en: "UPDATED", vi: "Cập nhật", color: "info" },
