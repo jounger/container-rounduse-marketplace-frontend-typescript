@@ -35,7 +35,9 @@
               <v-select
                 v-model="invoiceLocal.type"
                 prepend-icon="money"
-                :items="types"
+                :items="invoiceTypes"
+                item-text="vi"
+                item-value="en"
                 :rules="[required('loại hóa đơn')]"
                 label="Loại hóa đơn*"
               ></v-select>
@@ -121,18 +123,21 @@ export default class CreateInvoice extends Vue {
     paymentDate: this.dateInit
   } as IInvoice;
   valid = false;
-  types: Array<string> = [];
+  invoiceTypes: Array<object> = [];
 
   created() {
     const _contract = this.combined.contract as IContract;
     const _bid = this.combined.bid as IBid;
     const _bidder = _bid.bidder as IForwarder;
     if (this.$auth.check("ROLE_MERCHANT")) {
-      this.types = ["FINES", "PAYMENT"];
+      this.invoiceTypes = [
+        { en: "FINES", vi: "Tiền phạt hợp đồng" },
+        { en: "PAYMENT", vi: "Thanh toán phí" }
+      ];
       this.invoiceLocal.sender = _contract.sender.companyName;
       this.invoiceLocal.recipient = _bidder.companyName;
     } else if (this.$auth.check("ROLE_FORWARDER")) {
-      this.types = ["FINES"];
+      this.invoiceTypes = [{ en: "FINES", vi: "Tiền phạt hợp đồng" }];
       this.invoiceLocal.sender = _bidder.companyName;
       this.invoiceLocal.recipient = _contract.sender.companyName;
     }

@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts">
-interface Matching {
+export interface Matching {
   en: string;
   vi: string;
   color: string;

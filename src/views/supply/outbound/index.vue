@@ -1,29 +1,5 @@
 <template>
   <v-container fluid>
-    <CreateOutbound
-      :dialogAdd.sync="dialogAdd"
-      :outbounds.sync="outbounds"
-      :totalItems.sync="serverSideOptions.totalItems"
-    />
-    <UpdateOutbound
-      :outbound.sync="outbound"
-      :dialogEdit.sync="dialogEdit"
-      :outbounds="outbounds"
-    />
-    <CreateBiddingDocument
-      v-if="dialogCreateBiddingDocument"
-      :outbound.sync="outbound"
-      :dialogAdd.sync="dialogCreateBiddingDocument"
-    />
-    <v-row justify="center">
-      <DeleteOutbound
-        v-if="dialogDel"
-        :dialogDel.sync="dialogDel"
-        :outbound="outbound"
-        :outbounds.sync="outbounds"
-        :totalItems.sync="serverSideOptions.totalItems"
-      />
-    </v-row>
     <v-card>
       <v-data-table
         :headers="headers"
@@ -105,6 +81,30 @@
         </template>
       </v-data-table>
     </v-card>
+    <CreateOutbound
+      :dialogAdd.sync="dialogAdd"
+      :outbounds.sync="outbounds"
+      :totalItems.sync="serverSideOptions.totalItems"
+    />
+    <UpdateOutbound
+      :outbound.sync="outbound"
+      :dialogEdit.sync="dialogEdit"
+      :outbounds="outbounds"
+    />
+    <CreateBiddingDocument
+      v-if="dialogCreateBiddingDocument"
+      :outbound.sync="outbound"
+      :dialogAdd.sync="dialogCreateBiddingDocument"
+    />
+    <v-row justify="center">
+      <DeleteOutbound
+        v-if="dialogDel"
+        :dialogDel.sync="dialogDel"
+        :outbound="outbound"
+        :outbounds.sync="outbounds"
+        :totalItems.sync="serverSideOptions.totalItems"
+      />
+    </v-row>
   </v-container>
 </template>
 <script lang="ts">

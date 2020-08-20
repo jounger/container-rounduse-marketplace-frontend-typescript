@@ -1,24 +1,5 @@
 <template>
   <v-container fluid>
-    <v-row justify="center">
-      <DeleteRole
-        v-if="dialogDel"
-        :dialogDel.sync="dialogDel"
-        :role="role"
-        :roles.sync="roles"
-        :totalItems.sync="serverSideOptions.totalItems"
-      />
-    </v-row>
-    <v-row justify="center">
-      <CreateRole
-        v-if="dialogAdd"
-        :role="role"
-        :roles.sync="roles"
-        :totalItems.sync="serverSideOptions.totalItems"
-        :dialogAdd.sync="dialogAdd"
-        :update="update"
-      />
-    </v-row>
     <v-card>
       <v-data-table
         :headers="headers"
@@ -76,6 +57,23 @@
         </template>
       </v-data-table>
     </v-card>
+    <v-row justify="center">
+      <DeleteRole
+        v-if="dialogDel"
+        :dialogDel.sync="dialogDel"
+        :role="role"
+        :roles.sync="roles"
+        :totalItems.sync="serverSideOptions.totalItems"
+      />
+      <CreateRole
+        v-if="dialogAdd"
+        :role="role"
+        :roles.sync="roles"
+        :totalItems.sync="serverSideOptions.totalItems"
+        :dialogAdd.sync="dialogAdd"
+        :update="update"
+      />
+    </v-row>
   </v-container>
 </template>
 <script lang="ts">

@@ -1,27 +1,6 @@
 <template>
   <v-container fluid>
     <v-card>
-      <CreateShippingLine
-        v-if="dialogAdd"
-        :shippingLines.sync="shippingLines"
-        :dialogAdd.sync="dialogAdd"
-        :totalItems.sync="serverSideOptions.totalItems"
-      />
-      <UpdateShippingLine
-        v-if="dialogEdit"
-        :shippingLine="shippingLine"
-        :shippingLines.sync="shippingLines"
-        :dialogEdit.sync="dialogEdit"
-      />
-      <v-row justify="center">
-        <DeleteShippingLine
-          v-if="dialogDel"
-          :dialogDel.sync="dialogDel"
-          :shippingLine="shippingLine"
-          :shippingLines.sync="shippingLines"
-          :totalItems.sync="serverSideOptions.totalItems"
-        />
-      </v-row>
       <v-data-table
         :headers="headers"
         :items="shippingLines"
@@ -79,6 +58,27 @@
         </template>
       </v-data-table>
     </v-card>
+    <CreateShippingLine
+      v-if="dialogAdd"
+      :shippingLines.sync="shippingLines"
+      :dialogAdd.sync="dialogAdd"
+      :totalItems.sync="serverSideOptions.totalItems"
+    />
+    <UpdateShippingLine
+      v-if="dialogEdit"
+      :shippingLine="shippingLine"
+      :shippingLines.sync="shippingLines"
+      :dialogEdit.sync="dialogEdit"
+    />
+    <v-row justify="center">
+      <DeleteShippingLine
+        v-if="dialogDel"
+        :dialogDel.sync="dialogDel"
+        :shippingLine="shippingLine"
+        :shippingLines.sync="shippingLines"
+        :totalItems.sync="serverSideOptions.totalItems"
+      />
+    </v-row>
   </v-container>
 </template>
 <script lang="ts">

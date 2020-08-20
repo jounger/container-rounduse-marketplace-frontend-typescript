@@ -1,14 +1,6 @@
 <template>
   <v-container fluid>
     <v-card>
-      <v-row justify="center">
-        <UpdateReport
-          v-if="dialogEdit"
-          :report="report"
-          :reports.sync="reports"
-          :dialogEdit.sync="dialogEdit"
-        />
-      </v-row>
       <v-data-table
         :headers="headers"
         :items="reports"
@@ -104,13 +96,17 @@
         :biddingDocument="biddingDocument"
         :dialogDetail.sync="dialogBiddingDocumentDetail"
       />
-    </v-row>
-    <v-row justify="center">
       <CreateReport
         v-if="dialogAdd"
         :reports.sync="reports"
         :dialogAdd.sync="dialogAdd"
         :totalItems.sync="serverSideOptions.totalItems"
+      />
+      <UpdateReport
+        v-if="dialogEdit"
+        :report="report"
+        :reports.sync="reports"
+        :dialogEdit.sync="dialogEdit"
       />
     </v-row>
   </v-container>

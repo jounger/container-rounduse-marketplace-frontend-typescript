@@ -1,28 +1,5 @@
 <template>
   <v-container fluid>
-    <DetailContractDocument
-      v-if="dialogDetail"
-      :dialogDetail.sync="dialogDetail"
-      :contractDocuments.sync="contractDocuments"
-      :status.sync="status"
-      :contractDocument="contractDocument"
-    />
-    <CreateContractDocument
-      v-if="dialogAddContractDocument"
-      :dialogAdd.sync="dialogAddContractDocument"
-      :contractDocuments.sync="contractDocuments"
-      :status.sync="status"
-      :totalItems.sync="contractDocumentServerSideOptions.totalItems"
-      :contract="contract"
-    />
-    <v-row justify="center">
-      <UpdateShippingInfo
-        v-if="shippingInfo"
-        :dialogEdit.sync="dialogEdit"
-        :shippingInfo="shippingInfo"
-        :shippingInfos.sync="shippingInfos"
-      />
-    </v-row>
     <v-card
       class="d-flex justify-space-around align-start elevation-0"
       v-if="combined"
@@ -30,12 +7,7 @@
     >
       <!-- OUTOUNBD -->
       <v-card class="order-0 flex-grow-0 mx-auto mr-5" max-width="480">
-        <v-tabs
-          background-color="white"
-          color="deep-purple accent-4"
-          left
-          fixed-tabs
-        >
+        <v-tabs background-color="white" color="tertiary" left fixed-tabs>
           <v-tab>Lịch trình</v-tab>
           <v-tab>Hàng xuất</v-tab>
           <v-tab>Hợp đồng</v-tab>
@@ -411,6 +383,29 @@
         </v-data-table>
       </v-card>
     </v-card>
+    <DetailContractDocument
+      v-if="dialogDetail"
+      :dialogDetail.sync="dialogDetail"
+      :contractDocuments.sync="contractDocuments"
+      :status.sync="status"
+      :contractDocument="contractDocument"
+    />
+    <CreateContractDocument
+      v-if="dialogAddContractDocument"
+      :dialogAdd.sync="dialogAddContractDocument"
+      :contractDocuments.sync="contractDocuments"
+      :status.sync="status"
+      :totalItems.sync="contractDocumentServerSideOptions.totalItems"
+      :contract="contract"
+    />
+    <v-row justify="center">
+      <UpdateShippingInfo
+        v-if="shippingInfo"
+        :dialogEdit.sync="dialogEdit"
+        :shippingInfo="shippingInfo"
+        :shippingInfos.sync="shippingInfos"
+      />
+    </v-row>
   </v-container>
 </template>
 <script lang="ts">

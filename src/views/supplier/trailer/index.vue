@@ -1,25 +1,6 @@
 <template>
   <v-container fluid>
     <v-card>
-      <v-row justify="center">
-        <DeleteTrailer
-          v-if="dialogDel"
-          :dialogDel.sync="dialogDel"
-          :trailer="trailer"
-          :totalItems.sync="serverSideOptions.totalItems"
-          :trailers.sync="trailers"
-        />
-      </v-row>
-      <v-row justify="center">
-        <CreateTrailer
-          v-if="dialogAdd"
-          :trailer="trailer"
-          :trailers.sync="trailers"
-          :dialogAdd.sync="dialogAdd"
-          :totalItems.sync="serverSideOptions.totalItems"
-          :update="update"
-        />
-      </v-row>
       <v-data-table
         :headers="headers"
         :items="trailers"
@@ -79,6 +60,23 @@
         </template>
       </v-data-table>
     </v-card>
+    <v-row justify="center">
+      <DeleteTrailer
+        v-if="dialogDel"
+        :dialogDel.sync="dialogDel"
+        :trailer="trailer"
+        :totalItems.sync="serverSideOptions.totalItems"
+        :trailers.sync="trailers"
+      />
+      <CreateTrailer
+        v-if="dialogAdd"
+        :trailer="trailer"
+        :trailers.sync="trailers"
+        :dialogAdd.sync="dialogAdd"
+        :totalItems.sync="serverSideOptions.totalItems"
+        :update="update"
+      />
+    </v-row>
   </v-container>
 </template>
 <script lang="ts">

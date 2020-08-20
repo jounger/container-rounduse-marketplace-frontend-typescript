@@ -1,19 +1,17 @@
 <template>
   <v-container fluid>
-    <v-container class="fill-height" fluid>
-      <v-row align="center" justify="center">
-        <v-col class="text-center">
-          <p>
-            Tài khoản của bạn đang được xem xét bởi các Quản trị viên. Vui lòng
-            chờ phản hồi qua email!
-          </p>
-          <p>
-            Xem chi tiết đơn đăng ký tại
-            <a @click="dialogDetail = true">đây</a>
-          </p>
-        </v-col>
-      </v-row>
-    </v-container>
+    <v-row align="center" justify="center">
+      <v-col class="text-center">
+        <p>
+          Tài khoản của bạn đang được xem xét bởi các Quản trị viên. Vui lòng
+          chờ phản hồi qua email!
+        </p>
+        <p>
+          Xem chi tiết đơn đăng ký tại
+          <a @click="dialogDetail = true">đây</a>
+        </p>
+      </v-col>
+    </v-row>
     <v-row justify="center">
       <SupplierDetail
         v-if="dialogDetail"

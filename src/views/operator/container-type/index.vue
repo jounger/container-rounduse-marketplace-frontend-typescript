@@ -1,25 +1,6 @@
 <template>
   <v-container fluid>
     <v-card>
-      <v-row justify="center">
-        <DeleteContainerType
-          v-if="dialogDel"
-          :dialogDel.sync="dialogDel"
-          :containerType="containerType"
-          :containerTypes.sync="containerTypes"
-          :totalItems.sync="serverSideOptions.totalItems"
-        />
-      </v-row>
-      <v-row justify="center">
-        <CreateContainerType
-          v-if="dialogAdd"
-          :totalItems.sync="serverSideOptions.totalItems"
-          :containerType="containerType"
-          :containerTypes.sync="containerTypes"
-          :dialogAdd.sync="dialogAdd"
-          :update="update"
-        />
-      </v-row>
       <v-data-table
         :headers="headers"
         :items="containerTypes"
@@ -76,6 +57,23 @@
         </template>
       </v-data-table>
     </v-card>
+    <v-row justify="center">
+      <DeleteContainerType
+        v-if="dialogDel"
+        :dialogDel.sync="dialogDel"
+        :containerType="containerType"
+        :containerTypes.sync="containerTypes"
+        :totalItems.sync="serverSideOptions.totalItems"
+      />
+      <CreateContainerType
+        v-if="dialogAdd"
+        :totalItems.sync="serverSideOptions.totalItems"
+        :containerType="containerType"
+        :containerTypes.sync="containerTypes"
+        :dialogAdd.sync="dialogAdd"
+        :update="update"
+      />
+    </v-row>
   </v-container>
 </template>
 <script lang="ts">

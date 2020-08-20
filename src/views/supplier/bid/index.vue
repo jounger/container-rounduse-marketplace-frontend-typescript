@@ -1,28 +1,6 @@
 <template>
   <v-container fluid>
     <v-card>
-      <CreateBid
-        v-if="dialogAdd"
-        :biddingDocument.sync="biddingDocument"
-        :bids.sync="bids"
-        :dialogAdd.sync="dialogAdd"
-        :totalItems.sync="serverSideOptions.totalItems"
-      />
-      <UpdateBid
-        v-if="dialogEdit"
-        :bid="bid"
-        :bids.sync="bids"
-        :biddingDocument="biddingDocument"
-        :dialogEdit.sync="dialogEdit"
-      />
-      <v-row justify="center">
-        <CancelBid
-          v-if="dialogCancel"
-          :dialogCancel.sync="dialogCancel"
-          :bid="bid"
-          :bids.sync="bids"
-        />
-      </v-row>
       <v-data-table
         :headers="headers"
         :items="biddingDocuments"
@@ -151,6 +129,28 @@
         </template>
       </v-data-table>
     </v-card>
+    <CreateBid
+      v-if="dialogAdd"
+      :biddingDocument.sync="biddingDocument"
+      :bids.sync="bids"
+      :dialogAdd.sync="dialogAdd"
+      :totalItems.sync="serverSideOptions.totalItems"
+    />
+    <UpdateBid
+      v-if="dialogEdit"
+      :bid="bid"
+      :bids.sync="bids"
+      :biddingDocument="biddingDocument"
+      :dialogEdit.sync="dialogEdit"
+    />
+    <v-row justify="center">
+      <CancelBid
+        v-if="dialogCancel"
+        :dialogCancel.sync="dialogCancel"
+        :bid="bid"
+        :bids.sync="bids"
+      />
+    </v-row>
   </v-container>
 </template>
 <script lang="ts">

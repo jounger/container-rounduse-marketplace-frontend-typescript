@@ -1,25 +1,6 @@
 <template>
   <v-container fluid>
     <v-card>
-      <v-row justify="center">
-        <DeleteDiscount
-          v-if="dialogDel"
-          :dialogDel.sync="dialogDel"
-          :discount="discount"
-          :discounts.sync="discounts"
-          :totalItems.sync="serverSideOptions.totalItems"
-        />
-      </v-row>
-      <v-row justify="center">
-        <CreateDiscount
-          v-if="dialogAdd"
-          :discount="discount"
-          :discounts.sync="discounts"
-          :dialogAdd.sync="dialogAdd"
-          :totalItems.sync="serverSideOptions.totalItems"
-          :update="update"
-        />
-      </v-row>
       <v-data-table
         :headers="headers"
         :items="discounts"
@@ -82,6 +63,23 @@
         </template>
       </v-data-table>
     </v-card>
+    <v-row justify="center">
+      <DeleteDiscount
+        v-if="dialogDel"
+        :dialogDel.sync="dialogDel"
+        :discount="discount"
+        :discounts.sync="discounts"
+        :totalItems.sync="serverSideOptions.totalItems"
+      />
+      <CreateDiscount
+        v-if="dialogAdd"
+        :discount="discount"
+        :discounts.sync="discounts"
+        :dialogAdd.sync="dialogAdd"
+        :totalItems.sync="serverSideOptions.totalItems"
+        :update="update"
+      />
+    </v-row>
   </v-container>
 </template>
 <script lang="ts">

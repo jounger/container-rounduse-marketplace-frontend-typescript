@@ -1,46 +1,5 @@
 <template>
   <v-container fluid>
-    <v-row justify="center">
-      <CreateReport
-        v-if="dialogReport"
-        :dialogAdd.sync="dialogReport"
-        :biddingDocument.sync="biddingDocument"
-      />
-      <ConfirmBid
-        v-if="dialogRejectBid"
-        :dialogConfirm.sync="dialogRejectBid"
-        :bids.sync="bids"
-        :isAccept="false"
-        :bid="bid"
-      />
-      <CancelBid
-        v-if="dialogCancelBid"
-        :dialogCancel.sync="dialogCancelBid"
-        :bid="bid"
-        :bids.sync="bids"
-      />
-    </v-row>
-    <UpdateBid
-      v-if="dialogEditBid"
-      :bid="bid"
-      :bids.sync="bids"
-      :biddingDocument="biddingDocument"
-      :dialogEdit.sync="dialogEditBid"
-    />
-    <CreateCombined
-      v-if="bid && dialogAddCombined"
-      :dialogAdd.sync="dialogAddCombined"
-      :numberWinner.sync="numberWinner"
-      :isMultipleAward="biddingDocument.isMultipleAward"
-      :bid.sync="bid"
-    />
-    <CreateBid
-      v-if="dialogBid"
-      :biddingDocument.sync="biddingDocument"
-      :dialogAdd.sync="dialogBid"
-      :bids.sync="bids"
-      :totalItems.sync="serverSideOptions.totalItems"
-    />
     <v-card
       class="d-flex justify-space-around align-start elevation-0"
       v-if="biddingDocument"
@@ -450,6 +409,47 @@
         </v-data-table>
       </v-card>
     </v-card>
+    <v-row justify="center">
+      <CreateReport
+        v-if="dialogReport"
+        :dialogAdd.sync="dialogReport"
+        :biddingDocument.sync="biddingDocument"
+      />
+      <ConfirmBid
+        v-if="dialogRejectBid"
+        :dialogConfirm.sync="dialogRejectBid"
+        :bids.sync="bids"
+        :isAccept="false"
+        :bid="bid"
+      />
+      <CancelBid
+        v-if="dialogCancelBid"
+        :dialogCancel.sync="dialogCancelBid"
+        :bid="bid"
+        :bids.sync="bids"
+      />
+    </v-row>
+    <UpdateBid
+      v-if="dialogEditBid"
+      :bid="bid"
+      :bids.sync="bids"
+      :biddingDocument="biddingDocument"
+      :dialogEdit.sync="dialogEditBid"
+    />
+    <CreateCombined
+      v-if="bid && dialogAddCombined"
+      :dialogAdd.sync="dialogAddCombined"
+      :numberWinner.sync="numberWinner"
+      :isMultipleAward="biddingDocument.isMultipleAward"
+      :bid.sync="bid"
+    />
+    <CreateBid
+      v-if="dialogBid"
+      :biddingDocument.sync="biddingDocument"
+      :dialogAdd.sync="dialogBid"
+      :bids.sync="bids"
+      :totalItems.sync="serverSideOptions.totalItems"
+    />
   </v-container>
 </template>
 <script lang="ts">
@@ -524,7 +524,7 @@ export default class DetailBiddingDocument extends Vue {
       sortable: false,
       value: "id"
     },
-    { text: "Bên gửi thầu", value: "bidder.companyName" },
+    { text: "Bên gửi HSMT", value: "bidder.companyName" },
     { text: "SĐT liên hệ", value: "bidder.phone" },
     { text: "Giá thầu", value: "bidPrice" },
     { text: "Ngày thầu", value: "bidDate" },

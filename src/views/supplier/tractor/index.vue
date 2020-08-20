@@ -1,25 +1,6 @@
 <template>
   <v-container fluid>
     <v-card>
-      <v-row justify="center">
-        <DeleteTractor
-          v-if="dialogDel"
-          :dialogDel.sync="dialogDel"
-          :tractor="tractor"
-          :totalItems.sync="serverSideOptions.totalItems"
-          :tractors.sync="tractors"
-        />
-      </v-row>
-      <v-row justify="center">
-        <CreateTractor
-          v-if="dialogAdd"
-          :tractor="tractor"
-          :tractors.sync="tractors"
-          :dialogAdd.sync="dialogAdd"
-          :totalItems.sync="serverSideOptions.totalItems"
-          :update="update"
-        />
-      </v-row>
       <v-data-table
         :headers="headers"
         :items="tractors"
@@ -76,6 +57,23 @@
         </template>
       </v-data-table>
     </v-card>
+    <v-row justify="center">
+      <DeleteTractor
+        v-if="dialogDel"
+        :dialogDel.sync="dialogDel"
+        :tractor="tractor"
+        :totalItems.sync="serverSideOptions.totalItems"
+        :tractors.sync="tractors"
+      />
+      <CreateTractor
+        v-if="dialogAdd"
+        :tractor="tractor"
+        :tractors.sync="tractors"
+        :dialogAdd.sync="dialogAdd"
+        :totalItems.sync="serverSideOptions.totalItems"
+        :update="update"
+      />
+    </v-row>
   </v-container>
 </template>
 <script lang="ts">
