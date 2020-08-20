@@ -15,7 +15,7 @@
                 type="text"
                 disabled
                 :counter="20"
-                v-model="paymentLocal.sender"
+                v-model="invoiceLocal.sender"
               ></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
@@ -26,14 +26,14 @@
                 type="text"
                 disabled
                 :counter="20"
-                v-model="paymentLocal.recipient"
+                v-model="invoiceLocal.recipient"
               ></v-text-field>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12" md="6">
               <v-select
-                v-model="paymentLocal.type"
+                v-model="invoiceLocal.type"
                 prepend-icon="money"
                 :items="types"
                 :rules="[required('loại hóa đơn')]"
@@ -47,16 +47,16 @@
                 prepend-icon="monetization_on"
                 type="number"
                 :rules="[required('số tiền')]"
-                :hint="currencyFormatter(paymentLocal.amount)"
-                v-model="paymentLocal.amount"
+                :hint="currencyFormatter(invoiceLocal.amount)"
+                v-model="invoiceLocal.amount"
               ></v-text-field>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12" md="12">
               <DatetimePicker
-                :datetime="paymentLocal.paymentDate"
-                :return-value.sync="paymentLocal.paymentDate"
+                :datetime="invoiceLocal.paymentDate"
+                :return-value.sync="invoiceLocal.paymentDate"
                 dateicon="event"
                 datelabel="Thời gian thanh toán*"
                 timelabel="Giờ thanh toán"
@@ -71,7 +71,7 @@
                 prepend-icon="description"
                 outlined
                 :rules="[required('nội dung hóa đơn')]"
-                v-model="paymentLocal.detail"
+                v-model="invoiceLocal.detail"
               ></v-textarea>
             </v-col>
           </v-row>
@@ -79,7 +79,7 @@
       </v-card-text>
       <v-card-actions class="justify-space-between">
         <v-btn @click="dialogAddSync = false">Trở về</v-btn>
-        <v-btn @click="createPayment()" color="primary" :disabled="!valid"
+        <v-btn @click="createInvoice()" color="primary" :disabled="!valid"
           >Thêm mới</v-btn
         >
       </v-card-actions>
@@ -88,9 +88,9 @@
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
-import { IPayment } from "@/entity/payment";
+import { IInvoice } from "@/entity/invoice";
 import FormValidate from "@/mixin/form-validate";
-import { createPayment } from "@/api/payment";
+import { createInvoice } from "@/api/invoice";
 import { ICombined } from "@/entity/combined";
 import { IBid } from "@/entity/bid";
 import Utils from "@/mixin/utils";
@@ -105,13 +105,13 @@ import { IContract } from "@/entity/contract";
     DatetimePicker
   }
 })
-export default class CreatePayment extends Vue {
+export default class CreateInvoice extends Vue {
   @PropSync("dialogAdd", { type: Boolean }) dialogAddSync!: boolean;
-  @PropSync("payments", { type: Array }) paymentsSync?: Array<IPayment>;
+  @PropSync("invoices", { type: Array }) invoicesSync?: Array<IInvoice>;
   @Prop(Object) combined!: ICombined;
 
   dateInit = addTimeToDate(new Date().toISOString());
-  paymentLocal = {
+  invoiceLocal = {
     sender: "",
     recipient: "",
     detail: "",
@@ -119,7 +119,7 @@ export default class CreatePayment extends Vue {
     isPaid: false,
     type: "",
     paymentDate: this.dateInit
-  } as IPayment;
+  } as IInvoice;
   valid = false;
   types: Array<string> = [];
 
@@ -129,24 +129,24 @@ export default class CreatePayment extends Vue {
     const _bidder = _bid.bidder as IForwarder;
     if (this.$auth.check("ROLE_MERCHANT")) {
       this.types = ["FINES", "PAYMENT"];
-      this.paymentLocal.sender = _contract.sender.companyName;
-      this.paymentLocal.recipient = _bidder.companyName;
+      this.invoiceLocal.sender = _contract.sender.companyName;
+      this.invoiceLocal.recipient = _bidder.companyName;
     } else if (this.$auth.check("ROLE_FORWARDER")) {
       this.types = ["FINES"];
-      this.paymentLocal.sender = _bidder.companyName;
-      this.paymentLocal.recipient = _contract.sender.companyName;
+      this.invoiceLocal.sender = _bidder.companyName;
+      this.invoiceLocal.recipient = _contract.sender.companyName;
     }
   }
 
-  async createPayment() {
+  async createInvoice() {
     if (this.combined.contract) {
-      const _res = await createPayment(
+      const _res = await createInvoice(
         this.combined.contract.id as number,
-        this.paymentLocal
+        this.invoiceLocal
       );
-      if (_res.data && this.paymentsSync) {
-        const _payment = _res.data.data;
-        this.paymentsSync.push(_payment);
+      if (_res.data && this.invoicesSync) {
+        const _invoice = _res.data.data;
+        this.invoicesSync.push(_invoice);
       }
       if (_res.status == 201) {
         this.dialogAddSync = false;

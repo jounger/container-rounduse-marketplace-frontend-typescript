@@ -26,13 +26,17 @@
           </v-toolbar>
         </template>
         <template v-slot:item.action="{ item }">
-          <ChipStatus :status="item.action" :sub="true" />
+          <ChipStatus :status="item.action" type="action" />
         </template>
         <template v-slot:item.sendDate="{ item }">
           {{ formatDatetime(item.sendDate) }}
         </template>
         <template v-slot:expanded-item="{ headers }">
-          <td :colspan="headers.length" class="px-0">
+          <td
+            :colspan="headers.length"
+            class="px-0"
+            v-if="shippingInfos.length > 0"
+          >
             <v-data-table
               :headers="shippingInfoHeaders"
               :items="shippingInfos"
@@ -116,7 +120,7 @@ export default class BorrowNotify extends Vue {
       text: "Container No.",
       value: "container.number"
     },
-    { text: "Tài xế", value: "container.driver.fullname" },
+    { text: "Lái xe", value: "container.driver.fullname" },
     {
       text: "Rơ mọt",
       value: "container.trailer.licensePlate"

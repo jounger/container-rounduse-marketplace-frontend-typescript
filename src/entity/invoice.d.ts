@@ -1,4 +1,4 @@
-export interface IPayment {
+export interface IInvoice {
   id?: number;
   sender: string;
   recipient: string;

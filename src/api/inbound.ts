@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { PaginationRequest } from "./payload";
+import { PaginationRequest } from "../entity/payload";
 import { IInbound } from "@/entity/inbound";
 
 export function getInbounds(paging: PaginationRequest) {

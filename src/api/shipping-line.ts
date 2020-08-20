@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { PaginationRequest } from "./payload";
+import { PaginationRequest } from "../entity/payload";
 import { IShippingLine } from "@/entity/shipping-line";
 
 export function getShippingLines(paging: PaginationRequest) {

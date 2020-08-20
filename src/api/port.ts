@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { PaginationRequest } from "./payload";
+import { PaginationRequest } from "../entity/payload";
 import { IPort } from "@/entity/port";
 
 export function getPorts(paging: PaginationRequest) {

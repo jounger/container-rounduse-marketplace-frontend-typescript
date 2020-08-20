@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { PaginationRequest } from "./payload";
+import { PaginationRequest } from "../entity/payload";
 import { IContract } from "@/entity/contract";
 
 export function searchContracts(paging: PaginationRequest, search: string) {

@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { PaginationRequest } from "./payload";
+import { PaginationRequest } from "../entity/payload";
 import { IOperator } from "@/entity/operator";
 
 export function getOperators(paging: PaginationRequest) {

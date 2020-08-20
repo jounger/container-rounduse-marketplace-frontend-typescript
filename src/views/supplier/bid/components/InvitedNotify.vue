@@ -148,7 +148,7 @@ export default class InvitedNotify extends Vue {
     { text: "Cont qty", value: "containers.length" },
     { text: "Giá thầu", value: "bidPrice" },
     { text: "Ngày thầu", value: "bidDate" },
-    { text: "Hiệu lực", value: "bidValidityPeriod" },
+    { text: "Hiệu lực", value: "validityPeriod" },
     { text: "Hành động", value: "actions" }
   ];
 

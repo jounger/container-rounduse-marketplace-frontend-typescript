@@ -39,7 +39,11 @@
                 </template>
                 <!-- Show containerList expened -->
                 <template v-slot:expanded-item="{ headers }">
-                  <td :colspan="headers.length" class="px-0">
+                  <td
+                    :colspan="headers.length"
+                    class="px-0"
+                    v-if="containerList.length > 0"
+                  >
                     <v-data-table
                       :headers="containerHeaders"
                       :items="containerList"
@@ -186,7 +190,7 @@ export default class ListContainer extends Vue {
       value: "number",
       class: "tertiary"
     },
-    { text: "Tài xế", value: "driver.fullname", class: "tertiary" },
+    { text: "Lái xe", value: "driver.fullname", class: "tertiary" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate",
@@ -211,7 +215,7 @@ export default class ListContainer extends Vue {
       text: "Container No.",
       value: "number"
     },
-    { text: "Tài xế", value: "driver.fullname" },
+    { text: "Lái xe", value: "driver.fullname" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate"

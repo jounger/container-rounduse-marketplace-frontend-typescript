@@ -1,5 +1,5 @@
 import { IBiddingDocument } from "./bidding-document";
-import { ISupplier } from './supplier';
+import { ISupplier } from "./supplier";
 export interface IReport {
   id?: number;
   sender: ISupplier | string;

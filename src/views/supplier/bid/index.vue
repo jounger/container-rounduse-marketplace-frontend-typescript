@@ -85,7 +85,7 @@
         </template>
         <!-- Show Bids expened -->
         <template v-slot:expanded-item="{ headers }">
-          <td :colspan="headers.length" class="px-0">
+          <td :colspan="headers.length" class="px-0" v-if="bids.length > 0">
             <v-data-table
               :headers="bidHeaders"
               :items="bids"
@@ -103,8 +103,8 @@
               <template v-slot:item.bidDate="{ item }">
                 {{ formatDatetime(item.bidDate) }}
               </template>
-              <template v-slot:item.bidValidityPeriod="{ item }">
-                {{ formatDatetime(item.bidValidityPeriod) }}
+              <template v-slot:item.validityPeriod="{ item }">
+                {{ formatDatetime(item.validityPeriod) }}
               </template>
               <template v-slot:item.status="{ item }">
                 <ChipStatus :status="item.status" :sub="true" />
@@ -222,7 +222,7 @@ export default class Bid extends Vue {
     { text: "Ngày thầu", value: "bidDate", class: "tertiary" },
     {
       text: "Hiệu lực",
-      value: "bidValidityPeriod",
+      value: "validityPeriod",
       class: "tertiary"
     },
     { text: "Trạng thái", value: "status", class: "tertiary" },
@@ -275,14 +275,14 @@ export default class Bid extends Vue {
   }
 
   openEditDialog(item: IBid) {
-    if (new Date().getTime() - new Date(item.bidValidityPeriod).getTime() > 0) {
+    if (new Date().getTime() - new Date(item.validityPeriod).getTime() > 0) {
       this.bid = item;
       this.dialogEdit = true;
     }
   }
 
   openCancelDialog(item: IBid) {
-    if (new Date().getTime() - new Date(item.bidValidityPeriod).getTime() > 0) {
+    if (new Date().getTime() - new Date(item.validityPeriod).getTime() > 0) {
       this.bid = item;
       this.dialogCancel = true;
     }

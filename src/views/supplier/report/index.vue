@@ -9,10 +9,6 @@
           :dialogEdit.sync="dialogEdit"
         />
       </v-row>
-      <v-card-title>
-        Danh sách Report
-        <v-divider class="mx-4" inset vertical></v-divider>
-      </v-card-title>
       <v-data-table
         :headers="headers"
         :items="reports"
@@ -28,23 +24,29 @@
         disable-sort
         class="elevation-1"
       >
+        <template v-slot:top>
+          <v-toolbar flat color="white">
+            <v-toolbar-title>Danh sách Report</v-toolbar-title>
+            <v-divider class="mx-4" inset vertical></v-divider>
+          </v-toolbar>
+        </template>
         <template v-slot:item.reportId="{ item }">
           <v-btn
             class="ma-1"
             tile
             outlined
-            color="success"
+            color="info"
             @click.stop="openBiddingDocumentDetail(item)"
             small
           >
-            <v-icon left>business_center</v-icon> Xem HSMT
+            <v-icon left>remove_red_eye</v-icon> Xem HSMT
           </v-btn>
         </template>
         <template v-slot:item.sendDate="{ item }">
           {{ formatDatetime(item.sendDate) }}
         </template>
         <template v-slot:item.status="{ item }">
-          <ChipStatus :status="item.status" :sub="true" />
+          <ChipStatus :status="item.status" />
         </template>
         <template v-slot:item.actions="{ item }">
           <v-menu :close-on-click="true">

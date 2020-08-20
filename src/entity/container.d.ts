@@ -1,6 +1,6 @@
 import { IContainerSemiTrailer } from "./container-semi-trailer";
 import { IContainerTractor } from "./container-tractor";
-import { IDriver } from './driver';
+import { IDriver } from "./driver";
 export interface IContainer {
   id?: number;
   number: string;

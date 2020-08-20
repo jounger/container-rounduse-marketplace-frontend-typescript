@@ -83,7 +83,7 @@ export default class NavigationSupplier extends Vue {
           link: "/bidding-document"
         },
         { title: "Quản lý Hợp đồng", icon: "folder", link: "/contract" },
-        { title: "Quản lý Hóa đơn", icon: "store", link: "/payment" }
+        { title: "Quản lý Hóa đơn", icon: "store", link: "/invoice" }
       ]
     }
   ];
@@ -105,7 +105,7 @@ export default class NavigationSupplier extends Vue {
         { title: "Quản lý HSDT", icon: "business_center", link: "/bid" },
         { title: "Quản lý Report", icon: "report_problem", link: "/report" },
         { title: "Quản lý Hợp đồng", icon: "folder", link: "/contract" },
-        { title: "Quản lý Hóa đơn", icon: "store", link: "/payment" }
+        { title: "Quản lý Hóa đơn", icon: "store", link: "/invoice" }
       ]
     },
     {

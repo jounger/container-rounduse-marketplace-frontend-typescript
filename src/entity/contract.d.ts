@@ -1,5 +1,5 @@
 import { IDiscount } from "./discount";
-import { ISupplier } from './supplier';
+import { ISupplier } from "./supplier";
 export interface IContract {
   id?: number;
   sender: ISupplier;

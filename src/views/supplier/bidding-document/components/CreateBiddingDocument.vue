@@ -105,7 +105,7 @@
                     :hint="
                       currencyFormatter(
                         biddingDocumentLocal.bidPackagePrice,
-                        biddingDocumentLocal.currencyOfPayment
+                        biddingDocumentLocal.currencyOfInvoice
                       )
                     "
                     prepend-icon="money"
@@ -122,7 +122,7 @@
                     :hint="
                       currencyFormatter(
                         biddingDocumentLocal.bidFloorPrice,
-                        biddingDocumentLocal.currencyOfPayment
+                        biddingDocumentLocal.currencyOfInvoice
                       )
                     "
                     prepend-icon="local_atm"
@@ -132,9 +132,9 @@
                 ></v-col>
                 <v-col cols="12" md="2">
                   <v-select
-                    v-model="biddingDocumentLocal.currencyOfPayment"
+                    v-model="biddingDocumentLocal.currencyOfInvoice"
                     prepend-icon="strikethrough_s"
-                    :items="currencyOfPayments"
+                    :items="currencyOfInvoices"
                     :rules="[required('loại tiền tệ')]"
                     label="Loại tiền tệ"
                   ></v-select>
@@ -211,7 +211,7 @@ export default class CreateBiddingDocument extends Vue {
     bidOpening: this.dateInit,
     bidClosing: this.dateInit,
     dateOfDecision: this.dateInit,
-    currencyOfPayment: "VND",
+    currencyOfInvoice: "VND",
     bidPackagePrice: 0,
     bidFloorPrice: 0,
     priceLeadership: 0,
@@ -224,7 +224,7 @@ export default class CreateBiddingDocument extends Vue {
   stepper = 1;
   valid = true;
   // API list
-  currencyOfPayments: Array<string> = [];
+  currencyOfInvoices: Array<string> = [];
 
   // Outbound form
   outbounds: Array<IOutbound> = [];
@@ -308,7 +308,7 @@ export default class CreateBiddingDocument extends Vue {
   }
 
   created() {
-    this.currencyOfPayments = ["VND", "USD"];
+    this.currencyOfInvoices = ["VND", "USD"];
   }
 }
 </script>

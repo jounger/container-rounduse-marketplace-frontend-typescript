@@ -39,7 +39,7 @@
               <v-list dense :offset-y="true">
                 <v-list-item @click="openBiddingDocumentDetail">
                   <v-list-item-icon>
-                    <v-icon small>edit</v-icon>
+                    <v-icon small>remove_red_eye</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
                     <v-list-item-title>Xem HSMT</v-list-item-title>
@@ -53,7 +53,7 @@
                   "
                 >
                   <v-list-item-icon>
-                    <v-icon small>close</v-icon>
+                    <v-icon small>cancel</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
                     <v-list-item-title>Từ chối</v-list-item-title>
@@ -66,7 +66,7 @@
                   "
                 >
                   <v-list-item-icon>
-                    <v-icon small>edit</v-icon>
+                    <v-icon small>close</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
                     <v-list-item-title>Đóng Report</v-list-item-title>

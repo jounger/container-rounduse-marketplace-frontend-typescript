@@ -4,7 +4,7 @@
       <v-img
         width="434"
         height="100%"
-        src="https://cdn.vuetifyjs.com/images/cards/server-room.jpg"
+        src="@/assets/images/background-cover.jpg"
       >
         <v-row justify="center" align="start" class="fill-height">
           <v-col cols="12" md="12" align-self="start" class="pa-5">

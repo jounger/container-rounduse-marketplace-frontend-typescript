@@ -11,7 +11,7 @@
             <v-list>
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title>{{ payment.id }}</v-list-item-title>
+                  <v-list-item-title>{{ invoice.id }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -20,29 +20,29 @@
       </v-card-text>
       <v-card-actions class="justify-space-between">
         <v-btn @click="dialogConfirmSync = false">Trở về</v-btn>
-        <v-btn @click="confirmPayment()" color="primary">Xác nhận</v-btn>
+        <v-btn @click="confirmInvoice()" color="primary">Xác nhận</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts">
 import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
-import { IPayment } from "@/entity/payment";
-import { editPayment } from "@/api/payment";
+import { IInvoice } from "@/entity/invoice";
+import { editInvoice } from "@/api/invoice";
 
 @Component
-export default class ConfirmPayment extends Vue {
+export default class ConfirmInvoice extends Vue {
   @PropSync("dialogConfirm", { type: Boolean }) dialogConfirmSync!: boolean;
-  @PropSync("payments", { type: Array }) paymentsSync!: Array<IPayment>;
-  @Prop(Object) payment!: IPayment;
+  @PropSync("invoices", { type: Array }) invoicesSync!: Array<IInvoice>;
+  @Prop(Object) invoice!: IInvoice;
 
-  async confirmPayment() {
-    if (this.payment.id) {
-      const _res = await editPayment(this.payment.id, { isPaid: true });
+  async confirmInvoice() {
+    if (this.invoice.id) {
+      const _res = await editInvoice(this.invoice.id, { isPaid: true });
       if (_res.data) {
-        const _payment = _res.data.data;
-        const index = this.paymentsSync.findIndex(x => x.id === _payment.id);
-        this.paymentsSync.splice(index, 1, _payment);
+        const _invoice = _res.data.data;
+        const index = this.invoicesSync.findIndex(x => x.id === _invoice.id);
+        this.invoicesSync.splice(index, 1, _invoice);
         this.dialogConfirmSync = false;
       }
     }

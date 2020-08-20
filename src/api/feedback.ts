@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { PaginationRequest } from "./payload";
+import { PaginationRequest } from "../entity/payload";
 import { IFeedback } from "@/entity/feedback";
 
 export function getFeedbacksByReport(id: number, paging: PaginationRequest) {

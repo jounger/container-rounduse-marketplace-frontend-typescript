@@ -288,7 +288,7 @@ export default class UpdateBid extends Vue {
       text: "Container No.",
       value: "number"
     },
-    { text: "Tài xế", value: "driver.fullname" },
+    { text: "Lái xe", value: "driver.fullname" },
     {
       text: "Rơ mọt",
       value: "trailer.licensePlate"
