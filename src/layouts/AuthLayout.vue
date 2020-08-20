@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-15">
+  <div>
     <v-main>
       <router-view></router-view>
     </v-main>

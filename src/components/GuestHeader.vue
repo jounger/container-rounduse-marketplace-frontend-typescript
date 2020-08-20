@@ -1,8 +1,8 @@
 <template>
-  <v-app-bar app clipped-left color="blue">
-    <router-link to="/" class="home"
+  <v-app-bar app color="white" flat>
+    <router-link to="/homepage" class="home"
       ><v-toolbar-title
-        ><span style="color:white"
+        ><span class="title"
           >Container Round-use Marketplace</span
         ></v-toolbar-title
       ></router-link
@@ -12,35 +12,20 @@
       v-for="link in links"
       :key="link.title"
       :to="link.link"
-      color="white"
+      color="black"
       text
       rounded
       class="my-2"
     >
-      {{ link.title }}
+      <span class="btn">{{ link.title }}</span>
     </v-btn>
-    <v-menu left bottom :offset-y="true">
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn color="white" icon outlined v-bind="attrs" v-on="on">
-          <v-icon>mdi-dots-vertical</v-icon>
-        </v-btn>
-      </template>
-      <v-list dense>
-        <v-list-item
-          v-for="item in menu"
-          :key="item.title"
-          :to="item.link"
-          link
-        >
-          <v-list-item-icon>
-            <v-icon small>{{ item.icon }}</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-menu>
+    <v-spacer></v-spacer>
+    <v-btn class="loginBtn" to="/login" @click.native="scrollToTop"
+      >Đăng nhập</v-btn
+    >
+    <v-btn class="logoutBtn" to="/register" @click.native="scrollToTop"
+      >Đăng ký</v-btn
+    >
   </v-app-bar>
 </template>
 <script lang="ts">
@@ -62,6 +47,9 @@ export default class Menubar extends Vue {
     { title: "Hỗ trợ", scroll: "/help" },
     { title: "Liên lạc", scroll: "/contact" }
   ];
+  scrollToTop() {
+    window.scrollTo(0, 0);
+  }
 }
 </script>
 <style lang="css" scopedSlots>
@@ -70,5 +58,32 @@ export default class Menubar extends Vue {
 }
 .home div {
   color: #000 !important;
+}
+span.btn {
+  font-size: 13px !important;
+}
+span.btn:hover {
+  font-size: 15px !important;
+  font-weight: bold;
+}
+.loginBtn {
+  background: #eea632 !important;
+  color: white !important;
+  margin-right: 20px;
+}
+.loginBtn:hover {
+  margin-top: -5px !important;
+}
+.logoutBtn {
+  background: #00532f !important;
+  color: white !important;
+  margin-right: 50px;
+}
+.logoutBtn:hover {
+  margin-top: -5px !important;
+}
+.title {
+  color: green;
+  margin-left: 50px;
 }
 </style>

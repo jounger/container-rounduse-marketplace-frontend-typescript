@@ -1,15 +1,15 @@
 <template>
-  <v-dialog v-model="dialog" max-width="550" transition="scale-transition">
-    <v-card>
-      <v-toolbar color="primary" light flat>
-        <v-toolbar-title class="white--text">Đăng nhập </v-toolbar-title
-        ><v-spacer></v-spacer>
-        <p class="caption ma-3">
-          <router-link to="/" class="white--text"
-            >Quay lại trang chủ</router-link
-          >
-        </p>
-      </v-toolbar>
+  <v-dialog
+    v-model="dialog"
+    width="500"
+    height="320"
+    transition="scale-transition"
+  >
+    <v-card width="500" height="320" class="card">
+      <v-card-title>
+        Đăng nhập
+      </v-card-title>
+      <v-divider light></v-divider>
       <v-card-text>
         <v-form v-model="valid" validation>
           <v-text-field
@@ -35,9 +35,18 @@
         </v-form>
       </v-card-text>
       <v-card-actions class="justify-space-between">
-        <v-btn text to="/forgot-password">Quên mật khẩu</v-btn>
-        <v-btn @click.stop="login()" color="primary">Đăng nhập</v-btn>
+        <router-link to="/forgot-password">Quên mật khẩu</router-link>
+        <v-btn
+          class="login"
+          @click.stop="login()"
+          color="success"
+          :disabled="!valid"
+          >Đăng nhập</v-btn
+        >
       </v-card-actions>
+      <span class="register">
+        <router-link to="/register">Đăng ký</router-link></span
+      >
     </v-card>
   </v-dialog>
 </template>
@@ -50,8 +59,8 @@ import FormValidate from "@/mixin/form-validate";
 })
 export default class Login extends Vue {
   @PropSync("dialogLogin", { type: Boolean }) dialog!: boolean;
-  public username = "admin";
-  public password = "123456";
+  public username = "";
+  public password = "";
   valid = true;
 
   public created() {
@@ -70,3 +79,31 @@ export default class Login extends Vue {
   }
 }
 </script>
+<style scoped lang="css">
+.login {
+  margin-right: 10px;
+}
+.login:hover {
+  width: 110px;
+  height: 36px;
+}
+.title {
+  color: #037243;
+  margin-left: 10px;
+}
+.card {
+  border-radius: 10px;
+}
+.card a {
+  color: #037243;
+  text-decoration: none;
+  margin-left: 10px !important;
+}
+.card a:hover {
+  font-weight: bold;
+  font-size: 17px;
+}
+.card .register {
+  margin-left: 43%;
+}
+</style>

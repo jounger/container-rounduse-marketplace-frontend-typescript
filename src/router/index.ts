@@ -42,7 +42,7 @@ const routes: Array<RouteConfig> = [
     path: "/register",
     name: "Register",
     meta: {
-      layout: "RegisterLayout"
+      layout: "EmptyLayout"
     },
     component: () => import("@/views/auth/Register.vue")
   },
