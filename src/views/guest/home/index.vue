@@ -2,22 +2,29 @@
   ><v-container class="fill-height; card" fluid>
     <Introduction />
     <ListShippingLine />
-    <v-row align="center" justify="center"
-      ><v-col class="text-center"> <Aboutus /> </v-col
-    ></v-row>
+    <ManageContainer />
+    <FindContainer />
+    <Bidding />
+    <Automate />
   </v-container>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import Introduction from "./components/Introduction.vue";
 import ListShippingLine from "./components/ListShippingLine.vue";
-import Aboutus from "./components/Aboutus.vue";
+import ManageContainer from "./components/ManageContainer.vue";
+import FindContainer from "./components/FindContainer.vue";
+import Bidding from "./components/Bidding.vue";
+import Automate from "./components/Automate.vue";
 
 @Component({
   components: {
     Introduction,
     ListShippingLine,
-    Aboutus
+    ManageContainer,
+    FindContainer,
+    Bidding,
+    Automate
   }
 })
 export default class HomePage extends Vue {}
@@ -25,5 +32,6 @@ export default class HomePage extends Vue {}
 <style scoped lang="css">
 .card {
   padding: 0 !important;
+  margin: 0 !important;
 }
 </style>

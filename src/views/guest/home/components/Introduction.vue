@@ -1,5 +1,5 @@
 <template>
-  <v-card class="card">
+  <v-card class="card" flat>
     <v-row justify="center">
       <Login v-if="dialogLogin" :dialogLogin.sync="dialogLogin" />
     </v-row>
@@ -55,5 +55,8 @@ export default class Introduction extends Vue {
 }
 .introduction .loginBtn {
   margin-bottom: -20px !important;
+}
+.introduction .loginBtn:hover {
+  margin-bottom: -15px !important;
 }
 </style>

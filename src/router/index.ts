@@ -74,7 +74,8 @@ const routes: Array<RouteConfig> = [
     path: "/homepage",
     name: "HomePage",
     meta: {
-      layout: "EmptyLayout"
+      layout: "EmptyLayout",
+      title: "Trang chủ"
     },
     component: () => import("@/views/guest/home/index.vue")
   },
