@@ -1,6 +1,6 @@
 <template>
   <v-card class="card" flat>
-    <v-parallax height="950" class="find-cont-easy">
+    <v-parallax height="950" class="bidding">
       <v-row>
         <v-col cols="12" md="8">
           <h1 class="font-weight-thin mb-4">
@@ -36,17 +36,17 @@ export default class Bidding extends Vue {}
 .card {
   margin: 0 !important;
 }
-.find-cont-easy {
+.bidding {
   background-color: rgba(221, 221, 221, 0.2);
 }
-.find-cont-easy h1 {
+.bidding h1 {
   margin-top: 60px;
   margin-left: 365px;
   font-size: 35px !important;
   font-weight: 500 !important;
   color: black;
 }
-.find-cont-easy h3 {
+.bidding h3 {
   margin-top: 40px !important;
   margin-left: 365px;
   font-size: 22px !important;
@@ -59,16 +59,16 @@ export default class Bidding extends Vue {}
   border-bottom: 3.5px solid #eea632;
   position: absolute;
 }
-.find-cont-easy button {
+.bidding button {
   margin-left: 365px !important;
   margin-top: 30px !important;
   background-color: #00532f !important;
   color: white;
 }
-.find-cont-easy button:hover {
+.bidding button:hover {
   margin-top: 25px !important;
 }
-.find-cont-easy .v-image {
+.bidding .v-image {
   margin-top: -20px !important;
   height: 360px;
   width: 750px;

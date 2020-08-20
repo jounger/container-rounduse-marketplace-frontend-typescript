@@ -1,6 +1,6 @@
 <template>
   <v-card class="card" flat>
-    <v-parallax height="950" class="find-cont-easy">
+    <v-parallax height="850" class="automate">
       <v-row>
         <v-col cols="12" md="6">
           <h1 class="font-weight-thin mb-4">
@@ -18,8 +18,8 @@
           <v-btn>Tìm hiểu thêm</v-btn>
         </v-col>
         <v-col cols="12" md="6">
-          <v-img src="@/assets/images/managecont.jpg"></v-img>
-          <v-img src="@/assets/images/managecont2.jpg"></v-img>
+          <v-img src="@/assets/images/auto.jpg"></v-img>
+          <v-img src="@/assets/images/auto2.jpg"></v-img>
         </v-col>
       </v-row>
     </v-parallax>
@@ -35,17 +35,17 @@ export default class Automate extends Vue {}
 .card {
   margin: 0 !important;
 }
-.find-cont-easy {
+.automate {
   background-color: white;
 }
-.find-cont-easy h1 {
+.automate h1 {
   margin-top: 180px;
   margin-left: 150px;
   font-size: 35px !important;
   font-weight: 500 !important;
   color: black;
 }
-.find-cont-easy h3 {
+.automate h3 {
   margin-top: 40px !important;
   margin-left: 150px;
   font-size: 22px !important;
@@ -58,16 +58,16 @@ export default class Automate extends Vue {}
   border-bottom: 3px solid #eea632;
   position: absolute;
 }
-.find-cont-easy button {
+.automate button {
   margin-left: 150px !important;
   margin-top: 30px !important;
   background-color: #00532f !important;
   color: white;
 }
-.find-cont-easy button:hover {
+.automate button:hover {
   margin-top: 25px !important;
 }
-.find-cont-easy .v-image {
+.automate .v-image {
   margin-top: 30px !important;
   margin-left: 30px !important;
   height: 330px;

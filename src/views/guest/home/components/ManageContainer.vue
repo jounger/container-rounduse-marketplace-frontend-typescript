@@ -1,6 +1,6 @@
 <template>
   <v-card class="card" flat>
-    <v-parallax height="950" class="find-cont-easy">
+    <v-parallax height="950" class="manage-cont">
       <v-row>
         <v-col cols="12" md="6">
           <h1 class="font-weight-thin mb-4">
@@ -34,17 +34,17 @@ export default class ManageContainer extends Vue {}
 .card {
   margin: 0 !important;
 }
-.find-cont-easy {
+.manage-cont {
   background-color: white;
 }
-.find-cont-easy h1 {
+.manage-cont h1 {
   margin-top: 180px;
   margin-left: 150px;
   font-size: 35px !important;
   font-weight: 500 !important;
   color: black;
 }
-.find-cont-easy h3 {
+.manage-cont h3 {
   margin-top: 40px !important;
   margin-left: 150px;
   font-size: 22px !important;
@@ -57,16 +57,16 @@ export default class ManageContainer extends Vue {}
   border-bottom: 3px solid #eea632;
   position: absolute;
 }
-.find-cont-easy button {
+.manage-cont button {
   margin-left: 150px !important;
   margin-top: 30px !important;
   background-color: #00532f !important;
   color: white;
 }
-.find-cont-easy button:hover {
+.manage-cont button:hover {
   margin-top: 25px !important;
 }
-.find-cont-easy .v-image {
+.manage-cont .v-image {
   margin-top: 30px !important;
   margin-left: 30px !important;
   height: 330px;

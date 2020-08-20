@@ -6,6 +6,8 @@
     <FindContainer />
     <Bidding />
     <Automate />
+    <Feedback />
+    <Register />
   </v-container>
 </template>
 <script lang="ts">
@@ -16,6 +18,8 @@ import ManageContainer from "./components/ManageContainer.vue";
 import FindContainer from "./components/FindContainer.vue";
 import Bidding from "./components/Bidding.vue";
 import Automate from "./components/Automate.vue";
+import Feedback from "./components/Feedback.vue";
+import Register from "./components/Register.vue";
 
 @Component({
   components: {
@@ -24,7 +28,9 @@ import Automate from "./components/Automate.vue";
     ManageContainer,
     FindContainer,
     Bidding,
-    Automate
+    Automate,
+    Feedback,
+    Register
   }
 })
 export default class HomePage extends Vue {}

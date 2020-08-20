@@ -1,15 +1,19 @@
 <template>
-  <v-container class="my-container">
-    <v-row>
-      <!-- TITLE -->
-      <v-col class="md-6">
-        <v-card-title>Đăng ký tài khoản</v-card-title>
-        <div class="line"></div>
-        <p>
-          <strong>Đăng ký tài khoản</strong> để trở thành một Thành viên của
-          trang web.
-        </p>
-        <!-- START CONTENT -->
+  <v-card class="card" flat>
+    <v-parallax height="1000" class="register">
+      <v-row>
+        <v-col cols="12" md="8">
+          <h1 class="font-weight-thin mb-4">
+            Đăng ký ngay
+          </h1>
+          <div class="line"></div>
+          <h3>
+            Hãy cùng 300+ người dùng khác trải nghiệm và nhận về những giá trị
+            tại CRuM. Miễn phí 100% quá trình đăng ký cùng rất nhiều khuyến mãi.
+          </h3>
+        </v-col>
+      </v-row>
+      <v-row justify="center">
         <v-list class="form-list" three-line subheader outlined>
           <v-stepper v-model="stepper" vertical>
             <v-stepper-step
@@ -113,7 +117,9 @@
                     ></v-text-field>
                   </v-col>
                 </v-row>
-                <v-btn @click="stepper = 2" :disabled="!valid">Tiếp tục</v-btn>
+                <v-btn @click="stepper = 2" :disabled="!valid" color="primary"
+                  >Tiếp tục</v-btn
+                >
               </v-form>
             </v-stepper-content>
 
@@ -248,7 +254,9 @@
                   </v-col>
                 </v-row>
 
-                <v-btn @click="stepper = 3" :disabled="!valid2">Tiếp tục</v-btn>
+                <v-btn @click="stepper = 3" :disabled="!valid2" color="primary"
+                  >Tiếp tục</v-btn
+                >
                 <v-btn text @click="stepper = 1">Quay lại</v-btn>
               </v-form>
             </v-stepper-content>
@@ -266,57 +274,17 @@
                   v-model="checkbox"
                   label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
                 ></v-checkbox>
-                <v-btn @click="submit()" :disabled="!checkbox">Hoàn tất</v-btn>
+                <v-btn @click="submit()" :disabled="!checkbox" color="primary"
+                  >Hoàn tất</v-btn
+                >
                 <v-btn text @click="stepper = 2">Quay lại</v-btn>
               </v-form>
             </v-stepper-content>
           </v-stepper>
-        </v-list></v-col
-      >
-      <v-col class="md-5"
-        ><v-card width="500" height="200" class="follow" outlined>
-          <v-card-title>Theo dõi chúng tôi</v-card-title>
-
-          <p>để cập nhập những thông tin mới nhất</p>
-          <v-card-text>
-            <v-row justify="center">
-              <v-btn
-                v-for="icon in socialNetworks"
-                :key="icon.icon"
-                class="mx-4"
-                icon
-              >
-                <v-icon size="24px" :color="icon.color">{{ icon.icon }}</v-icon>
-              </v-btn></v-row
-            >
-          </v-card-text>
-        </v-card>
-        <v-card width="500" height="400" class="contact" outlined>
-          <v-card-title>Liên lạc với chúng tôi</v-card-title>
-
-          <p>để được tư vấn thêm</p>
-          <v-card-text>
-            <v-list>
-              <v-list-item
-                v-for="item in contacts"
-                :key="item.title"
-                class="mx-4"
-                icon
-              >
-                <v-list-item-icon>
-                  <v-icon :color="item.color">{{ item.icon }}</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>{{ item.title }}</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item></v-list
-            >
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <!-- END CONTENT --></v-row
-    >
-  </v-container>
+        </v-list>
+      </v-row>
+    </v-parallax>
+  </v-card>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
@@ -327,34 +295,6 @@ import { ISupplier } from "@/entity/supplier";
   mixins: [FormValidate]
 })
 export default class Register extends Vue {
-  socialNetworks = [
-    { icon: "mdi-facebook", color: "blue" },
-    { icon: "mdi-twitter", color: "blue" },
-    { icon: "mdi-linkedin", color: "blue" },
-    { icon: "mdi-instagram", color: "pink" }
-  ];
-  contacts = [
-    {
-      icon: "location_on",
-      color: "red",
-      title: "Thạch Hòa- Thạch Thất- Hà Nội"
-    },
-    {
-      icon: "call",
-      color: "green",
-      title: "0359049292"
-    },
-    {
-      icon: "email",
-      color: "blue",
-      title: "support@crum.vn"
-    },
-    {
-      icon: "contacts",
-      color: "gold",
-      title: "123-456 / 456-789"
-    }
-  ];
   supplier = {
     username: "",
     password: "",
@@ -391,55 +331,35 @@ export default class Register extends Vue {
 }
 </script>
 <style scoped lang="css">
-.my-container {
-  background-color: rgba(221, 221, 221, 0.2);
-  width: 100%;
-  max-width: 100% !important;
+.card {
   margin: 0 !important;
 }
-.my-container .v-card__title {
-  margin-left: 80px !important;
-  font-size: 30px;
-  margin-top: 20px;
+.register {
+  background-color: #cbe4d6;
 }
-.my-container p {
-  margin-left: 100px;
-  margin-top: 10px;
+.register h1 {
+  margin-top: 60px;
+  margin-left: 365px;
+  font-size: 35px !important;
+  font-weight: 500 !important;
+  color: black;
 }
-.my-container .form-list {
-  width: 800px;
-  margin-left: 80px !important;
-}
-.follow {
-  margin-top: 20px;
-}
-.follow .v-card__title {
-  font-size: 20px;
-  margin-left: 5px !important;
-}
-.follow p {
-  margin-top: 10px;
-  margin-left: 25px;
-}
-.contact {
-  margin-top: 30px;
-}
-.contact .v-card__title {
-  font-size: 20px;
-  margin-left: 5px !important;
-}
-.contact p {
-  margin-top: 10px;
-  margin-left: 25px;
+.register h3 {
+  margin-top: 40px !important;
+  margin-left: 365px;
+  font-size: 22px !important;
+  color: black;
+  font-weight: 300 !important;
 }
 .line {
-  width: 200px;
-  margin-left: 6%;
-  border-bottom: 5px solid #eea632;
+  width: 150px;
+  margin-left: 24%;
+  border-bottom: 3.5px solid #eea632;
   position: absolute;
 }
-.form-list button {
-  background-color: #037243 !important;
-  color: white;
+.form-list {
+  width: 800px;
+  height: 660px;
+  background-color: #cbe4d6;
 }
 </style>

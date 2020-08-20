@@ -8,7 +8,19 @@
         <v-col class="text-center" cols="12">
           <h1 class="font-weight-thin mb-4">Giải pháp Logistic của thời đại</h1>
           <div class="line"></div>
-          <h4>Mang lại giá trị từ chính những gì bạn có</h4>
+          <v-row>
+            <v-col cols="12" md="9">
+              <h4>
+                CRuM là trang web đóng vai trò cầu nối giữa những Container rỗng
+                trong quá trình di chuyển và những người dùng có nhu cầu vận
+                chuyển hàng hóa nhằm mục đích tối ưu quy trình vận chuyển của
+                Container. Với sứ mệnh làm mới ngành công nghiệp Logictis, CRuM
+                cung cấp một giải pháp tối ưu cho quy trình quản lý và điều phối
+                Container, đồng thời tạo điều kiện cho quá trình xuất nhập khẩu
+                của doanh nghiệp được nhanh chóng với chi phí thấp hơn.
+              </h4>
+            </v-col>
+          </v-row>
         </v-col>
         <v-btn class="loginBtn" @click="dialogLogin = true"
           >Đăng nhập ngay</v-btn
@@ -44,6 +56,7 @@ export default class Introduction extends Vue {
 }
 .introduction h4 {
   margin-top: 40px !important;
+  margin-left: 400px;
   color: black;
   font-weight: normal;
 }

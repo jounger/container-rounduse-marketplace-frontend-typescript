@@ -2,8 +2,12 @@
   <v-card outlined height="200" class="shipping-line" flat>
     <v-row justify="center" align="center">
       <p>
-        Đọc <a>điều kiện</a> để trở thành thành viên của trang Web và gia nhập
-        vào cộng đồng Logistics lớn nhất Việt Nam
+        Đọc <a>điều khoản hoạt động</a> và
+        <router-link to="/register" @click.native="scrollToTop"
+          >đăng ký ngay</router-link
+        >
+        để trở thành thành viên của trang Web và gia nhập vào cộng đồng
+        Logistics lớn nhất Việt Nam
       </p>
     </v-row>
     <v-row justify="center">
@@ -35,6 +39,9 @@ export default class ListShippingLine extends Vue {
   ];
   getPic(item: string) {
     return require("@/assets/images/" + item + ".jpg");
+  }
+  scrollToTop() {
+    window.scrollTo(0, 0);
   }
 }
 </script>
