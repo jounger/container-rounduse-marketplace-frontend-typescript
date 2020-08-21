@@ -1,30 +1,26 @@
 <template>
-  <v-card class="card" flat>
-    <v-parallax height="950" class="bidding">
-      <v-row>
-        <v-col cols="12" md="8">
-          <h1 class="font-weight-thin mb-4">
-            Đấu thầu công khai
+  <section style="height:550px">
+    <v-container>
+      <v-row justify="center" align="center" class="mt-15">
+        <v-col cols="12" md="4">
+          <h1 class="black--text display-1 ml-0 mb-5 title">
+            Đấu thầu kín - cạnh tranh công bằng
           </h1>
           <div class="line"></div>
-          <h3>
+          <h4 class="black--text subheading ml-0 ma-3">
             Quá trình ghép cặp Container và hàng được diễn ra dưới hình thức đấu
-            thầu công khai, đảm bảo sự uy tín và tin cậy, đồng thời giúp người
-            dùng có nhiều lựa chọn để phù hợp với nhu cầu của bản thân.
-          </h3>
-          <v-btn>Tìm hiểu thêm</v-btn>
+            thầu kín, đảm bảo công bằng cho các bên tham gia.
+          </h4>
+          <v-btn color="primary" to="/register" large>
+            Tìm hiểu thêm
+          </v-btn>
+        </v-col>
+        <v-col cols="12" md="8">
+          <v-img src="@/assets/images/auto2.jpg"></v-img>
         </v-col>
       </v-row>
-      <v-row>
-        <v-col cols="12" md="6">
-          <v-img src="@/assets/images/bidding.jpg"></v-img>
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-img src="@/assets/images/bidding2.jpg"></v-img>
-        </v-col>
-      </v-row>
-    </v-parallax>
-  </v-card>
+    </v-container>
+  </section>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
@@ -33,44 +29,15 @@ import { Component, Vue } from "vue-property-decorator";
 export default class Bidding extends Vue {}
 </script>
 <style scoped lang="css">
-.card {
-  margin: 0 !important;
+section {
+  background-color: #ffe6ba !important;
 }
-.bidding {
-  background-color: rgba(221, 221, 221, 0.2);
-}
-.bidding h1 {
-  margin-top: 60px;
-  margin-left: 365px;
+.title {
   font-size: 35px !important;
-  font-weight: 500 !important;
-  color: black;
+  font-weight: 300;
 }
-.bidding h3 {
-  margin-top: 40px !important;
-  margin-left: 365px;
-  font-size: 22px !important;
-  color: black;
-  font-weight: 300 !important;
-}
-.line {
-  width: 400px;
-  margin-left: 24%;
-  border-bottom: 3.5px solid #eea632;
-  position: absolute;
-}
-.bidding button {
-  margin-left: 365px !important;
-  margin-top: 30px !important;
-  background-color: #00532f !important;
-  color: white;
-}
-.bidding button:hover {
-  margin-top: 25px !important;
-}
-.bidding .v-image {
-  margin-top: -20px !important;
-  height: 360px;
-  width: 750px;
+.subheading {
+  font-size: 20px !important;
+  font-weight: 300;
 }
 </style>

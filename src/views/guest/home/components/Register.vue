@@ -1,21 +1,23 @@
 <template>
-  <v-card class="card" flat>
-    <v-parallax height="1000" class="register">
-      <v-row>
+  <section style="height:1000px">
+    <v-container>
+      <v-row justify="center" align="center" class="mt-15">
+        <v-col cols="12" md="2"></v-col>
         <v-col cols="12" md="8">
-          <h1 class="font-weight-thin mb-4">
-            Đăng ký ngay
+          <h1 class="black--text display-1 ml-0 mb-5 title">
+            Hãy đăng ký ngay
           </h1>
           <div class="line"></div>
-          <h3>
-            Hãy cùng 300+ người dùng khác trải nghiệm và nhận về những giá trị
-            tại CRuM. Miễn phí 100% quá trình đăng ký cùng rất nhiều khuyến mãi.
-          </h3>
+          <h4 class="black--text subheading ml-0 ma-3">
+            Cùng 300+ khách hàng khác đang sử dụng CRuM nâng cao hiệu suất -
+            giảm thiểu chi phí cho doanh nghiệp của bạn.
+          </h4>
         </v-col>
+        <v-col cols="12" md="2"></v-col>
       </v-row>
       <v-row justify="center">
-        <v-list class="form-list" three-line subheader outlined>
-          <v-stepper v-model="stepper" vertical>
+        <v-list three-line subheader outlined>
+          <v-stepper v-model="stepper" vertical class="elevation-0">
             <v-stepper-step
               :complete="stepper > 1"
               step="1"
@@ -283,8 +285,8 @@
           </v-stepper>
         </v-list>
       </v-row>
-    </v-parallax>
-  </v-card>
+    </v-container>
+  </section>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
@@ -331,35 +333,15 @@ export default class Register extends Vue {
 }
 </script>
 <style scoped lang="css">
-.card {
-  margin: 0 !important;
+section {
+  background-color: #cbe4d6 !important;
 }
-.register {
-  background-color: #cbe4d6;
-}
-.register h1 {
-  margin-top: 60px;
-  margin-left: 365px;
+.title {
   font-size: 35px !important;
-  font-weight: 500 !important;
-  color: black;
+  font-weight: 300;
 }
-.register h3 {
-  margin-top: 40px !important;
-  margin-left: 365px;
-  font-size: 22px !important;
-  color: black;
-  font-weight: 300 !important;
-}
-.line {
-  width: 150px;
-  margin-left: 24%;
-  border-bottom: 3.5px solid #eea632;
-  position: absolute;
-}
-.form-list {
-  width: 800px;
-  height: 660px;
-  background-color: #cbe4d6;
+.subheading {
+  font-size: 20px !important;
+  font-weight: 300;
 }
 </style>

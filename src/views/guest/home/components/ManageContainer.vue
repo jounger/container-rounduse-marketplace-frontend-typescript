@@ -1,28 +1,26 @@
 <template>
-  <v-card class="card" flat>
-    <v-parallax height="950" class="manage-cont">
-      <v-row>
-        <v-col cols="12" md="6">
-          <h1 class="font-weight-thin mb-4">
-            Quá trình khai báo Container chi tiết và dễ dàng quản lý
+  <section style="height:600px">
+    <v-container>
+      <v-row justify="center" align="center" class="mt-15">
+        <v-col cols="12" md="4">
+          <h1 class="black--text display-1 ml-0 mb-5 title">
+            Quản lý tập trung - dễ dàng
           </h1>
           <div class="line"></div>
-          <h3>
-            Với việc khai báo và quản lý chi tiết từng thành phần của Container,
-            việc quản lý Container rỗng chưa bao giờ đơn giản đến thế. Việc tận
-            dụng Container rỗng trong quá trình vận chuyển giúp chi phí vận
-            chuyển được giảm xuống, cùng với đó là mang lại giá trị cho cả hai
-            bên.
-          </h3>
-          <v-btn>Tìm hiểu thêm</v-btn>
+          <h4 class="black--text subheading ml-0 ma-3">
+            Khai báo container rỗng theo hàng nhập giúp việc quản lý tập trung,
+            việc chọn lựa đấu thầu với nhóm container chưa bao giờ dễ đến thế!
+          </h4>
+          <v-btn color="primary" to="/register" large>
+            Tìm hiểu thêm
+          </v-btn>
         </v-col>
-        <v-col cols="12" md="6">
-          <v-img src="@/assets/images/managecont.jpg"></v-img>
+        <v-col cols="12" md="8">
           <v-img src="@/assets/images/managecont2.jpg"></v-img>
         </v-col>
       </v-row>
-    </v-parallax>
-  </v-card>
+    </v-container>
+  </section>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
@@ -31,44 +29,15 @@ import { Component, Vue } from "vue-property-decorator";
 export default class ManageContainer extends Vue {}
 </script>
 <style scoped lang="css">
-.card {
-  margin: 0 !important;
+section {
+  background-color: rgba(221, 221, 221, 0.2) !important;
 }
-.manage-cont {
-  background-color: white;
-}
-.manage-cont h1 {
-  margin-top: 180px;
-  margin-left: 150px;
+.title {
   font-size: 35px !important;
-  font-weight: 500 !important;
-  color: black;
+  font-weight: 300;
 }
-.manage-cont h3 {
-  margin-top: 40px !important;
-  margin-left: 150px;
-  font-size: 22px !important;
-  color: black;
-  font-weight: 300 !important;
-}
-.line {
-  width: 250px;
-  margin-left: 10%;
-  border-bottom: 3px solid #eea632;
-  position: absolute;
-}
-.manage-cont button {
-  margin-left: 150px !important;
-  margin-top: 30px !important;
-  background-color: #00532f !important;
-  color: white;
-}
-.manage-cont button:hover {
-  margin-top: 25px !important;
-}
-.manage-cont .v-image {
-  margin-top: 30px !important;
-  margin-left: 30px !important;
-  height: 330px;
+.subheading {
+  font-size: 20px !important;
+  font-weight: 300;
 }
 </style>

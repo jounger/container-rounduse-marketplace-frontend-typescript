@@ -2,7 +2,7 @@
   <v-container fluid class="background-img">
     <v-card width="500" height="350" class="card mt-14 mx-auto">
       <v-card-title>
-        <router-link to="/homepage"
+        <router-link to="/"
           ><v-toolbar-title
             ><span class="title"
               >Container Round-use Marketplace</span

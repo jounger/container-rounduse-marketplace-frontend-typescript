@@ -1,30 +1,31 @@
 <template>
-  <v-card class="card" flat>
-    <v-parallax height="950" class="find-cont-easy">
-      <v-row>
+  <section style="height:900px">
+    <v-container>
+      <v-row justify="center" align="center" class="mt-15">
+        <v-col cols="12" md="2"></v-col>
         <v-col cols="12" md="8">
-          <h1 class="font-weight-thin mb-4">
-            Dễ dàng tìm kiếm Container phù hợp
+          <h1 class="black--text display-1 ml-0 mb-5 title">
+            Khai báo ngắn gon - hiệu quả nâng cao
           </h1>
           <div class="line"></div>
-          <h3>
-            Quá trình tìm kiếm Container phù hợp được tự động tìm kiếm trên hệ
-            thống và gửi thông báo đến cho những chủ xe sở hữu Container để đảm
-            bảo ghép cặp được Container nhanh chóng và phù hợp nhất.
-          </h3>
-          <v-btn>Tìm hiểu thêm</v-btn>
+          <h4 class="black--text subheading ml-0 ma-3">
+            Chủ hàng và chủ xe khai báo thông tin trên các hộp thoại khai báo,
+            khi mở đấu thầu, hệ thống sẽ tự động lựa chọn các hàng xuất và
+            container phù hợp để gửi thông báo.
+          </h4>
+          <v-btn color="primary" to="/register" large>
+            Tìm hiểu thêm
+          </v-btn>
         </v-col>
+        <v-col cols="12" md="2"></v-col>
       </v-row>
       <v-row>
-        <v-col cols="12" md="6">
-          <v-img src="@/assets/images/findcont.jpg"></v-img>
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-img src="@/assets/images/findcont2.jpg"></v-img>
+        <v-col cols="12" md="10">
+          <v-img src="@/assets/images/notification.png"></v-img>
         </v-col>
       </v-row>
-    </v-parallax>
-  </v-card>
+    </v-container>
+  </section>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
@@ -33,44 +34,15 @@ import { Component, Vue } from "vue-property-decorator";
 export default class FindContainer extends Vue {}
 </script>
 <style scoped lang="css">
-.card {
-  margin: 0 !important;
+section {
+  background-color: #fff !important;
 }
-.find-cont-easy {
-  background-color: #ffe6ba;
-}
-.find-cont-easy h1 {
-  margin-top: 60px;
-  margin-left: 365px;
+.title {
   font-size: 35px !important;
-  font-weight: 500 !important;
-  color: black;
+  font-weight: 300;
 }
-.find-cont-easy h3 {
-  margin-top: 40px !important;
-  margin-left: 365px;
-  font-size: 22px !important;
-  color: black;
-  font-weight: 300 !important;
-}
-.line {
-  width: 400px;
-  margin-left: 24%;
-  border-bottom: 3.5px solid #eea632;
-  position: absolute;
-}
-.find-cont-easy button {
-  margin-left: 365px !important;
-  margin-top: 30px !important;
-  background-color: #00532f !important;
-  color: white;
-}
-.find-cont-easy button:hover {
-  margin-top: 25px !important;
-}
-.find-cont-easy .v-image {
-  margin-top: -20px !important;
-  height: 370px;
-  width: 750px;
+.subheading {
+  font-size: 20px !important;
+  font-weight: 300;
 }
 </style>

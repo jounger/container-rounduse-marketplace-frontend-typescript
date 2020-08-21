@@ -19,7 +19,7 @@
 
       <v-card-text class="white--text">
         Cung cấp bởi
-        <router-link to="/homepage" @click.native="scrollToTop"
+        <router-link to="/" @click.native="scrollToTop"
           ><strong>CRuM</strong></router-link
         >
         ©{{ new Date().getFullYear() }}.Đã đăng ký bản quyền rev 21/08/2020

@@ -1,29 +1,23 @@
 <template>
-  <v-app-bar app color="white" class="elevation-0">
-    <router-link to="/homepage" class="home"
+  <v-app-bar app color="white">
+    <router-link to="/" class="home"
       ><v-toolbar-title
-        ><span class="title"
-          >Container Round-use Marketplace</span
-        ></v-toolbar-title
+        ><span class="title">CRuM</span></v-toolbar-title
       ></router-link
     >
     <v-spacer></v-spacer>
-    <v-btn
-      v-for="link in links"
-      :key="link.title"
-      :to="link.link"
-      color="black"
-      text
-      rounded
-      class="my-2"
-    >
-      <span class="btn">{{ link.title }}</span>
+    <v-btn v-for="link in links" :key="link.title" :to="link.link" text rounded
+      >{{ link.title }}
     </v-btn>
     <v-spacer></v-spacer>
-    <v-btn class="loginBtn" to="/login" @click.native="scrollToTop"
+    <v-btn depressed class="loginBtn" to="/login" @click.native="scrollToTop"
       >Đăng nhập</v-btn
     >
-    <v-btn class="logoutBtn" to="/register" @click.native="scrollToTop"
+    <v-btn
+      depressed
+      class="logoutBtn"
+      to="/register"
+      @click.native="scrollToTop"
       >Đăng ký</v-btn
     >
   </v-app-bar>
@@ -59,17 +53,11 @@ export default class Menubar extends Vue {
 .home div {
   color: #000 !important;
 }
-span.btn {
-  font-size: 13px !important;
-}
-span.btn:hover {
-  font-size: 15px !important;
-  font-weight: bold;
-}
 .loginBtn {
   background: #eea632 !important;
   color: white !important;
   margin-right: 20px;
+  transition: 0.2s;
 }
 .loginBtn:hover {
   margin-top: -5px !important;
@@ -78,6 +66,7 @@ span.btn:hover {
   background: #00532f !important;
   color: white !important;
   margin-right: 50px;
+  transition: 0.2s;
 }
 .logoutBtn:hover {
   margin-top: -5px !important;
