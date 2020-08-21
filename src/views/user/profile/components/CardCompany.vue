@@ -85,7 +85,7 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="12" md="6"
+        <v-col cols="12" md="12"
           ><v-list-item>
             <v-list-item-icon>
               <v-icon color="tertiary">description</v-icon>

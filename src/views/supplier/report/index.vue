@@ -160,11 +160,11 @@ export default class Report extends Vue {
       sortable: false,
       value: "id"
     },
-    { text: "Người gửi", value: "sender.companyName" },
-    { text: "Nguồn liên quan", value: "reportId" },
     { text: "Tiêu đề", value: "title" },
-    { text: "Nội dung", value: "detail" },
     { text: "Ngày gửi", value: "sendDate" },
+    { text: "Người gửi", value: "sender.companyName" },
+    { text: "SĐT liên hệ", value: "sender.phone" },
+    { text: "Nguồn liên quan", value: "reportId" },
     { text: "Trạng thái", value: "status" },
     { text: "Hành động", value: "actions" }
   ];

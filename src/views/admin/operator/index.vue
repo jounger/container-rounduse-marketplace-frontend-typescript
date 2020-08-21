@@ -41,6 +41,12 @@
         <template v-slot:item.status="{ item }">
           <ChipStatus :status="item.status" />
         </template>
+        <template v-slot:item.roles="{ item }">
+          <ChipStatus :status="item.roles" type="roles" />
+        </template>
+        <template v-slot:item.isRoot="{ item }">
+          {{ item.isRoot ? "Đúng" : "Không" }}
+        </template>
         <template v-slot:item.actions="{ item }">
           <v-menu :close-on-click="true">
             <template v-slot:activator="{ on, attrs }">
@@ -145,6 +151,7 @@ export default class Operator extends Vue {
       text: "Vai trò",
       value: "roles"
     },
+    { text: "Root", value: "isRoot" },
     { text: "Trạng thái", value: "status" },
     { text: "Hành động", value: "actions" }
   ];
