@@ -1,33 +1,25 @@
 <template>
-  <v-card class="card" flat>
-    <v-row justify="center">
-      <Login v-if="dialogLogin" :dialogLogin.sync="dialogLogin" />
-    </v-row>
-    <v-parallax height="600" class="introduction">
-      <v-row align="center" justify="center">
-        <v-col class="text-center" cols="12">
-          <h1 class="font-weight-thin mb-4">Giải pháp Logistic của thời đại</h1>
+  <section style="height:400px">
+    <v-container>
+      <v-row justify="center" align="center" class="mt-15">
+        <v-col cols="12" md="2"> </v-col>
+        <v-col cols="12" md="8">
+          <h1 class="black--text display-1 ml-0 mb-5 title">
+            Giải pháp Logistic thời đại 4.0
+          </h1>
           <div class="line"></div>
-          <v-row>
-            <v-col cols="12" md="9">
-              <h4>
-                CRuM là trang web đóng vai trò cầu nối giữa những Container rỗng
-                trong quá trình di chuyển và những người dùng có nhu cầu vận
-                chuyển hàng hóa nhằm mục đích tối ưu quy trình vận chuyển của
-                Container. Với sứ mệnh làm mới ngành công nghiệp Logictis, CRuM
-                cung cấp một giải pháp tối ưu cho quy trình quản lý và điều phối
-                Container, đồng thời tạo điều kiện cho quá trình xuất nhập khẩu
-                của doanh nghiệp được nhanh chóng với chi phí thấp hơn.
-              </h4>
-            </v-col>
-          </v-row>
+          <h4 class="black--text subheading ml-0 ma-3">
+            Giải pháp tối ưu vỏ container rỗng, tiết kiệm chi phí quy trình xuất
+            nhập khẩu của doanh nghiệp.
+          </h4>
+          <v-btn color="primary" to="/register" large>
+            Đăng ký ngay
+          </v-btn>
         </v-col>
-        <v-btn class="loginBtn" @click="dialogLogin = true"
-          >Đăng nhập ngay</v-btn
-        >
+        <v-col cols="12" md="2"> </v-col>
       </v-row>
-    </v-parallax>
-  </v-card>
+    </v-container>
+  </section>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
@@ -43,33 +35,15 @@ export default class Introduction extends Vue {
 }
 </script>
 <style scoped lang="css">
-.card {
-  margin: 0 !important;
+section {
+  background-color: #cbe4d6 !important;
 }
-.introduction {
-  background-color: #cbe4d6;
+.title {
+  font-size: 45px !important;
+  font-weight: 600;
 }
-.introduction h1 {
-  font-size: 50px !important;
-  font-weight: bold !important;
-  color: black;
-}
-.introduction h4 {
-  margin-top: 40px !important;
-  margin-left: 400px;
-  color: black;
-  font-weight: normal;
-}
-.line {
-  width: 550px;
-  margin-left: 31%;
-  border-bottom: 5px solid #eea632;
-  position: absolute;
-}
-.introduction .loginBtn {
-  margin-bottom: -20px !important;
-}
-.introduction .loginBtn:hover {
-  margin-bottom: -15px !important;
+.subheading {
+  font-size: 22px !important;
+  font-weight: 300;
 }
 </style>

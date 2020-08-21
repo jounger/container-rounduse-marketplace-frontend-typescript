@@ -1,6 +1,6 @@
 <template>
   <div>
-    <GuestHeader :drawer.sync="drawer" />
+    <GuestHeader />
     <v-main>
       <router-view></router-view>
     </v-main>
@@ -20,9 +20,13 @@ import GuestFooter from "@/components/GuestFooter.vue";
   }
 })
 export default class EmptyLayout extends Vue {
-  public drawer = true;
   created() {
     this.$vuetify.theme.dark = false;
   }
 }
 </script>
+<style lang="css">
+.v-application--wrap {
+  background-color: #fff;
+}
+</style>

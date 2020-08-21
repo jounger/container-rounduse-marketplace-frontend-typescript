@@ -1,14 +1,13 @@
-<template
-  ><v-container class="fill-height; card" fluid>
+<template>
+  <div>
     <Introduction />
-    <ListShippingLine />
     <ManageContainer />
     <FindContainer />
     <Bidding />
-    <Automate />
     <Feedback />
+    <ListShippingLine />
     <Register />
-  </v-container>
+  </div>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
@@ -17,7 +16,6 @@ import ListShippingLine from "./components/ListShippingLine.vue";
 import ManageContainer from "./components/ManageContainer.vue";
 import FindContainer from "./components/FindContainer.vue";
 import Bidding from "./components/Bidding.vue";
-import Automate from "./components/Automate.vue";
 import Feedback from "./components/Feedback.vue";
 import Register from "./components/Register.vue";
 
@@ -28,16 +26,18 @@ import Register from "./components/Register.vue";
     ManageContainer,
     FindContainer,
     Bidding,
-    Automate,
     Feedback,
     Register
   }
 })
 export default class HomePage extends Vue {}
 </script>
-<style scoped lang="css">
-.card {
-  padding: 0 !important;
-  margin: 0 !important;
+<style lang="css">
+.line::after {
+  content: "";
+  width: 40%;
+  height: 4px;
+  background: #eea632;
+  display: block;
 }
 </style>

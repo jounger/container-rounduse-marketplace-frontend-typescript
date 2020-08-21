@@ -1,22 +1,20 @@
 <template>
-  <v-card outlined height="200" class="shipping-line" flat>
-    <v-row justify="center" align="center">
-      <p>
-        Đọc <a>điều khoản hoạt động</a> và
-        <router-link to="/register" @click.native="scrollToTop"
-          >đăng ký ngay</router-link
-        >
-        để trở thành thành viên của trang Web và gia nhập vào cộng đồng
-        Logistics lớn nhất Việt Nam
-      </p>
-    </v-row>
-    <v-row justify="center">
-      <div v-for="pic in shippingLines" :key="pic">
-        <v-col cols="12" md="1">
-          <img width="70" :src="getPic(pic)" alt="pic"
-        /></v-col></div
-    ></v-row>
-  </v-card>
+  <section style="height:250px">
+    <v-container>
+      <v-row justify="center" align="center" class="mt-2">
+        <v-col cols="12" md="12">
+          <h4 class="black--text subheading mx-auto my-3">
+            Đồng hành cùng chúng tôi
+          </h4>
+          <v-row>
+            <v-col cols="12" md="1" v-for="pic in shippingLines" :key="pic">
+              <img width="70" :src="getPic(pic)" alt="pic" />
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+    </v-container>
+  </section>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
@@ -46,18 +44,12 @@ export default class ListShippingLine extends Vue {
 }
 </script>
 <style scoped lang="css">
-.shipping-line {
-  background-color: rgba(221, 221, 221, 0.2) !important;
+.subheading {
+  font-size: 20px !important;
+  font-weight: 300;
+  text-align: center;
 }
-.shipping-line p {
-  margin-top: 50px;
-  font-size: 14px;
-}
-.shipping-line p a {
-  color: #00532f;
-  text-decoration: none;
-}
-.shipping-line p a:hover {
-  text-decoration: underline;
+section {
+  background-color: #fff !important;
 }
 </style>

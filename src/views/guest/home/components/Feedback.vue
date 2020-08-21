@@ -1,19 +1,19 @@
 <template>
-  <v-card class="card" flat>
-    <v-parallax height="600" class="feedback">
-      <v-row>
-        <v-col cols="12" md="6">
-          <h1 class="font-weight-thin mb-4">
-            Phản hồi người dùng về CRuM
+  <section style="height:600px">
+    <v-container>
+      <v-row justify="center" align="center" class="mt-15">
+        <v-col cols="12" md="12">
+          <h1 class="black--text display-1 ml-0 mb-5 title">
+            Giá trị khi khách hàng sử dụng CRuM
           </h1>
           <div class="line"></div>
-          <h3>
+          <h4 class="black--text subheading ml-0 ma-3">
             300+ chủ xe, chủ hàng, hãng tàu sử dụng CRuM hàng ngày.
-          </h3>
+          </h4>
         </v-col>
       </v-row>
       <v-row class="feedback-row">
-        <div v-for="item in feedbacks" :key="item.title">
+        <v-col cols="12" md="3" v-for="item in feedbacks" :key="item.title">
           <v-card width="250" class="feedback-card" flat>
             <div class="card-title">
               <v-card-text>"{{ item.title }}"</v-card-text>
@@ -22,10 +22,10 @@
             <div>
               <img width="210" :src="getPic(item.img)" alt="pic" /></div
           ></v-card>
-        </div>
+        </v-col>
       </v-row>
-    </v-parallax>
-  </v-card>
+    </v-container>
+  </section>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
@@ -60,9 +60,6 @@ export default class Feedback extends Vue {
 }
 </script>
 <style scoped lang="css">
-.card {
-  margin: 0 !important;
-}
 .feedback {
   background-color: rgba(221, 221, 221, 0.2);
 }
@@ -80,25 +77,27 @@ export default class Feedback extends Vue {
   color: black;
   font-weight: 300 !important;
 }
-.line {
-  width: 250px;
-  margin-left: 10%;
-  border-bottom: 3px solid #eea632;
-  position: absolute;
-}
 .feedback img {
   margin-top: 20px !important;
   margin-left: 20px !important;
 }
 .feedback-card {
-  margin-left: 50px;
   height: 300px;
 }
 .card-title {
   font-style: italic;
   height: 160px;
 }
-.feedback-row {
-  margin-left: 100px !important;
+/* NEW */
+section {
+  background-color: rgba(221, 221, 221, 0.2) !important;
+}
+.title {
+  font-size: 35px !important;
+  font-weight: 300;
+}
+.subheading {
+  font-size: 20px !important;
+  font-weight: 300;
 }
 </style>

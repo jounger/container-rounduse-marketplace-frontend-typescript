@@ -63,15 +63,6 @@ const routes: Array<RouteConfig> = [
   // GENERAL
   {
     path: "/",
-    name: "Home",
-    meta: {
-      layout: "DefaultLayout",
-      title: "Trang chủ"
-    },
-    component: () => import("@/views/Home.vue")
-  },
-  {
-    path: "/homepage",
     name: "HomePage",
     meta: {
       layout: "EmptyLayout",
