@@ -100,7 +100,7 @@
 <script lang="ts">
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { ISupplier } from "@/entity/supplier";
-import { getSuppliers } from "@/api/supplier";
+import { getSuppliersByRole } from "@/api/supplier";
 import ReviewSupplier from "./components/ReviewSupplier.vue";
 import SupplierDetail from "./components/SupplierDetail.vue";
 import { DataOptions } from "vuetify";
@@ -166,7 +166,7 @@ export default class Supplier extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _res = await getSuppliers({
+      const _res = await getSuppliersByRole({
         page: val.page - 1,
         limit: val.itemsPerPage
       });

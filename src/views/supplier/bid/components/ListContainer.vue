@@ -4,7 +4,7 @@
       <v-card-title class="headline">Danh sách Container</v-card-title>
       <v-divider></v-divider>
       <v-card-text>
-        <v-tabs background-color="white" color="deep-purple accent-4" left>
+        <v-tabs background-color="white" color="tertiary" left>
           <v-tab>Danh sách Inbound</v-tab>
           <v-tab v-if="action == 'ADD'"
             >Danh sách Containers đã chọn ({{
@@ -41,7 +41,7 @@
                 <td
                   :colspan="headers.length"
                   class="px-0"
-                  v-if="containerList.length > 0"
+                  v-if="loading == false"
                 >
                   <v-data-table
                     :headers="containerHeaders"

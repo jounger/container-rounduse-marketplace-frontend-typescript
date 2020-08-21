@@ -17,6 +17,12 @@ export function getSuppliersByStatus(paging: PaginationRequest) {
   });
 }
 
+export function getSuppliersByRole(paging: PaginationRequest) {
+  return Vue.axios.get("/supplier/role", {
+    params: paging
+  });
+}
+
 // Use "defaults" in destructuring:
 // https://stackoverflow.com/a/26578323/10597062
 export function reviewSupplier(id: number, updates: object) {

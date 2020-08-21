@@ -39,19 +39,19 @@ export default class ChipStatus extends Vue {
     // SUCCESS
     { en: "ACCEPTED", vi: "Đã đồng ý", color: "success" },
     { en: "ACTIVE", vi: "Đang hoạt động", color: "success" },
-    { en: "COMBINED", vi: "Đã ghép", color: "success" },
-    { en: "DELIVERED", vi: "Đã giao", color: "success" },
+    { en: "COMBINED", vi: "Đã ghép hàng", color: "success" },
+    { en: "DELIVERED", vi: "Đã giao hàng", color: "success" },
     { en: "RESOLVED", vi: "Đã giải quyết", color: "success" },
     { en: "PAID", vi: "Đã thanh toán", color: "success" },
     // WARNING
     { en: "CANCELED", vi: "Đã hủy", color: "warning" },
     { en: "CANCEL", vi: "Đã hủy", color: "warning" },
     // ERROR
-    { en: "REJECTED", vi: "Từ chối", color: "error" },
-    { en: "BANNED", vi: "Cấm", color: "error" },
-    { en: "EXCEPTION", vi: "Có lỗi", color: "error" },
+    { en: "REJECTED", vi: "Đã từ chối", color: "error" },
+    { en: "BANNED", vi: "Bị cấm", color: "error" },
+    { en: "EXCEPTION", vi: "Có lỗi xảy ra", color: "error" },
     // EXPIRED
-    { en: "EXPIRED", vi: "Hết hạn", color: "expired" },
+    { en: "EXPIRED", vi: "Đã hết hạn", color: "expired" },
     { en: "CLOSED", vi: "Đã đóng", color: "expired" }
   ] as Matching[];
 

@@ -46,7 +46,7 @@ const routes: Array<RouteConfig> = [
     path: "/register",
     name: "Register",
     meta: {
-      layout: "EmptyLayout",
+      layout: "DefaultLayout",
       title: "Đăng ký"
     },
     component: () => import("@/views/auth/Register.vue")
@@ -65,7 +65,7 @@ const routes: Array<RouteConfig> = [
     path: "/",
     name: "HomePage",
     meta: {
-      layout: "EmptyLayout",
+      layout: "DefaultLayout",
       title: "Trang chủ"
     },
     component: () => import("@/views/guest/home/index.vue")
@@ -74,7 +74,7 @@ const routes: Array<RouteConfig> = [
     path: "/aboutus",
     name: "Aboutus",
     meta: {
-      layout: "EmptyLayout",
+      layout: "DefaultLayout",
       title: "Về chúng tôi"
     },
     component: () => import("@/views/guest/aboutus/index.vue")
