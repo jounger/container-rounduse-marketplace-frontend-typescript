@@ -64,7 +64,7 @@
         </template>
         <!-- Show Bids expened -->
         <template v-slot:expanded-item="{ headers }">
-          <td :colspan="headers.length" class="px-0" v-if="bids.length > 0">
+          <td :colspan="headers.length" class="px-0" v-if="loading == false">
             <v-data-table
               :headers="bidHeaders"
               :items="bids"

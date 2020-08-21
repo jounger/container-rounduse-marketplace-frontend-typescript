@@ -181,8 +181,8 @@
                   </v-list-item-icon>
                   <v-list-item-content>
                     <v-list-item-title
-                      >Tham gia: {{ serverSideOptions.totalItems }} đối
-                      tác</v-list-item-title
+                      >Tham gia: {{ serverSideOptions.totalItems }} chủ
+                      xe</v-list-item-title
                     >
                     <v-list-item-subtitle>
                       Số thầu thắng:
@@ -354,11 +354,7 @@
           </template>
 
           <template v-slot:expanded-item="{ headers }">
-            <td
-              :colspan="headers.length"
-              class="px-0"
-              v-if="containers.length > 0"
-            >
+            <td :colspan="headers.length" class="px-0" v-if="loading == false">
               <v-data-table
                 v-if="biddingDocument.isMultipleAward"
                 :headers="containerHeaders"
@@ -373,7 +369,11 @@
                 }"
                 :actions-append="containerOptions.page"
                 v-model="containerSelected"
-                :show-select="$auth.check('ROLE_MERCHANT')"
+                :show-select="
+                  $auth.check('ROLE_MERCHANT') &&
+                    bid &&
+                    ['PENDING'].includes(bid.status)
+                "
                 @item-selected="selectContainer"
                 disable-sort
                 dense

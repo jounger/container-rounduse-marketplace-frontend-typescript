@@ -183,7 +183,7 @@ import { IBiddingDocument } from "@/entity/bidding-document";
 import { IOutbound } from "@/entity/outbound";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
-import { isEmptyObject, addTimeToDate } from "@/utils/tool";
+import { isEmptyObject, addTimeToDate, addMinutesToDate } from "@/utils/tool";
 import { createBiddingDocument } from "@/api/bidding-document";
 import { getOutboundByMerchant } from "@/api/outbound";
 import { DataOptions } from "vuetify";
@@ -209,7 +209,7 @@ export default class CreateBiddingDocument extends Vue {
     outbound: -1 as number,
     isMultipleAward: false,
     bidOpening: this.dateInit,
-    bidClosing: this.dateInit,
+    bidClosing: addMinutesToDate(this.dateInit, 720),
     dateOfDecision: this.dateInit,
     currencyOfInvoice: "VND",
     bidPackagePrice: 0,

@@ -1,21 +1,23 @@
 <template>
-  <v-snackbar
-    v-model="display"
-    :top="true"
-    :left="false"
-    :bottom="false"
-    :right="true"
-    :vertical="false"
-    :multi-line="true"
-    :color="snackbarInfo.color"
-    :timeout="snackbarInfo.timeout"
-    >{{ snackbarInfo.text }}
-    <template v-slot:action="{ attrs }">
-      <v-btn dark text @click="closeSnackbar()" v-bind="attrs">
-        Close
-      </v-btn>
-    </template>
-  </v-snackbar>
+  <div @click.stop="closeSnackbar()">
+    <v-snackbar
+      v-model="display"
+      :top="true"
+      :left="false"
+      :bottom="false"
+      :right="true"
+      :vertical="false"
+      :multi-line="true"
+      :color="snackbarInfo.color"
+      :timeout="snackbarInfo.timeout"
+      >{{ snackbarInfo.text }}
+      <template v-slot:action="{ attrs }">
+        <v-btn dark text @click="closeSnackbar()" v-bind="attrs">
+          Đóng
+        </v-btn>
+      </template>
+    </v-snackbar>
+  </div>
 </template>
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";

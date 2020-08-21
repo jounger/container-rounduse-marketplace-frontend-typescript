@@ -46,11 +46,7 @@
         </template>
         <!-- EDITING -->
         <template v-slot:expanded-item="{ headers }">
-          <td
-            :colspan="headers.length"
-            class="px-0"
-            v-if="combineds.length > 0"
-          >
+          <td :colspan="headers.length" class="px-0" v-if="loading == false">
             <v-data-table
               :headers="combinedHeaders"
               :items="combineds"

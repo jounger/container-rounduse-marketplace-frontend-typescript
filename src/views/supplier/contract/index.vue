@@ -89,11 +89,7 @@
           {{ formatDatetime(item.contract.creationDate) }}
         </template>
         <template v-slot:expanded-item="{ headers }">
-          <td
-            :colspan="headers.length"
-            class="px-0"
-            v-if="contractDocuments.length > 0"
-          >
+          <td :colspan="headers.length" class="px-0" v-if="loading == false">
             <v-data-table
               :headers="contractDocumentHeaders"
               :items="contractDocuments"

@@ -54,6 +54,9 @@
                     item.outbound.containerType.name
                 }}
               </template>
+              <template v-slot:item.isMultipleAward="{ item }">
+                {{ item.isMultipleAward ? "Đúng" : "Không" }}
+              </template>
               <template v-slot:item.bidOpening="{ item }">
                 {{ formatDatetime(item.bidOpening) }}
               </template>
@@ -133,7 +136,7 @@
           >
           <!-- SELECT CONTAINER -->
           <v-stepper-content step="3">
-            <v-tabs background-color="white" color="deep-purple accent-4" left>
+            <v-tabs background-color="white" color="tertiary" left>
               <v-tab>Danh sách Inbound</v-tab>
               <v-tab
                 >Danh sách Containers đã chọn ({{
@@ -170,7 +173,7 @@
                     <td
                       :colspan="headers.length"
                       class="px-0"
-                      v-if="containers.length > 0"
+                      v-if="loading == false"
                     >
                       <v-data-table
                         :headers="containerHeaders"

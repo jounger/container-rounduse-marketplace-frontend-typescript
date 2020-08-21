@@ -38,7 +38,9 @@
                 v-model="invoiceLocal.type"
                 prepend-icon="money"
                 disabled
-                :items="types"
+                :items="invoiceTypes"
+                item-text="vi"
+                item-value="en"
                 :rules="[required('loại hóa đơn')]"
                 label="Loại hóa đơn*"
               ></v-select>
@@ -121,11 +123,14 @@ export default class UpdateInvoice extends Vue {
   invoiceLocal = null as IInvoice | null;
 
   valid = false;
-  types: Array<string> = ["FINES", "PAYMENT"];
+  invoiceTypes: Array<object> = [];
 
   created() {
     this.invoiceLocal = Object.assign({}, this.invoice);
-    this.invoiceLocal = Object.assign({}, this.invoice);
+    this.invoiceTypes = [
+      { en: "FINES", vi: "Tiền phạt hợp đồng" },
+      { en: "PAYMENT", vi: "Thanh toán phí" }
+    ];
   }
 
   async updateInvoice() {

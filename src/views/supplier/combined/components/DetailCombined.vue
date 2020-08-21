@@ -262,12 +262,12 @@
                     </v-toolbar>
                   </template>
                   <template v-slot:item.status="{ item }">
-                    <ChipStatus :status="item.status" :sub="true" />
+                    <ChipStatus :status="item.status" />
                   </template>
                   <template v-slot:item.actions="{ item }">
                     <v-btn
                       class="ma-1"
-                      x-small
+                      small
                       tile
                       outlined
                       color="info"
