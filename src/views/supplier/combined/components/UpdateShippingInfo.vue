@@ -85,9 +85,7 @@ export default class UpdateShippingInfo extends Vue {
       { en: "DELIVERED", vi: "Đã giao hàng" },
       { en: "EXCEPTION", vi: "Đã có lỗi xảy ra" }
     ];
-    if (this.shippingInfo) {
-      this.shippingInfoLocal = Object.assign({}, this.shippingInfo);
-    }
+    this.shippingInfoLocal = Object.assign({}, this.shippingInfo);
   }
 }
 </script>

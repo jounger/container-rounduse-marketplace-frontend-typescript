@@ -368,9 +368,7 @@ export default class UpdateBid extends Vue {
 
   mounted() {
     this.biddingDocuments.push(this.biddingDocument);
-    if (this.bid) {
-      this.bidLocal = Object.assign({}, this.bid);
-    }
+    this.bidLocal = Object.assign({}, this.bid);
   }
 }
 </script>
