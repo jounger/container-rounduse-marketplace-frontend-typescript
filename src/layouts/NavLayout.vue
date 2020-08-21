@@ -50,11 +50,10 @@ export default class NavLayout extends Vue {
 }
 </script>
 <style lang="css">
-.v-application--wrap {
-  background-color: #f2f4f7;
-}
+.v-application--wrap,
+.v-main__wrap,
 .container.container--fluid > div {
-  background-color: #f2f4f7;
+  background-color: #f2f4f7 !important;
 }
 .v-dialog .v-card__title,
 .container.container--fluid .v-card__title,

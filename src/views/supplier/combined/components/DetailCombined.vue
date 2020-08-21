@@ -284,7 +284,9 @@
       </v-card>
       <v-card class="order-1 flex-grow-1 mx-auto">
         <v-card-title v-if="shippingInfo">
-          Mã đơn vận chuyển: {{ "#" + shippingInfo.id }}
+          <div class="text-h4 text-no-wrap font-weight-bold">
+            Mã đơn vận chuyển: {{ "#" + shippingInfo.id }}
+          </div>
         </v-card-title>
         <v-card-subtitle class="text-h7 text-no-wrap font-weight-bold"
           >Mã hàng ghép: #{{ getRouterId }}</v-card-subtitle
