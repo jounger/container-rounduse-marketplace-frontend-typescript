@@ -86,7 +86,7 @@ const routes: Array<RouteConfig> = [
       layout: "EmptyLayout",
       title: "Về chúng tôi"
     },
-    component: () => import("@/views/guest/home/components/Aboutus.vue")
+    component: () => import("@/views/guest/aboutus/index.vue")
   },
   {
     path: "/profile",

@@ -6,8 +6,8 @@
         <router-link to="/register" @click.native="scrollToTop"
           >đăng ký ngay</router-link
         >
-        để trở thành thành viên của trang Web và gia nhập vào cộng đồng
-        Logistics lớn nhất Việt Nam
+        để trở thành thành viên và gia nhập vào cộng đồng Logistics lớn nhất
+        Việt Nam
       </p>
     </v-row>
     <v-row justify="center">

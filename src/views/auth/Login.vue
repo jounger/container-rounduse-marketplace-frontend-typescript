@@ -95,7 +95,7 @@ export default class Login extends Vue {
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-  height: 175%;
+  height: 185%;
   width: 200%;
 }
 .title {

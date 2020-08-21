@@ -25,7 +25,7 @@
         ©{{ new Date().getFullYear() }}.Đã đăng ký bản quyền rev 21/08/2020
         9:38:35 AM
       </v-card-text>
-      <v-row justify="center">
+      <v-row justify="center" class="function-link">
         <div v-for="(item, index) in links" :key="index">
           <span v-if="index != 0">| </span>
           <router-link :to="item.to">{{ item.title }}</router-link>
@@ -60,5 +60,8 @@ export default class Footer extends Vue {
   font-size: 16px;
   color: #037243;
   font-weight: bold;
+}
+.function-link {
+  margin-bottom: 20px !important;
 }
 </style>

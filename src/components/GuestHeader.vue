@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar app color="white" flat>
+  <v-app-bar app color="white" class="elevation-0">
     <router-link to="/homepage" class="home"
       ><v-toolbar-title
         ><span class="title"
@@ -42,10 +42,10 @@ export default class Menubar extends Vue {
   ];
   links = [
     { title: "Trang chủ", link: "/homepage" },
-    { title: "Về chúng tôi", scroll: "mission" },
-    { title: "Điều khoản", scroll: "/rule" },
-    { title: "Hỗ trợ", scroll: "/help" },
-    { title: "Liên lạc", scroll: "/contact" }
+    { title: "Về chúng tôi", link: "/aboutus" },
+    { title: "Điều khoản", link: "/termofuse" },
+    { title: "Hỗ trợ", link: "/help" },
+    { title: "Liên lạc", link: "/contact" }
   ];
   scrollToTop() {
     window.scrollTo(0, 0);
