@@ -96,7 +96,7 @@ export default class Value extends Vue {}
 </script>
 <style scoped lang="css">
 .value {
-  background-color: rgba(0, 0, 0, 0);
+  background-color: #f4f4f4;
   height: 400px !important;
 }
 .value h1 {

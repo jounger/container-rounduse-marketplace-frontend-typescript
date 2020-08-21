@@ -12,7 +12,7 @@
             Giải pháp tối ưu vỏ container rỗng, tiết kiệm chi phí quy trình xuất
             nhập khẩu của doanh nghiệp.
           </h4>
-          <v-btn color="primary" to="/register" large>
+          <v-btn to="/register" large>
             Đăng ký ngay
           </v-btn>
         </v-col>
@@ -45,5 +45,10 @@ section {
 .subheading {
   font-size: 22px !important;
   font-weight: 300;
+}
+.v-btn {
+  margin-top: 20px;
+  background-color: #eea632 !important;
+  color: white;
 }
 </style>

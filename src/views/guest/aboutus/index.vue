@@ -21,7 +21,7 @@ import Team from "./components/Team.vue";
     Team
   }
 })
-export default class HomePage extends Vue {}
+export default class About extends Vue {}
 </script>
 <style scoped lang="css">
 .card {

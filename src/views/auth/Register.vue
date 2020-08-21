@@ -4,7 +4,7 @@
       <!-- TITLE -->
       <v-col class="md-6">
         <v-card-title>Đăng ký tài khoản</v-card-title>
-        <div class="line"></div>
+        <div class="register-line"></div>
         <p>
           <strong>Đăng ký tài khoản</strong> để trở thành một Thành viên của
           trang web.
@@ -283,6 +283,8 @@
               <v-btn
                 v-for="icon in socialNetworks"
                 :key="icon.icon"
+                :href="icon.to"
+                target="_blank"
                 class="mx-4"
                 icon
               >
@@ -328,10 +330,10 @@ import { ISupplier } from "@/entity/supplier";
 })
 export default class Register extends Vue {
   socialNetworks = [
-    { icon: "mdi-facebook", color: "blue" },
-    { icon: "mdi-twitter", color: "blue" },
-    { icon: "mdi-linkedin", color: "blue" },
-    { icon: "mdi-instagram", color: "pink" }
+    { icon: "mdi-facebook", color: "blue", to: "https://facebook.com" },
+    { icon: "mdi-twitter", color: "blue", to: "https://twitter.com/" },
+    { icon: "mdi-linkedin", color: "blue", to: "https://www.linkedin.com/" },
+    { icon: "mdi-instagram", color: "pink", to: "https://www.instagram.com/" }
   ];
   contacts = [
     {
@@ -432,7 +434,7 @@ export default class Register extends Vue {
   margin-top: 10px;
   margin-left: 25px;
 }
-.line {
+.register-line {
   width: 200px;
   margin-left: 6%;
   border-bottom: 5px solid #eea632;

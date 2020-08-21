@@ -33,11 +33,14 @@ import Register from "./components/Register.vue";
 export default class HomePage extends Vue {}
 </script>
 <style lang="css">
-.line::after {
+.line {
   content: "";
   width: 40%;
   height: 4px;
   background: #eea632;
   display: block;
+}
+.v-btn:hover {
+  font-weight: bold;
 }
 </style>

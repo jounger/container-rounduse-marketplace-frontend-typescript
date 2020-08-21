@@ -1,5 +1,5 @@
 <template>
-  <section height="1260" class="card">
+  <section height="1260">
     <v-parallax height="400" src="@/assets/images/aboutus.jpg"> </v-parallax
     ><v-row class="about-us">
       <v-col cols="12" md="6">
@@ -65,7 +65,7 @@ import { Component, Vue } from "vue-property-decorator";
 export default class Aboutus extends Vue {}
 </script>
 <style scoped land="css">
-.card {
+.section {
   background-color: white !important;
 }
 .about-us .v-card {

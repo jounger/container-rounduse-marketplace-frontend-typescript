@@ -8,8 +8,15 @@
       width="1550"
     >
       <v-card-text>
-        <v-btn v-for="icon in icons" :key="icon" class="mx-4 white--text" icon>
-          <v-icon size="24px">{{ icon }}</v-icon>
+        <v-btn
+          v-for="icon in icons"
+          :key="icon.icon"
+          :href="icon.to"
+          target="_blank"
+          class="mx-4 white--text"
+          icon
+        >
+          <v-icon size="24px">{{ icon.icon }}</v-icon>
         </v-btn>
       </v-card-text>
 
@@ -28,7 +35,9 @@
       <v-row justify="center" class="function-link">
         <div v-for="(item, index) in links" :key="index">
           <span v-if="index != 0">| </span>
-          <router-link :to="item.to">{{ item.title }}</router-link>
+          <router-link :to="item.to" @click.native="scrollToTop">{{
+            item.title
+          }}</router-link>
         </div>
       </v-row>
     </v-card>
@@ -38,11 +47,16 @@
 import { Component, Vue } from "vue-property-decorator";
 @Component
 export default class Footer extends Vue {
-  icons = ["mdi-facebook", "mdi-twitter", "mdi-linkedin", "mdi-instagram"];
+  icons = [
+    { icon: "mdi-facebook", to: "https://facebook.com" },
+    { icon: "mdi-twitter", to: "https://twitter.com/" },
+    { icon: "mdi-linkedin", to: "https://www.linkedin.com/" },
+    { icon: "mdi-instagram", to: "https://www.instagram.com/" }
+  ];
   links = [
     { title: "Điều khoản sử dụng", to: "/termofuse" },
     { title: "Hỗ trợ", to: "/help" },
-    { title: "Liên lạc", to: "/contact" },
+    { title: "Liên hệ", to: "/contactus" },
     { title: "Về chúng tôi", to: "/aboutus" }
   ];
   scrollToTop() {

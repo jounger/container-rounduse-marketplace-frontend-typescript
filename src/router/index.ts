@@ -80,6 +80,24 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/guest/aboutus/index.vue")
   },
   {
+    path: "/contactus",
+    name: "Contactus",
+    meta: {
+      layout: "EmptyLayout",
+      title: "Liên hệ"
+    },
+    component: () => import("@/views/guest/contactus/index.vue")
+  },
+  {
+    path: "/termofuse",
+    name: "Termofuse",
+    meta: {
+      layout: "EmptyLayout",
+      title: "Điều khoản sử dụng"
+    },
+    component: () => import("@/views/guest/termofuse/index.vue")
+  },
+  {
     path: "/profile",
     name: "Profile",
     component: () => import("@/views/user/profile/index.vue"),

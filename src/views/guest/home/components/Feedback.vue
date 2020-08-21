@@ -77,12 +77,12 @@ export default class Feedback extends Vue {
   color: black;
   font-weight: 300 !important;
 }
-.feedback img {
+.feedback-card img {
   margin-top: 20px !important;
   margin-left: 20px !important;
 }
 .feedback-card {
-  height: 300px;
+  height: 270px;
 }
 .card-title {
   font-style: italic;
