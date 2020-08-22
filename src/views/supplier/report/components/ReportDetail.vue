@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
-    <v-row justify="center">
-      <v-card class="mx-12 my-5" width="800" v-if="report">
+    <div>
+      <v-card class="mx-auto" width="800" v-if="report">
         <v-row>
           <v-col cols="12" md="11">
             <v-list-item two-line>
@@ -99,21 +99,28 @@
           </v-list-item-content>
         </v-list-item>
         <v-divider></v-divider>
-        <div
-          class="text-center"
-          v-if="options.page < serverSideOptions.totalPages"
-        >
-          <v-btn
-            class="ma-2"
-            :loading="loading"
-            :disabled="loading"
-            @click.stop="seeMore()"
-            outlined
-            color="tertiary"
-            small
-            >Xem thêm...</v-btn
-          >
-        </div>
+        <v-row>
+          <v-col cols="12" md="4">
+            <h5 class="ml-5">Phản hồi:</h5>
+          </v-col>
+          <v-col cols="12" md="8">
+            <div
+              class="text-center"
+              v-if="options.page < serverSideOptions.totalPages"
+            >
+              <v-btn
+                class="ma-2"
+                :loading="loading"
+                :disabled="loading"
+                @click.stop="seeMore()"
+                outlined
+                color="tertiary"
+                small
+                >Xem thêm...</v-btn
+              >
+            </div>
+          </v-col>
+        </v-row>
         <v-list dense>
           <v-list-item
             three-line
@@ -229,8 +236,9 @@
                 :counter="255"
                 :rules="[minLength('feedback', 2), maxLength('feedback', 255)]"
               ></v-textarea>
-            </v-form> </v-col></v-row></v-card
-    ></v-row>
+            </v-form> </v-col></v-row
+      ></v-card>
+    </div>
     <v-row justify="center">
       <ChangeStatusReport
         v-if="dialogConfirm"
