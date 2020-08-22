@@ -13,8 +13,14 @@ export function getBiddingNotifications(paging: PaginationRequest) {
   });
 }
 
-export function getShippingLineNotifications(paging: PaginationRequest) {
+export function getShippingNotifications(paging: PaginationRequest) {
   return Vue.axios.get(`/shipping-notification/`, {
+    params: paging
+  });
+}
+
+export function getCombinedNotifications(paging: PaginationRequest) {
+  return Vue.axios.get(`/combined-notification/`, {
     params: paging
   });
 }

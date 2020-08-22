@@ -61,7 +61,7 @@ import Utils from "@/mixin/utils";
 import { DataOptions } from "vuetify";
 import { getShippingInfosByCombined } from "@/api/shipping-info";
 import { IShippingLineNotification } from "@/entity/notification";
-import { getShippingLineNotifications } from "@/api/notification";
+import { getCombinedNotifications } from "@/api/notification";
 import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
@@ -168,7 +168,7 @@ export default class BorrowNotify extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _res = await getShippingLineNotifications({
+      const _res = await getCombinedNotifications({
         page: val.page - 1,
         limit: val.itemsPerPage
       });
