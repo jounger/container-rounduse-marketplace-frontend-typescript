@@ -48,6 +48,14 @@
               </v-btn>
             </template>
             <v-list dense>
+              <v-list-item @click="openDetailDialog(item)">
+                <v-list-item-icon>
+                  <v-icon small>remove_red_eye</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Xem chi tiết</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
               <v-list-item @click="openCreateBidDialog(item)">
                 <v-list-item-icon>
                   <v-icon small>find_in_page</v-icon>
@@ -163,6 +171,11 @@
         :containers.sync="containers"
         :totalItems.sync="containerServerSideOptions.totalItems"
       />
+      <DetailInbound
+        v-if="dialogDetail"
+        :dialogDetail.sync="dialogDetail"
+        :inbound="inbound"
+      />
     </v-row>
   </v-container>
 </template>
@@ -181,6 +194,7 @@ import CreateContainer from "./components/CreateContainer.vue";
 import { DataOptions } from "vuetify";
 import ChipStatus from "@/components/ChipStatus.vue";
 import CreateBid from "../../supplier/bid/components/CreateBid.vue";
+import DetailInbound from "./components/DetailInbound.vue";
 
 @Component({
   mixins: [Utils],
@@ -188,6 +202,7 @@ import CreateBid from "../../supplier/bid/components/CreateBid.vue";
     CreateInbound,
     UpdateInbound,
     DeleteInbound,
+    DetailInbound,
     DeleteContainer,
     CreateContainer,
     ChipStatus,
@@ -205,6 +220,7 @@ export default class Inbound extends Vue {
   dialogAdd = false;
   dialogEdit = false;
   dialogDel = false;
+  dialogDetail = false;
   expanded: Array<IInbound> = [];
   singleExpand = true;
   search = "";
@@ -274,6 +290,11 @@ export default class Inbound extends Vue {
     { text: "Trạng thái", value: "status", class: "tertiary" },
     { text: "Hành động", value: "actions", class: "tertiary" }
   ];
+
+  openDetailDialog(item: IInbound) {
+    this.inbound = item;
+    this.dialogDetail = true;
+  }
 
   openCreateBidDialog(item: IInbound) {
     this.inbound = item;

@@ -44,17 +44,6 @@
               </v-btn>
             </template>
             <v-list dense>
-              <v-list-item
-                @click.stop="openEditDialog(item)"
-                v-if="item.status == 'BIDDING'"
-              >
-                <v-list-item-icon>
-                  <v-icon small>edit</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>Chỉnh sửa</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
               <v-list-item @click.stop="openDetailDialog(item)">
                 <v-list-item-icon>
                   <v-icon small>remove_red_eye</v-icon>
@@ -64,8 +53,19 @@
                 </v-list-item-content>
               </v-list-item>
               <v-list-item
+                @click.stop="openEditDialog(item)"
+                v-if="['BIDDING', 'EXPIRED', 'CANCELED'].includes(item.status)"
+              >
+                <v-list-item-icon>
+                  <v-icon small>edit</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Chỉnh sửa</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item
                 @click.stop="openCancelDialog(item)"
-                v-if="item.status == 'BIDDING'"
+                v-if="['BIDDING'].includes(item.status)"
               >
                 <v-list-item-icon>
                   <v-icon small>cancel_presentation</v-icon>
@@ -76,7 +76,7 @@
               </v-list-item>
               <v-list-item
                 @click.stop="openDeleteDialog(item)"
-                v-if="item.status != 'COMBINED'"
+                v-if="['CANCELED'].includes(item.status)"
               >
                 <v-list-item-icon>
                   <v-icon small>delete</v-icon>

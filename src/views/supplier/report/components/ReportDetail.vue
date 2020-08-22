@@ -42,14 +42,14 @@
                     <v-icon small>remove_red_eye</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
-                    <v-list-item-title>Xem HSMT</v-list-item-title>
+                    <v-list-item-title>Xem chi tiết HSMT</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item
                   @click="openConfirmDialog('REJECTED')"
                   v-if="
                     $auth.check('ROLE_MODERATOR') &&
-                      ['PENDING', 'UPDATED'].includes(report.status)
+                      ['PENDING'].includes(report.status)
                   "
                 >
                   <v-list-item-icon>
@@ -62,7 +62,8 @@
                 <v-list-item
                   @click="openConfirmDialog('CLOSED')"
                   v-if="
-                    $auth.check('ROLE_MODERATOR') && report.status == 'RESOLVED'
+                    $auth.check('ROLE_MODERATOR') &&
+                      ['RESOLVED'].includes(report.status)
                   "
                 >
                   <v-list-item-icon>

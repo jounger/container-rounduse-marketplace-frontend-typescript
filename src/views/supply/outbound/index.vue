@@ -55,6 +55,14 @@
               </v-btn>
             </template>
             <v-list dense>
+              <v-list-item @click="openDetailDialog(item)">
+                <v-list-item-icon>
+                  <v-icon small>remove_red_eye</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Xem chi tiết</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
               <v-list-item
                 @click="openCreateBiddingDocument(item)"
                 v-if="['CREATED'].includes(item.status)"
@@ -116,6 +124,11 @@
         :outbounds.sync="outbounds"
         :totalItems.sync="serverSideOptions.totalItems"
       />
+      <DetailOutbound
+        v-if="dialogDetail"
+        :dialogDetail.sync="dialogDetail"
+        :outbound="outbound"
+      />
     </v-row>
   </v-container>
 </template>
@@ -130,6 +143,7 @@ import Utils from "@/mixin/utils";
 import CreateBiddingDocument from "../../supplier/bidding-document/components/CreateBiddingDocument.vue";
 import { DataOptions } from "vuetify";
 import ChipStatus from "@/components/ChipStatus.vue";
+import DetailOutbound from "./components/DetailOutbound.vue";
 
 @Component({
   mixins: [Utils],
@@ -137,6 +151,7 @@ import ChipStatus from "@/components/ChipStatus.vue";
     CreateOutbound,
     UpdateOutbound,
     DeleteOutbound,
+    DetailOutbound,
     CreateBiddingDocument,
     ChipStatus
   }
@@ -147,6 +162,7 @@ export default class Outbound extends Vue {
   dialogAdd = false;
   dialogEdit = false;
   dialogDel = false;
+  dialogDetail = false;
   dialogCreateBiddingDocument = false;
   loading = false;
   options = {
@@ -179,6 +195,11 @@ export default class Outbound extends Vue {
       value: "actions"
     }
   ];
+
+  openDetailDialog(item: IOutbound) {
+    this.outbound = item;
+    this.dialogDetail = true;
+  }
 
   openUpdateDialog(item: IOutbound) {
     this.outbound = item;

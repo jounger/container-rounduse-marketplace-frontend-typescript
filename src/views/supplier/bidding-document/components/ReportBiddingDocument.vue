@@ -23,7 +23,7 @@
                   "Giá gói thầu: " +
                     currencyFormatter(
                       biddingDocument.bidPackagePrice,
-                      biddingDocument.currencyOfInvoice
+                      biddingDocument.currencyOfPayment
                     )
                 }}</v-list-item-title>
                 <v-list-item-subtitle>
@@ -31,7 +31,7 @@
                     "Giá sàn: " +
                       currencyFormatter(
                         biddingDocument.bidFloorPrice,
-                        biddingDocument.currencyOfInvoice
+                        biddingDocument.currencyOfPayment
                       )
                   }}
                 </v-list-item-subtitle>

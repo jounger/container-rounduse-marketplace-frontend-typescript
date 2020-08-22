@@ -12,7 +12,7 @@
         <v-btn icon dark @click="dialogEditSync = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title>Cập nhật</v-toolbar-title>
+        <v-toolbar-title>Chỉnh sửa Hồ sơ mời thầu</v-toolbar-title>
       </v-toolbar>
       <!-- START CONTENT -->
       <v-list three-line subheader>
@@ -43,6 +43,9 @@
               </template>
               <template v-slot:item.cutOffTime="{ item }">
                 {{ formatDatetime(item.booking.cutOffTime) }}
+              </template>
+              <template v-slot:item.status="{ item }">
+                <ChipStatus :status="item.status" />
               </template>
               <template v-slot:item.grossWeight="{ item }">
                 {{ item.grossWeight + "" + item.unitOfMeasurement }}
@@ -96,7 +99,7 @@
                     :hint="
                       currencyFormatter(
                         biddingDocumentLocal.bidPackagePrice,
-                        biddingDocumentLocal.currencyOfInvoice
+                        biddingDocumentLocal.currencyOfPayment
                       )
                     "
                     prepend-icon="money"
@@ -113,7 +116,7 @@
                     :hint="
                       currencyFormatter(
                         biddingDocumentLocal.bidFloorPrice,
-                        biddingDocumentLocal.currencyOfInvoice
+                        biddingDocumentLocal.currencyOfPayment
                       )
                     "
                     prepend-icon="local_atm"
@@ -131,9 +134,9 @@
                 ></v-col>
                 <v-col cols="12" md="2">
                   <v-select
-                    v-model="biddingDocumentLocal.currencyOfInvoice"
+                    v-model="biddingDocumentLocal.currencyOfPayment"
                     prepend-icon="strikethrough_s"
-                    :items="currencyOfInvoices"
+                    :items="currenciesOfPayment"
                     :rules="[required('currency')]"
                     label="Loại tiền tệ"
                   ></v-select>
@@ -168,11 +171,13 @@ import { editBiddingDocument } from "@/api/bidding-document";
 import { IOutbound } from "@/entity/outbound";
 import { addTimeToDate } from "@/utils/tool";
 import DatetimePicker from "@/components/DatetimePicker.vue";
+import ChipStatus from "@/components/ChipStatus.vue";
 
 @Component({
   mixins: [FormValidate, Utils],
   components: {
-    DatetimePicker
+    DatetimePicker,
+    ChipStatus
   }
 })
 export default class UpdateBiddingDocument extends Vue {
@@ -189,7 +194,7 @@ export default class UpdateBiddingDocument extends Vue {
     bidOpening: this.dateInit,
     bidClosing: this.dateInit,
     dateOfDecision: this.dateInit,
-    currencyOfInvoice: "VND",
+    currencyOfPayment: "VND",
     bidPackagePrice: 0,
     bidFloorPrice: 0,
     priceLeadership: 0,
@@ -202,7 +207,7 @@ export default class UpdateBiddingDocument extends Vue {
   stepper = 1;
   valid = true;
   // API list
-  currencyOfInvoices: Array<string> = [];
+  currenciesOfPayment: Array<string> = [];
   unitOfMeasurements: Array<string> = [];
   outbound = [] as Array<IOutbound>;
   // Outbound form
@@ -215,14 +220,14 @@ export default class UpdateBiddingDocument extends Vue {
     },
     { text: "Booking No.", value: "booking.number" },
     { text: "Hãng tàu", value: "shippingLine.companyName" },
-    { text: "Trạng thái", value: "status" },
-    { text: "Thời gian đóng hàng", value: "packingTime" },
-    { text: "Thời gian tàu chạy", value: "cutOffTime" },
-    { text: "Nơi đóng hàng", value: "packingStation" },
-    { text: "Cảng đóng hàng", value: "booking.portOfLoading.fullname" },
-    { text: "Khối lượng hàng", value: "grossWeight" },
     { text: "Số cont", value: "unit" },
-    { text: "FCL", value: "fcl" }
+    { text: "Khối lượng hàng", value: "grossWeight" },
+    { text: "Thời gian đóng hàng", value: "packingTime" },
+    { text: "Nơi đóng hàng", value: "packingStation" },
+    { text: "Thời gian Cut-off", value: "cutOffTime" },
+    { text: "Cảng đóng hàng", value: "booking.portOfLoading.fullname" },
+    { text: "FCL", value: "fcl" },
+    { text: "Trạng thái", value: "status" }
   ];
 
   created() {
@@ -253,7 +258,7 @@ export default class UpdateBiddingDocument extends Vue {
   }
 
   mounted() {
-    this.currencyOfInvoices = ["VND", "USD"];
+    this.currenciesOfPayment = ["VND", "USD"];
     this.unitOfMeasurements = ["KG"];
   }
 }
