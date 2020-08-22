@@ -108,7 +108,7 @@ export default class NavigationOperator extends Vue {
     },
     { title: "Quản lý Mã giảm giá", icon: "loyalty", link: "/discount" },
     {
-      title: "Quản lý Report",
+      title: "Quản lý Báo cáo",
       icon: "report_problem",
       link: "/report"
     }

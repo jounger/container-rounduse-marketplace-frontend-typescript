@@ -103,7 +103,7 @@ export default class NavigationSupplier extends Vue {
         { title: "Quản lý HSDT", icon: "business_center", link: "/bid" },
         { title: "Quản lý Hợp đồng", icon: "folder", link: "/contract" },
         { title: "Quản lý Hóa đơn", icon: "store", link: "/invoice" },
-        { title: "Quản lý Report", icon: "report_problem", link: "/report" }
+        { title: "Quản lý Báo cáo", icon: "report_problem", link: "/report" }
       ]
     },
     {

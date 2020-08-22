@@ -1,12 +1,12 @@
 <template>
   <v-dialog v-model="dialogDelSync" max-width="400px">
     <v-card>
-      <v-card-title class="headline">Xóa Report</v-card-title>
+      <v-card-title class="headline">Xóa Báo cáo</v-card-title>
 
       <v-card-text>
         <v-form>
           <v-container>
-            <span>Bạn có chắc chắn muốn xóa Report này?</span>
+            <span>Bạn có chắc chắn muốn xóa Báo cáo này?</span>
             <v-divider class="mt-3"></v-divider>
             <v-list>
               <v-list-item>

@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialogConfirmSync" max-width="400">
     <v-card>
-      <v-card-title class="headline">Thay đổi trạng thái Report</v-card-title>
+      <v-card-title class="headline">Thay đổi trạng thái Báo cáo</v-card-title>
 
       <v-card-text>
         <v-form>
@@ -11,7 +11,7 @@
               {{
                 status == "RESOLVED" || status == "CLOSED" ? "đóng" : "từ chối"
               }}
-              Report này?</span
+              Báo cáo này?</span
             >
             <v-divider class="mt-3"></v-divider>
             <v-list>

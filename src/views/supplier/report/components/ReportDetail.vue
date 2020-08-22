@@ -36,7 +36,7 @@
                   <v-icon>mdi-dots-vertical</v-icon>
                 </v-btn>
               </template>
-              <v-list dense :offset-y="true">
+              <v-list dense offset-y>
                 <v-list-item @click="openBiddingDocumentDetail">
                   <v-list-item-icon>
                     <v-icon small>remove_red_eye</v-icon>

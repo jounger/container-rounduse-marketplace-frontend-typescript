@@ -45,10 +45,7 @@
           {{ item.booking.unit + " x " + item.containerType.name }}
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-menu
-            :close-on-click="true"
-            :disabled="['COMBINED', 'DELIVERED'].includes(item.status)"
-          >
+          <v-menu :close-on-click="true">
             <template v-slot:activator="{ on, attrs }">
               <v-btn color="primary" icon outlined v-bind="attrs" v-on="on">
                 <v-icon>mdi-dots-vertical</v-icon>

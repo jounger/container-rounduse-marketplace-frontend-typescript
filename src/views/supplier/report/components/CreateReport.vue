@@ -12,7 +12,7 @@
         <v-btn icon dark @click="dialogAddSync = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title>Thêm mới Report</v-toolbar-title>
+        <v-toolbar-title>Thêm mới Báo cáo</v-toolbar-title>
       </v-toolbar>
       <!-- START CONTENT -->
       <v-list three-line subheader>
@@ -72,7 +72,7 @@
             >
           </v-stepper-content>
           <v-stepper-step :complete="stepper > 2" step="2" :editable="editable">
-            Thông tin Report
+            Thông tin Báo cáo
             <small>Thông tin chung</small>
           </v-stepper-step>
           <v-stepper-content step="2">

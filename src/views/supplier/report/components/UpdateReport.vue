@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialogEditSync" max-width="600">
     <v-card>
-      <v-card-title class="headline">Cập nhật Report</v-card-title>
+      <v-card-title class="headline">Cập nhật Báo cáo</v-card-title>
       <v-divider></v-divider>
       <v-card-text>
         <v-form v-model="valid" validation>
@@ -14,8 +14,8 @@
                 type="text"
                 :counter="100"
                 :rules="[
-                  minLength('Tiêu đề Report', 5),
-                  maxLength('Tiêu đề Report', 100)
+                  minLength('Tiêu đề Báo cáo', 5),
+                  maxLength('Tiêu đề Báo cáo', 100)
                 ]"
                 v-model="reportLocal.title"
               ></v-text-field>
@@ -31,8 +31,8 @@
                 type="text"
                 :counter="200"
                 :rules="[
-                  minLength('Nội dung Report', 5),
-                  maxLength('Nội dung Report', 200)
+                  minLength('Nội dung Báo cáo', 5),
+                  maxLength('Nội dung Báo cáo', 200)
                 ]"
                 v-model="reportLocal.detail"
               ></v-textarea>

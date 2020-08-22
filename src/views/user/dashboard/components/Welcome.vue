@@ -7,8 +7,8 @@
             Chào mừng
             {{
               $auth.user().status == "ACTIVE"
-                ? "trở lại "
-                : "tham gia với chúng tôi "
+                ? "trở lại"
+                : "tham gia với chúng tôi"
             }},
             <router-link to="/profile"
               ><span class="username">{{
@@ -34,15 +34,18 @@
               $auth.user().status == 'ACTIVE' && $auth.check('ROLE_MERCHANT')
             "
           >
-            <h4 class="subheading">Xem ngay danh sách Hồ sơ mời thầu</h4>
-            <v-btn class="mt-5" color="secondary" to="/bidding-document"
+            <h4 class="subheading">
+              Khai báo hàng xuất và mở đấu thầu ngay để tiếp cận với nhiều chủ
+              xe đang có vỏ rỗng.
+            </h4>
+            <v-btn class="mt-5" color="secondary" to="/outbound"
               >Xem ngay</v-btn
             >
           </div>
           <div
             v-if="$auth.user().status == 'ACTIVE' && $auth.check('ROLE_ADMIN')"
           >
-            <h4 class="subheading">Xem ngay danh sách Quản trị viên</h4>
+            <h4 class="subheading">Xem danh sách Quản trị viên</h4>
             <v-btn class="mt-5" color="secondary" to="/operator"
               >Xem ngay</v-btn
             >
@@ -62,8 +65,11 @@
               $auth.user().status == 'ACTIVE' && $auth.check('ROLE_FORWARDER')
             "
           >
-            <h4 class="subheading">Xem ngay danh sách Hồ sơ dự thầu</h4>
-            <v-btn class="mt-5" color="secondary" to="/bid">Xem ngay</v-btn>
+            <h4 class="subheading">
+              Khai báo các container rỗng của bạn và tìm kiếm các chủ hàng đang
+              cần chở hàng.
+            </h4>
+            <v-btn class="mt-5" color="secondary" to="/inbound">Xem ngay</v-btn>
           </div>
           <div
             v-if="
@@ -72,7 +78,7 @@
             "
           >
             <h4 class="subheading">
-              Xem ngay danh sách Thông báo mượn Container
+              Kiểm tra các bên mượn vỏ container của bạn
             </h4>
             <v-btn class="mt-5" color="secondary" to="/borrow-notify"
               >Xem ngay</v-btn
@@ -82,7 +88,7 @@
             v-if="$auth.user().status == 'ACTIVE' && $auth.check('ROLE_DRIVER')"
           >
             <h4 class="subheading">
-              Xem ngay danh sách Hàng đang vận chuyển
+              Xem ngay danh sách yêu cầu vận chuyển
             </h4>
             <v-btn class="mt-5" color="secondary" to="/shipping"
               >Xem ngay</v-btn
