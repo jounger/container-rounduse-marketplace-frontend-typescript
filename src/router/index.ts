@@ -71,7 +71,7 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/guest/home/index.vue")
   },
   {
-    path: "/aboutus",
+    path: "/about-us",
     name: "Aboutus",
     meta: {
       layout: "DefaultLayout",
@@ -80,19 +80,19 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/guest/aboutus/index.vue")
   },
   {
-    path: "/contactus",
+    path: "/contact-us",
     name: "Contactus",
     meta: {
-      layout: "EmptyLayout",
+      layout: "DefaultLayout",
       title: "Liên hệ"
     },
     component: () => import("@/views/guest/contactus/index.vue")
   },
   {
-    path: "/termofuse",
+    path: "/term-of-use",
     name: "Termofuse",
     meta: {
-      layout: "EmptyLayout",
+      layout: "DefaultLayout",
       title: "Điều khoản sử dụng"
     },
     component: () => import("@/views/guest/termofuse/index.vue")

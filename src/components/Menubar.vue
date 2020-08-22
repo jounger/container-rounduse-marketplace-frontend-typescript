@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar app clipped-left>
+  <v-app-bar app clipped-left class="elevation-1">
     <router-link to="/" class="home"
       ><v-toolbar-title
         >Container Round-use Marketplace</v-toolbar-title

@@ -3,7 +3,7 @@
     <v-row justify="center">
       <h1>ĐỘI NGŨ CỦA CHÚNG TÔI</h1>
     </v-row>
-    <v-row justify="center" class="list">
+    <v-row justify="center" class="ml-12">
       <div v-for="item in team" :key="item.name">
         <v-col class="person">
           <v-avatar class="profile" color="grey" size="150">
@@ -53,8 +53,5 @@ export default class Team extends Vue {
 }
 .person {
   width: 250px !important;
-}
-.list {
-  margin-left: 40px !important;
 }
 </style>

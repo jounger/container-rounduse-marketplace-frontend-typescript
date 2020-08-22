@@ -11,7 +11,7 @@
             Quá trình ghép cặp Container và hàng được diễn ra dưới hình thức đấu
             thầu kín, đảm bảo công bằng cho các bên tham gia.
           </h4>
-          <v-btn color="primary" to="/register" large>
+          <v-btn color="primary" to="/term-of-use" large>
             Tìm hiểu thêm
           </v-btn>
         </v-col>

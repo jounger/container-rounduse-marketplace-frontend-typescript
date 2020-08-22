@@ -13,7 +13,7 @@
             khi mở đấu thầu, hệ thống sẽ tự động lựa chọn các hàng xuất và
             container phù hợp để gửi thông báo.
           </h4>
-          <v-btn color="primary" to="/register" large>
+          <v-btn color="primary" to="/term-of-use" large>
             Tìm hiểu thêm
           </v-btn>
         </v-col>

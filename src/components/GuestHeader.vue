@@ -5,9 +5,10 @@
         ><span class="title">CRuM</span></v-toolbar-title
       ></router-link
     >
+    <Login v-if="dialogLogin" :dialogLogin.sync="dialogLogin" />
     <v-spacer></v-spacer>
     <v-btn
-      class="head-link"
+      class="head-link mr-2"
       v-for="link in links"
       :key="link.title"
       :to="link.link"
@@ -15,7 +16,6 @@
       rounded
       >{{ link.title }}
     </v-btn>
-    <v-spacer></v-spacer>
     <v-menu bottom offset-y>
       <template v-slot:activator="{ on, attrs }" v-if="$auth.user()">
         <v-btn text v-bind="attrs" v-on="on" color="rgba(0,0,0,0)">
@@ -72,8 +72,7 @@
       v-if="!$auth.user()"
       depressed
       class="loginBtn"
-      to="/login"
-      @click.native="scrollToTop"
+      @click="dialogLogin = true"
       >Đăng nhập</v-btn
     >
     <v-btn
@@ -88,14 +87,19 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-@Component
+import Login from "../views/guest/home/components/Login.vue";
+@Component({
+  components: {
+    Login
+  }
+})
 export default class Menubar extends Vue {
+  dialogLogin = false;
   links = [
     { title: "Trang chủ", link: "/" },
-    { title: "Về chúng tôi", link: "/aboutus" },
-    { title: "Điều khoản", link: "/termofuse" },
-    { title: "Hỗ trợ", link: "/help" },
-    { title: "Liên hệ", link: "/contactus" }
+    { title: "Về chúng tôi", link: "/about-us" },
+    { title: "Điều khoản", link: "/term-of-use" },
+    { title: "Liên hệ", link: "/contact-us" }
   ];
   menu = [
     { title: "Dashboard", icon: "dashboard", link: "/dashboard", auth: true },

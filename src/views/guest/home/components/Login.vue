@@ -39,7 +39,7 @@
         <v-btn
           class="login"
           @click.stop="login()"
-          color="success"
+          color="primary"
           :disabled="!valid"
           >Đăng nhập</v-btn
         >

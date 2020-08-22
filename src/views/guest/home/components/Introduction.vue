@@ -23,16 +23,9 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import Login from "./Login.vue";
 
-@Component({
-  components: {
-    Login
-  }
-})
-export default class Introduction extends Vue {
-  dialogLogin = false;
-}
+@Component
+export default class Introduction extends Vue {}
 </script>
 <style scoped lang="css">
 section {

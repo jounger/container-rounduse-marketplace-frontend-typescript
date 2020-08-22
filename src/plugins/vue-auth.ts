@@ -16,7 +16,7 @@ const options = {
   loginData: {
     url: "/auth/signin",
     method: "POST",
-    redirect: "/",
+    redirect: "/dashboard",
     headerToken: "Authorization",
     fetchUser: true,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

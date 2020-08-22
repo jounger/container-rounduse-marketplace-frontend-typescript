@@ -39,6 +39,23 @@
       </v-list-item>
     </v-list>
     <v-divider></v-divider>
+    <v-list dense>
+      <v-list-item
+        v-for="item in getHeaderNavigation"
+        :key="item.title"
+        :to="item.link"
+        link
+        color="primary"
+      >
+        <v-list-item-icon>
+          <v-icon color="primary">{{ item.icon }}</v-icon>
+        </v-list-item-icon>
+
+        <v-list-item-content>
+          <v-list-item-title class="ml-6">{{ item.title }}</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+    </v-list>
     <component :is="navigation"> </component>
     <v-list dense>
       <v-list-item
@@ -53,7 +70,7 @@
         </v-list-item-icon>
 
         <v-list-item-content>
-          <v-list-item-title>{{ item.title }}</v-list-item-title>
+          <v-list-item-title class="ml-6">{{ item.title }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
     </v-list>
@@ -123,6 +140,9 @@ export default class Navigation extends Vue {
   protected generalNavigation = [
     { title: "Trang cá nhân", icon: "account_circle", link: "/profile" }
   ];
+  protected headerNavigation = [
+    { title: "Bảng điều khiển", icon: "dashboard", link: "/dashboard" }
+  ];
 
   get getUserRole() {
     const _role = this.roleMatching.filter(
@@ -135,6 +155,13 @@ export default class Navigation extends Vue {
   get getNavigation() {
     if (this.$auth.user()) {
       return this.generalNavigation;
+    } else {
+      return this.$router.push("/");
+    }
+  }
+  get getHeaderNavigation() {
+    if (this.$auth.user()) {
+      return this.headerNavigation;
     } else {
       return this.$router.push("/");
     }

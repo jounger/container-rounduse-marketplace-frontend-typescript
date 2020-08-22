@@ -68,7 +68,6 @@ import { Component, Vue } from "vue-property-decorator";
 })
 export default class NavigationOperator extends Vue {
   private adminNavigation = [
-    { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
     {
       title: "Quản lý Quản trị viên",
       icon: "verified_user",
@@ -86,7 +85,6 @@ export default class NavigationOperator extends Vue {
     }
   ];
   private moderatorNavigation = [
-    { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
     {
       title: "Quản lý Đơn đăng ký",
       icon: "account_balance",

@@ -2,18 +2,16 @@
   <section style="height:700px">
     <v-container>
       <v-row justify="center" align="center" class="mt-15">
-        <v-col cols="12" md="2"></v-col>
-        <v-col cols="12" md="8">
-          <h1 class="black--text display-1 ml-0 mb-5 title">
-            Liên hệ ngay
-          </h1>
-          <div class="line"></div>
-          <h4 class="black--text subheading ml-0 ma-3">
-            Để nhận được tư vấn từ những tư vấn cần thiết cho nhu cầu của bạn.
-          </h4>
-        </v-col>
-        <v-col cols="12" md="2"></v-col>
+        <h1 class="black--text display-1 ml-0 mb-5 title">
+          Liên hệ ngay
+        </h1>
       </v-row>
+      <v-row justify="center" align="center"> <div class="line"></div></v-row>
+      <v-row justify="center" align="center">
+        <h4 class="black--text subheading ml-0 ma-3">
+          Để nhận được tư vấn từ những tư vấn cần thiết cho nhu cầu của bạn.
+        </h4></v-row
+      >
       <v-row justify="center">
         <v-btn
           v-for="icon in socialNetworks"
@@ -66,12 +64,12 @@ export default class Contactus extends Vue {
     {
       icon: "call",
       color: "green",
-      title: "0359049292"
+      title: "035.904.9292"
     },
     {
       icon: "email",
       color: "blue",
-      title: "support@crum.vn"
+      title: "support@containerrounduse.com"
     },
     {
       icon: "contacts",
@@ -101,12 +99,9 @@ section {
 }
 .line {
   content: "";
-  width: 40%;
+  width: 15%;
   height: 4px;
   background: #eea632;
   display: block;
-}
-.icon:hover {
-  font-weight: bold;
 }
 </style>

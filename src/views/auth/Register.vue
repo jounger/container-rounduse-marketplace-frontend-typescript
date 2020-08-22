@@ -113,7 +113,9 @@
                     ></v-text-field>
                   </v-col>
                 </v-row>
-                <v-btn @click="stepper = 2" :disabled="!valid">Tiếp tục</v-btn>
+                <v-btn @click="stepper = 2" :disabled="!valid" color="primary"
+                  >Tiếp tục</v-btn
+                >
               </v-form>
             </v-stepper-content>
 
@@ -248,7 +250,9 @@
                   </v-col>
                 </v-row>
 
-                <v-btn @click="stepper = 3" :disabled="!valid2">Tiếp tục</v-btn>
+                <v-btn @click="stepper = 3" :disabled="!valid2" color="primary"
+                  >Tiếp tục</v-btn
+                >
                 <v-btn text @click="stepper = 1">Quay lại</v-btn>
               </v-form>
             </v-stepper-content>
@@ -266,7 +270,9 @@
                   v-model="checkbox"
                   label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
                 ></v-checkbox>
-                <v-btn @click="submit()" :disabled="!checkbox">Hoàn tất</v-btn>
+                <v-btn @click="submit()" :disabled="!checkbox" color="primary"
+                  >Hoàn tất</v-btn
+                >
                 <v-btn text @click="stepper = 2">Quay lại</v-btn>
               </v-form>
             </v-stepper-content>
@@ -344,12 +350,12 @@ export default class Register extends Vue {
     {
       icon: "call",
       color: "green",
-      title: "0359049292"
+      title: "035.904.9292"
     },
     {
       icon: "email",
       color: "blue",
-      title: "support@crum.vn"
+      title: "support@containerrounduse.com"
     },
     {
       icon: "contacts",
@@ -439,9 +445,5 @@ export default class Register extends Vue {
   margin-left: 6%;
   border-bottom: 5px solid #eea632;
   position: absolute;
-}
-.form-list button {
-  background-color: #037243 !important;
-  color: white;
 }
 </style>

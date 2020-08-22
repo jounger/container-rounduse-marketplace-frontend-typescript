@@ -68,7 +68,6 @@ import { Component, Vue } from "vue-property-decorator";
 })
 export default class NavigationSupplier extends Vue {
   private merchantNavigation = [
-    { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
     { title: "Quản lý Hàng xuất", icon: "flight_takeoff", link: "/outbound" },
     { title: "Quản lý Hàng ghép", icon: "table_chart", link: "/combined" },
     {
@@ -88,7 +87,6 @@ export default class NavigationSupplier extends Vue {
     }
   ];
   private forwarderNavigation = [
-    { title: "Dashboard", icon: "dashboard", link: "/dashboard" },
     { title: "Quản lý Hàng nhập", icon: "flight_land", link: "/inbound" },
     { title: "Quản lý Hàng ghép", icon: "table_chart", link: "/combined" },
     {
@@ -143,7 +141,7 @@ export default class NavigationSupplier extends Vue {
   ];
 
   private supplierRegisterNavigation = [
-    { title: "Đơn đăng ký", icon: "dashboard", link: "/application" }
+    { title: "Đơn đăng ký", icon: "assignment", link: "/application" }
   ];
 
   get getNavigation() {

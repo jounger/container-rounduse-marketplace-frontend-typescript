@@ -35,7 +35,7 @@
       <v-row justify="center" class="function-link">
         <div v-for="(item, index) in links" :key="index">
           <span v-if="index != 0">| </span>
-          <router-link :to="item.to" @click.native="scrollToTop">{{
+          <router-link :to="item.to" @click.native="scrollToTop" class="mr-1">{{
             item.title
           }}</router-link>
         </div>
@@ -54,10 +54,9 @@ export default class Footer extends Vue {
     { icon: "mdi-instagram", to: "https://www.instagram.com/" }
   ];
   links = [
-    { title: "Điều khoản sử dụng", to: "/termofuse" },
-    { title: "Hỗ trợ", to: "/help" },
-    { title: "Liên hệ", to: "/contactus" },
-    { title: "Về chúng tôi", to: "/aboutus" }
+    { title: "Điều khoản sử dụng", to: "/term-of-use" },
+    { title: "Liên hệ", to: "/contact-us" },
+    { title: "Về chúng tôi", to: "/about-us" }
   ];
   scrollToTop() {
     window.scrollTo(0, 0);

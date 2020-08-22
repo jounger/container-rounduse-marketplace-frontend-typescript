@@ -11,7 +11,7 @@
             Khai báo container rỗng theo hàng nhập giúp việc quản lý tập trung,
             việc chọn lựa đấu thầu với nhóm container chưa bao giờ dễ đến thế!
           </h4>
-          <v-btn color="primary" to="/register" large>
+          <v-btn color="primary" to="/term-of-use" large>
             Tìm hiểu thêm
           </v-btn>
         </v-col>
