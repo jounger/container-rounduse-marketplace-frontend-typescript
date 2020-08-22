@@ -278,7 +278,7 @@ import { createBid } from "@/api/bid";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { addTimeToDate, addMinutesToDate } from "@/utils/tool";
 import { getBiddingNotifications } from "@/api/notification";
-import { IBiddingNotification } from "@/entity/bidding-notification";
+import { IBiddingNotification } from "@/entity/notification";
 import { IOutbound } from "@/entity/outbound";
 import { getContainersByInbound } from "@/api/container";
 import { DataOptions } from "vuetify";

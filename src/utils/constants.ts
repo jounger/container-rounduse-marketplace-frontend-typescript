@@ -9,8 +9,8 @@ export const INTL_TIME_OPTION = {
 };
 
 export const NOTIFICATION_LINK = {
-  BIDDING: "/queue/bidding-notification",
-  DRIVER: "/queue/driver-notification",
   REPORT: "/queue/report-notification",
-  SHIPPING_LINE: "/queue/shipping-line-notification"
+  BIDDING: "/queue/bidding-notification",
+  COMBINED: "/queue/combined-notification",
+  SHIPPING: "/queue/shipping-notification"
 };

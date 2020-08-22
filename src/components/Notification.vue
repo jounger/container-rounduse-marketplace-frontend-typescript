@@ -11,7 +11,7 @@
         <v-badge
           :value="messageCount"
           :content="messageCount"
-          color="warning"
+          color="red"
           overlap
         >
           <v-icon dark>
@@ -116,7 +116,8 @@ import {
   getBiddingNotification,
   getNotifications,
   getReportNotification,
-  editNotification
+  editNotification,
+  getCombinedNotification
 } from "@/api/notification";
 import { INotification, IBiddingNotification } from "@/entity/notification";
 import Utils from "@/mixin/utils";
@@ -158,11 +159,21 @@ export default class Notification extends Vue {
           ROUTER = "/contract";
         } else ROUTER = `/bidding-document/${_res.data.relatedResource.id}`;
       }
+    } else if (item.type == "COMBINED") {
+      const _res = await getCombinedNotification(item.id as number);
+      if (_res.data) {
+        const _combinedNotification = _res.data as IBiddingNotification;
+        if (_combinedNotification.action.includes("CONTRACT")) {
+          ROUTER = "/contract";
+        } else if (_combinedNotification.action.includes("INVOICE")) {
+          ROUTER = "/invoice";
+        } else ROUTER = "/borrow-notify";
+      }
     } else if (item.type == "REPORT") {
       const _res = await getReportNotification(item.id as number);
       if (_res.data) ROUTER = `/report/${_res.data.relatedResource.id}`;
-    } else if (item.type == "SHIPPINGLINE") {
-      ROUTER = "/borrow-notify";
+    } else if (item.type == "SHIPPING") {
+      ROUTER = "#";
     }
     if (location.pathname == ROUTER) {
       location.reload();
@@ -276,15 +287,22 @@ export default class Notification extends Vue {
     // CONNECT WEBSOCKET
     if (this.$auth.check("ROLE_MODERATOR")) {
       this.notificationSubscribe.push(NOTIFICATION_LINK.REPORT);
-    } else if (this.$auth.check(["ROLE_FORWARDER", "ROLE_MERCHANT"])) {
+    } else if (this.$auth.check("ROLE_MERCHANT")) {
       this.notificationSubscribe.push(
         NOTIFICATION_LINK.BIDDING,
+        NOTIFICATION_LINK.COMBINED,
+        NOTIFICATION_LINK.SHIPPING
+      );
+    } else if (this.$auth.check("ROLE_FORWARDER")) {
+      this.notificationSubscribe.push(
+        NOTIFICATION_LINK.BIDDING,
+        NOTIFICATION_LINK.COMBINED,
         NOTIFICATION_LINK.REPORT
       );
     } else if (this.$auth.check("ROLE_SHIPPINGLINE")) {
-      this.notificationSubscribe.push(NOTIFICATION_LINK.SHIPPING_LINE);
+      this.notificationSubscribe.push(NOTIFICATION_LINK.COMBINED);
     } else if (this.$auth.check("ROLE_DRIVER")) {
-      this.notificationSubscribe.push(NOTIFICATION_LINK.DRIVER);
+      this.notificationSubscribe.push(NOTIFICATION_LINK.SHIPPING);
     } else {
       console.log("You're not in subscribe list!");
     }

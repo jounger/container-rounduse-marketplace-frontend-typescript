@@ -145,7 +145,7 @@ import Utils from "@/mixin/utils";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { isEmptyObject } from "@/utils/tool";
 import { IReport } from "@/entity/report";
-import { IBiddingNotification } from "@/entity/bidding-notification";
+import { IBiddingNotification } from "@/entity/notification";
 import { getBiddingNotifications } from "@/api/notification";
 import { createReport } from "@/api/report";
 import { DataOptions } from "vuetify";

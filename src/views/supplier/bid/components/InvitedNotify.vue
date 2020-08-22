@@ -106,7 +106,7 @@
 import { Component, Watch, Vue } from "vue-property-decorator";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import CreateBid from "./CreateBid.vue";
-import { IBiddingNotification } from "@/entity/bidding-notification";
+import { IBiddingNotification } from "@/entity/notification";
 import { getBiddingNotifications } from "@/api/notification";
 import Utils from "@/mixin/utils";
 import { DataOptions } from "vuetify";

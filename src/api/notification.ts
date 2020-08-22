@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { PaginationRequest } from "../entity/payload";
+import { PaginationRequest } from "@/entity/payload";
 
 export function getNotifications(paging: PaginationRequest) {
   return Vue.axios.get("/notification/user", {
@@ -14,7 +14,7 @@ export function getBiddingNotifications(paging: PaginationRequest) {
 }
 
 export function getShippingLineNotifications(paging: PaginationRequest) {
-  return Vue.axios.get(`/shipping-line-notification/`, {
+  return Vue.axios.get(`/shipping-notification/`, {
     params: paging
   });
 }
@@ -28,12 +28,12 @@ export function getReportNotification(id: number) {
   return Vue.axios.get(`/report-notification/${id}`);
 }
 
-export function getDriverNotification(id: number) {
-  return Vue.axios.get(`/driver-notification/${id}`);
+export function getCombinedNotification(id: number) {
+  return Vue.axios.get(`/combined-notification/${id}`);
 }
 
-export function getShippingLineNotification(id: number) {
-  return Vue.axios.get(`/shipping-line-notification/${id}`);
+export function getShippingNotification(id: number) {
+  return Vue.axios.get(`/shipping-notification/${id}`);
 }
 
 // Edit notification

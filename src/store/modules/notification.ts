@@ -1,15 +1,15 @@
 import Vue from "vue";
 import { Module, VuexModule, Mutation, Action } from "vuex-module-decorators";
-import { IBiddingNotification } from "@/entity/bidding-notification";
+import { INotification } from "@/entity/notification";
 import { PaginationRequest } from "@/entity/payload";
 import store from "../index";
 
 @Module({ dynamic: true, store: store, name: "notification" })
 export default class NotificationModule extends VuexModule {
-  notifications: Array<IBiddingNotification> = [];
+  notifications: Array<INotification> = [];
 
   @Mutation
-  setNotification(notifications: Array<IBiddingNotification>) {
+  setNotification(notifications: Array<INotification>) {
     this.notifications = notifications;
   }
 
