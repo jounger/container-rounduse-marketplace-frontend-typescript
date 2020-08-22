@@ -408,6 +408,17 @@ const routes: Array<RouteConfig> = [
       title: "Danh sách yêu cầu mượn vỏ container"
     }
   },
+  //driver
+  {
+    path: "/delivery-history",
+    name: "DeliveryHistory",
+    component: () => import("@/views/driver/delivery-history/index.vue"),
+    meta: {
+      auth: ["ROLE_DRIVER"],
+      layout: "NavLayout",
+      title: "Lịch sử giao hàng"
+    }
+  },
 
   // 404 page must be placed at the end !!!
   { path: "*", redirect: "/404" }

@@ -2,14 +2,15 @@
   <v-container fluid class="background-img">
     <v-card width="500" height="350" class="card mt-14 mx-auto">
       <v-card-title>
-        <router-link to="/"
-          ><v-toolbar-title
-            ><span class="title"
-              >Container Round-use Marketplace</span
-            ></v-toolbar-title
-          ></router-link
-        ><v-divider vertical class="mx-2"></v-divider>
-        <span class="btn-login">Đăng nhập</span>
+        <v-row>
+          <v-col cols="12" md="3"></v-col>
+          <router-link to="/"
+            ><v-toolbar-title
+              ><span class="title">CRuM</span></v-toolbar-title
+            ></router-link
+          ><v-divider vertical class="mx-2"></v-divider>
+          <span class="btn-login">Đăng nhập</span></v-row
+        >
       </v-card-title>
       <v-divider light></v-divider>
       <v-card-text>
@@ -100,7 +101,7 @@ export default class Login extends Vue {
 }
 .title {
   color: #037243;
-  margin-left: 10px;
+  font-size: 40px !important;
 }
 .card {
   border-radius: 10px;
@@ -116,6 +117,6 @@ export default class Login extends Vue {
 }
 .btn-login {
   color: black;
-  font-weight: normal;
+  font-weight: 200 !important;
 }
 </style>

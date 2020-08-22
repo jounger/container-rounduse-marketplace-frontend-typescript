@@ -11,11 +11,8 @@ export function getShippingInfo(id: number) {
   return Vue.axios.get(`/shipping-info/${id}`);
 }
 
-export function getShippingInfosByDriver(
-  id: number,
-  paging: PaginationRequest
-) {
-  return Vue.axios.get(`/shipping-info/driver/${id}`, {
+export function getShippingInfosByDriver(paging: PaginationRequest) {
+  return Vue.axios.get("/shipping-info/driver/", {
     params: paging
   });
 }
