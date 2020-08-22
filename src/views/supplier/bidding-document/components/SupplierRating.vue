@@ -10,7 +10,9 @@
       size="14"
     ></v-rating>
 
-    <div class="grey--text ml-4">{{ supplier.ratingValue }} (413)</div>
+    <div class="grey--text ml-4">
+      {{ supplier.ratingValue }} ({{ supplier.ratingCount || 0 }})
+    </div>
   </v-row>
 </template>
 <script lang="ts">

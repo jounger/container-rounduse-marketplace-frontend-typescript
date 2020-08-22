@@ -8,12 +8,17 @@ export default class GoogleMapMixins extends Vue {
     return list.filter(x => x && x.length >= 5);
   }
 
-  getMarkerFromPlace(place: google.maps.places.PlaceResult, adress: string) {
+  getMarkerFromPlace(
+    place: google.maps.places.PlaceResult,
+    adress: string,
+    icon?: string
+  ) {
     if (place && typeof place.geometry !== "undefined") {
       return {
         position: place.geometry.location,
         title: adress,
-        visible: true
+        visible: true,
+        icon: icon
       } as google.maps.MarkerOptions;
     }
     return undefined;

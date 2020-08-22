@@ -12,9 +12,9 @@
         <h2>Ý tưởng đầu tiên</h2>
         <h4>
           Đầu tháng 05 năm 2020, anh Nguyễn Văn An nảy ra một ý tưởng về một hệ
-          thống kết nối Container với các Chủ hàng với mục tiêu là tận dụng
-          Container rỗng trong quá trình di chuyển. Anh cùng nhóm đồ án đã đặt
-          viên gạch đầu tiên xây dựng hệ thống vào ngày 18/05/2020.
+          thống kết nối Container với các Chủ hàng với mục tiêu là tận dụng vỏ
+          container rỗng trong quá trình di chuyển. Anh cùng nhóm đồ án đã đặt
+          viên gạch đầu tiên xây dựng CRuM vào ngày 18/05/2020.
         </h4>
         <v-card height="200" width="160">
           <v-img src="@/assets/images/story01.jpg"></v-img>
@@ -26,11 +26,11 @@
       <v-col cols="12" md="4">
         <span>06/2020</span>
         <p></p>
-        <h2>Học ngôn ngữ mới</h2>
+        <h2>Nghiên cứu tài liệu</h2>
         <h4>
           Ngay lập tức, An cùng cả nhóm đồ án triển khai và phân tích ý tưởng,
-          từ đó vẽ ra các ngôn ngữ mới cần học. Cả nhóm cùng nhau miệt mài học
-          tập trong suốt một tháng. 06/2020, cả nhóm bắt đầu chính thức viết
+          từ đó tìm ra các công việc cần làm. Cả nhóm cùng nhau miệt mài tìm
+          hiểu trong suốt một tháng. 06/2020, cả nhóm bắt đầu chính thức viết
           những dòng code đầu tiên của hệ thống.
         </h4>
         <v-card height="200" width="263">
@@ -65,7 +65,7 @@
           Sau suốt thời gian ròng rã cố gắng cùng sản phẩm, An cùng cả nhóm đã
           đứng trước hội đồng và bảo vệ thành công đồ án của mình. Cả nhóm vượt
           qua kỳ đồ án, ra trường với niềm vui và sự tự tin cùng sản phẩm của
-          bản thân, nghĩ đến một tương lai tươi đẹp.
+          mình, hướng đến một tương lai tươi đẹp.
         </h4>
         <v-card height="200" width="263">
           <v-img src="@/assets/images/story04.jpg"></v-img

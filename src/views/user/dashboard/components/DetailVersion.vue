@@ -21,7 +21,7 @@
               - Tự sinh hợp đồng cho Hàng ghép. Xác thực hợp đồng từ 2 phía.
             </p>
             <p>- Xem chi tiết vị trí và trạng thái của đơn hàng.</p>
-            <p>- Quản lý bảo mật bằng mã QR.</p>
+            <p>- Quản lý trạng thái đơn vận chuyển bằng mã QR.</p>
           </h4>
         </v-col>
       </v-row>

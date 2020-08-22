@@ -2,8 +2,9 @@
   <v-dialog v-model="dialogRatingSync" width="400">
     <v-card>
       <v-card-title class="headline">
-        Đánh giá feedback
+        Đánh giá phản hồi
       </v-card-title>
+      <v-divider></v-divider>
       <v-card-text>
         <div class="text-center mt-12">
           <v-rating
@@ -16,7 +17,7 @@
         </div>
       </v-card-text>
       <v-card-actions class="justify-space-between">
-        <v-btn @click="dialogRatingSync = false">Trở về</v-btn>
+        <v-btn @click="resetRating">Trở về</v-btn>
         <v-btn
           @click="ratingFeedback()"
           color="primary"
@@ -28,7 +29,7 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync, Prop } from "vue-property-decorator";
+import { Component, Vue, PropSync } from "vue-property-decorator";
 import { IFeedback } from "@/entity/feedback";
 import { editFeedback } from "@/api/feedback";
 
@@ -36,12 +37,18 @@ import { editFeedback } from "@/api/feedback";
 export default class RatingFeedback extends Vue {
   @PropSync("dialogRating", { type: Boolean }) dialogRatingSync!: boolean;
   @PropSync("feedbacks", { type: Array }) feedbacksSync!: Array<IFeedback>;
-  @Prop(Object) feedback!: IFeedback;
+  @PropSync("feedback", { type: Object }) feedbackSync!: IFeedback;
 
   feedbackLocal = null as IFeedback | null;
 
   created() {
-    this.feedbackLocal = Object.assign({}, this.feedback);
+    this.feedbackLocal = Object.assign({}, this.feedbackSync);
+    console.log(this.feedbackLocal);
+  }
+
+  resetRating() {
+    this.dialogRatingSync = false;
+    this.feedbackSync.satisfactionPoints = 0;
   }
 
   async ratingFeedback() {
@@ -56,6 +63,10 @@ export default class RatingFeedback extends Vue {
         this.dialogRatingSync = false;
       }
     }
+  }
+
+  beforeDestroy() {
+    this.feedbackSync.satisfactionPoints = 0;
   }
 }
 </script>

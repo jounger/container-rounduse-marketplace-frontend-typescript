@@ -9,4 +9,5 @@ export interface ISupplier extends IUser {
   tin: string;
   fax: string;
   ratingValue?: number;
+  ratingCount?: number;
 }

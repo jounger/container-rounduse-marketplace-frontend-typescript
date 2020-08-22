@@ -50,7 +50,7 @@
             <v-list dense>
               <v-list-item @click="openCreateBidDialog(item)">
                 <v-list-item-icon>
-                  <v-icon small>add</v-icon>
+                  <v-icon small>find_in_page</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>Tìm thầu</v-list-item-title>
@@ -74,7 +74,7 @@
               </v-list-item>
               <v-list-item @click="openCreateContainer(item)">
                 <v-list-item-icon>
-                  <v-icon small>add</v-icon>
+                  <v-icon small>local_shipping</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>Khai báo container</v-list-item-title>

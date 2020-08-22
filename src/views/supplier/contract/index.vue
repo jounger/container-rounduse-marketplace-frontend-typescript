@@ -76,6 +76,14 @@
                   <v-list-item-title>Tải lên hợp đồng</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
+              <v-list-item @click="openCreateRating(item)">
+                <v-list-item-icon>
+                  <v-icon small>stars</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Đánh giá nhà cung cấp</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
             </v-list>
           </v-menu>
         </template>
@@ -167,6 +175,11 @@
         :merchant="merchant"
         :totalItems.sync="serverSideOptions.totalItems"
       />
+      <RatingContract
+        v-if="dialogRating"
+        :dialogRating.sync="dialogRating"
+        :combined="combined"
+      />
     </v-row>
   </v-container>
 </template>
@@ -184,6 +197,7 @@ import CreateInvoice from "../invoice/components/CreateInvoice.vue";
 import CreateContractDocument from "../combined/components/CreateContractDocument.vue";
 import Utils from "@/mixin/utils";
 import ChipStatus from "@/components/ChipStatus.vue";
+import RatingContract from "./components/RatingContract.vue";
 
 @Component({
   mixins: [Utils],
@@ -192,7 +206,8 @@ import ChipStatus from "@/components/ChipStatus.vue";
     UpdateContract,
     CreateInvoice,
     CreateContractDocument,
-    ChipStatus
+    ChipStatus,
+    RatingContract
   }
 })
 export default class Contract extends Vue {
@@ -203,6 +218,7 @@ export default class Contract extends Vue {
   dialogAdd = false;
   dialogAddInvoice = false;
   dialogAddContractDocument = false;
+  dialogRating = false;
   loading = true;
   update = false;
   readonly = false;
@@ -300,6 +316,11 @@ export default class Contract extends Vue {
     this.merchant = this.merchants[index];
     this.readonly = true;
     this.dialogAdd = true;
+  }
+
+  openCreateRating(item: ICombined) {
+    this.combined = item;
+    this.dialogRating = true;
   }
 
   @Watch("options", { immediate: true })

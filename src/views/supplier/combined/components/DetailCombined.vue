@@ -32,6 +32,32 @@
                       :map="map"
                     >
                     </GoogleMapDirection>
+                    <GoogleMapMarker
+                      v-if="shippingInfo.container.driver.location"
+                      :visible="false"
+                      :marker="
+                        getMarkerFromPlace(
+                          {
+                            geometry: {
+                              location: {
+                                lat: parseFloat(
+                                  shippingInfo.container.driver.location
+                                    .latitude
+                                ),
+                                lng: parseFloat(
+                                  shippingInfo.container.driver.location
+                                    .longitude
+                                )
+                              }
+                            }
+                          },
+                          shippingInfo.container.number,
+                          '/local_shipping.png'
+                        )
+                      "
+                      :google="google"
+                      :map="map"
+                    />
                   </template>
                 </GoogleMapLoader>
                 <v-card-title
@@ -430,20 +456,23 @@ import { getCombined } from "@/api/combined";
 import { IPort } from "@/entity/port";
 import GoogleMapLoader from "@/components/googlemaps/GoogleMapLoader.vue";
 import GoogleMapDirection from "@/components/googlemaps/GoogleMapDirection.vue";
+import GoogleMapMarker from "@/components/googlemaps/GoogleMapMarker.vue";
 import { IBiddingDocument } from "@/entity/bidding-document";
 import { getBiddingDocumentByCombined } from "@/api/bidding-document";
 import { google } from "google-maps";
 import ChipStatus from "@/components/ChipStatus.vue";
 import UpdateShippingInfo from "./UpdateShippingInfo.vue";
+import GoogleMapMixins from "@/components/googlemaps/map-mixins";
 
 @Component({
-  mixins: [FormValidate, Utils],
+  mixins: [FormValidate, Utils, GoogleMapMixins],
   components: {
     CreateContractDocument,
     DetailContractDocument,
     SupplierRating,
     GoogleMapLoader,
     GoogleMapDirection,
+    GoogleMapMarker,
     UpdateShippingInfo,
     ChipStatus
   }
@@ -576,7 +605,7 @@ export default class DetailCombined extends Vue {
     }
   }
 
-  @Watch("shippingInfoOptions", { immediate: true })
+  @Watch("shippingInfoOptions")
   async onShippingInfoOptionsChange(val: DataOptions) {
     if (typeof val !== "undefined") {
       this.loading = true;
@@ -640,7 +669,7 @@ export default class DetailCombined extends Vue {
 
   @Watch("contractDocumentOptions", { immediate: true })
   async onContractDocumentOptionsChange(val: DataOptions) {
-    if (typeof val != "undefined" && this.contract) {
+    if (typeof val != "undefined" && this.contract && this.contract.required) {
       this.loading = true;
       const _res = await getContractDocumentsByContract(
         this.contract.id as number,

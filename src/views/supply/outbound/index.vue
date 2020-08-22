@@ -45,14 +45,20 @@
           {{ item.booking.unit + " x " + item.containerType.name }}
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-menu :close-on-click="true">
+          <v-menu
+            :close-on-click="true"
+            :disabled="['COMBINED', 'DELIVERED'].includes(item.status)"
+          >
             <template v-slot:activator="{ on, attrs }">
               <v-btn color="primary" icon outlined v-bind="attrs" v-on="on">
                 <v-icon>mdi-dots-vertical</v-icon>
               </v-btn>
             </template>
-            <v-list dense v-if="item.status == 'CREATED'">
-              <v-list-item @click="openCreateBiddingDocument(item)">
+            <v-list dense>
+              <v-list-item
+                @click="openCreateBiddingDocument(item)"
+                v-if="['CREATED'].includes(item.status)"
+              >
                 <v-list-item-icon>
                   <v-icon small>add</v-icon>
                 </v-list-item-icon>
@@ -60,7 +66,10 @@
                   <v-list-item-title>Mở đấu thầu</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item @click="openUpdateDialog(item)">
+              <v-list-item
+                @click="openUpdateDialog(item)"
+                v-if="['CREATED', 'BIDDING'].includes(item.status)"
+              >
                 <v-list-item-icon>
                   <v-icon small>edit</v-icon>
                 </v-list-item-icon>
@@ -68,7 +77,10 @@
                   <v-list-item-title>Chỉnh sửa</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item @click="openDeleteDialog(item)">
+              <v-list-item
+                @click="openDeleteDialog(item)"
+                v-if="['CREATED'].includes(item.status)"
+              >
                 <v-list-item-icon>
                   <v-icon small>delete</v-icon>
                 </v-list-item-icon>

@@ -4,7 +4,7 @@
       <v-card-title> Thông tin nhà cung cấp </v-card-title>
       <v-divider></v-divider>
       <v-row>
-        <v-col cols="12" md="6">
+        <v-col cols="12" md="4">
           <v-list-item>
             <v-list-item-icon>
               <v-icon color="tertiary">verified_user</v-icon>
@@ -18,7 +18,7 @@
             </v-list-item-content>
           </v-list-item>
         </v-col>
-        <v-col cols="12" md="6">
+        <v-col cols="12" md="8">
           <v-list-item>
             <v-list-item-icon>
               <v-icon color="tertiary">contacts</v-icon>
@@ -33,7 +33,7 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="12" md="6">
+        <v-col cols="12" md="4">
           <v-list-item>
             <v-list-item-icon>
               <v-icon color="tertiary">copyright</v-icon>
@@ -46,22 +46,7 @@
             </v-list-item-content>
           </v-list-item>
         </v-col>
-        <v-col cols="12" md="6">
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon color="tertiary">location_city</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-subtitle>Địa chỉ công ty</v-list-item-subtitle>
-              <v-list-item-title>{{
-                supplier.companyAddress || "N/A"
-              }}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12" md="6">
+        <v-col cols="12" md="4">
           <v-list-item>
             <v-list-item-icon>
               <v-icon color="tertiary">card_travel</v-icon>
@@ -72,7 +57,7 @@
             </v-list-item-content>
           </v-list-item>
         </v-col>
-        <v-col cols="12" md="6">
+        <v-col cols="12" md="4">
           <v-list-item>
             <v-list-item-icon>
               <v-icon color="tertiary">perm_phone_msg</v-icon>
@@ -94,6 +79,21 @@
               <v-list-item-subtitle>Mô tả</v-list-item-subtitle>
               <v-list-item-title>{{
                 supplier.companyDescription || "N/A"
+              }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="12">
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon color="tertiary">location_city</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-subtitle>Địa chỉ công ty</v-list-item-subtitle>
+              <v-list-item-title>{{
+                supplier.companyAddress || "N/A"
               }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>

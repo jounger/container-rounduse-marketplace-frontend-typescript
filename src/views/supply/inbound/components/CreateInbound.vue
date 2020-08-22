@@ -32,7 +32,7 @@
         <v-btn icon dark @click="dialogAddSync = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title>Hộp thoại thêm mới Hàng nhập</v-toolbar-title>
+        <v-toolbar-title>Khai báo Hàng nhập</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
           <v-btn dark text @click="clearForm()">Xóa dữ liệu đã nhập</v-btn>
@@ -43,9 +43,10 @@
         class="d-flex justify-space-around align-start elevation-0"
         width="100%"
       >
-        <div
-          class="order-0 flex-grow-0 mx-auto mr-5"
-          :style="{ width: '600px' }"
+        <v-card
+          class="order-0 flex-grow-1 mx-auto mr-5 elevation-0"
+          max-width="700"
+          tile
         >
           <v-list three-line subheader width="inherit">
             <v-stepper v-model="stepper" vertical class="elevation-0">
@@ -62,7 +63,7 @@
                 <v-form ref="inboundForm" v-model="valid" validation>
                   <small>*Dấu sao là trường bắt buộc</small>
                   <v-row
-                    ><v-col cols="12" sm="6">
+                    ><v-col cols="12" sm="8">
                       <v-select
                         v-model="inboundLocal.shippingLine"
                         prepend-icon="directions_boat"
@@ -73,7 +74,7 @@
                         no-data-text="Danh sách hãng tàu rỗng."
                         label="Hãng tàu*"
                       ></v-select> </v-col
-                    ><v-col cols="12" sm="6">
+                    ><v-col cols="12" sm="4">
                       <v-select
                         v-model="inboundLocal.containerType"
                         prepend-icon="directions_bus"
@@ -85,14 +86,21 @@
                         no-data-text="Danh sách loại Cont rỗng."
                       ></v-select> </v-col
                   ></v-row>
-                  <v-row
-                    ><v-col cols="12">
+                  <v-row justify="start" align="end" class="pa-3"
+                    ><v-col
+                      cols="12"
+                      sm="1"
+                      class="pa-0 pb-2"
+                      style="max-width: 25px"
+                      ><v-icon>add_location</v-icon>
+                    </v-col>
+                    <v-col cols="12" sm="11" class="pa-0">
                       <label class="place-label">Nơi trả hàng</label>
                       <input
                         ref="inputAddress1"
                         class="place-input"
                         type="text"
-                        placeholder="Nơi trả hàng"
+                        placeholder="Nơi trả hàng (Kho hàng nhập)"
                         :rules="[required('nơi trả hàng')]"
                         required
                       />
@@ -133,7 +141,7 @@
                 <v-form ref="billOfLadingForm" v-model="valid2" validation>
                   <small>*Dấu sao là trường bắt buộc</small>
                   <v-row
-                    ><v-col cols="12" sm="6">
+                    ><v-col cols="12" sm="4">
                       <v-text-field
                         v-model="inboundLocal.billOfLading.number"
                         prepend-icon="play_for_work"
@@ -141,7 +149,7 @@
                         :rules="[required('Số B/L')]"
                         label="B/L No.*"
                       ></v-text-field> </v-col
-                    ><v-col cols="12" sm="6">
+                    ><v-col cols="12" sm="8">
                       <v-select
                         v-model="inboundLocal.billOfLading.portOfDelivery"
                         prepend-icon="flag"
@@ -153,8 +161,16 @@
                         label="Cảng lấy cont đặc*"
                       ></v-select> </v-col
                   ></v-row>
-                  <v-row
-                    ><v-col cols="12">
+                  <v-row>
+                    <v-col cols="12" sm="4">
+                      <v-text-field
+                        v-model="inboundLocal.billOfLading.unit"
+                        prepend-icon="local_shipping"
+                        type="number"
+                        :rules="[required('số lượng Container đăng ký')]"
+                        label="Số lượng cont*"
+                      ></v-text-field></v-col
+                    ><v-col cols="12" sm="8">
                       <DatetimePicker
                         :datetime="inboundLocal.billOfLading.freeTime"
                         :return-value.sync="inboundLocal.billOfLading.freeTime"
@@ -163,17 +179,6 @@
                         timelabel="Giờ Freetime"
                       />
                     </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="12" sm="6">
-                      <v-text-field
-                        v-model="inboundLocal.billOfLading.unit"
-                        prepend-icon="local_shipping"
-                        type="number"
-                        :rules="[required('số lượng Container đăng ký')]"
-                        label="Số lượng cont*"
-                      ></v-text-field
-                    ></v-col>
                   </v-row>
                   <v-btn
                     color="primary"
@@ -283,7 +288,7 @@
               </v-stepper-content>
             </v-stepper>
           </v-list>
-        </div>
+        </v-card>
         <v-card class="order-1 flex-shrink-1 mx-auto my-5">
           <GoogleMapLoader
             :options="mapConfig"

@@ -83,17 +83,17 @@ export function convertTime(input: string) {
     return "Vừa xong";
   } else {
     if (minute < 60) {
-      return minute + " phút";
+      return minute + " phút trước";
     } else {
       const hour = Math.floor(minute / 60);
       if (hour < 24) {
-        return hour + " giờ";
+        return hour + " giờ trước";
       } else {
         const date = Math.floor(hour / 24);
-        if (date < 365) {
-          return date + " ngày";
+        if (date < 3) {
+          return date + " ngày trước";
         } else {
-          return Math.floor(date / 365) + " năm";
+          return formatDatetime(input);
         }
       }
     }

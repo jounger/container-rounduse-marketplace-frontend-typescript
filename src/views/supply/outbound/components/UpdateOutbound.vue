@@ -12,7 +12,7 @@
         <v-btn icon dark @click="dialogEditSync = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title>Hộp thoại chỉnh sửa hàng xuất</v-toolbar-title>
+        <v-toolbar-title>Chỉnh sửa hàng xuất</v-toolbar-title>
         <v-spacer></v-spacer>
       </v-toolbar>
       <!-- START CONTENT -->
@@ -20,10 +20,11 @@
         class="d-flex justify-space-around align-start elevation-0"
         width="100%"
       >
-        <div
+        <v-card
           v-if="outboundLocal"
-          class="order-0 flex-grow-0 mx-auto mr-5"
-          :style="{ width: '600px' }"
+          class="order-0 flex-grow-1 mx-auto mr-5 elevation-0"
+          max-width="700"
+          tile
         >
           <v-list three-line subheader width="inherit">
             <v-stepper v-model="stepper" vertical class="elevation-0">
@@ -40,7 +41,7 @@
                 <v-form ref="outboundForm" v-model="valid" lazy-validation>
                   <small>*Dấu sao là trường bắt buộc</small>
                   <v-row>
-                    <v-col cols="12" sm="6">
+                    <v-col cols="12" sm="8">
                       <v-select
                         v-model="outboundLocal.shippingLine"
                         prepend-icon="directions_boat"
@@ -52,7 +53,7 @@
                         label="Hãng tàu*"
                       ></v-select>
                     </v-col>
-                    <v-col cols="12" sm="6">
+                    <v-col cols="12" sm="4">
                       <v-select
                         v-model="outboundLocal.containerType"
                         prepend-icon="directions_bus"
@@ -66,7 +67,15 @@
                     </v-col>
                   </v-row>
                   <v-row>
-                    <v-col cols="12">
+                    <v-col cols="12" sm="4">
+                      <v-text-field
+                        v-model="outboundLocal.grossWeight"
+                        prepend-icon="fitness_center"
+                        type="number"
+                        label="Khối lượng hàng"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="8">
                       <DatetimePicker
                         :datetime="outboundLocal.packingTime"
                         :return-value.sync="outboundLocal.packingTime"
@@ -77,8 +86,16 @@
                       />
                     </v-col>
                   </v-row>
-                  <v-row>
-                    <v-col cols="12">
+                  <v-row justify="start" align="end" class="pa-3">
+                    <v-col
+                      cols="12"
+                      sm="1"
+                      class="pa-0 pb-2"
+                      style="max-width: 25px"
+                    >
+                      <v-icon>add_location</v-icon>
+                    </v-col>
+                    <v-col cols="12" sm="11" class="pa-0">
                       <label class="place-label">Nơi đóng hàng</label>
                       <input
                         ref="inputAddress1"
@@ -96,29 +113,16 @@
                     </v-col>
                   </v-row>
                   <v-row
-                    ><v-col cols="12" sm="6">
-                      <v-text-field
-                        v-model="outboundLocal.grossWeight"
-                        prepend-icon="fitness_center"
-                        type="number"
-                        label="Khối lượng hàng"
-                      ></v-text-field> </v-col
-                    ><v-col cols="12" sm="6">
-                      <v-select
-                        v-model="outboundLocal.unitOfMeasurement"
-                        prepend-icon="strikethrough_s"
-                        :items="unitOfMeasurements"
-                        label="Đơn vị đo"
-                      ></v-select> </v-col
-                  ></v-row>
-                  <v-row
                     ><v-col cols="12">
-                      <v-text-field
+                      <v-textarea
                         v-model="outboundLocal.goodsDescription"
                         prepend-icon="description"
+                        outlined
+                        row="1"
+                        row-height="15"
                         type="text"
                         label="Mô tả hàng"
-                      ></v-text-field> </v-col
+                      ></v-textarea> </v-col
                   ></v-row>
 
                   <v-btn
@@ -141,7 +145,7 @@
                 <v-form ref="bookingForm" v-model="valid2" lazy-validation>
                   <small>*Dấu sao là trường bắt buộc</small>
                   <v-row
-                    ><v-col cols="12" sm="6">
+                    ><v-col cols="12" sm="5">
                       <v-text-field
                         v-model="outboundLocal.booking.number"
                         prepend-icon="import_export"
@@ -150,7 +154,7 @@
                         label="Số Booking*"
                         disabled
                       ></v-text-field> </v-col
-                    ><v-col cols="12" sm="6">
+                    ><v-col cols="12" sm="7">
                       <v-select
                         v-model="outboundLocal.booking.portOfLoading"
                         prepend-icon="flag"
@@ -162,20 +166,8 @@
                         label="Cảng xuất hàng*"
                       ></v-select> </v-col
                   ></v-row>
-                  <v-row
-                    ><v-col cols="12">
-                      <DatetimePicker
-                        :datetime="outboundLocal.booking.cutOffTime"
-                        :return-value.sync="outboundLocal.booking.cutOffTime"
-                        dateicon="flight_takeoff"
-                        datelabel="Ngày tàu cắt máng"
-                        timelabel="Giờ cắt máng"
-                        disabled
-                      />
-                    </v-col>
-                  </v-row>
                   <v-row>
-                    <v-col cols="12" sm="6">
+                    <v-col cols="12" sm="4">
                       <v-text-field
                         v-model="outboundLocal.booking.unit"
                         prepend-icon="commute"
@@ -184,7 +176,16 @@
                         type="number"
                         required
                       ></v-text-field> </v-col
-                  ></v-row>
+                    ><v-col cols="12" sm="8">
+                      <DatetimePicker
+                        :datetime="outboundLocal.booking.cutOffTime"
+                        :return-value.sync="outboundLocal.booking.cutOffTime"
+                        dateicon="flight_takeoff"
+                        datelabel="Ngày tàu cắt máng"
+                        timelabel="Giờ cắt máng"
+                      />
+                    </v-col>
+                  </v-row>
                   <v-checkbox
                     v-model="outboundLocal.booking.isFcl"
                     label="Hàng nguyên cont"
@@ -200,7 +201,7 @@
               </v-stepper-content>
             </v-stepper>
           </v-list>
-        </div>
+        </v-card>
         <v-card class="order-1 flex-shrink-1 mx-auto my-5">
           <GoogleMapLoader
             :options="mapConfig"

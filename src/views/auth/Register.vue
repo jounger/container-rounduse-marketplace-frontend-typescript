@@ -343,14 +343,14 @@ export default class Register extends Vue {
   ];
   contacts = [
     {
-      icon: "location_on",
-      color: "red",
-      title: "Thạch Hòa- Thạch Thất- Hà Nội"
+      icon: "account_circle",
+      color: "primary",
+      title: "Nguyễn Văn An"
     },
     {
       icon: "call",
       color: "green",
-      title: "035.904.9292"
+      title: "096.739.0098"
     },
     {
       icon: "email",
@@ -358,9 +358,9 @@ export default class Register extends Vue {
       title: "support@containerrounduse.com"
     },
     {
-      icon: "contacts",
-      color: "gold",
-      title: "123-456 / 456-789"
+      icon: "location_on",
+      color: "red",
+      title: "Thạch Hòa- Thạch Thất- Hà Nội"
     }
   ];
   supplier = {

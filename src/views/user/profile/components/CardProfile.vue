@@ -69,7 +69,7 @@
         </v-list-item-icon>
 
         <v-list-item-content>
-          <v-list-item-subtitle>Họ và tên</v-list-item-subtitle>
+          <v-list-item-subtitle>Người liên hệ</v-list-item-subtitle>
           <v-list-item-title>{{
             $auth.user().fullname || "N/A"
           }}</v-list-item-title>

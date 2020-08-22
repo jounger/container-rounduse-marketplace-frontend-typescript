@@ -143,6 +143,9 @@
               <v-list-item-title>{{
                 item.sender.fullname || "N/A"
               }}</v-list-item-title>
+              <v-list-item-subtitle>{{
+                convertTime(item.sendDate)
+              }}</v-list-item-subtitle>
               <v-list-item-subtitle>{{ item.message }} </v-list-item-subtitle>
               <v-rating
                 v-model="item.satisfactionPoints"
@@ -151,31 +154,27 @@
                 empty-icon="$ratingFull"
                 hover
                 x-small
-                readonly
+                :readonly="
+                  !$auth.check('ROLE_FORWARDER') ||
+                    ($auth.check('ROLE_FORWARDER') &&
+                      item.satisfactionPoints > 0)
+                "
+                @input="openMarkDialog(item)"
               ></v-rating>
             </v-list-item-content>
             <v-spacer></v-spacer>
-            <v-menu :close-on-click="true">
+            <v-menu
+              :close-on-click="true"
+              v-if="
+                $auth.check('ROLE_MODERATOR') && item.satisfactionPoints == 0
+              "
+            >
               <template v-slot:activator="{ on, attrs }">
                 <v-btn color="primary" icon dense v-bind="attrs" v-on="on">
                   <v-icon>mdi-dots-vertical</v-icon>
                 </v-btn>
               </template>
               <v-list dense :offset-y="true">
-                <v-list-item
-                  @click="openMarkDialog(item)"
-                  v-if="
-                    item.sender.roles.includes('ROLE_MODERATOR') &&
-                      $auth.check('ROLE_FORWARDER')
-                  "
-                >
-                  <v-list-item-icon>
-                    <v-icon small>edit</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>Đánh giá phản hồi</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
                 <v-list-item
                   @click="openDeleteDialog(item)"
                   v-if="item.sender.username == $auth.user().username"
@@ -200,7 +199,7 @@
           align="center"
         >
           <v-col cols="12" md="1">
-            <v-list-item two-line>
+            <v-list-item three-line>
               <v-list-item-avatar color="tertiary">
                 <v-img
                   v-if="$auth.user().profileImagePath"
@@ -254,7 +253,7 @@
       <RatingFeedback
         v-if="dialogFeedbackRating"
         :dialogRating.sync="dialogFeedbackRating"
-        :feedback="feedback"
+        :feedback.sync="feedback"
         :feedbacks.sync="feedbacks"
       />
       <DeleteFeedback

@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialogDelSync" max-width="400px">
     <v-card>
-      <v-card-title class="headline">Xóa đầu kéo</v-card-title>
+      <v-card-title class="headline">Xóa phản hồi</v-card-title>
 
       <v-card-text>
         <v-form>

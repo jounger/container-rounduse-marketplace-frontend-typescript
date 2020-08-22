@@ -42,7 +42,8 @@ export default class GoogleMapMarker extends Vue {
       this.mapMarker = new this.google.maps.Marker({
         position: this.marker.position,
         map: this.map,
-        title: this.marker.title
+        title: this.marker.title,
+        icon: this.marker.icon
       });
     }
   }
