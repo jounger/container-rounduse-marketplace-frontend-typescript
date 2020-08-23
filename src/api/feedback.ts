@@ -9,7 +9,7 @@ export function getFeedbacksByReport(id: number, paging: PaginationRequest) {
 }
 
 export function getFeedbacks(paging: PaginationRequest) {
-  return Vue.axios.get("/feedback/user", {
+  return Vue.axios.get("/feedback", {
     params: paging
   });
 }

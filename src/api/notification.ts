@@ -2,7 +2,7 @@ import Vue from "vue";
 import { PaginationRequest } from "@/entity/payload";
 
 export function getNotifications(paging: PaginationRequest) {
-  return Vue.axios.get("/notification/user", {
+  return Vue.axios.get("/notification", {
     params: paging
   });
 }

@@ -1,12 +1,6 @@
 import Vue from "vue";
-import { PaginationRequest } from "../entity/payload";
+import { PaginationRequest } from "@/entity/payload";
 import { IReport } from "@/entity/report";
-
-export function getReportsByUser(paging: PaginationRequest) {
-  return Vue.axios.get("/report/user", {
-    params: paging
-  });
-}
 
 export function getReports(paging: PaginationRequest) {
   return Vue.axios.get("/report", {

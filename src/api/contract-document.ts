@@ -11,16 +11,11 @@ export function getContractDocumentsByContract(
 }
 
 export function getContractDocuments(paging: PaginationRequest) {
-  return Vue.axios.get("/contract-document/user", {
+  return Vue.axios.get("/contract-document", {
     params: paging
   });
 }
 
-export function getContractDocumentsByContractDocumentNumber(
-  contractDocumentNumber: string
-) {
-  return Vue.axios.get(`/contract-document/${contractDocumentNumber}`);
-}
 export function removeContractDocument(id: number) {
   return Vue.axios.delete(`/contract-document/${id}`);
 }

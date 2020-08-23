@@ -8,15 +8,8 @@ export function getOperators(paging: PaginationRequest) {
   });
 }
 
-export function getOperatorById(id: number) {
+export function getOperator(id: number) {
   return Vue.axios.get(`/operator/${id}`);
-}
-export function getOperatorByUsername(username: string) {
-  return Vue.axios.get(`/operator/username`, {
-    params: {
-      username: username
-    }
-  });
 }
 
 export function createOperator(operator: IOperator) {

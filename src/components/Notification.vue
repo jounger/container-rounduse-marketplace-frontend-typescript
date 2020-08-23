@@ -175,6 +175,7 @@ export default class Notification extends Vue {
     } else if (item.type == "SHIPPING") {
       ROUTER = "#";
     }
+    console.log(location.pathname, ROUTER);
     if (location.pathname == ROUTER) {
       location.reload();
     } else {

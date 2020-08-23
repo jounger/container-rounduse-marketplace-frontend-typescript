@@ -2,17 +2,18 @@ import Vue from "vue";
 import { PaginationRequest } from "@/entity/payload";
 import { IInvoice } from "@/entity/invoice";
 
-export function searchInvoices(paging: PaginationRequest, search: string) {
+export function searchInvoices(search: string, paging: PaginationRequest) {
   return Vue.axios.get("/invoice/filter", {
     params: { paging, search }
   });
 }
 
 export function getInvoices(paging: PaginationRequest) {
-  return Vue.axios.get("/invoice/user", {
+  return Vue.axios.get("/invoice", {
     params: paging
   });
 }
+
 export function getInvoicesByContract(id: number, paging: PaginationRequest) {
   return Vue.axios.get(`/invoice/contract/${id}`, {
     params: paging

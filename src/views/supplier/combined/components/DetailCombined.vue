@@ -376,10 +376,7 @@
               <v-icon left dense>location_on </v-icon>Xem
             </v-btn>
           </template>
-          <template
-            v-slot:item.actions="{ item }"
-            v-if="$auth.check('ROLE_FORWARDER')"
-          >
+          <template v-slot:item.actions="{ item }">
             <v-menu :close-on-click="true">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn color="primary" icon outlined v-bind="attrs" v-on="on">
@@ -397,12 +394,29 @@
                   ].includes(item.status)
                 "
               >
-                <v-list-item @click="openUpdateDialog(item)">
+                <v-list-item
+                  @click="openUpdateDialog(item)"
+                  v-if="$auth.check('ROLE_FORWARDER')"
+                >
                   <v-list-item-icon>
                     <v-icon small>location_on</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
                     <v-list-item-title>Cập nhật trạng thái</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item
+                  @click="openQRCodeDialog(item)"
+                  v-if="
+                    $auth.check('ROLE_MERCHANT') &&
+                      ['INFO_RECEIVED'].includes(item.status)
+                  "
+                >
+                  <v-list-item-icon>
+                    <v-icon small>stay_primary_landscape</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>Tạo mã QR</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
@@ -432,6 +446,10 @@
         :dialogEdit.sync="dialogEdit"
         :shippingInfo="shippingInfo"
         :shippingInfos.sync="shippingInfos"
+      />
+      <QRCodeGenerator
+        v-if="dialogQRGender"
+        :dialogGender.sync="dialogQRGender"
       />
     </v-row>
   </v-container>
@@ -463,6 +481,7 @@ import { google } from "google-maps";
 import ChipStatus from "@/components/ChipStatus.vue";
 import UpdateShippingInfo from "./UpdateShippingInfo.vue";
 import GoogleMapMixins from "@/components/googlemaps/map-mixins";
+import QRCodeGenerator from "@/components/QRCodeGenerator.vue";
 
 @Component({
   mixins: [FormValidate, Utils, GoogleMapMixins],
@@ -474,7 +493,8 @@ import GoogleMapMixins from "@/components/googlemaps/map-mixins";
     GoogleMapDirection,
     GoogleMapMarker,
     UpdateShippingInfo,
-    ChipStatus
+    ChipStatus,
+    QRCodeGenerator
   }
 })
 export default class DetailCombined extends Vue {
@@ -495,6 +515,7 @@ export default class DetailCombined extends Vue {
   dialogDetail = false;
   dialogEdit = false;
   dialogAddContractDocument = false;
+  dialogQRGender = false;
   status = false;
   shippingInfoOptions = {
     page: 1,
@@ -660,6 +681,11 @@ export default class DetailCombined extends Vue {
   openUpdateDialog(item: IShippingInfo) {
     this.shippingInfo = item;
     this.dialogEdit = true;
+  }
+
+  openQRCodeDialog(item: IShippingInfo) {
+    this.shippingInfo = item;
+    this.dialogQRGender = true;
   }
 
   openDetailContractDocument(item: IContractDocument) {

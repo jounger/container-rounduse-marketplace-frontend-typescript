@@ -117,7 +117,7 @@ import { IReport } from "@/entity/report";
 import CreateReport from "./components/CreateReport.vue";
 import DeleteReport from "./components/DeleteReport.vue";
 import UpdateReport from "./components/UpdateReport.vue";
-import { getReportsByUser, getReports } from "@/api/report";
+import { getReports } from "@/api/report";
 import { DataOptions } from "vuetify";
 import ReportBiddingDocument from "../bidding-document/components/ReportBiddingDocument.vue";
 import { IBiddingDocument } from "@/entity/bidding-document";
@@ -188,15 +188,10 @@ export default class Report extends Vue {
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;
-      const _res = this.$auth.check("ROLE_MODERATOR")
-        ? await getReports({
-            page: val.page - 1,
-            limit: val.itemsPerPage
-          })
-        : await getReportsByUser({
-            page: val.page - 1,
-            limit: val.itemsPerPage
-          });
+      const _res = await getReports({
+        page: val.page - 1,
+        limit: val.itemsPerPage
+      });
       if (_res.data) {
         const _reports = _res.data.data;
         this.reports = _reports;

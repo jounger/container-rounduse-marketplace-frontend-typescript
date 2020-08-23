@@ -15,7 +15,7 @@ export default class NotificationModule extends VuexModule {
 
   @Action({ commit: "setNotification" })
   async fetchNotification(id: number, paging: PaginationRequest) {
-    return Vue.axios.get(`/notification/user/${id}`, {
+    return Vue.axios.get(`/notification/${id}`, {
       params: paging,
       headers: {
         Authorization: "Bearer {auth_token}"

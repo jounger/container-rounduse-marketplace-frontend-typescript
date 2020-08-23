@@ -12,12 +12,6 @@ export function getBid(id: number) {
   return Vue.axios.get(`/bid/${id}`);
 }
 
-export function getBidsByForwarder(id: number, paging: PaginationRequest) {
-  return Vue.axios.get(`/bid/forwarder/${id}`, {
-    params: paging
-  });
-}
-
 export function getBidsByBiddingDocument(
   id: number,
   paging: PaginationRequest

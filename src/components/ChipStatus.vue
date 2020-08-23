@@ -71,12 +71,17 @@ export default class ChipStatus extends Vue {
       icon: "monetization_on"
     },
     {
-      en: "SHIPPINGLINE",
-      vi: "Mượn vỏ",
+      en: "SHIPPING",
+      vi: "Vận chuyển",
+      color: "info",
+      icon: "local_shipping"
+    },
+    {
+      en: "COMBINED",
+      vi: "Hàng ghép",
       color: "success",
       icon: "directions_boat"
-    },
-    { en: "DRIVER", vi: "Giao việc", color: "success", icon: "local_shipping" }
+    }
   ] as Matching[];
 
   actionMatching = [
