@@ -450,6 +450,7 @@
       <QRCodeGenerator
         v-if="dialogQRGender"
         :dialogGender.sync="dialogQRGender"
+        :shippingInfo="shippingInfo"
       />
     </v-row>
   </v-container>
