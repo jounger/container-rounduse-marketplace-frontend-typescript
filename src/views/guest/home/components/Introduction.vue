@@ -1,5 +1,5 @@
 <template>
-  <section style="height:400px">
+  <section>
     <v-container>
       <v-row justify="center" align="center" class="mt-15">
         <v-col cols="12" md="2"> </v-col>
@@ -30,6 +30,7 @@ export default class Introduction extends Vue {}
 <style scoped lang="css">
 section {
   background-color: #cbe4d6 !important;
+  height: 400px;
 }
 .title {
   font-size: 45px !important;

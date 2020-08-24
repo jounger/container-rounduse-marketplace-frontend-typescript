@@ -1,5 +1,5 @@
 <template>
-  <section style="height:550px">
+  <section>
     <v-container>
       <v-row justify="center" align="center" class="mt-15">
         <v-col cols="12" md="4">
@@ -11,7 +11,12 @@
             Quá trình ghép cặp Container và hàng được diễn ra dưới hình thức đấu
             thầu kín, đảm bảo công bằng cho các bên tham gia.
           </h4>
-          <v-btn color="primary" to="/term-of-use" large>
+          <v-btn
+            color="primary"
+            to="/term-of-use"
+            large
+            @click.native="scrollTo(0, 0)"
+          >
             Tìm hiểu thêm
           </v-btn>
         </v-col>
@@ -26,11 +31,16 @@
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
-export default class Bidding extends Vue {}
+export default class Bidding extends Vue {
+  scrollTo(x: number, y: number) {
+    window.scrollTo(x, y);
+  }
+}
 </script>
 <style scoped lang="css">
 section {
   background-color: #ffe6ba !important;
+  height: 550px;
 }
 .title {
   font-size: 35px !important;

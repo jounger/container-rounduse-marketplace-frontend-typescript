@@ -410,13 +410,23 @@ const routes: Array<RouteConfig> = [
   },
   //driver
   {
-    path: "/delivery-history",
-    name: "DeliveryHistory",
-    component: () => import("@/views/driver/delivery-history/index.vue"),
+    path: "/delivery",
+    name: "Delivery",
+    component: () => import("@/views/driver/delivery/index.vue"),
     meta: {
       auth: ["ROLE_DRIVER"],
       layout: "NavLayout",
-      title: "Lịch sử giao hàng"
+      title: "Danh sách vận đơn"
+    }
+  },
+  {
+    path: "/transporting",
+    name: "Transporting",
+    component: () => import("@/views/driver/transporting/index.vue"),
+    meta: {
+      auth: ["ROLE_DRIVER"],
+      layout: "NavLayout",
+      title: "Hàng đang vận chuyển"
     }
   },
 

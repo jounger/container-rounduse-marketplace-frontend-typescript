@@ -136,8 +136,12 @@ export default class NavigationSupplier extends Vue {
   ];
 
   private driverNavigation = [
-    { title: "Hàng đang vận chuyển", icon: "format_strikethrough", link: "" },
-    { title: "Lịch sử giao hàng", icon: "tram", link: "" }
+    {
+      title: "Hàng đang vận chuyển",
+      icon: "format_strikethrough",
+      link: "/transporting"
+    },
+    { title: "Danh sách vận đơn", icon: "tram", link: "/delivery" }
   ];
 
   private supplierRegisterNavigation = [

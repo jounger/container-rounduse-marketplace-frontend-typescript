@@ -1,6 +1,6 @@
 <template>
   <v-app-bar app color="white" class="elevation-1">
-    <router-link to="/" class="home"
+    <router-link to="/" class="home" @click.native="scrollToTop"
       ><v-toolbar-title
         ><span class="title">CRuM</span></v-toolbar-title
       ></router-link
@@ -12,6 +12,7 @@
       v-for="link in links"
       :key="link.title"
       :to="link.link"
+      @click.native="scrollToTop"
       text
       rounded
       >{{ link.title }}
@@ -71,7 +72,7 @@
     <v-btn
       v-if="!$auth.user()"
       depressed
-      class="loginBtn"
+      class="loginBtn ml-5"
       @click="dialogLogin = true"
       >Đăng nhập</v-btn
     >

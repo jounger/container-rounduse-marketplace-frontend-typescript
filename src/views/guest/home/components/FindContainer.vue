@@ -1,5 +1,5 @@
 <template>
-  <section style="height:900px">
+  <section>
     <v-container>
       <v-row justify="center" align="center" class="mt-15">
         <v-col cols="12" md="2"></v-col>
@@ -13,7 +13,12 @@
             khi mở đấu thầu, hệ thống sẽ tự động lựa chọn các hàng xuất và
             container phù hợp để gửi thông báo.
           </h4>
-          <v-btn color="primary" to="/term-of-use" large>
+          <v-btn
+            color="primary"
+            to="/term-of-use"
+            large
+            @click.native="scrollTo(0, 0)"
+          >
             Tìm hiểu thêm
           </v-btn>
         </v-col>
@@ -31,11 +36,16 @@
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
-export default class FindContainer extends Vue {}
+export default class FindContainer extends Vue {
+  scrollTo(x: number, y: number) {
+    window.scrollTo(x, y);
+  }
+}
 </script>
 <style scoped lang="css">
 section {
   background-color: #fff !important;
+  height: 900px;
 }
 .title {
   font-size: 35px !important;

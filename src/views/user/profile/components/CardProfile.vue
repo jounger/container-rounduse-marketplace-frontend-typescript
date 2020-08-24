@@ -65,11 +65,17 @@
     <v-list two-line>
       <v-list-item>
         <v-list-item-icon>
-          <v-icon color="tertiary">bookmarks</v-icon>
+          <v-icon color="tertiary">person</v-icon>
         </v-list-item-icon>
 
         <v-list-item-content>
-          <v-list-item-subtitle>Người liên hệ</v-list-item-subtitle>
+          <v-list-item-subtitle>{{
+            $auth.check("ROLE_MERCHANT") ||
+            $auth.check("ROLE_FORWARDER") ||
+            $auth.check("ROLE_SHIPPINGLINE")
+              ? "Người liên hệ"
+              : "Họ và tên"
+          }}</v-list-item-subtitle>
           <v-list-item-title>{{
             $auth.user().fullname || "N/A"
           }}</v-list-item-title>
@@ -101,6 +107,21 @@
           <v-list-item-subtitle>Email</v-list-item-subtitle>
           <v-list-item-title>{{
             $auth.user().email || "N/A"
+          }}</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-divider></v-divider>
+
+      <v-list-item>
+        <v-list-item-icon>
+          <v-icon color="tertiary">location_on</v-icon>
+        </v-list-item-icon>
+
+        <v-list-item-content>
+          <v-list-item-subtitle>Địa chỉ</v-list-item-subtitle>
+          <v-list-item-title>{{
+            $auth.user().address || "N/A"
           }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>

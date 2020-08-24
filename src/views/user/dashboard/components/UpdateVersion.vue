@@ -48,9 +48,6 @@ a {
   color: #037243;
   text-decoration: none !important;
 }
-a:hover {
-  font-weight: bold;
-}
 .version {
   color: red;
 }

@@ -37,7 +37,7 @@
       <v-card-actions class="justify-space-between">
         <router-link to="/forgot-password">Quên mật khẩu</router-link>
         <v-btn
-          class="login"
+          class="mr-5 login"
           @click.stop="login()"
           color="primary"
           :disabled="!valid"
@@ -80,9 +80,6 @@ export default class Login extends Vue {
 }
 </script>
 <style scoped lang="css">
-.login {
-  margin-right: 10px;
-}
 .login:hover {
   width: 110px;
   height: 36px;
@@ -95,12 +92,9 @@ export default class Login extends Vue {
   border-radius: 10px;
 }
 .card a {
-  color: #037243;
-  text-decoration: none;
   margin-left: 10px !important;
 }
 .card a:hover {
-  font-weight: bold;
   font-size: 17px;
 }
 .card .register {

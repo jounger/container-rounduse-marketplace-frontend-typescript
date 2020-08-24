@@ -47,6 +47,12 @@
               disable-sort
               dense
             >
+              <template v-slot:item.outbound.packingTime="{ item }">
+                {{ formatDatetime(item.outbound.packingTime) }}
+              </template>
+              <template v-slot:item.outbound.booking.cutOffTime="{ item }">
+                {{ formatDatetime(item.outbound.booking.cutOffTime) }}
+              </template>
             </v-data-table>
           </td>
         </template>
@@ -125,6 +131,14 @@ export default class BorrowNotify extends Vue {
     {
       text: "Đầu kéo",
       value: "container.tractor.licensePlate"
+    },
+    {
+      text: "Ngày mượn cont",
+      value: "outbound.packingTime"
+    },
+    {
+      text: "Ngày trả cont",
+      value: "outbound.booking.cutOffTime"
     }
   ];
 

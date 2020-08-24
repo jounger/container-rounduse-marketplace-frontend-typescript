@@ -1,5 +1,5 @@
 <template>
-  <section style="height:600px">
+  <section>
     <v-container>
       <v-row justify="center" align="center" class="mt-15">
         <v-col cols="12" md="4">
@@ -11,7 +11,12 @@
             Khai báo container rỗng theo hàng nhập giúp việc quản lý tập trung,
             việc chọn lựa đấu thầu với nhóm container chưa bao giờ dễ đến thế!
           </h4>
-          <v-btn color="primary" to="/term-of-use" large>
+          <v-btn
+            color="primary"
+            to="/term-of-use"
+            large
+            @click.native="scrollTo(0, 0)"
+          >
             Tìm hiểu thêm
           </v-btn>
         </v-col>
@@ -26,11 +31,16 @@
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
-export default class ManageContainer extends Vue {}
+export default class ManageContainer extends Vue {
+  scrollTo(x: number, y: number) {
+    window.scrollTo(x, y);
+  }
+}
 </script>
 <style scoped lang="css">
 section {
   background-color: rgba(221, 221, 221, 0.2) !important;
+  height: 600px;
 }
 .title {
   font-size: 35px !important;

@@ -1,5 +1,5 @@
 <template>
-  <section style="height:700px">
+  <section>
     <v-container>
       <v-row justify="center" align="center" class="mt-15">
         <h1 class="black--text display-1 ml-0 mb-5 title">
@@ -82,6 +82,7 @@ export default class Contactus extends Vue {
 <style scoped lang="css">
 section {
   background-color: #f4f4f4 !important;
+  height: 700px;
 }
 .title {
   font-size: 35px !important;

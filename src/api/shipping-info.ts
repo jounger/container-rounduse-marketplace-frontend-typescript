@@ -12,7 +12,12 @@ export function getShippingInfo(id: number) {
 }
 
 export function getShippingInfosByDriver(paging: PaginationRequest) {
-  return Vue.axios.get("/shipping-info/driver/", {
+  return Vue.axios.get("/shipping-info/driver", {
+    params: paging
+  });
+}
+export function getShippingInfosAreActive(paging: PaginationRequest) {
+  return Vue.axios.get("/shipping-info/active", {
     params: paging
   });
 }

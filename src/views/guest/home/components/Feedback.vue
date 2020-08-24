@@ -1,5 +1,5 @@
 <template>
-  <section style="height:600px">
+  <section>
     <v-container>
       <v-row justify="center" align="center" class="mt-15">
         <v-col cols="12" md="12">
@@ -91,6 +91,7 @@ export default class Feedback extends Vue {
 /* NEW */
 section {
   background-color: rgba(221, 221, 221, 0.2) !important;
+  height: 600px;
 }
 .title {
   font-size: 35px !important;

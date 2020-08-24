@@ -1,7 +1,7 @@
 <template>
   <v-card class="order-1 flex-grow-1 mx-auto">
     <div v-if="supplier">
-      <v-card-title> Thông tin nhà cung cấp </v-card-title>
+      <v-card-title> Thông tin Nhà cung cấp </v-card-title>
       <v-divider></v-divider>
       <v-row>
         <v-col cols="12" md="4">

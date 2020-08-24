@@ -49,13 +49,22 @@
         </template>
         <template v-slot:item.actions="{ item }">
           <v-menu :close-on-click="true">
-            <template v-slot:activator="{ on, attrs }">
+            <template
+              v-slot:activator="{ on, attrs }"
+              v-if="
+                (isRoot && item.username != $auth.user().username) ||
+                  (!isRoot && item.roles == 'ROLE_MODERATOR')
+              "
+            >
               <v-btn color="primary" icon outlined v-bind="attrs" v-on="on">
                 <v-icon>mdi-dots-vertical</v-icon>
               </v-btn>
             </template>
             <v-list dense>
-              <v-list-item @click="openUpdateDialog(item)">
+              <v-list-item
+                @click="openUpdateDialog(item)"
+                v-if="item.roles == 'ROLE_MODERATOR' || isRoot"
+              >
                 <v-list-item-icon>
                   <v-icon small>edit</v-icon>
                 </v-list-item-icon>
@@ -63,13 +72,40 @@
                   <v-list-item-title>Chỉnh sửa</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item @click="openDeleteDialog(item)">
+              <v-list-item
+                @click="openDeleteDialog(item)"
+                v-if="item.roles == 'ROLE_MODERATOR' || isRoot"
+              >
                 <v-list-item-icon>
                   <v-icon small>delete</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>Xóa bỏ</v-list-item-title>
                 </v-list-item-content>
+              </v-list-item>
+              <v-list-item
+                @click="openReviewDialog(item)"
+                v-if="
+                  item.status === 'ACTIVE' &&
+                    (item.roles == 'ROLE_MODERATOR' || isRoot)
+                "
+              >
+                <v-list-item-icon>
+                  <v-icon small>lock</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Khóa tài khoản</v-list-item-title>
+              </v-list-item>
+              <v-list-item
+                @click="openReviewDialog(item)"
+                v-if="
+                  item.status === 'BANNED' &&
+                    (item.roles == 'ROLE_MODERATOR' || isRoot)
+                "
+              >
+                <v-list-item-icon>
+                  <v-icon small>lock_open</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Mở khóa tài khoản</v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -87,10 +123,17 @@
       <CreateOperator
         v-if="dialogAdd"
         :operator="operator"
+        :isRoot="isRoot"
         :operators.sync="operators"
         :dialogAdd.sync="dialogAdd"
         :totalItems.sync="serverSideOptions.totalItems"
         :update="update"
+      />
+      <ReviewOperator
+        v-if="dialogReview"
+        :dialogReview.sync="dialogReview"
+        :operator="operator"
+        :operators.sync="operators"
       />
     </v-row>
   </v-container>
@@ -103,11 +146,14 @@ import DeleteOperator from "./components/DeleteOperator.vue";
 import { getOperators } from "@/api/operator";
 import { DataOptions } from "vuetify";
 import ChipStatus from "@/components/ChipStatus.vue";
+import ReviewOperator from "./components/ReviewOperator.vue";
+import { getOperator } from "../../../api/operator";
 
 @Component({
   components: {
     CreateOperator,
     DeleteOperator,
+    ReviewOperator,
     ChipStatus
   }
 })
@@ -116,6 +162,8 @@ export default class Operator extends Vue {
   operator = null as IOperator | null;
   dialogAdd = false;
   dialogDel = false;
+  dialogReview = false;
+  isRoot = false;
   loading = true;
   update = false;
   options = {
@@ -166,6 +214,10 @@ export default class Operator extends Vue {
     this.update = true;
     this.dialogAdd = true;
   }
+  openReviewDialog(item: IOperator) {
+    this.operator = item;
+    this.dialogReview = true;
+  }
 
   openDeleteDialog(item: IOperator) {
     this.operator = item;
@@ -186,6 +238,14 @@ export default class Operator extends Vue {
         this.serverSideOptions.totalItems = _res.data.totalElements;
       }
       this.loading = false;
+    }
+  }
+  async created() {
+    if (this.$auth.check("ROLE_ADMIN")) {
+      const _res = await getOperator(this.$auth.user().id);
+      if (_res) {
+        this.isRoot = _res.data.isRoot;
+      }
     }
   }
 }

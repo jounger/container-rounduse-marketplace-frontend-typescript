@@ -27,7 +27,7 @@
           <h4 class="black--text subheading ml-0 ma-3" v-else>
             Bạn đang dùng version <span class="version">1.0</span>. Đơn đăng ký
             của bạn đang được xem xét. Xem chi tiết tại mục
-            <router-link to="/application">Đơn đăng ký!</router-link>
+            <router-link to="/application">Đơn đăng ký</router-link>.
           </h4>
           <div
             v-if="
@@ -45,7 +45,7 @@
           <div
             v-if="$auth.user().status == 'ACTIVE' && $auth.check('ROLE_ADMIN')"
           >
-            <h4 class="subheading">Xem danh sách Quản trị viên</h4>
+            <h4 class="subheading">Xem ngay danh sách Quản trị viên</h4>
             <v-btn class="mt-5" color="secondary" to="/operator"
               >Xem ngay</v-btn
             >
@@ -88,7 +88,7 @@
             v-if="$auth.user().status == 'ACTIVE' && $auth.check('ROLE_DRIVER')"
           >
             <h4 class="subheading">
-              Xem ngay danh sách yêu cầu vận chuyển
+              Xem ngay đơn hàng đang vận chuyển
             </h4>
             <v-btn class="mt-5" color="secondary" to="/shipping"
               >Xem ngay</v-btn
@@ -130,9 +130,6 @@ section {
 a {
   color: #037243;
   text-decoration: none !important;
-}
-a:hover {
-  font-weight: bold;
 }
 .version {
   color: red;

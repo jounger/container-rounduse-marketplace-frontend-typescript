@@ -18,8 +18,20 @@
       >
         <template v-slot:top>
           <v-toolbar flat color="white">
-            <v-toolbar-title>Lịch sử giao hàng</v-toolbar-title>
+            <v-toolbar-title>Danh sách vận đơn</v-toolbar-title>
           </v-toolbar>
+        </template>
+        <template v-slot:item.outbound.grossWeight="{ item }">
+          {{ item.outbound.grossWeight }} {{ item.outbound.unitOfMeasurement }}
+        </template>
+        <template v-slot:item.outbound.packingTime="{ item }">
+          {{ formatDatetime(item.outbound.packingTime) }}
+        </template>
+        <template v-slot:item.outbound.booking.cutOffTime="{ item }">
+          {{ formatDatetime(item.outbound.booking.cutOffTime) }}
+        </template>
+        <template v-slot:item.status="{ item }">
+          <ChipStatus :status="item.status" />
         </template>
       </v-data-table>
     </v-card>
@@ -39,7 +51,7 @@ import { IShippingInfo } from "@/entity/shipping-info";
     ChipStatus
   }
 })
-export default class DeliveryHistory extends Vue {
+export default class Delivery extends Vue {
   shippingInfos: Array<IShippingInfo> = [];
   loading = true;
   options = {
@@ -57,19 +69,24 @@ export default class DeliveryHistory extends Vue {
       sortable: false,
       value: "id"
     },
+    { text: "Khối lượng hàng", value: "outbound.grossWeight" },
+    { text: "Loại cont", value: "outbound.containerType.name" },
+    { text: "Thời gian đóng hàng", value: "outbound.packingTime" },
     {
-      text: "Container No.",
-      value: "container.number"
-    },
-    { text: "Lái xe", value: "container.driver.fullname" },
-    { text: "SĐT liên hệ", value: "container.driver.phone" },
-    {
-      text: "Rơ mọt",
-      value: "container.trailer.licensePlate"
+      text: "Nơi đóng hàng",
+      value: "outbound.packingStation"
     },
     {
-      text: "Đầu kéo",
-      value: "container.tractor.licensePlate"
+      text: "Thời gian Cut-off",
+      value: "outbound.booking.cutOffTime"
+    },
+    {
+      text: "Cảng xuất hàng",
+      value: "outbound.booking.portOfLoading.fullname"
+    },
+    {
+      text: "Trạng thái",
+      value: "status"
     }
   ];
 

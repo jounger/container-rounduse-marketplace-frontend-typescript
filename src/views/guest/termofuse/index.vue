@@ -19,4 +19,7 @@ export default class Term extends Vue {}
   padding: 0 !important;
   margin: 0 !important;
 }
+section {
+  height: fit-content;
+}
 </style>

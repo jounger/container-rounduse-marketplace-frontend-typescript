@@ -114,7 +114,7 @@ export default class ChipStatus extends Vue {
     { en: "ROLE_ADMIN", vi: "Quản trị viên", color: "primary" },
     { en: "ROLE_MODERATOR", vi: "Người vận hành", color: "secondary" },
     { en: "ROLE_FORWARDER", vi: "Chủ xe", color: "warning" },
-    { en: "ROLE_MERCHANT", vi: "Chủ hàng", color: "warning" },
+    { en: "ROLE_MERCHANT", vi: "Chủ hàng", color: "tertiary" },
     { en: "ROLE_SHIPPINGLINE", vi: "Hãng tàu", color: "info" },
     { en: "ROLE_DRIVER", vi: "Lái xe", color: "success" }
   ] as Matching[];

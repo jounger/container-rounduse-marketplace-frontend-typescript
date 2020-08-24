@@ -1,5 +1,5 @@
 <template>
-  <section style="height:1000px">
+  <section>
     <v-container>
       <v-row justify="center" align="center" class="mt-15">
         <v-col cols="12" md="2"></v-col>
@@ -16,7 +16,7 @@
         <v-col cols="12" md="2"></v-col>
       </v-row>
       <v-row justify="center">
-        <v-list three-line subheader outlined>
+        <v-list three-line subheader outlined width="800">
           <v-stepper v-model="stepper" vertical class="elevation-0">
             <v-stepper-step
               :complete="stepper > 1"
@@ -70,7 +70,7 @@
                   <v-radio
                     label="Đăng ký làm chủ hàng"
                     value="merchant"
-                    style="margin-left:275px;"
+                    style="margin-left: 185px;"
                   ></v-radio>
                 </v-radio-group>
                 <v-row>
@@ -335,6 +335,7 @@ export default class Register extends Vue {
 <style scoped lang="css">
 section {
   background-color: #cbe4d6 !important;
+  height: 1000px;
 }
 .title {
   font-size: 35px !important;

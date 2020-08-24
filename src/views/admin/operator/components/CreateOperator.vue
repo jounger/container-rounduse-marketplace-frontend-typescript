@@ -141,6 +141,7 @@ export default class CreateOperator extends Vue {
   @PropSync("totalItems", { type: Number }) totalItemsSync!: number;
   @Prop(Object) operator!: IOperator;
   @Prop(Boolean) update!: boolean;
+  @Prop(Boolean) isRoot!: boolean;
 
   valid = false;
   roles: Array<string> = [];
@@ -148,7 +149,7 @@ export default class CreateOperator extends Vue {
     username: "",
     email: "",
     phone: "",
-    roles: ["ROLE_ADMIN"],
+    roles: ["ROLE_MODERATOR"],
     status: "ACTIVE",
     address: "",
     password: "",
@@ -157,7 +158,11 @@ export default class CreateOperator extends Vue {
   } as IOperator;
 
   created() {
-    this.roles = ["ROLE_ADMIN", "ROLE_MODERATOR"];
+    if (this.isRoot) {
+      this.roles = ["ROLE_ADMIN", "ROLE_MODERATOR"];
+    } else {
+      this.roles = ["ROLE_MODERATOR"];
+    }
     if (this.update) {
       this.operatorLocal = Object.assign({}, this.operator);
     }

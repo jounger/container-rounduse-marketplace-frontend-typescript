@@ -64,7 +64,7 @@
                   <v-radio
                     label="Đăng ký làm chủ hàng"
                     value="merchant"
-                    style="margin-left:275px;"
+                    style="margin-left:185px;"
                   ></v-radio>
                 </v-radio-group>
                 <v-row>
@@ -280,10 +280,10 @@
         </v-list></v-col
       >
       <v-col class="md-5"
-        ><v-card width="500" height="200" class="follow" outlined>
+        ><v-card width="500" height="200" class="follow mt-5" outlined>
           <v-card-title>Theo dõi chúng tôi</v-card-title>
 
-          <p>để cập nhập những thông tin mới nhất</p>
+          <p class="mt-5 ml-6">để cập nhật những thông tin mới nhất</p>
           <v-card-text>
             <v-row justify="center">
               <v-btn
@@ -299,10 +299,10 @@
             >
           </v-card-text>
         </v-card>
-        <v-card width="500" height="400" class="contact" outlined>
+        <v-card width="500" height="400" class="contact mt-10" outlined>
           <v-card-title>Liên lạc với chúng tôi</v-card-title>
 
-          <p>để được tư vấn thêm</p>
+          <p class="mt-5 ml-6">để được tư vấn thêm</p>
           <v-card-text>
             <v-list>
               <v-list-item
@@ -418,27 +418,13 @@ export default class Register extends Vue {
   width: 800px;
   margin-left: 80px !important;
 }
-.follow {
-  margin-top: 20px;
-}
 .follow .v-card__title {
   font-size: 20px;
   margin-left: 5px !important;
 }
-.follow p {
-  margin-top: 10px;
-  margin-left: 25px;
-}
-.contact {
-  margin-top: 30px;
-}
 .contact .v-card__title {
   font-size: 20px;
   margin-left: 5px !important;
-}
-.contact p {
-  margin-top: 10px;
-  margin-left: 25px;
 }
 .register-line {
   width: 200px;

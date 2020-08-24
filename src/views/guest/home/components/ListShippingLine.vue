@@ -1,5 +1,5 @@
 <template>
-  <section style="height:250px">
+  <section>
     <v-container>
       <v-row justify="center" align="center" class="mt-2">
         <v-col cols="12" md="12">
@@ -51,5 +51,6 @@ export default class ListShippingLine extends Vue {
 }
 section {
   background-color: #fff !important;
+  height: 250px;
 }
 </style>

@@ -107,12 +107,9 @@ export default class Login extends Vue {
   border-radius: 10px;
 }
 .card a {
-  color: #037243;
-  text-decoration: none;
   margin-left: 10px !important;
 }
 .card a:hover {
-  font-weight: bold;
   font-size: 17px;
 }
 .btn-login {

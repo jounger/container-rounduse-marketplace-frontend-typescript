@@ -38,4 +38,10 @@ export default class App extends Vue {
 </script>
 <style lang="css">
 @import "./assets/css/vuetify-remake.css";
+a {
+  text-decoration: none !important;
+}
+a:hover {
+  font-weight: bold;
+}
 </style>

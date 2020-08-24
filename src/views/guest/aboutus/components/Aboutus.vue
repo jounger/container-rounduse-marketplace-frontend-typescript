@@ -65,7 +65,7 @@ import { Component, Vue } from "vue-property-decorator";
 export default class Aboutus extends Vue {}
 </script>
 <style scoped land="css">
-.section {
+section {
   background-color: white !important;
 }
 .about-us .v-card {
