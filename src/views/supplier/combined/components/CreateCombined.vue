@@ -77,11 +77,27 @@
               </v-row>
               <v-row>
                 <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="combinedLocal.contract.price"
+                    prepend-icon="money"
+                    type="number"
+                    :rules="[
+                      required('giá hợp đồng'),
+                      minNumber('Giá hợp đồng', 0),
+                      maxNumber('Giá hợp đồng', bidSync.bidPrice)
+                    ]"
+                    :hint="currencyFormatter(combinedLocal.contract.price)"
+                    label="Giá hợp đồng"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6">
                   <v-checkbox
                     v-model="combinedLocal.contract.required"
                     label="Yêu cầu hợp đồng"
                   />
                 </v-col>
+              </v-row>
+              <v-row>
                 <v-col cols="12" sm="6">
                   <v-text-field
                     v-if="combinedLocal.contract.required"
@@ -90,8 +106,16 @@
                     "
                     prepend-icon="money"
                     type="number"
-                    :rules="[required('phần trăm tiền phạt')]"
-                    label="% tiền phạt"
+                    :rules="[
+                      required('% tiền phạt'),
+                      minNumber('% tiền phạt', 0),
+                      maxNumber('% tiền phạt', 8)
+                    ]"
+                    :hint="
+                      combinedLocal.contract.finesAgainstContractViolations +
+                        '%'
+                    "
+                    label="% tiền phạt vi phạm hợp đồng"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -157,8 +181,9 @@ export default class CreateCombined extends Vue {
     bid: -1,
     contract: {
       sender: this.$auth.user().username,
+      price: 0,
       containers: [],
-      finesAgainstContractViolation: 0,
+      finesAgainstContractViolations: 0,
       required: false
     } as IContract
   } as ICombined;

@@ -96,6 +96,17 @@
         <template v-slot:item.contract.creationDate="{ item }">
           {{ formatDatetime(item.contract.creationDate) }}
         </template>
+        <template v-slot:item.contract.paymentPercentage="{ item }">
+          <v-progress-linear
+            color="success"
+            height="25"
+            :value="item.contract.paymentPercentage || 0"
+          >
+            <template v-slot="{ value }">
+              <strong>{{ Math.ceil(value) }}%</strong>
+            </template></v-progress-linear
+          >
+        </template>
         <template v-slot:expanded-item="{ headers }">
           <td :colspan="headers.length" class="px-0" v-if="loading == false">
             <v-data-table
@@ -259,6 +270,7 @@ export default class Contract extends Vue {
       text: "% Tiền phạt",
       value: "contract.finesAgainstContractViolation"
     },
+    { text: "Đã thanh toán (%)", value: "contract.paymentPercentage" },
     { text: "Ngày tạo hợp đồng", value: "contract.creationDate" },
     {
       text: "Hành động",

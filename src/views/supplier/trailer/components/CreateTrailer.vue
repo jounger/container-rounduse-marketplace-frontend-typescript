@@ -37,13 +37,14 @@
           <v-row>
             <v-col cols="12" md="11">
               <v-text-field
-                label="Số lượng trục*"
+                label="Số lượng giàn*"
                 name="numberOfAxles"
                 prepend-icon="format_size"
                 type="number"
                 :rules="[
-                  minNumber('Số lượng trục', 2),
-                  maxNumber('Số lượng trục', 5)
+                  required('số lượng giàn'),
+                  minNumber('Số lượng giàn', 2),
+                  maxNumber('Số lượng giàn', 3)
                 ]"
                 v-model="trailerLocal.numberOfAxles"
               ></v-text-field>

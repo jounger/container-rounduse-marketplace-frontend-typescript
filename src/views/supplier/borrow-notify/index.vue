@@ -25,7 +25,7 @@
             <v-toolbar-title>Danh sách yêu cầu mượn container</v-toolbar-title>
           </v-toolbar>
         </template>
-        <template v-slot:item.action="{ item }">
+        <template v-slot:item.type="{ item }">
           <ChipStatus :status="item.action" type="action" />
         </template>
         <template v-slot:item.sendDate="{ item }">
@@ -53,11 +53,37 @@
               <template v-slot:item.outbound.booking.cutOffTime="{ item }">
                 {{ formatDatetime(item.outbound.booking.cutOffTime) }}
               </template>
+              <template v-slot:item.status="{ item }">
+                <ChipStatus :status="item.status" :sub="true" />
+              </template>
+              <template v-slot:item.actions="{ item }">
+                <v-btn
+                  v-if="
+                    $auth.check('ROLE_SHIPPINGLINE') &&
+                      ['SHIPPING'].includes(item.status)
+                  "
+                  @click="openQRCodeDialog(item)"
+                  class="ma-1"
+                  tile
+                  outlined
+                  color="info"
+                  small
+                >
+                  <v-icon left>stay_primary_landscape</v-icon> Tạo mã QR
+                </v-btn>
+              </template>
             </v-data-table>
           </td>
         </template>
       </v-data-table>
     </v-card>
+    <v-row justify="center">
+      <QRCodeGenerator
+        v-if="dialogQRGender"
+        :dialogGender.sync="dialogQRGender"
+        :shippingInfo="shippingInfo"
+      />
+    </v-row>
   </v-container>
 </template>
 <script lang="ts">
@@ -69,17 +95,22 @@ import { getShippingInfosByCombined } from "@/api/shipping-info";
 import { IShippingLineNotification } from "@/entity/notification";
 import { getCombinedNotifications } from "@/api/notification";
 import ChipStatus from "@/components/ChipStatus.vue";
+import { IShippingInfo } from "@/entity/shipping-info";
+import QRCodeGenerator from "@/components/QRCodeGenerator.vue";
 
 @Component({
   mixins: [Utils],
   components: {
-    ChipStatus
+    ChipStatus,
+    QRCodeGenerator
   }
 })
 export default class BorrowNotify extends Vue {
   shippingLineNotifications: Array<IShippingLineNotification> = [];
   shippingLineNotification = null as IShippingLineNotification | null;
   shippingInfos: Array<ICombined> = [];
+  shippingInfo = null as IShippingInfo | null;
+  dialogQRGender = false;
   loading = true;
   expanded: Array<IShippingLineNotification> = [];
   singleExpand = true;
@@ -107,9 +138,9 @@ export default class BorrowNotify extends Vue {
       value: "id"
     },
     { text: "Bên mượn", value: "relatedResource.bid.bidder.companyName" },
-    { text: "Nội dung", value: "title" },
     { text: "Ngày gửi y/c", value: "sendDate" },
-    { text: "Loại yêu cầu", value: "action" }
+    { text: "Loại yêu cầu", value: "type" },
+    { text: "Nội dung", value: "title" }
   ];
   shippingInfoHeaders = [
     {
@@ -125,22 +156,31 @@ export default class BorrowNotify extends Vue {
     { text: "Lái xe", value: "container.driver.fullname" },
     { text: "SĐT liên hệ", value: "container.driver.phone", class: "tertiary" },
     {
-      text: "Rơ mọt",
-      value: "container.trailer.licensePlate"
-    },
-    {
       text: "Đầu kéo",
       value: "container.tractor.licensePlate"
     },
     {
-      text: "Ngày mượn cont",
+      text: "Ngày đóng hàng",
       value: "outbound.packingTime"
     },
     {
-      text: "Ngày trả cont",
+      text: "Ngày Cut-off",
       value: "outbound.booking.cutOffTime"
+    },
+    {
+      text: "Trạng thái",
+      value: "status"
+    },
+    {
+      text: "Hành động",
+      value: "actions"
     }
   ];
+
+  openQRCodeDialog(item: IShippingInfo) {
+    this.shippingInfo = item;
+    this.dialogQRGender = true;
+  }
 
   async clicked(value: IShippingLineNotification) {
     if (this.singleExpand) {

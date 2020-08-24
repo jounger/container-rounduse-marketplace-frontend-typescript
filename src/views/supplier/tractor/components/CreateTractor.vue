@@ -25,14 +25,14 @@
           <v-row>
             <v-col cols="12" md="11">
               <v-text-field
-                label="Số lượng trục*"
+                label="Số lượng cầu*"
                 name="numberOfAxles"
                 prepend-icon="format_size"
                 type="number"
                 :rules="[
-                  required('số trục'),
-                  minNumber('Số lượng trục', 1),
-                  maxNumber('Số lượng trục', 5)
+                  required('số lượng cầu'),
+                  minNumber('Số lượng cầu', 1),
+                  maxNumber('Số lượng cầu', 2)
                 ]"
                 v-model="tractorLocal.numberOfAxles"
               ></v-text-field>
@@ -84,7 +84,7 @@ export default class CreateTractor extends Vue {
 
   tractorLocal = {
     licensePlate: "",
-    numberOfAxles: 2
+    numberOfAxles: 1
   } as IContainerTractor;
   valid = false;
   created() {

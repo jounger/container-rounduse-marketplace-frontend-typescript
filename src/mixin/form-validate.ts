@@ -37,13 +37,15 @@ export default class FormValidate extends Vue {
   // input must greater than min number
   minNumber(propertyType: unknown, minNumber: number) {
     return (v: number) =>
-      (v && v >= minNumber) || `${propertyType} phải lớn hơn ${minNumber}`;
+      (v && v >= minNumber) ||
+      `${propertyType} phải lớn hơn hoặc bằng  ${minNumber}`;
   }
 
   // input must less than max number
   maxNumber(propertyType: unknown, maxNumber: number) {
     return (v: number) =>
-      (v && v <= maxNumber) || `${propertyType} phải nhỏ hơn ${maxNumber}.`;
+      (v && v <= maxNumber) ||
+      `${propertyType} phải nhỏ hơn hoặc bằng ${maxNumber}.`;
   }
   minTime(propertyType: unknown, minTime: string) {
     return (v: string) =>

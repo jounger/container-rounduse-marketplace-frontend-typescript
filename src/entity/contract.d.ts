@@ -3,9 +3,10 @@ import { ISupplier } from "./supplier";
 export interface IContract {
   id?: number;
   sender: ISupplier;
-  price?: number;
+  price: number;
+  paymentPercentage?: number;
   containers?: number[];
-  finesAgainstContractViolation?: number;
+  finesAgainstContractViolations: number;
   discount?: IDiscount;
   required: boolean;
   creationDate?: string;

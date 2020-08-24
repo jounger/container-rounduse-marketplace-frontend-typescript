@@ -40,9 +40,17 @@
                   ></v-text-field>
                 </v-col>
               </v-row>
-              <v-row>
-                <v-col cols="12">
-                  <label for="">Vị trí cảng</label>
+              <v-row justify="start" align="end" class="pa-3">
+                <v-col
+                  cols="12"
+                  sm="1"
+                  class="pa-0 pb-2"
+                  style="max-width: 25px"
+                >
+                  <v-icon>add_location</v-icon>
+                </v-col>
+                <v-col cols="12" sm="11" class="pa-0">
+                  <label class="place-label">Vị trí cảng</label>
                   <input
                     ref="inputAddress1"
                     class="place-input"
@@ -199,6 +207,10 @@ export default class UpdatePort extends Vue {
 }
 </script>
 <style lang="css">
+.place-label {
+  font-size: 12px;
+  margin-left: 10px;
+}
 .place-input {
   height: 40px;
   width: -webkit-fill-available;

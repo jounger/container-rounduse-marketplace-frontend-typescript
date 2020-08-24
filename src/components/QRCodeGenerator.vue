@@ -1,7 +1,9 @@
 <template>
   <v-dialog v-model="dialogGenderSync" persistent max-width="450">
     <v-card v-if="value">
-      <v-card-title class="headline">Mã QR (Dành cho lái xe)</v-card-title>
+      <v-card-title class="headline"
+        >Mã QR cho container: #{{ shippingInfo.container.number }}</v-card-title
+      >
       <v-divider></v-divider>
       <v-card-text>
         <qrcode-vue :value="value" :size="size" level="H"></qrcode-vue>

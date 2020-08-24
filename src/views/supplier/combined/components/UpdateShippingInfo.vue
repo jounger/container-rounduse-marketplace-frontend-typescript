@@ -79,7 +79,6 @@ export default class UpdateShippingInfo extends Vue {
 
   created() {
     this.shippingInfoStatus = [
-      { en: "PENDING", vi: "Chờ xác nhận" },
       { en: "INFO_RECEIVED", vi: "Đã nhận lệnh" },
       { en: "SHIPPING", vi: "Đang vận chuyển" },
       { en: "DELIVERED", vi: "Đã giao hàng" },

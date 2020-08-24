@@ -116,7 +116,7 @@ export default class Tractor extends Vue {
       text: "Biển số",
       value: "licensePlate"
     },
-    { text: "Số lượng trục", value: "numberOfAxles" },
+    { text: "Số cầu", value: "numberOfAxles" },
     {
       text: "Hành động",
       value: "actions"

@@ -119,7 +119,7 @@ export default class Trailer extends Vue {
       text: "Biển số",
       value: "licensePlate"
     },
-    { text: "Số lượng trục", value: "numberOfAxles" },
+    { text: "Số giàn", value: "numberOfAxles" },
     { text: "Loại rơ moóc", value: "trailerType" },
     {
       text: "Hành động",
