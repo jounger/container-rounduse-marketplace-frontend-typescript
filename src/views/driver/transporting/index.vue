@@ -2,7 +2,6 @@
   <v-container fluid>
     <v-card
       class="d-flex justify-space-around align-start elevation-0"
-      v-if="shippingInfo"
       width="100%"
     >
       <v-row justify="center">
@@ -273,79 +272,9 @@
           <template v-slot:item.status="{ item }">
             <ChipStatus :status="item.status" />
           </template>
-          <template v-slot:item.router="{ item }">
-            <v-btn
-              class="ma-1"
-              small
-              rounded
-              :outlined="shippingInfo.id !== item.id"
-              :color="shippingInfo.id == item.id ? 'info' : 'gray'"
-              @click.stop="openDetailRouter(item)"
-            >
-              <v-icon left dense>location_on </v-icon>Xem
-            </v-btn>
-          </template>
-          <template v-slot:item.actions="{ item }">
-            <v-menu :close-on-click="true">
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn color="primary" icon outlined v-bind="attrs" v-on="on">
-                  <v-icon>mdi-dots-vertical</v-icon>
-                </v-btn>
-              </template>
-              <v-list
-                dense
-                v-if="
-                  [
-                    'INFO_RECEIVED',
-                    'SHIPPING',
-                    'DELIVERED',
-                    'EXCEPTION'
-                  ].includes(item.status)
-                "
-              >
-                <v-list-item
-                  @click="openUpdateDialog(item)"
-                  v-if="$auth.check('ROLE_FORWARDER')"
-                >
-                  <v-list-item-icon>
-                    <v-icon small>location_on</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>Cập nhật trạng thái</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item
-                  @click="openQRCodeDialog(item)"
-                  v-if="
-                    $auth.check('ROLE_MERCHANT') &&
-                      ['INFO_RECEIVED'].includes(item.status)
-                  "
-                >
-                  <v-list-item-icon>
-                    <v-icon small>stay_primary_landscape</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>Tạo mã QR</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </template>
         </v-data-table>
       </v-card>
     </v-card>
-    <v-row v-else justify="center" align="center">
-      <v-col class="text-center">
-        <p>
-          Bạn đang không có đơn vận nào cần chạy. Rảnh rỗi hãy ghé xem Danh sách
-          vận đơn nhé!
-        </p>
-        <p>
-          Xem Danh sách vận đơn tại
-          <router-link to="/delivery">đây</router-link>
-        </p></v-col
-      >
-    </v-row>
   </v-container>
 </template>
 <script lang="ts">
@@ -405,15 +334,6 @@ export default class Transporting extends Vue {
     totalItems: 0,
     itemsPerPageItems: [5, 10, 20, 50]
   };
-  // ContractDocument
-  contractDocumentOptions = {
-    page: 1,
-    itemsPerPage: 5
-  } as DataOptions;
-  contractDocumentServerSideOptions = {
-    totalItems: 0,
-    itemsPerPageItems: [5, 10, 20, 50]
-  };
 
   shippingInfoHeaders = [
     {
@@ -435,14 +355,6 @@ export default class Transporting extends Vue {
     {
       text: "Trạng thái",
       value: "status"
-    },
-    {
-      text: "Lịch trình",
-      value: "router"
-    },
-    {
-      text: "Hành động",
-      value: "actions"
     }
   ];
   contractDocumentHeaders = [
@@ -518,19 +430,19 @@ export default class Transporting extends Vue {
       console.log("shipping", _res.data);
       this.loading = false;
       if (_res.data) {
-        const _shippingInfos = _res.data.data;
-        this.shippingInfos = _shippingInfos;
-        this.shippingInfoServerSideOptions.totalItems = _res.data.totalElements;
-        if (this.shippingInfos.length > 0) {
-          this.shippingInfo = this.shippingInfos[0];
-          await this.openDetailRouter(this.shippingInfo);
-        }
+        console.log(_res);
+        const _shippingInfo = _res.data;
+        this.shippingInfo = _shippingInfo as IShippingInfo;
+        this.shippingInfos.push(this.shippingInfo);
+        this.shippingInfoServerSideOptions.totalItems = 1;
+        await this.openDetailRouter(this.shippingInfo);
       }
     }
   }
 
   async openDetailRouter(item: IShippingInfo) {
     this.shippingInfo = item;
+    console.log(this.shippingInfo);
     const _res = await getInboundByContainer(item.container.id as number);
     if (_res.data) {
       const _inbound = _res.data;

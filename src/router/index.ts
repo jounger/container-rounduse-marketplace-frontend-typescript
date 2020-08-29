@@ -136,6 +136,16 @@ const routes: Array<RouteConfig> = [
       title: "Bảng điều khiển"
     }
   },
+  {
+    path: "/overview",
+    name: "Overview",
+    component: () => import("@/views/user/overview/index.vue"),
+    meta: {
+      auth: true,
+      layout: "NavLayout",
+      title: "Trang tổng quan"
+    }
+  },
   // ADMIN
   {
     path: "/role",
