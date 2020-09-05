@@ -156,6 +156,7 @@ export default class CardProfile extends Vue {
           user.profileImagePath = _user.profileImagePath;
           // Save back to localStorage
           localStorage.setItem("default_auth_user", JSON.stringify(user));
+          location.reload();
         }
       }
     }

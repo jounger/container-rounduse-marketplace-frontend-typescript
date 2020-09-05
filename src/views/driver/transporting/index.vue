@@ -51,7 +51,7 @@
                             }
                           },
                           shippingInfo.container.number,
-                          '/local_shipping.png'
+                          '/truck.png'
                         )
                       "
                       :google="google"
@@ -316,7 +316,7 @@ export default class Transporting extends Vue {
   status = false;
   shippingInfoOptions = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   shippingInfoServerSideOptions = {
     totalItems: 0,

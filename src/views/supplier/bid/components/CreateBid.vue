@@ -330,7 +330,7 @@ export default class CreateBid extends Vue {
 
   biddingDocumentOptions = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   biddingDocumentServerSideOptions = {
     totalItems: 0,
@@ -338,7 +338,7 @@ export default class CreateBid extends Vue {
   };
   inboundOptions = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   inboundServerSideOptions = {
     totalItems: 0,
@@ -346,7 +346,7 @@ export default class CreateBid extends Vue {
   };
   containerOptions = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   containerServerSideOptions = {
     totalItems: 0,

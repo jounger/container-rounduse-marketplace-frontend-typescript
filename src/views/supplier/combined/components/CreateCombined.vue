@@ -208,7 +208,7 @@ export default class CreateCombined extends Vue {
   loading = false;
   containerOptions = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   containerServerSideOptions = {
     totalItems: 0,

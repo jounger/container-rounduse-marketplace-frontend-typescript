@@ -155,7 +155,7 @@ export default class ListContainer extends Vue {
   loading = true;
   inboundOptions = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   inboundServerSideOptions = {
     totalItems: 0,
@@ -163,7 +163,7 @@ export default class ListContainer extends Vue {
   };
   containerOptions = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   containerServerSideOptions = {
     totalItems: 0,

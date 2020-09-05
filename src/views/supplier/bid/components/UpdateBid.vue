@@ -262,7 +262,7 @@ export default class UpdateBid extends Vue {
   loading = true;
   containerOptions = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   containerServerSideOptions = {
     totalItems: 0,

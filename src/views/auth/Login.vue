@@ -90,15 +90,6 @@ export default class Login extends Vue {
   width: 110px;
   height: 36px;
 }
-.background-img {
-  background: linear-gradient(#7c7979cc, rgba(114, 112, 112, 0.8)),
-    url("../../assets/images/background.jpg");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  width: inherit;
-  height: 175%;
-}
 .title {
   color: #037243;
   font-size: 40px !important;
