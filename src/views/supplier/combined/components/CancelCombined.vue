@@ -10,12 +10,11 @@
             <v-divider class="mt-3"></v-divider>
             <div>
               Nếu hủy, bạn sẽ phải trả
-              {{ combined.contract.finesAgainstContractViolations || 0 }}% =
+              {{ combined.contract.finesAgainstContractViolations }}% =
               {{
                 currencyFormatter(
                   Math.ceil(
-                    ((combined.contract.finesAgainstContractViolations || 0) /
-                      100) *
+                    (combined.contract.finesAgainstContractViolations / 100) *
                       combined.contract.price
                   )
                 )

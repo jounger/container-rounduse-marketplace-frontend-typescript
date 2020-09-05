@@ -77,30 +77,30 @@
                   :sub="true"
                 />
               </template>
+              <template v-slot:item.detail="{ item }">
+                <v-btn
+                  class="ma-1"
+                  tile
+                  outlined
+                  color="info"
+                  x-small
+                  :to="`/combined/${item.id}`"
+                >
+                  <v-icon left dense>remove_red_eye</v-icon> Chi tiết
+                </v-btn>
+              </template>
               <template v-slot:item.actions="{ item }">
-                <div>
-                  <v-btn
-                    class="ma-1"
-                    tile
-                    outlined
-                    color="info"
-                    x-small
-                    :to="`/combined/${item.id}`"
-                  >
-                    <v-icon left dense>remove_red_eye</v-icon> Chi tiết
-                  </v-btn>
-                  <v-btn
-                    v-if="item.isCanceled == false"
-                    class="ma-1"
-                    tile
-                    outlined
-                    color="error"
-                    x-small
-                    @click="openCancelCombined(item)"
-                  >
-                    <v-icon left dense>cancel</v-icon> Hủy hợp đồng
-                  </v-btn>
-                </div>
+                <v-btn
+                  v-if="item.isCanceled == false"
+                  class="ma-1"
+                  tile
+                  outlined
+                  color="error"
+                  x-small
+                  @click="openCancelCombined(item)"
+                >
+                  <v-icon left dense>cancel</v-icon> Hủy hợp đồng
+                </v-btn>
               </template>
             </v-data-table>
           </td>
@@ -110,7 +110,7 @@
     <v-row justify="center">
       <CancelCombined
         v-if="dialogEdit"
-        :dialogCancel="dialogEdit"
+        :dialogCancel.sync="dialogEdit"
         :combined="combined"
         ::combineds.sync="combineds"
       />
@@ -204,6 +204,11 @@ export default class Combined extends Vue {
       class: "tertiary"
     },
     { text: "Trạng thái", value: "isCanceled", class: "tertiary" },
+    {
+      text: "Chi tiết",
+      value: "detail",
+      class: "tertiary"
+    },
     {
       text: "Hành động",
       value: "actions",
