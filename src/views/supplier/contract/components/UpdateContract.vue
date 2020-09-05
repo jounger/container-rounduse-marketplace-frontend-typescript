@@ -16,7 +16,7 @@
                 prepend-icon="person"
                 type="text"
                 disabled
-                v-model="$auth.user().fullname"
+                v-model="combined.contract.sender.companyName"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -45,13 +45,17 @@
             <v-col cols="12" md="11">
               <v-text-field
                 v-if="contractLocal.required"
-                disabled
                 label="% Tiền phạt*"
-                name="finesAgainstContractViolation"
+                name="finesAgainstContractViolations"
                 prepend-icon="monetization_on"
                 type="text"
-                :rules="[required('phần trăm tiền phạt')]"
-                v-model="contractLocal.finesAgainstContractViolation"
+                :rules="[
+                  required('% tiền phạt'),
+                  minNumber('% tiền phạt', 0),
+                  maxNumber('% tiền phạt', 8)
+                ]"
+                :hint="contractLocal.finesAgainstContractViolations + '%'"
+                v-model="contractLocal.finesAgainstContractViolations"
               ></v-text-field>
             </v-col>
           </v-row>

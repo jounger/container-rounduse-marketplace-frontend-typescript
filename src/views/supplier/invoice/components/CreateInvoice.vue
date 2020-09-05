@@ -131,8 +131,8 @@ export default class CreateInvoice extends Vue {
     const _bidder = _bid.bidder as IForwarder;
     if (this.$auth.check("ROLE_MERCHANT")) {
       this.invoiceTypes = [
-        { en: "FINES", vi: "Tiền phạt hợp đồng" },
-        { en: "PAYMENT", vi: "Thanh toán phí" }
+        { en: "PAYMENT", vi: "Thanh toán phí" },
+        { en: "FINES", vi: "Tiền phạt hợp đồng" }
       ];
       this.invoiceLocal.sender = _contract.sender.companyName;
       this.invoiceLocal.recipient = _bidder.companyName;

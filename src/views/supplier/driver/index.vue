@@ -116,7 +116,7 @@ export default class Driver extends Vue {
   update = false;
   options = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   serverSideOptions = {
     totalItems: 0,

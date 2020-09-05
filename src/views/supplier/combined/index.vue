@@ -78,22 +78,43 @@
                 />
               </template>
               <template v-slot:item.actions="{ item }">
-                <v-btn
-                  class="ma-1"
-                  tile
-                  outlined
-                  color="info"
-                  x-small
-                  :to="`/combined/${item.id}`"
-                >
-                  <v-icon left dense>remove_red_eye</v-icon> Chi tiết
-                </v-btn>
+                <div>
+                  <v-btn
+                    class="ma-1"
+                    tile
+                    outlined
+                    color="info"
+                    x-small
+                    :to="`/combined/${item.id}`"
+                  >
+                    <v-icon left dense>remove_red_eye</v-icon> Chi tiết
+                  </v-btn>
+                  <v-btn
+                    v-if="item.isCanceled == false"
+                    class="ma-1"
+                    tile
+                    outlined
+                    color="error"
+                    x-small
+                    @click="openCancelCombined(item)"
+                  >
+                    <v-icon left dense>cancel</v-icon> Hủy hợp đồng
+                  </v-btn>
+                </div>
               </template>
             </v-data-table>
           </td>
         </template>
       </v-data-table>
     </v-card>
+    <v-row justify="center">
+      <CancelCombined
+        v-if="dialogEdit"
+        :dialogCancel="dialogEdit"
+        :combined="combined"
+        ::combineds.sync="combineds"
+      />
+    </v-row>
   </v-container>
 </template>
 <script lang="ts">
@@ -105,23 +126,27 @@ import { getBiddingDocumentsByExistCombined } from "@/api/bidding-document";
 import { DataOptions } from "vuetify";
 import { getCombinedsByBiddingDocument } from "@/api/combined";
 import ChipStatus from "@/components/ChipStatus.vue";
+import CancelCombined from "./components/CancelCombined.vue";
 
 @Component({
   mixins: [Utils],
   components: {
-    ChipStatus
+    ChipStatus,
+    CancelCombined
   }
 })
 export default class Combined extends Vue {
   biddingDocuments: Array<IBiddingDocument> = [];
   biddingDocument = null as IBiddingDocument | null;
   combineds: Array<ICombined> = [];
+  combined = null as ICombined | null;
+  dialogEdit = false;
   loading = true;
   expanded: Array<IBiddingDocument> = [];
   singleExpand = true;
   options = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   serverSideOptions = {
     totalItems: 0,
@@ -129,7 +154,7 @@ export default class Combined extends Vue {
   };
   combinedOptions = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   combinedServerSideOptions = {
     totalItems: 0,
@@ -185,6 +210,11 @@ export default class Combined extends Vue {
       class: "tertiary"
     }
   ];
+
+  openCancelCombined(item: ICombined) {
+    this.combined = item;
+    this.dialogEdit = true;
+  }
 
   async clicked(value: IBiddingDocument) {
     if (this.singleExpand) {

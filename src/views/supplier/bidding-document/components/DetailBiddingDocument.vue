@@ -502,7 +502,7 @@ export default class DetailBiddingDocument extends Vue {
   numberWinner = 0;
   options = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   serverSideOptions = {
     totalItems: 0,
@@ -510,7 +510,7 @@ export default class DetailBiddingDocument extends Vue {
   };
   containerOptions = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   containerServerSideOptions = {
     totalItems: 0,

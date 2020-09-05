@@ -147,7 +147,7 @@ export default class Report extends Vue {
   loading = true;
   options = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   serverSideOptions = {
     totalItems: 0,

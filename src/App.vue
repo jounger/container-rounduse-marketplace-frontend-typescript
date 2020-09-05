@@ -24,7 +24,7 @@ export default class App extends Vue {
   DEFAULT_TITLE = "CRuM - Trang trống";
 
   get layout() {
-    return this.$route.meta.layout || "DefaultLayout";
+    return this.$route.meta.layout || "EmptyLayout";
   }
 
   @Watch("$route", { immediate: true })

@@ -43,6 +43,14 @@
                   <v-list-item-title>Tạo hóa đơn</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
+              <v-list-item @click="openDetailInvoice(item)">
+                <v-list-item-icon>
+                  <v-icon small>remove_red_eye</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Xem hóa đơn</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
               <v-list-item
                 @click="openUpdateDialog(item)"
                 v-if="$auth.check('ROLE_MERCHANT')"
@@ -52,17 +60,6 @@
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>Chỉnh sửa</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-              <v-list-item
-                @click="openDetailDialog(item)"
-                v-if="$auth.check('ROLE_FORWARDER')"
-              >
-                <v-list-item-icon>
-                  <v-icon small>remove_red_eye</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>Xem chi tiết</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
               <v-list-item
@@ -98,12 +95,12 @@
         </template>
         <template v-slot:item.contract.paymentPercentage="{ item }">
           <v-progress-linear
-            color="success"
+            :color="item.isCanceled ? 'red' : 'success'"
             height="25"
             :value="item.contract.paymentPercentage || 0"
           >
             <template v-slot="{ value }">
-              <strong>{{ Math.ceil(value) }}%</strong>
+              <strong>{{ value >= 100 ? 100 : Math.ceil(value) }}%</strong>
             </template></v-progress-linear
           >
         </template>
@@ -172,7 +169,6 @@
       v-if="dialogAddInvoice"
       :dialogAdd.sync="dialogAddInvoice"
       :combined="combined"
-      :merchant="merchant"
       :update="false"
       :readonly="false"
     />
@@ -183,12 +179,17 @@
         :contract.sync="contract"
         :dialogAdd.sync="dialogAdd"
         :readonly="readonly"
-        :merchant="merchant"
         :totalItems.sync="serverSideOptions.totalItems"
       />
       <RatingContract
         v-if="dialogRating"
         :dialogRating.sync="dialogRating"
+        :combined="combined"
+      />
+      <DetailInvoiceByContract
+        v-if="dialogDetailInvoice"
+        :dialogDetail.sync="dialogDetailInvoice"
+        :contract="contract"
         :combined="combined"
       />
     </v-row>
@@ -209,6 +210,7 @@ import CreateContractDocument from "../combined/components/CreateContractDocumen
 import Utils from "@/mixin/utils";
 import ChipStatus from "@/components/ChipStatus.vue";
 import RatingContract from "./components/RatingContract.vue";
+import DetailInvoiceByContract from "../invoice/components/DetailInvoiceByContract.vue";
 
 @Component({
   mixins: [Utils],
@@ -218,7 +220,8 @@ import RatingContract from "./components/RatingContract.vue";
     CreateInvoice,
     CreateContractDocument,
     ChipStatus,
-    RatingContract
+    RatingContract,
+    DetailInvoiceByContract
   }
 })
 export default class Contract extends Vue {
@@ -228,6 +231,7 @@ export default class Contract extends Vue {
   dialogDetail = false;
   dialogAdd = false;
   dialogAddInvoice = false;
+  dialogDetailInvoice = false;
   dialogAddContractDocument = false;
   dialogRating = false;
   loading = true;
@@ -236,13 +240,11 @@ export default class Contract extends Vue {
   checkValid = false;
   expanded: Array<ICombined> = [];
   contractDocuments: Array<IContractDocument> = [];
-  merchants: Array<string> = [];
-  merchant = "";
   contractDocument = null as IContractDocument | null;
   singleExpand = true;
   options = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   serverSideOptions = {
     totalItems: 0,
@@ -250,7 +252,7 @@ export default class Contract extends Vue {
   };
   contractDocumentOptions = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   contractDocumentServerSideOptions = {
     totalItems: 0,
@@ -268,7 +270,7 @@ export default class Contract extends Vue {
     { text: "Giá hợp đồng", value: "contract.price" },
     {
       text: "% Tiền phạt",
-      value: "contract.finesAgainstContractViolation"
+      value: "contract.finesAgainstContractViolations"
     },
     { text: "Đã thanh toán (%)", value: "contract.paymentPercentage" },
     { text: "Ngày tạo hợp đồng", value: "contract.creationDate" },
@@ -297,9 +299,13 @@ export default class Contract extends Vue {
   openCreateInvoice(item: ICombined) {
     this.contract = item.contract as IContract;
     this.combined = item;
-    const index = this.combineds.findIndex((x: ICombined) => x.id == item.id);
-    this.merchant = this.merchants[index];
     this.dialogAddInvoice = true;
+  }
+
+  openDetailInvoice(item: ICombined) {
+    this.contract = item.contract as IContract;
+    this.combined = item;
+    this.dialogDetailInvoice = true;
   }
 
   openDetailContractDocument(item: IContractDocument) {
@@ -315,8 +321,6 @@ export default class Contract extends Vue {
   openUpdateDialog(item: ICombined) {
     this.contract = item.contract as IContract;
     this.combined = item;
-    const index = this.combineds.findIndex((x: ICombined) => x.id == item.id);
-    this.merchant = this.merchants[index];
     this.readonly = false;
     this.dialogAdd = true;
   }
@@ -324,8 +328,6 @@ export default class Contract extends Vue {
   openDetailDialog(item: ICombined) {
     this.contract = item.contract as IContract;
     this.combined = item;
-    const index = this.combineds.findIndex((x: ICombined) => x.id == item.id);
-    this.merchant = this.merchants[index];
     this.readonly = true;
     this.dialogAdd = true;
   }

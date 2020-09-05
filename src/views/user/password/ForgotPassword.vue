@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid class="background-img">
     <v-card width="550" height="fit-content" class="mt-12 mx-auto">
       <v-toolbar color="primary" light flat>
         <v-toolbar-title
