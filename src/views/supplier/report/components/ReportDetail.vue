@@ -204,7 +204,7 @@
               <v-list-item-avatar color="tertiary">
                 <v-img
                   v-if="$auth.user().profileImagePath"
-                  :src="$auth.user().profileImagePath"
+                  :src="userProfileImage"
                 ></v-img>
                 <span v-else class="white--text headline">{{
                   $auth.user().username
@@ -322,6 +322,10 @@ export default class ReportDetail extends Vue {
     message: "",
     satisfactionPoints: 0
   } as IFeedback;
+
+  get userProfileImage() {
+    return process.env.VUE_APP_ENDPOINT + this.$auth.user().profileImagePath;
+  }
 
   openDeleteDialog(item: IFeedback) {
     this.feedback = item;

@@ -16,7 +16,7 @@
               >
                 <v-img
                   v-if="$auth.user().profileImagePath"
-                  :src="profileImagePath"
+                  :src="userProfileImage"
                 ></v-img>
                 <v-icon v-else dark>mdi-account-circle</v-icon>
                 <v-row
@@ -138,7 +138,7 @@ export default class CardProfile extends Vue {
   fileInput = null as Blob | null;
   editProfileImage = false;
 
-  profileImagePath = "";
+  userProfileImage = "";
 
   async onUpload() {
     if (this.fileInput) {
@@ -147,7 +147,7 @@ export default class CardProfile extends Vue {
       const _res = await uploadProfileImage(formData);
       if (_res.data) {
         const _user = _res.data.data;
-        this.profileImagePath =
+        this.userProfileImage =
           process.env.VUE_APP_ENDPOINT + _user.profileImagePath;
         // Get the existing data
         const defaultAuthUser = localStorage.getItem("default_auth_user");
@@ -163,7 +163,7 @@ export default class CardProfile extends Vue {
   }
 
   mounted() {
-    this.profileImagePath =
+    this.userProfileImage =
       process.env.VUE_APP_ENDPOINT + this.$auth.user().profileImagePath;
   }
 }

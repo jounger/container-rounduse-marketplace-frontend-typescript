@@ -68,7 +68,7 @@ import { Component, Vue } from "vue-property-decorator";
 })
 export default class NavigationSupplier extends Vue {
   private merchantNavigation = [
-    { title: "Trang tổng quan", icon: "dashboard", link: "/overview" },
+    { title: "Trang tổng quan", icon: "equalizer", link: "/overview" },
     { title: "Quản lý Hàng xuất", icon: "flight_takeoff", link: "/outbound" },
     { title: "Quản lý Hàng ghép", icon: "table_chart", link: "/combined" },
     {
@@ -88,7 +88,7 @@ export default class NavigationSupplier extends Vue {
     }
   ];
   private forwarderNavigation = [
-    { title: "Trang tổng quan", icon: "dashboard", link: "/overview" },
+    { title: "Trang tổng quan", icon: "equalizer", link: "/overview" },
     { title: "Quản lý Hàng nhập", icon: "flight_land", link: "/inbound" },
     { title: "Quản lý Hàng ghép", icon: "table_chart", link: "/combined" },
     {
