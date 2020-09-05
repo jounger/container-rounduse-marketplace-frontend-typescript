@@ -190,7 +190,7 @@ export default class BiddingDocument extends Vue {
   dateInit = addTimeToDate(new Date().toString());
   options = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   serverSideOptions = {
     totalItems: 0,

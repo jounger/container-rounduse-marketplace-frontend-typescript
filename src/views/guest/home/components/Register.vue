@@ -16,7 +16,7 @@
         <v-col cols="12" md="2"></v-col>
       </v-row>
       <v-row justify="center">
-        <v-list three-line subheader outlined width="800">
+        <v-list three-line subheader outlined width="800" class="elevation-5">
           <v-stepper v-model="stepper" vertical class="elevation-0">
             <v-stepper-step
               :complete="stepper > 1"

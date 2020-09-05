@@ -1,8 +1,7 @@
 <template>
   <v-container class="my-container">
     <v-row>
-      <!-- TITLE -->
-      <v-col class="md-6">
+      <v-col cols="12" md="8">
         <v-card-title>Đăng ký tài khoản</v-card-title>
         <div class="register-line"></div>
         <p>
@@ -10,8 +9,8 @@
           trang web.
         </p>
         <!-- START CONTENT -->
-        <v-list class="form-list" three-line subheader outlined>
-          <v-stepper v-model="stepper" vertical>
+        <v-list class="form-list elevation-5" three-line subheader outlined>
+          <v-stepper v-model="stepper" vertical class="elevation-0">
             <v-stepper-step
               :complete="stepper > 1"
               step="1"
@@ -279,8 +278,8 @@
           </v-stepper>
         </v-list></v-col
       >
-      <v-col class="md-5"
-        ><v-card width="500" height="200" class="follow mt-5" outlined>
+      <v-col cols="12" md="4"
+        ><v-card width="400" height="200" class="follow mt-5" outlined>
           <v-card-title>Theo dõi chúng tôi</v-card-title>
 
           <p class="mt-5 ml-6">để cập nhật những thông tin mới nhất</p>
@@ -299,7 +298,7 @@
             >
           </v-card-text>
         </v-card>
-        <v-card width="500" height="400" class="contact mt-10" outlined>
+        <v-card width="400" height="400" class="contact mt-10" outlined>
           <v-card-title>Liên lạc với chúng tôi</v-card-title>
 
           <p class="mt-5 ml-6">để được tư vấn thêm</p>
@@ -321,8 +320,7 @@
             >
           </v-card-text>
         </v-card>
-      </v-col>
-      <!-- END CONTENT --></v-row
+      </v-col></v-row
     >
   </v-container>
 </template>

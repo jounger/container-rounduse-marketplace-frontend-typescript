@@ -159,7 +159,8 @@
             <v-form ref="finishForm">
               <v-checkbox
                 v-model="autoSendCheckbox"
-                label="Tự động gửi thư mời thầu"
+                label="Tự động gửi thư mời thầu cho các chủ xe"
+                disabled
               ></v-checkbox>
               <v-checkbox
                 v-model="checkbox"
@@ -237,7 +238,7 @@ export default class CreateBiddingDocument extends Vue {
   loading = false;
   options = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   serverSideOptions = {
     totalItems: 0,

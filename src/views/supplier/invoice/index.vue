@@ -149,7 +149,7 @@ export default class Invoice extends Vue {
   disabled = false;
   options = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   serverSideOptions = {
     totalItems: 0,

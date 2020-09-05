@@ -116,7 +116,7 @@ export default class BorrowNotify extends Vue {
   singleExpand = true;
   options = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   serverSideOptions = {
     totalItems: 0,
@@ -124,7 +124,7 @@ export default class BorrowNotify extends Vue {
   };
   shippingInfoOptions = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   shippingInfoServerSideOptions = {
     totalItems: 0,

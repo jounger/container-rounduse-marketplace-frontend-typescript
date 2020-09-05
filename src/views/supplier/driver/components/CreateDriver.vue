@@ -61,8 +61,8 @@
                 v-model="driverLocal.driverLicense"
                 :counter="50"
                 :rules="[
-                  minLength('Số bằng lái', 5),
-                  maxLength('Số bằng lái', 50)
+                  minLength('Số bằng lái', 12),
+                  maxLength('Số bằng lái', 12)
                 ]"
               ></v-text-field>
             </v-col>

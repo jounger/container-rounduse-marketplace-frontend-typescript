@@ -5,7 +5,7 @@
       tile
       color="black"
       class="footer lighten-1 white--text text-center"
-      width="1550"
+      width="100%"
     >
       <v-card-text>
         <v-btn

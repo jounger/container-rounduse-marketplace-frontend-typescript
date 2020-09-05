@@ -109,7 +109,7 @@ export default class Supplier extends Vue {
   status = false;
   options = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 10
   } as DataOptions;
   serverSideOptions = {
     totalItems: 0,
