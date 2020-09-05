@@ -27,3 +27,9 @@ export interface ResetPasswordRequest {
   email?: string;
   newPassword?: string;
 }
+
+export interface OverviewRequest {
+  status?: string;
+  startDate: string;
+  endDate: string;
+}
