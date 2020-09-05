@@ -96,8 +96,8 @@ export default class Login extends Vue {
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-  height: 185%;
-  width: 200%;
+  width: inherit;
+  height: 175%;
 }
 .title {
   color: #037243;

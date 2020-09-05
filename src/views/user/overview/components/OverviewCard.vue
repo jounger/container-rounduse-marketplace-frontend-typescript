@@ -1,7 +1,17 @@
 <template>
   <section class="overview">
     <v-row>
-      <h1 class="ml-10">Tổng quan hàng xuất trong tháng qua</h1>
+      <h1 class="ml-10">
+        Tổng quan
+        {{
+          $auth.check("ROLE_FORWARDER")
+            ? "Container"
+            : $auth.check("ROLE_MERCHANT")
+            ? "hàng xuất"
+            : ""
+        }}
+        trong tháng
+      </h1>
     </v-row>
     <v-divider inset class="mt-5"></v-divider>
     <v-row>
@@ -10,12 +20,34 @@
           <v-col cols="12" md="1"></v-col>
           <v-col cols="12" md="2">
             <v-avatar color="blue" size="36"
-              ><v-icon dark>flight_takeoff</v-icon></v-avatar
+              ><v-icon dark>{{
+                $auth.check("ROLE_FORWARDER")
+                  ? "flight_land"
+                  : $auth.check("ROLE_MERCHANT")
+                  ? "flight_takeoff"
+                  : ""
+              }}</v-icon></v-avatar
             >
           </v-col>
           <v-col cols="12" md="8">
-            <h2><router-link to="/outbound">Tổng số hàng xuất</router-link></h2>
-            <p>{{ totalOutbound }} hàng xuất</p>
+            <h2>
+              <router-link to="/outbound" v-if="$auth.check('ROLE_MERCHANT')"
+                >Tổng số hàng xuất</router-link
+              >
+              <router-link to="/inbound" v-if="$auth.check('ROLE_FORWARDER')"
+                >Tổng số hàng nhập</router-link
+              >
+            </h2>
+            <p>
+              {{ total }} hàng
+              {{
+                $auth.check("ROLE_FORWARDER")
+                  ? "nhập"
+                  : $auth.check("ROLE_MERCHANT")
+                  ? "xuất"
+                  : ""
+              }}
+            </p>
           </v-col></v-row
         ></v-col
       ><v-col cols="12" md="6"
@@ -23,12 +55,35 @@
           <v-col cols="12" md="1"></v-col>
           <v-col cols="12" md="2">
             <v-avatar color="success" size="36"
-              ><v-icon dark>offline_pin</v-icon></v-avatar
+              ><v-icon dark>{{
+                $auth.check("ROLE_FORWARDER")
+                  ? "local_shipping"
+                  : $auth.check("ROLE_MERCHANT")
+                  ? "offline_pin"
+                  : ""
+              }}</v-icon></v-avatar
             >
           </v-col>
           <v-col cols="12" md="8">
-            <h2><router-link to="/combined">Số hàng đã giao</router-link></h2>
-            <p>{{ delivered }} mặt hàng</p>
+            <h2>
+              <router-link to="/combined" v-if="$auth.check('ROLE_MERCHANT')"
+                >Số hàng đã giao</router-link
+              >
+            </h2>
+            <h2>
+              <router-link to="/inbound" v-if="$auth.check('ROLE_FORWARDER')"
+                >Tổng số Container</router-link
+              >
+            </h2>
+            <p>
+              {{
+                $auth.check("ROLE_FORWARDER")
+                  ? delivered + " mặt hàng"
+                  : $auth.check("ROLE_MERCHANT")
+                  ? countCont + " container"
+                  : ""
+              }}
+            </p>
           </v-col></v-row
         ></v-col
       >
@@ -42,13 +97,29 @@
               ><v-icon dark>business_center</v-icon></v-avatar
             >
           </v-col>
-          <v-col cols="12" md="8">
+          <v-col cols="12" md="9">
             <h2>
-              <router-link to="/bidding-document"
+              <router-link
+                to="/bidding-document"
+                v-if="$auth.check('ROLE_MERCHANT')"
                 >Hàng đang đấu thầu</router-link
               >
             </h2>
-            <p>{{ bidding }} mặt hàng</p>
+            <h2>
+              <router-link to="/bid" v-if="$auth.check('ROLE_FORWARDER')"
+                >Container đang đấu thầu</router-link
+              >
+            </h2>
+            <p>
+              {{ bidding }}
+              {{
+                $auth.check("ROLE_FORWARDER")
+                  ? " container"
+                  : $auth.check("ROLE_MERCHANT")
+                  ? " mặt hàng"
+                  : ""
+              }}
+            </p>
           </v-col></v-row
         ></v-col
       ><v-col cols="12" md="6"
@@ -60,8 +131,46 @@
             >
           </v-col>
           <v-col cols="12" md="8">
-            <h2><router-link to="/combined">Hàng đã ghép</router-link></h2>
-            <p>{{ combined }} mặt hàng</p>
+            <h2>
+              <router-link to="/combined"
+                >{{
+                  $auth.check("ROLE_FORWARDER")
+                    ? "Container "
+                    : $auth.check("ROLE_MERCHANT")
+                    ? "Hàng "
+                    : ""
+                }}
+                đã ghép</router-link
+              >
+            </h2>
+            <p>
+              {{ combined }}
+              {{
+                $auth.check("ROLE_FORWARDER")
+                  ? " container"
+                  : $auth.check("ROLE_MERCHANT")
+                  ? " mặt hàng"
+                  : ""
+              }}
+            </p>
+          </v-col></v-row
+        ></v-col
+      >
+    </v-row>
+    <v-row v-if="$auth.check('ROLE_FORWARDER')">
+      <v-col cols="12" md="6"
+        ><v-row>
+          <v-col cols="12" md="1"></v-col>
+          <v-col cols="12" md="2">
+            <v-avatar color="warning" size="36"
+              ><v-icon dark>local_shipping</v-icon></v-avatar
+            >
+          </v-col>
+          <v-col cols="12" md="9">
+            <h2>
+              <router-link to="/combined">Số Container hoàn thành</router-link>
+            </h2>
+            <p>{{ delivered }} container</p>
           </v-col></v-row
         ></v-col
       >
@@ -75,10 +184,11 @@ import { addTimeToDate } from "@/utils/tool";
 
 @Component
 export default class OverviewCard extends Vue {
-  totalOutbound = 0;
+  total = 0;
   delivered = 0;
   bidding = 0;
   combined = 0;
+  countCont = 0;
   dateInit = addTimeToDate(new Date().toString());
 
   async created() {
@@ -114,10 +224,18 @@ export default class OverviewCard extends Vue {
       endDate: endDate
     });
     if (_res) {
-      this.totalOutbound = _res.data.outboundQty;
-      this.delivered = _res.data.combinedOutbountQty;
-      this.bidding = _res.data.pendingOutboundQty;
-      this.combined = _res.data.biddedOutboundQty;
+      if (this.$auth.check("ROLE_MERCHANT")) {
+        this.total = _res.data.outboundQty;
+        this.delivered = _res.data.combinedOutbountQty;
+        this.bidding = _res.data.pendingOutboundQty;
+        this.combined = _res.data.biddedOutboundQty;
+      } else if (this.$auth.check("ROLE_FORWARDER")) {
+        this.total = _res.data.inboundQty;
+        this.delivered = _res.data.combinedContainerQty;
+        this.bidding = _res.data.pendingContainerQty;
+        this.combined = _res.data.biddedContainerQty;
+        this.countCont = _res.data.containerQty;
+      }
     }
   }
 }

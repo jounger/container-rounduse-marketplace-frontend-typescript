@@ -8,9 +8,9 @@
           src="@/assets/images/background-cover.jpg"
         ></v-img>
         <v-card-title>Thông tin hàng nhập</v-card-title>
+        <v-divider inset></v-divider>
         <v-card-text>
           <v-list dense>
-            <v-subheader>Thông tin chung</v-subheader>
             <v-list-item>
               <v-list-item-icon>
                 <v-icon>import_export</v-icon>
@@ -38,7 +38,7 @@
                 }}</v-list-item-title>
                 <v-list-item-subtitle>
                   {{
-                    "Số lượng: " +
+                    "Số lượng Cont: " +
                       inbound.billOfLading.unit +
                       " x " +
                       inbound.containerType.name

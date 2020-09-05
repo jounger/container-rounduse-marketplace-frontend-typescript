@@ -1,6 +1,16 @@
 <template>
   <div id="chart" class="conversion">
-    <v-row> <h1>Bảng so sánh hàng xuất</h1> </v-row
+    <v-row>
+      <h1>
+        Tỉ lệ
+        {{
+          $auth.check("ROLE_FORWARDER")
+            ? "quay đầu"
+            : $auth.check("ROLE_MERCHANT")
+            ? "chuyển đổi hàng xuất"
+            : ""
+        }}
+      </h1> </v-row
     ><v-divider inset class="mt-5 mb-5"></v-divider>
     <v-card width="450">
       <apexchart
@@ -42,6 +52,11 @@ export default class ConversionChart extends Vue {
     labels: ["Tỉ lệ chuyển đổi hàng xuất"]
   };
   async created() {
+    if (this.$auth.check("ROLE_MERCHANT")) {
+      this.chartOptions.labels[0] = "Tỉ lệ chuyển đổi hàng xuất";
+    } else if (this.$auth.check("ROLE_FORWARDER")) {
+      this.chartOptions.labels[0] = "Tỉ lệ quay đầu";
+    }
     const year = this.dateInit.slice(0, 4);
     const month = this.dateInit.slice(5, 7);
     const startDate = year + "-" + month + "-01T00:00";
@@ -74,8 +89,21 @@ export default class ConversionChart extends Vue {
       endDate: endDate
     });
     if (_res) {
-      const x = _res.data.combinedOutbountQty / _res.data.outboundQty;
-      this.series.push(x * 100);
+      if (this.$auth.check("ROLE_MERCHANT")) {
+        if (_res.data.outboundQty != 0) {
+          const x = _res.data.combinedOutbountQty / _res.data.outboundQty;
+          this.series.push(x * 100);
+        } else {
+          this.series.push(0);
+        }
+      } else if (this.$auth.check("ROLE_FORWARDER")) {
+        if (_res.data.containerQty != 0) {
+          const x = _res.data.combinedContainerQty / _res.data.containerQty;
+          this.series.push(x * 100);
+        } else {
+          this.series.push(0);
+        }
+      }
     }
   }
 }
