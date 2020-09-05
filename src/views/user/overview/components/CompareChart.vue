@@ -1,6 +1,16 @@
 <template>
   <div id="chart" class="ml-10 compare">
-    <v-row> <h1>Bảng so sánh hàng xuất</h1> </v-row
+    <v-row>
+      <h1>
+        Bảng so sánh
+        {{
+          $auth.check("ROLE_FORWARDER")
+            ? "Container"
+            : $auth.check("ROLE_MERCHANT")
+            ? "hàng xuất"
+            : ""
+        }}
+      </h1> </v-row
     ><v-divider inset class="mt-5 mb-5"></v-divider>
     <v-card width="450">
       <v-card-text>
@@ -29,11 +39,11 @@ export default class CompareChart extends Vue {
   dateInit = addTimeToDate(new Date().toString());
   series = [
     {
-      name: "Tổng số hàng xuất",
+      name: "",
       data: [] as Array<number>
     },
     {
-      name: "Số hàng xuất đã giao",
+      name: "",
       data: [] as Array<number>
     }
   ];
@@ -72,6 +82,13 @@ export default class CompareChart extends Vue {
     }
   };
   async created() {
+    if (this.$auth.check("ROLE_MERCHANT")) {
+      this.series[0].name = "Tổng số hàng xuất";
+      this.series[1].name = "Số hàng xuất đã giao";
+    } else if (this.$auth.check("ROLE_FORWARDER")) {
+      this.series[0].name = "Tổng số Container";
+      this.series[1].name = "Số Container quay đầu";
+    }
     const year = this.dateInit.slice(0, 4);
     const month = this.dateInit.slice(5, 7);
     const startDate = year + "-" + month + "-01T00:00";
@@ -104,32 +121,52 @@ export default class CompareChart extends Vue {
       endDate: year + "-" + month + "-07T23:59"
     });
     if (_resWeek1) {
-      this.series[0].data.push(_resWeek1.data.outboundQty);
-      this.series[1].data.push(_resWeek1.data.combinedOutbountQty);
+      if (this.$auth.check("ROLE_MERCHANT")) {
+        this.series[0].data.push(_resWeek1.data.outboundQty);
+        this.series[1].data.push(_resWeek1.data.combinedOutbountQty);
+      } else if (this.$auth.check("ROLE_FORWARDER")) {
+        this.series[0].data.push(_resWeek1.data.containerQty);
+        this.series[1].data.push(_resWeek1.data.combinedContainerQty);
+      }
     }
     const _resWeek2 = await overview({
-      startDate: year + "-" + month + "-08T23:59",
+      startDate: year + "-" + month + "-08T00:00",
       endDate: year + "-" + month + "-15T23:59"
     });
     if (_resWeek2) {
-      this.series[0].data.push(_resWeek2.data.outboundQty);
-      this.series[1].data.push(_resWeek2.data.combinedOutbountQty);
+      if (this.$auth.check("ROLE_MERCHANT")) {
+        this.series[0].data.push(_resWeek2.data.outboundQty);
+        this.series[1].data.push(_resWeek2.data.combinedOutbountQty);
+      } else if (this.$auth.check("ROLE_FORWARDER")) {
+        this.series[0].data.push(_resWeek2.data.containerQty);
+        this.series[1].data.push(_resWeek2.data.combinedContainerQty);
+      }
     }
     const _resWeek3 = await overview({
-      startDate: year + "-" + month + "-16T23:59",
+      startDate: year + "-" + month + "-16T00:00",
       endDate: year + "-" + month + "-23T23:59"
     });
     if (_resWeek3) {
-      this.series[0].data.push(_resWeek3.data.outboundQty);
-      this.series[1].data.push(_resWeek3.data.combinedOutbountQty);
+      if (this.$auth.check("ROLE_MERCHANT")) {
+        this.series[0].data.push(_resWeek3.data.outboundQty);
+        this.series[1].data.push(_resWeek3.data.combinedOutbountQty);
+      } else if (this.$auth.check("ROLE_FORWARDER")) {
+        this.series[0].data.push(_resWeek3.data.containerQty);
+        this.series[1].data.push(_resWeek3.data.combinedContainerQty);
+      }
     }
     const _resWeek4 = await overview({
-      startDate: year + "-" + month + "-24T23:59",
+      startDate: year + "-" + month + "-24T00:00",
       endDate: endDate
     });
     if (_resWeek4) {
-      this.series[0].data.push(_resWeek4.data.outboundQty);
-      this.series[1].data.push(_resWeek4.data.combinedOutbountQty);
+      if (this.$auth.check("ROLE_MERCHANT")) {
+        this.series[0].data.push(_resWeek4.data.outboundQty);
+        this.series[1].data.push(_resWeek4.data.combinedOutbountQty);
+      } else if (this.$auth.check("ROLE_FORWARDER")) {
+        this.series[0].data.push(_resWeek4.data.containerQty);
+        this.series[1].data.push(_resWeek4.data.combinedContainerQty);
+      }
     }
   }
 }

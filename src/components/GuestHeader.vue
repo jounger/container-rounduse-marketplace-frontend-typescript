@@ -2,9 +2,12 @@
   <v-app-bar app color="white" class="elevation-1">
     <router-link to="/" class="home" @click.native="scrollToTop"
       ><v-toolbar-title
-        ><span class="title">CRuM</span></v-toolbar-title
-      ></router-link
-    >
+        ><v-img
+          class="title"
+          src="@/assets/images/logo.jpg"
+          width="63"
+        ></v-img></v-toolbar-title
+    ></router-link>
     <Login v-if="dialogLogin" :dialogLogin.sync="dialogLogin" />
     <v-spacer></v-spacer>
     <v-btn
@@ -24,7 +27,7 @@
             <v-list-item-avatar color="tertiary">
               <v-img
                 v-if="$auth.user().profileImagePath"
-                :src="$auth.user().profileImagePath"
+                :src="userProfileImage"
               ></v-img>
               <span v-else class="white--text headline">{{
                 $auth.user().username
@@ -119,11 +122,17 @@ export default class Menubar extends Vue {
     },
     { title: "Đăng xuất", icon: "launch", link: "/logout", auth: true }
   ];
+
   scrollToTop() {
     window.scrollTo(0, 0);
   }
+
   get getMenu() {
     return this.menu.filter(x => x.auth == (this.$auth.user() != null));
+  }
+
+  get userProfileImage() {
+    return process.env.VUE_APP_ENDPOINT + this.$auth.user().profileImagePath;
   }
 }
 </script>

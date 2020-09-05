@@ -3,19 +3,8 @@
     <v-card
       class="d-flex justify-space-around align-start elevation-0"
       width="100%"
+      v-if="shippingInfo"
     >
-      <v-row justify="center">
-        <UpdateShippingInfo
-          v-if="shippingInfo"
-          :dialogEdit.sync="dialogEdit"
-          :shippingInfo="shippingInfo"
-          :shippingInfos.sync="shippingInfos"
-        />
-        <QRCodeGenerator
-          v-if="dialogQRGender"
-          :dialogGender.sync="dialogQRGender"
-        />
-      </v-row>
       <!-- OUTOUNBD -->
       <v-card class="order-0 flex-grow-0 mx-auto mr-5" max-width="480">
         <v-tabs background-color="white" color="tertiary" left fixed-tabs>
@@ -146,15 +135,12 @@
                       <v-icon>import_export</v-icon>
                     </v-list-item-icon>
                     <v-list-item-content>
-                      <v-list-item-title>{{
-                        "Mã hàng xuất: " + shippingInfo.outbound.code
-                      }}</v-list-item-title>
-                      <v-list-item-subtitle>
+                      <v-list-item-title>
                         {{
                           "Cảng bốc hàng: " +
                             shippingInfo.outbound.booking.portOfLoading.fullname
-                        }}
-                      </v-list-item-subtitle>
+                        }}</v-list-item-title
+                      >
                     </v-list-item-content>
                   </v-list-item>
 
@@ -275,10 +261,22 @@
         </v-data-table>
       </v-card>
     </v-card>
+    <v-row v-if="!shippingInfo" justify="center" align="center">
+      <v-col class="text-center">
+        <p>
+          Bạn đang không có đơn vận nào cần chạy. Rảnh rỗi hãy ghé xem Danh sách
+          vận đơn nhé!
+        </p>
+        <p>
+          Xem Danh sách vận đơn tại
+          <router-link to="/delivery">đây</router-link>
+        </p></v-col
+      >
+    </v-row>
   </v-container>
 </template>
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import FormValidate from "@/mixin/form-validate";
 import Utils from "@/mixin/utils";
 import { IInbound } from "@/entity/inbound";
@@ -294,20 +292,14 @@ import { IBiddingDocument } from "@/entity/bidding-document";
 import { google } from "google-maps";
 import ChipStatus from "@/components/ChipStatus.vue";
 import GoogleMapMixins from "@/components/googlemaps/map-mixins";
-import QRCodeGenerator from "@/components/QRCodeGenerator.vue";
-import SupplierRating from "../../supplier/bidding-document/components/SupplierRating.vue";
-import UpdateShippingInfo from "../../supplier/combined/components/UpdateShippingInfo.vue";
 
 @Component({
   mixins: [FormValidate, Utils, GoogleMapMixins],
   components: {
-    SupplierRating,
     GoogleMapLoader,
     GoogleMapDirection,
     GoogleMapMarker,
-    UpdateShippingInfo,
-    ChipStatus,
-    QRCodeGenerator
+    ChipStatus
   }
 })
 export default class Transporting extends Vue {
@@ -321,10 +313,6 @@ export default class Transporting extends Vue {
   stepper2 = 1;
   router = null as google.maps.DirectionsRequest | null;
   exception = true;
-  dialogDetail = false;
-  dialogEdit = false;
-  dialogAddContractDocument = false;
-  dialogQRGender = false;
   status = false;
   shippingInfoOptions = {
     page: 1,
@@ -418,25 +406,22 @@ export default class Transporting extends Vue {
     }
   }
 
-  @Watch("shippingInfoOptions")
-  async onShippingInfoOptionsChange(val: DataOptions) {
-    if (typeof val !== "undefined") {
-      this.loading = true;
-      const _res = await getShippingInfosAreActive({
-        page: val.page - 1,
-        limit: val.itemsPerPage
-      });
+  async created() {
+    this.loading = true;
+    const _res = await getShippingInfosAreActive({
+      page: 0,
+      limit: 1
+    });
 
-      console.log("shipping", _res.data);
-      this.loading = false;
-      if (_res.data) {
-        console.log(_res);
-        const _shippingInfo = _res.data;
-        this.shippingInfo = _shippingInfo as IShippingInfo;
-        this.shippingInfos.push(this.shippingInfo);
-        this.shippingInfoServerSideOptions.totalItems = 1;
-        await this.openDetailRouter(this.shippingInfo);
-      }
+    console.log("shipping", _res.data);
+    this.loading = false;
+    if (_res.data) {
+      console.log(_res);
+      const _shippingInfo = _res.data;
+      this.shippingInfo = _shippingInfo as IShippingInfo;
+      this.shippingInfos.push(this.shippingInfo);
+      this.shippingInfoServerSideOptions.totalItems = 1;
+      await this.openDetailRouter(this.shippingInfo);
     }
   }
 
@@ -451,15 +436,6 @@ export default class Transporting extends Vue {
     this.processShippingInfo(item);
   }
 
-  openUpdateDialog(item: IShippingInfo) {
-    this.shippingInfo = item;
-    this.dialogEdit = true;
-  }
-
-  openQRCodeDialog(item: IShippingInfo) {
-    this.shippingInfo = item;
-    this.dialogQRGender = true;
-  }
   get mapConfig() {
     return {
       loaderOptions: {

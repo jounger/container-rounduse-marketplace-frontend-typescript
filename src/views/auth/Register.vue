@@ -265,10 +265,19 @@
 
             <v-stepper-content step="3">
               <v-form ref="finishForm">
-                <v-checkbox
-                  v-model="checkbox"
-                  label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
-                ></v-checkbox>
+                <v-row
+                  ><v-col cols="12" md="1"
+                    ><v-checkbox v-model="checkbox"></v-checkbox></v-col
+                  ><v-col cols="12" md="8" class="mt-5"
+                    ><span
+                      >Tôi đã đọc và đồng ý với
+                      <router-link to="/term-of-use" target="_blank"
+                        >các điều khoản sử dụng</router-link
+                      >
+                      của hệ thống.</span
+                    ></v-col
+                  ></v-row
+                >
                 <v-btn @click="submit()" :disabled="!checkbox" color="primary"
                   >Hoàn tất</v-btn
                 >
@@ -429,5 +438,8 @@ export default class Register extends Vue {
   margin-left: 6%;
   border-bottom: 5px solid #eea632;
   position: absolute;
+}
+span {
+  margin-left: -25px;
 }
 </style>

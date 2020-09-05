@@ -228,10 +228,19 @@
 
           <v-stepper-content step="3">
             <v-form ref="finishForm">
-              <v-checkbox
-                v-model="checkbox"
-                label="Bạn đồng ý muốn thêm hãng tàu với những thông tin trên?"
-              ></v-checkbox>
+              <v-row
+                ><v-col cols="12" md="1"
+                  ><v-checkbox v-model="checkbox"></v-checkbox></v-col
+                ><v-col cols="12" md="8" class="mt-5"
+                  ><span
+                    >Tôi đã đọc và đồng ý với
+                    <router-link to="/term-of-use" target="_blank"
+                      >các điều khoản sử dụng</router-link
+                    >
+                    của hệ thống.</span
+                  ></v-col
+                ></v-row
+              >
               <v-btn
                 color="primary"
                 @click="createShippingLine()"
@@ -300,3 +309,8 @@ export default class CreateShippingLine extends Vue {
   }
 }
 </script>
+<style scoped lang="css">
+span {
+  margin-left: -25px;
+}
+</style>

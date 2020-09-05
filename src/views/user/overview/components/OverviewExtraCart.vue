@@ -100,9 +100,15 @@ export default class OverviewExtraCard extends Vue {
       endDate: endDate
     });
     if (_res) {
-      this.totalContract = _res.data.contractQty;
-      this.paid = _res.data.paidContractQty;
-      this.unpaid = _res.data.unpaidContractQty;
+      if (this.$auth.check("ROLE_MERCHANT")) {
+        this.totalContract = _res.data.contractQty;
+        this.paid = _res.data.paidContractQty;
+        this.unpaid = _res.data.unpaidContractQty;
+      } else if (this.$auth.check("ROLE_FORWARDER")) {
+        this.totalContract = _res.data.receivedContractQty;
+        this.paid = _res.data.getPaidContractQty;
+        this.unpaid = _res.data.unpaidContractQty;
+      }
     }
   }
 }

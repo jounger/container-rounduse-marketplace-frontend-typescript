@@ -62,7 +62,7 @@ export default class Newest extends Vue {
   stompClient = null as Client | null;
   options = {
     page: 1,
-    itemsPerPage: 5
+    itemsPerPage: 2
   } as DataOptions;
   serverSideOptions = {
     totalItems: 0,

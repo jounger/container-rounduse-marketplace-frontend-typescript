@@ -50,7 +50,7 @@
         <template v-slot:item.isMultipleAward="{ item }">
           {{ item.isMultipleAward ? "Đúng" : "Không" }}
         </template>
-        <template v-slot:item.actions="{ item }">
+        <template v-slot:item.detail="{ item }">
           <v-btn
             class="ma-1"
             tile
@@ -217,8 +217,8 @@ export default class Bid extends Vue {
     { text: "Ngày đóng thầu", value: "bidClosing" },
     { text: "Nhiều thầu thắng", value: "isMultipleAward" },
     {
-      text: "Hành động",
-      value: "actions"
+      text: "Chi tiết HSMT",
+      value: "detail"
     }
   ];
 

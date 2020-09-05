@@ -64,10 +64,11 @@
                 <v-list-item-title>{{
                   "Mã hàng xuất: " + biddingDocument.outbound.code
                 }}</v-list-item-title>
-                <v-list-item-subtitle>
-                  {{
-                    "Cảng bốc hàng: " +
-                      biddingDocument.outbound.booking.portOfLoading.fullname
+                <v-list-item-subtitle
+                  >{{
+                    "Khối lượng: " +
+                      biddingDocument.outbound.grossWeight +
+                      biddingDocument.outbound.unitOfMeasurement
                   }}
                 </v-list-item-subtitle>
               </v-list-item-content>
@@ -84,7 +85,7 @@
                 }}</v-list-item-title>
                 <v-list-item-subtitle>
                   {{
-                    "Số lượng: " +
+                    "Số lượng Cont: " +
                       biddingDocument.outbound.booking.unit +
                       " x " +
                       biddingDocument.outbound.containerType.name
@@ -112,14 +113,15 @@
 
             <v-list-item>
               <v-list-item-icon>
-                <v-icon>description</v-icon>
+                <v-icon>home_work</v-icon>
               </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title>{{
-                  "Khối lượng: " +
-                    biddingDocument.outbound.grossWeight +
-                    biddingDocument.outbound.unitOfMeasurement
-                }}</v-list-item-title>
+                <v-list-item-title>
+                  {{
+                    "Cảng bốc hàng: " +
+                      biddingDocument.outbound.booking.portOfLoading.fullname
+                  }}</v-list-item-title
+                >
                 <v-list-item-subtitle>
                   {{ "Mô tả: " + biddingDocument.outbound.goodsDescription }}
                 </v-list-item-subtitle>

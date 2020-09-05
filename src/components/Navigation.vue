@@ -13,7 +13,7 @@
         <v-list-item-avatar color="tertiary">
           <v-img
             v-if="$auth.user().profileImagePath"
-            :src="$auth.user().profileImagePath"
+            :src="userProfileImage"
           ></v-img>
           <span v-else class="white--text headline">{{
             $auth.user().username
@@ -143,6 +143,10 @@ export default class Navigation extends Vue {
   protected headerNavigation = [
     { title: "Bảng điều khiển", icon: "dashboard", link: "/dashboard" }
   ];
+
+  get userProfileImage() {
+    return process.env.VUE_APP_ENDPOINT + this.$auth.user().profileImagePath;
+  }
 
   get getUserRole() {
     const _role = this.roleMatching.filter(

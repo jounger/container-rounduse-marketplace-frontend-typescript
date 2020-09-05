@@ -13,7 +13,7 @@
             <v-list-item-avatar color="tertiary">
               <v-img
                 v-if="$auth.user().profileImagePath"
-                :src="$auth.user().profileImagePath"
+                :src="userProfileImage"
               ></v-img>
               <span v-else class="white--text headline">{{
                 $auth.user().username
@@ -77,6 +77,10 @@ export default class Menubar extends Vue {
 
   get getMenu() {
     return this.menu.filter(x => x.auth == (this.$auth.user() != null));
+  }
+
+  get userProfileImage() {
+    return process.env.VUE_APP_ENDPOINT + this.$auth.user().profileImagePath;
   }
 }
 </script>
