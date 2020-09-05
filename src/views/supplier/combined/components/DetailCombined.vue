@@ -52,7 +52,7 @@
                             }
                           },
                           shippingInfo.container.number,
-                          '/local_shipping.png'
+                          '/truck.png'
                         )
                       "
                       :google="google"
