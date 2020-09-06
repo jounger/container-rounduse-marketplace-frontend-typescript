@@ -182,10 +182,10 @@ export default class Combined extends Vue {
     { text: "Booking No.", value: "outbound.booking.number" },
     { text: "Hãng tàu", value: "outbound.shippingLine.companyName" },
     { text: "Số lượng & loại cont", value: "unit" },
-    { text: "Nơi đóng hàng", value: "outbound.packingStation" },
+    { text: "Nơi đóng hàng xuất", value: "outbound.packingStation" },
     { text: "", value: "forward" },
     {
-      text: "Cảng hạ hàng xuất",
+      text: "Cảng hạ cont hàng xuất",
       value: "outbound.booking.portOfLoading.fullname"
     },
     { text: "FCL", value: "fcl" }

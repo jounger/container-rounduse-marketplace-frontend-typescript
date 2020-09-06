@@ -14,7 +14,7 @@
         ></v-img>
         <v-card-title>Hồ sơ mời thầu (HSMT): #{{ getRouterId }}</v-card-title>
         <v-card-text>
-          Chủ hàng xuất:
+          Chủ hàng:
           <SupplierRating :supplier="biddingDocument.offeree" />
 
           <v-list dense>
@@ -136,7 +136,7 @@
               <v-list-item-content>
                 <v-list-item-title>
                   {{
-                    "Cảng bốc hàng: " +
+                    "Cảng hạ cont hàng xuất: " +
                       biddingDocument.outbound.booking.portOfLoading.fullname
                   }}</v-list-item-title
                 >

@@ -71,7 +71,7 @@
                     class="elevation-0 pb-0"
                   >
                     <v-stepper-step step="1" complete
-                      >Cảng lấy cont:
+                      >Cảng lấy cont hàng nhập:
                       {{ inbound.billOfLading.portOfDelivery.fullname }}
                       <small class="mt-1"
                         >Thời gian lấy:
@@ -80,7 +80,7 @@
                     </v-stepper-step>
                     <v-stepper-content step="1"></v-stepper-content>
                     <v-stepper-step step="2" :complete="stepper2 >= 2"
-                      >Nơi trả hàng: {{ inbound.returnStation }}
+                      >Nơi bốc dỡ hàng nhập: {{ inbound.returnStation }}
                       <small class="mt-1"
                         >Thời gian trả:
                         {{
@@ -90,7 +90,7 @@
                     >
                     <v-stepper-content step="2"></v-stepper-content>
                     <v-stepper-step step="3" :complete="stepper2 >= 3"
-                      >Nơi đóng hàng:
+                      >Nơi đóng hàng xuất:
                       {{ shippingInfo.outbound.packingStation }}
                       <small class="mt-1"
                         >Thời gian đóng:
@@ -101,7 +101,7 @@
                     >
                     <v-stepper-content step="3"></v-stepper-content>
                     <v-stepper-step step="4" :complete="stepper2 >= 4"
-                      >Cảng bốc hàng:
+                      >Cảng hạ cont hàng xuất:
                       {{ shippingInfo.outbound.booking.portOfLoading.fullname }}
                       <small class="mt-1"
                         >Thời gian Cut-off:
@@ -193,7 +193,7 @@
                     <v-list-item-content>
                       <v-list-item-title>
                         {{
-                          "Cảng bốc hàng: " +
+                          "Cảng hạ cont hàng xuất: " +
                             shippingInfo.outbound.booking.portOfLoading.fullname
                         }}</v-list-item-title
                       >

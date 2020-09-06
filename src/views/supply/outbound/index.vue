@@ -182,9 +182,9 @@ export default class Outbound extends Vue {
     { text: "Booking No.", value: "booking.number" },
     { text: "Hãng tàu", value: "shippingLine.companyName" },
     { text: "Số lượng & loại cont", value: "unit" },
-    { text: "Nơi đóng hàng", value: "packingStation" },
+    { text: "Nơi đóng hàng xuất", value: "packingStation" },
     { text: "", value: "forward" },
-    { text: "Cảng hạ cont xuất", value: "booking.portOfLoading.fullname" },
+    { text: "Cảng hạ cont hàng xuất", value: "booking.portOfLoading.fullname" },
     { text: "FCL", value: "fcl" },
     { text: "Trạng thái", value: "status" },
     {

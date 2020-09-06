@@ -379,7 +379,10 @@ export default class CreateBid extends Vue {
     { text: "Loại cont", value: "containerType.name" },
     { text: "Time lấy cont", value: "pickUpTime" },
     { text: "B/L No.", value: "billOfLading.number" },
-    { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery.fullname" },
+    {
+      text: "Cảng lấy cont hàng nhập",
+      value: "billOfLading.portOfDelivery.fullname"
+    },
     { text: "Số lượng cont đăng ký", value: "billOfLading.unit" }
   ];
   // Container form

@@ -256,7 +256,7 @@ export default class CreateBiddingDocument extends Vue {
     { text: "Số lượng & loại cont", value: "unit" },
     { text: "Khối lượng hàng", value: "grossWeight" },
     { text: "Thời gian đóng hàng", value: "packingTime" },
-    { text: "Nơi đóng hàng", value: "packingStation" },
+    { text: "Nơi đóng hàng xuất", value: "packingStation" },
     { text: "Thời gian Cut-off", value: "cutOffTime" },
     { text: "Cảng đóng hàng", value: "booking.portOfLoading.fullname" },
     { text: "FCL", value: "fcl" },

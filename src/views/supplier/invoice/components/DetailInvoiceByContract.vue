@@ -204,8 +204,8 @@ export default class DetailInvoiceByContract extends Vue {
       value: "id"
     },
     { text: "Mã hợp đồng", value: "contract.id" },
-    { text: "Người gửi", value: "sender.companyName" },
-    { text: "Người nhận", value: "recipient.companyName" },
+    { text: "Bên gửi", value: "sender.companyName" },
+    { text: "Bên nhận", value: "recipient.companyName" },
     { text: "Số tiền", value: "amount" },
     { text: "Loại hóa đơn", value: "type" },
     { text: "Ngày thanh toán", value: "paymentDate" },

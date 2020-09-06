@@ -98,12 +98,12 @@
                       <v-icon>add_location</v-icon>
                     </v-col>
                     <v-col cols="12" sm="11" class="pa-0">
-                      <label class="place-label">Nơi đóng hàng</label>
+                      <label class="place-label">Nơi đóng hàng xuất</label>
                       <input
                         ref="inputAddress1"
                         class="place-input"
                         type="text"
-                        placeholder="Nơi đóng hàng (Kho hàng xuất)"
+                        placeholder="Nơi đóng hàng xuất (Kho hàng xuất)"
                         :rules="[required('nơi đóng hàng')]"
                         required
                       />
@@ -111,7 +111,7 @@
                       v-model="outboundLocal.packingStation"
                       prepend-icon="location_on"
                       type="text"
-                      label="Nơi đóng hàng"
+                      label="Nơi đóng hàng xuất"
                     ></v-text-field>  --></v-col
                     >
                   </v-row>
