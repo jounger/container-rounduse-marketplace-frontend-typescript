@@ -2,7 +2,7 @@
   <v-dialog v-model="dialogAddContSync" max-width="600">
     <v-card>
       <v-card-title class="headline">{{
-        update ? "Cập nhật Container" : "Thêm mới Container"
+        update ? "Cập nhật Container" : "Khai báo Container"
       }}</v-card-title>
       <v-divider></v-divider>
       <v-card-text>
@@ -14,7 +14,12 @@
                 <v-text-field
                   v-model="containerLocal.number"
                   prepend-icon="directions_bus"
-                  :rules="[required('mã Container')]"
+                  :counter="11"
+                  :rules="[
+                    required('số Container'),
+                    minLength('số Container', 11),
+                    maxLength('số Container', 11)
+                  ]"
                   label="Container No.*"
                 ></v-text-field>
               </v-col>
@@ -41,7 +46,7 @@
                   item-text="licensePlate"
                   item-value="licensePlate"
                   no-data-text="Danh sách đầu kéo rỗng."
-                  label="Chọn đầu kéo*"
+                  label="Đầu kéo*"
                 ></v-select>
               </v-col>
               <v-col cols="12" md="6">
@@ -53,7 +58,7 @@
                   item-text="licensePlate"
                   item-value="licensePlate"
                   no-data-text="Danh sách rơ moóc rỗng."
-                  label="Chọn rơ moóc*"
+                  label="Rơ moóc*"
                 ></v-select>
               </v-col>
             </v-row>

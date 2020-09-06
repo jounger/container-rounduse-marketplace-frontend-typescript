@@ -366,6 +366,10 @@
           <template v-slot:item.status="{ item }">
             <ChipStatus :status="item.status" />
           </template>
+          <template v-slot:item.container.driver.fullname="{ item }">
+            <div>{{ item.container.driver.fullname }}</div>
+            <small>SĐT: {{ item.container.driver.phone }}</small>
+          </template>
           <template v-slot:item.router="{ item }">
             <v-btn
               class="ma-1"
@@ -550,18 +554,17 @@ export default class DetailCombined extends Vue {
       value: "container.number"
     },
     { text: "Lái xe", value: "container.driver.fullname" },
-    { text: "SĐT liên hệ", value: "container.driver.phone" },
     {
-      text: "Đầu kéo",
+      text: "Biển số đầu kéo",
       value: "container.tractor.licensePlate"
+    },
+    {
+      text: "Lịch trình & vị trí",
+      value: "router"
     },
     {
       text: "Trạng thái",
       value: "status"
-    },
-    {
-      text: "Lịch trình",
-      value: "router"
     },
     {
       text: "Hành động",

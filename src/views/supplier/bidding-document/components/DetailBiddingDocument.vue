@@ -286,14 +286,16 @@
           class="elevation-0"
           :hide-default-footer="$auth.check('ROLE_FORWARDER')"
         >
+          <template v-slot:item.bidder.fullname="{ item }">
+            <div>{{ item.bidder.fullname }}</div>
+            <small>SĐT: {{ item.bidder.phone }}</small>
+          </template>
           <template v-slot:item.bidDate="{ item }">
-            {{ formatDatetime(item.bidDate) }}
+            <div>{{ formatDatetime(item.bidDate) }}</div>
+            <small>Hiệu lực: {{ formatDatetime(item.validityPeriod) }}</small>
           </template>
           <template v-slot:item.bidPrice="{ item }">
             {{ currencyFormatter(item.bidPrice) }}
-          </template>
-          <template v-slot:item.validityPeriod="{ item }">
-            {{ formatDatetime(item.validityPeriod) }}
           </template>
           <template v-slot:item.status="{ item }">
             <ChipStatus :status="item.status" />
@@ -526,11 +528,10 @@ export default class DetailBiddingDocument extends Vue {
       sortable: false,
       value: "id"
     },
-    { text: "Bên gửi HSMT", value: "bidder.companyName" },
-    { text: "SĐT liên hệ", value: "bidder.phone" },
-    { text: "Giá thầu", value: "bidPrice" },
+    { text: "Bên gửi thầu", value: "bidder.companyName" },
+    { text: "Người đại diện", value: "bidder.fullname" },
     { text: "Ngày thầu", value: "bidDate" },
-    { text: "Hiệu lực đến", value: "validityPeriod" },
+    { text: "Giá gửi thầu", value: "bidPrice" },
     { text: "Trạng thái", value: "status" },
     { text: "Hành động", value: "actions" }
   ];

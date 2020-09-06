@@ -33,11 +33,18 @@
         <template v-slot:item.unit="{ item }">
           {{ item.billOfLading.unit + " x " + item.containerType.name }}
         </template>
-        <template v-slot:item.pickUpTime="{ item }">
-          {{ formatDatetime(item.pickupTime) }}
+        <template v-slot:item.billOfLading.portOfDelivery.fullname="{ item }">
+          <div>{{ item.billOfLading.portOfDelivery.fullname }}</div>
+          <small>Lấy lúc: {{ formatDatetime(item.pickupTime) }}</small>
         </template>
-        <template v-slot:item.freetime="{ item }">
-          {{ formatDatetime(item.billOfLading.freeTime) }}
+        <template v-slot:item.forward>
+          <v-icon color="tertiary">arrow_forward</v-icon>
+        </template>
+        <template v-slot:item.returnStation="{ item }">
+          <div>{{ item.returnStation }}</div>
+          <small
+            >Trả lúc: {{ formatDatetime(item.billOfLading.freeTime) }}</small
+          >
         </template>
 
         <template v-slot:item.actions="{ item }">
@@ -252,11 +259,13 @@ export default class Inbound extends Vue {
     },
     { text: "B/L No.", value: "billOfLading.number" },
     { text: "Hãng tàu", value: "shippingLine.companyName" },
-    { text: "Số cont đăng ký", value: "unit" },
-    { text: "Thời gian lấy cont", value: "pickUpTime" },
-    { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery.fullname" },
+    { text: "Số lượng & loại cont trên B/L", value: "unit" },
+    {
+      text: "Cảng lấy cont hàng nhập",
+      value: "billOfLading.portOfDelivery.fullname"
+    },
+    { text: "", value: "forward" },
     { text: "Nơi bốc dỡ hàng", value: "returnStation" },
-    { text: "Thời gian mượn cont", value: "freetime" },
     {
       text: "Hành động",
       value: "actions"
@@ -278,12 +287,12 @@ export default class Inbound extends Vue {
     { text: "Lái xe", value: "driver.fullname", class: "tertiary" },
     { text: "SĐT liên hệ", value: "driver.phone", class: "tertiary" },
     {
-      text: "Rơ mọt",
+      text: "Biển số rơ mọt",
       value: "trailer.licensePlate",
       class: "tertiary"
     },
     {
-      text: "Đầu kéo",
+      text: "Biển số đầu kéo",
       value: "tractor.licensePlate",
       class: "tertiary"
     },

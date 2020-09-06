@@ -142,14 +142,14 @@ export default class InvitedNotify extends Vue {
       value: "relatedResource.id"
     },
     {
-      text: "Bên gửi HSMT",
+      text: "Bên mời thầu",
       value: "relatedResource.offeree.companyName"
     },
     {
       text: "Hãng tàu",
       value: "relatedResource.outbound.shippingLine.companyName"
     },
-    { text: "Số cont", value: "unit" },
+    { text: "Số lượng & loại cont", value: "unit" },
     { text: "Giá gói thầu", value: "relatedResource.bidPackagePrice" },
     { text: "Giá sàn", value: "relatedResource.bidFloorPrice" },
     { text: "Mở thầu", value: "bidOpening" },

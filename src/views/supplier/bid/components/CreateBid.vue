@@ -370,7 +370,7 @@ export default class CreateBid extends Vue {
     },
     { text: "Bên mời thầu", value: "offeree.companyName" },
     { text: "Hãng tàu", value: "outbound.shippingLine.companyName" },
-    { text: "Số cont", value: "unit" },
+    { text: "Số lượng & loại cont", value: "unit" },
     { text: "Giá gói thầu", value: "bidPackagePrice" },
     { text: "Giá sàn", value: "bidFloorPrice" },
     { text: "Mở thầu", value: "bidOpening" },
