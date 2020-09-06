@@ -2,7 +2,7 @@ import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 
 Vue.use(VueRouter);
-// DIVICE BY PERMISSION
+// SORT BY PERMISSION
 const routes: Array<RouteConfig> = [
   // ERROR
   {
@@ -66,7 +66,7 @@ const routes: Array<RouteConfig> = [
     name: "HomePage",
     meta: {
       layout: "DefaultLayout",
-      title: "Trang chủ"
+      title: "Container Round-use Marketplace"
     },
     component: () => import("@/views/guest/home/index.vue")
   },

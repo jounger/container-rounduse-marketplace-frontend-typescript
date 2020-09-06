@@ -52,7 +52,7 @@
                             }
                           },
                           shippingInfo.container.number,
-                          '/truck.png'
+                          '/static/truck.png'
                         )
                       "
                       :google="google"
@@ -322,17 +322,18 @@
         <v-card-text>
           <v-stepper :value="stepper" alt-labels class="elevation-0">
             <v-stepper-header>
-              <v-stepper-step step="1" :complete="stepper >= 1" color="info"
-                >Nhận thông tin</v-stepper-step
+              <v-stepper-step
+                step="1"
+                :complete="stepper >= 1"
+                :rules="[() => exception]"
+                color="info"
+                >Nhận thông tin<small v-if="exception == false"
+                  >Đã có lỗi xảy ra</small
+                ></v-stepper-step
               >
               <v-divider></v-divider>
-              <v-stepper-step
-                step="2"
-                :complete="stepper >= 2"
-                :rules="[() => exception]"
-                color="warning"
+              <v-stepper-step step="2" :complete="stepper >= 2" color="warning"
                 >Đang vận chuyển
-                <small v-if="exception == false">Đã có lỗi xảy ra</small>
               </v-stepper-step>
               <v-divider></v-divider>
               <v-stepper-step step="3" :complete="stepper >= 3" color="success"
@@ -360,7 +361,7 @@
         >
           <template v-slot:top>
             <v-toolbar flat color="white">
-              <v-toolbar-title>Danh sách vận chuyển</v-toolbar-title>
+              <v-toolbar-title>Danh sách đơn vận chuyển</v-toolbar-title>
             </v-toolbar>
           </template>
           <template v-slot:item.status="{ item }">
@@ -616,8 +617,8 @@ export default class DetailCombined extends Vue {
           this.stepper2 = 4;
           break;
         case "EXCEPTION":
-          this.stepper = 2;
-          this.stepper2 = 3;
+          this.stepper = 1;
+          this.stepper2 = 2;
           this.exception = false;
           break;
         default:

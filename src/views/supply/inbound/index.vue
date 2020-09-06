@@ -361,7 +361,7 @@ export default class Inbound extends Vue {
     }
   }
 
-  @Watch("options", { immediate: true })
+  @Watch("options")
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;

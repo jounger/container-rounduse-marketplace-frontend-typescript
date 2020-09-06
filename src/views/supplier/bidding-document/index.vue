@@ -142,13 +142,7 @@ import { getBiddingDocuments } from "@/api/bidding-document";
 import DeleteBiddingDocument from "./components/DeleteBiddingDocument.vue";
 import CancelBiddingDocument from "./components/CancelBiddingDocument.vue";
 import Utils from "@/mixin/utils";
-import { getContainerTypes } from "@/api/container-type";
-import { IContainerType } from "@/entity/container-type";
 import { DataOptions } from "vuetify";
-import { getPorts } from "@/api/port";
-import { getShippingLines } from "@/api/shipping-line";
-import { IShippingLine } from "@/entity/shipping-line";
-import { IPort } from "@/entity/port";
 import { addTimeToDate } from "@/utils/tool";
 import ChipStatus from "@/components/ChipStatus.vue";
 
@@ -170,22 +164,6 @@ export default class BiddingDocument extends Vue {
   dialogEdit = false;
   dialogCancel = false;
   dialogDel = false;
-  moreOptions = false;
-  shippingLineSearch = "";
-  containerTypeSearch = "";
-  bookingNumberSearch = "";
-  statusSearch = "";
-  minBidPackagePrice = "";
-  maxBidPackagePrice = "";
-  isMultipleAwardSearch = false;
-  bidOpeningSearch = "";
-  bidClosingSearch = "";
-  search = "";
-  // API list
-  ports: Array<IPort> = [];
-  shippingLines: Array<IShippingLine> = [];
-  containerTypes: Array<IContainerType> = [];
-  status: Array<string> = [];
   loading = true;
   dateInit = addTimeToDate(new Date().toString());
   options = {
@@ -251,38 +229,6 @@ export default class BiddingDocument extends Vue {
       }
       this.loading = false;
     }
-  }
-
-  async created() {
-    this.status = ["BIDDING", "COMBINED", "CANCELED"];
-    // API GET Ports
-    const _ports = await getPorts({
-      page: 0,
-      limit: 100
-    });
-    this.ports = _ports.data.data || [];
-    // API GET Shipping Line
-    const _shippingLines = await getShippingLines({
-      page: 0,
-      limit: 100
-    });
-    this.shippingLines = _shippingLines.data.data || [];
-    // API GET Container Type
-    const _containerTypes = await getContainerTypes({
-      page: 0,
-      limit: 100
-    });
-    this.containerTypes = _containerTypes.data.data || [];
-  }
-
-  get portsToString() {
-    return this.ports.map(x => x.nameCode);
-  }
-  get shippingLinesToString() {
-    return this.shippingLines.map(x => x.companyCode);
-  }
-  get containerTypesToString() {
-    return this.containerTypes.map(x => x.name);
   }
 }
 </script>
