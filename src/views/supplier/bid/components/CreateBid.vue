@@ -250,19 +250,10 @@
           <v-stepper-step step="4">Hoàn thành</v-stepper-step>
           <v-stepper-content step="4">
             <v-form ref="finishForm">
-              <v-row
-                ><v-col cols="12" md="1"
-                  ><v-checkbox v-model="checkbox"></v-checkbox></v-col
-                ><v-col cols="12" md="8" class="mt-5"
-                  ><span
-                    >Tôi đã đọc và đồng ý với
-                    <router-link to="/term-of-use" target="_blank"
-                      >các điều khoản sử dụng</router-link
-                    >
-                    của hệ thống.</span
-                  ></v-col
-                ></v-row
-              >
+              <v-checkbox
+                v-model="checkbox"
+                label="Tôi đã đọc và đồng ý với các điều khoản sử dụng."
+              ></v-checkbox>
               <v-btn color="primary" @click="createBid()" :disabled="!checkbox"
                 >Hoàn tất</v-btn
               >
@@ -388,7 +379,10 @@ export default class CreateBid extends Vue {
     { text: "Loại cont", value: "containerType.name" },
     { text: "Time lấy cont", value: "pickUpTime" },
     { text: "B/L No.", value: "billOfLading.number" },
-    { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery.fullname" },
+    {
+      text: "Cảng lấy cont hàng nhập",
+      value: "billOfLading.portOfDelivery.fullname"
+    },
     { text: "Số lượng cont đăng ký", value: "billOfLading.unit" }
   ];
   // Container form

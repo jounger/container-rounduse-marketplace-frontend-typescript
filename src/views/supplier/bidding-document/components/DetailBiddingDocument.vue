@@ -14,7 +14,7 @@
         ></v-img>
         <v-card-title>Hồ sơ mời thầu (HSMT): #{{ getRouterId }}</v-card-title>
         <v-card-text>
-          Chủ hàng xuất:
+          Chủ hàng:
           <SupplierRating :supplier="biddingDocument.offeree" />
 
           <v-list dense>
@@ -136,7 +136,7 @@
               <v-list-item-content>
                 <v-list-item-title>
                   {{
-                    "Cảng bốc hàng: " +
+                    "Cảng hạ cont hàng xuất: " +
                       biddingDocument.outbound.booking.portOfLoading.fullname
                   }}</v-list-item-title
                 >
@@ -286,6 +286,26 @@
           class="elevation-0"
           :hide-default-footer="$auth.check('ROLE_FORWARDER')"
         >
+          <template v-slot:item.bidder.companyName="{ item }">
+            <div>{{ item.bidder.companyName }}</div>
+            <v-row align="center" class="mx-0">
+              <v-rating
+                :value="item.bidder.ratingValue"
+                color="amber"
+                dense
+                half-increments
+                readonly
+                size="14"
+                x-small
+              ></v-rating>
+
+              <small class="grey--text ml-1">
+                {{ item.bidder.ratingValue }} ({{
+                  item.bidder.ratingCount || 0
+                }})
+              </small>
+            </v-row>
+          </template>
           <template v-slot:item.bidder.fullname="{ item }">
             <div>{{ item.bidder.fullname }}</div>
             <small>SĐT: {{ item.bidder.phone }}</small>

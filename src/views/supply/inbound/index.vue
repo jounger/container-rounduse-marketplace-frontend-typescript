@@ -265,7 +265,7 @@ export default class Inbound extends Vue {
       value: "billOfLading.portOfDelivery.fullname"
     },
     { text: "", value: "forward" },
-    { text: "Nơi bốc dỡ hàng", value: "returnStation" },
+    { text: "Nơi bốc dỡ hàng nhập", value: "returnStation" },
     {
       text: "Hành động",
       value: "actions"
@@ -361,7 +361,7 @@ export default class Inbound extends Vue {
     }
   }
 
-  @Watch("options", { immediate: true })
+  @Watch("options")
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;

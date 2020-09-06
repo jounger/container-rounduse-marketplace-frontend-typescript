@@ -35,7 +35,10 @@
               </v-btn>
             </template>
             <v-list dense>
-              <v-list-item @click="openCreateInvoice(item)">
+              <v-list-item
+                @click="openCreateInvoice(item)"
+                v-if="item.isCanceled == false"
+              >
                 <v-list-item-icon>
                   <v-icon small>add</v-icon>
                 </v-list-item-icon>
@@ -53,7 +56,7 @@
               </v-list-item>
               <v-list-item
                 @click="openUpdateDialog(item)"
-                v-if="$auth.check('ROLE_MERCHANT')"
+                v-if="$auth.check('ROLE_MERCHANT') && item.isCanceled == false"
               >
                 <v-list-item-icon>
                   <v-icon small>edit</v-icon>
@@ -64,7 +67,7 @@
               </v-list-item>
               <v-list-item
                 @click="openCreateContractDocument(item)"
-                v-if="$auth.check('ROLE_FORWARDER')"
+                v-if="$auth.check('ROLE_FORWARDER') && item.isCanceled == false"
               >
                 <v-list-item-icon>
                   <v-icon small>cloud_upload</v-icon>
@@ -337,7 +340,7 @@ export default class Contract extends Vue {
     this.dialogRating = true;
   }
 
-  @Watch("options", { immediate: true })
+  @Watch("options")
   async onOptionsChange(val: DataOptions) {
     if (typeof val != "undefined") {
       this.loading = true;

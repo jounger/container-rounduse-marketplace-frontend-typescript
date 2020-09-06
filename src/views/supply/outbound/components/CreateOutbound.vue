@@ -98,12 +98,12 @@
                       <v-icon>add_location</v-icon>
                     </v-col>
                     <v-col cols="12" sm="11" class="pa-0">
-                      <label class="place-label">Nơi đóng hàng</label>
+                      <label class="place-label">Nơi đóng hàng xuất</label>
                       <input
                         ref="inputAddress1"
                         class="place-input"
                         type="text"
-                        placeholder="Nơi đóng hàng (Kho hàng xuất)"
+                        placeholder="Nơi đóng hàng xuất (Kho hàng xuất)"
                         :rules="[required('nơi đóng hàng')]"
                         required
                       />
@@ -111,7 +111,7 @@
                       v-model="outboundLocal.packingStation"
                       prepend-icon="location_on"
                       type="text"
-                      label="Nơi đóng hàng"
+                      label="Nơi đóng hàng xuất"
                     ></v-text-field>  --></v-col
                     >
                   </v-row>
@@ -186,18 +186,12 @@
                     </v-col>
                   </v-row>
                   <v-row
-                    ><v-col cols="12" md="1"
-                      ><v-checkbox v-model="checkbox"></v-checkbox></v-col
-                    ><v-col cols="12" md="8" class="mt-5"
-                      ><span
-                        >Tôi đã đọc và đồng ý với
-                        <router-link to="/term-of-use" target="_blank"
-                          >các điều khoản sử dụng</router-link
-                        >
-                        của hệ thống.</span
-                      ></v-col
-                    ></v-row
-                  >
+                    ><v-col cols="12"
+                      ><v-checkbox
+                        v-model="checkbox"
+                        label="Tôi đã đọc và đồng ý với các điều khoản sử dụng."
+                      ></v-checkbox></v-col
+                  ></v-row>
                   <v-btn
                     color="primary"
                     @click="
@@ -233,7 +227,7 @@
                   </v-row>
                   <v-checkbox
                     v-model="checkbox"
-                    label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
+                    label="Tôi đã đọc và đồng ý với các điều khoản sử dụng."
                   ></v-checkbox>
                   <v-btn
                     color="primary"

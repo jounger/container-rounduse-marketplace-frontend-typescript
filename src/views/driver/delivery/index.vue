@@ -73,7 +73,7 @@ export default class Delivery extends Vue {
     { text: "Loại cont", value: "outbound.containerType.name" },
     { text: "Thời gian đóng hàng", value: "outbound.packingTime" },
     {
-      text: "Nơi đóng hàng",
+      text: "Nơi đóng hàng xuất",
       value: "outbound.packingStation"
     },
     {

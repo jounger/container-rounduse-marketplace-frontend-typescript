@@ -265,19 +265,10 @@
 
             <v-stepper-content step="3">
               <v-form ref="finishForm">
-                <v-row
-                  ><v-col cols="12" md="1"
-                    ><v-checkbox v-model="checkbox"></v-checkbox></v-col
-                  ><v-col cols="12" md="8" class="mt-5"
-                    ><span
-                      >Tôi đã đọc và đồng ý với
-                      <router-link to="/term-of-use" target="_blank"
-                        >các điều khoản sử dụng</router-link
-                      >
-                      của hệ thống.</span
-                    ></v-col
-                  ></v-row
-                >
+                <v-checkbox
+                  v-model="checkbox"
+                  label="Tôi đã đọc và đồng ý với các điều khoản sử dụng."
+                ></v-checkbox>
                 <v-btn @click="submit()" :disabled="!checkbox" color="primary"
                   >Hoàn tất</v-btn
                 >

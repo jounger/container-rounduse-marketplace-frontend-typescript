@@ -274,7 +274,7 @@
               <v-form ref="finishForm">
                 <v-checkbox
                   v-model="checkbox"
-                  label="Bạn đồng ý rằng tất cả các thông tin đưa lên đều là chính xác."
+                  label="Tôi đã đọc và đồng ý với các điều khoản sử dụng."
                 ></v-checkbox>
                 <v-btn @click="submit()" :disabled="!checkbox" color="primary"
                   >Hoàn tất</v-btn

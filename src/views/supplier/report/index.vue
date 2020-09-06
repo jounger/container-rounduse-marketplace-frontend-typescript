@@ -31,11 +31,15 @@
             @click.stop="openBiddingDocumentDetail(item)"
             small
           >
-            <v-icon left>remove_red_eye</v-icon> Xem HSMT
+            <v-icon left>remove_red_eye</v-icon> Chi tiết
           </v-btn>
         </template>
         <template v-slot:item.sendDate="{ item }">
           {{ formatDatetime(item.sendDate) }}
+        </template>
+        <template v-slot:item.sender.fullname="{ item }">
+          <div>{{ item.sender.fullname }}</div>
+          <small>SĐT: {{ item.sender.phone }}</small>
         </template>
         <template v-slot:item.status="{ item }">
           <ChipStatus :status="item.status" />
@@ -162,9 +166,9 @@ export default class Report extends Vue {
     },
     { text: "Tiêu đề", value: "title" },
     { text: "Ngày gửi", value: "sendDate" },
-    { text: "Người gửi", value: "sender.companyName" },
-    { text: "SĐT liên hệ", value: "sender.phone" },
-    { text: "Nguồn liên quan", value: "reportId" },
+    { text: "Bên gửi", value: "sender.companyName" },
+    { text: "Người đại diện", value: "sender.fullname" },
+    { text: "HSMT bị báo cáo", value: "reportId" },
     { text: "Trạng thái", value: "status" },
     { text: "Hành động", value: "actions" }
   ];

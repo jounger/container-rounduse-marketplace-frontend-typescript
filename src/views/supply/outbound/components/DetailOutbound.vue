@@ -69,7 +69,8 @@
               <v-list-item-content>
                 <v-list-item-title>
                   {{
-                    "Cảng bốc hàng: " + outbound.booking.portOfLoading.fullname
+                    "Cảng hạ cont hàng xuất: " +
+                      outbound.booking.portOfLoading.fullname
                   }}</v-list-item-title
                 >
                 <v-list-item-subtitle>

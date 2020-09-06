@@ -95,12 +95,12 @@
                       ><v-icon>add_location</v-icon>
                     </v-col>
                     <v-col cols="12" sm="11" class="pa-0">
-                      <label class="place-label">Nơi trả hàng</label>
+                      <label class="place-label">Nơi bốc dỡ hàng nhập</label>
                       <input
                         ref="inputAddress1"
                         class="place-input"
                         type="text"
-                        placeholder="Nơi trả hàng (Kho hàng nhập)"
+                        placeholder="Nơi bốc dỡ hàng nhập (Kho hàng nhập)"
                         :rules="[required('nơi trả hàng')]"
                         required
                       />
@@ -109,7 +109,7 @@
                           prepend-icon="location_on"
                           type="text"
                           :rules="[required('return station')]"
-                          label="Nơi trả hàng*"
+                          label="Nơi bốc dỡ hàng nhập*"
                         ></v-text-field> -->
                     </v-col>
                   </v-row>
@@ -156,9 +156,9 @@
                         :items="ports"
                         item-text="fullname"
                         return-object
-                        :rules="[required('cảng lấy Container đặc')]"
+                        :rules="[required('cảng lấy cont hàng nhập')]"
                         no-data-text="Danh sách cảng rỗng."
-                        label="Cảng lấy cont đặc*"
+                        label="Cảng lấy cont hàng nhập*"
                       ></v-select> </v-col
                   ></v-row>
                   <v-row>
@@ -212,18 +212,12 @@
                     ></v-col>
                   </v-row>
                   <v-row
-                    ><v-col cols="12" md="1"
-                      ><v-checkbox v-model="checkbox"></v-checkbox></v-col
-                    ><v-col cols="12" md="8" class="mt-5"
-                      ><span
-                        >Tôi đã đọc và đồng ý với
-                        <router-link to="/term-of-use" target="_blank"
-                          >các điều khoản sử dụng</router-link
-                        >
-                        của hệ thống.</span
-                      ></v-col
-                    ></v-row
-                  >
+                    ><v-col cols="12"
+                      ><v-checkbox
+                        v-model="checkbox"
+                        label="Tôi đã đọc và đồng ý với các điều khoản sử dụng."
+                      ></v-checkbox></v-col
+                  ></v-row>
                   <v-btn
                     color="primary"
                     @click="createInbound()"
