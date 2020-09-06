@@ -69,7 +69,7 @@ th.text-start {
   color: #fff !important;
 }
 .v-data-table__expanded .v-data-table.v-data-table--dense.theme--light {
-  background: #f2f4f7;
+  background: #eaf2fd;
 }
 .v-data-table__expanded th.text-start {
   background: #005caf !important;
@@ -77,5 +77,8 @@ th.text-start {
 }
 .v-data-table__expanded .v-data-footer__select .v-select {
   margin: 5px 0 5px 34px !important;
+}
+small {
+  font-weight: bold !important;
 }
 </style>

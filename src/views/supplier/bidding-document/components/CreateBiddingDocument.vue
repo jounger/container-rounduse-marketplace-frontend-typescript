@@ -262,7 +262,7 @@ export default class CreateBiddingDocument extends Vue {
     },
     { text: "Booking No.", value: "booking.number" },
     { text: "Hãng tàu", value: "shippingLine.companyName" },
-    { text: "Số cont", value: "unit" },
+    { text: "Số lượng & loại cont", value: "unit" },
     { text: "Khối lượng hàng", value: "grossWeight" },
     { text: "Thời gian đóng hàng", value: "packingTime" },
     { text: "Nơi đóng hàng", value: "packingStation" },

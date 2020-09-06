@@ -181,7 +181,7 @@ export default class ListContainer extends Vue {
     { text: "Loại cont", value: "containerType.name" },
     { text: "Thời gian lấy cont", value: "pickUpTime" },
     { text: "Cảng lấy cont", value: "billOfLading.portOfDelivery.fullname" },
-    { text: "Số cont đăng ký", value: "billOfLading.unit" }
+    { text: "Số lượng & loại cont đăng ký", value: "billOfLading.unit" }
   ];
   // Container form
   containerHeaders = [

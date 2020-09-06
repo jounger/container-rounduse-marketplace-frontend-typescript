@@ -29,14 +29,16 @@
         <template v-slot:item.status="{ item }">
           <ChipStatus :status="item.status" />
         </template>
-        <template v-slot:item.packingTime="{ item }">
-          {{ formatDatetime(item.packingTime) }}
+        <template v-slot:item.packingStation="{ item }">
+          <div>{{ item.packingStation }}</div>
+          <small>Đóng lúc: {{ formatDatetime(item.packingTime) }}</small>
         </template>
-        <template v-slot:item.cutOffTime="{ item }">
-          {{ formatDatetime(item.booking.cutOffTime) }}
+        <template v-slot:item.booking.portOfLoading.fullname="{ item }">
+          <div>{{ item.booking.portOfLoading.fullname }}</div>
+          <small>Cut-off: {{ formatDatetime(item.booking.cutOffTime) }}</small>
         </template>
-        <template v-slot:item.grossWeight="{ item }">
-          {{ item.grossWeight + "" + item.unitOfMeasurement }}
+        <template v-slot:item.forward>
+          <v-icon color="tertiary">arrow_forward</v-icon>
         </template>
         <template v-slot:item.fcl="{ item }">
           {{ item.booking.isFcl ? "Có" : "Không" }}
@@ -179,12 +181,10 @@ export default class Outbound extends Vue {
     },
     { text: "Booking No.", value: "booking.number" },
     { text: "Hãng tàu", value: "shippingLine.companyName" },
-    { text: "Số cont", value: "unit" },
-    { text: "Khối lượng hàng", value: "grossWeight" },
-    { text: "Thời gian đóng hàng", value: "packingTime" },
+    { text: "Số lượng & loại cont", value: "unit" },
     { text: "Nơi đóng hàng", value: "packingStation" },
-    { text: "Thời gian Cut-off", value: "cutOffTime" },
-    { text: "Cảng đóng hàng", value: "booking.portOfLoading.fullname" },
+    { text: "", value: "forward" },
+    { text: "Cảng hạ cont xuất", value: "booking.portOfLoading.fullname" },
     { text: "FCL", value: "fcl" },
     { text: "Trạng thái", value: "status" },
     {

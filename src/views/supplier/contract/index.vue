@@ -88,7 +88,11 @@
           {{ currencyFormatter(item.contract.price) }}
         </template>
         <template v-slot:item.contract.required="{ item }">
-          {{ item.contract.required ? "Có" : "Không" }}
+          <div>{{ item.contract.required ? "Có" : "Không" }}</div>
+          <small v-if="item.contract.required"
+            >Phạt vi phạm:
+            {{ item.contract.finesAgainstContractViolations }}%</small
+          >
         </template>
         <template v-slot:item.contract.creationDate="{ item }">
           {{ formatDatetime(item.contract.creationDate) }}
@@ -266,12 +270,8 @@ export default class Contract extends Vue {
     },
     { text: "Bên chủ hàng", value: "contract.sender.companyName" },
     { text: "Bên chủ xe", value: "bid.bidder.companyName" },
-    { text: "Y/c hợp đồng", value: "contract.required" },
     { text: "Giá hợp đồng", value: "contract.price" },
-    {
-      text: "% Tiền phạt",
-      value: "contract.finesAgainstContractViolations"
-    },
+    { text: "Y/c hợp đồng", value: "contract.required" },
     { text: "Đã thanh toán (%)", value: "contract.paymentPercentage" },
     { text: "Ngày tạo hợp đồng", value: "contract.creationDate" },
     {

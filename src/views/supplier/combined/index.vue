@@ -25,11 +25,23 @@
             <v-toolbar-title>Danh sách hàng đã ghép</v-toolbar-title>
           </v-toolbar>
         </template>
-        <template v-slot:item.packingTime="{ item }">
-          {{ formatDatetime(item.outbound.packingTime) }}
+        <template v-slot:item.outbound.packingStation="{ item }">
+          <div>{{ item.outbound.packingStation }}</div>
+          <small
+            >Đóng lúc: {{ formatDatetime(item.outbound.packingTime) }}</small
+          >
         </template>
-        <template v-slot:item.cutOffTime="{ item }">
-          {{ formatDatetime(item.outbound.booking.cutOffTime) }}
+        <template v-slot:item.forward>
+          <v-icon color="tertiary">arrow_forward</v-icon>
+        </template>
+        <template
+          v-slot:item.outbound.booking.portOfLoading.fullname="{ item }"
+        >
+          <div>{{ item.outbound.booking.portOfLoading.fullname }}</div>
+          <small
+            >Cut-off:
+            {{ formatDatetime(item.outbound.booking.cutOffTime) }}</small
+          >
         </template>
         <template v-slot:item.grossWeight="{ item }">
           {{ item.outbound.grossWeight }} {{ item.outbound.unitOfMeasurement }}
@@ -112,7 +124,7 @@
         v-if="dialogEdit"
         :dialogCancel.sync="dialogEdit"
         :combined="combined"
-        ::combineds.sync="combineds"
+        :combineds.sync="combineds"
       />
     </v-row>
   </v-container>
@@ -167,13 +179,16 @@ export default class Combined extends Vue {
       sortable: false,
       value: "id"
     },
+    { text: "Booking No.", value: "outbound.booking.number" },
     { text: "Hãng tàu", value: "outbound.shippingLine.companyName" },
-    { text: "Số cont", value: "unit" },
-    { text: "Khối lượng hàng", value: "grossWeight" },
-    { text: "Thời gian đóng hàng", value: "packingTime" },
+    { text: "Số lượng & loại cont", value: "unit" },
     { text: "Nơi đóng hàng", value: "outbound.packingStation" },
-    { text: "Thời gian Cut-off", value: "cutOffTime" },
-    { text: "Cảng trả hàng", value: "outbound.booking.portOfLoading.fullname" }
+    { text: "", value: "forward" },
+    {
+      text: "Cảng hạ hàng xuất",
+      value: "outbound.booking.portOfLoading.fullname"
+    },
+    { text: "FCL", value: "fcl" }
   ];
   combinedHeaders = [
     {
