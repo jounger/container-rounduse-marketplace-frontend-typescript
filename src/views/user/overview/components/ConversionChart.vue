@@ -4,7 +4,7 @@
       <h1>
         Tỉ lệ
         {{
-          $auth.check("ROLE_FORWARDER")
+          $auth.check("ROLE_FORWARDER") || $auth.check("ROLE_SHIPPINGLINE")
             ? "quay đầu"
             : $auth.check("ROLE_MERCHANT")
             ? "chuyển đổi hàng xuất"
@@ -49,12 +49,15 @@ export default class ConversionChart extends Vue {
         }
       }
     },
-    labels: ["Tỉ lệ chuyển đổi hàng xuất"]
+    labels: [] as Array<string>
   };
   async created() {
     if (this.$auth.check("ROLE_MERCHANT")) {
       this.chartOptions.labels[0] = "Tỉ lệ chuyển đổi hàng xuất";
-    } else if (this.$auth.check("ROLE_FORWARDER")) {
+    } else if (
+      this.$auth.check("ROLE_FORWARDER") ||
+      this.$auth.check("ROLE_SHIPPINGLINE")
+    ) {
       this.chartOptions.labels[0] = "Tỉ lệ quay đầu";
     }
     const year = this.dateInit.slice(0, 4);
@@ -91,14 +94,17 @@ export default class ConversionChart extends Vue {
     if (_res) {
       if (this.$auth.check("ROLE_MERCHANT")) {
         if (_res.data.outboundQty != 0) {
-          const x = _res.data.combinedOutbountQty / _res.data.outboundQty;
+          const x = _res.data.deliveredOutbountQty / _res.data.outboundQty;
           this.series.push(x * 100);
         } else {
           this.series.push(0);
         }
-      } else if (this.$auth.check("ROLE_FORWARDER")) {
+      } else if (
+        this.$auth.check("ROLE_FORWARDER") ||
+        this.$auth.check("ROLE_SHIPPINGLINE")
+      ) {
         if (_res.data.containerQty != 0) {
-          const x = _res.data.combinedContainerQty / _res.data.containerQty;
+          const x = _res.data.deliveredContainerQty / _res.data.containerQty;
           this.series.push(x * 100);
         } else {
           this.series.push(0);

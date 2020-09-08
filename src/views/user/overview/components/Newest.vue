@@ -1,8 +1,8 @@
 <template>
-  <v-card class="newest" width="450">
+  <v-card class="newest">
     <v-card-title> <h1>Thông báo mới nhất</h1> </v-card-title
     ><v-divider inset class="mb-5"></v-divider>
-    <v-list>
+    <v-list v-if="serverSideOptions.totalItems != 0">
       <v-list-item
         v-for="item in notifications"
         :key="item.id"
@@ -29,6 +29,9 @@
         </v-list-item-icon>
       </v-list-item>
     </v-list>
+    <v-row justify="center" align="center" v-else>
+      <span class="mb-5">Bạn không có thông báo mới nào.</span></v-row
+    >
   </v-card>
 </template>
 <script lang="ts">

@@ -2,10 +2,10 @@
   <v-dialog
     v-model="dialog"
     width="500"
-    height="320"
+    height="310"
     transition="scale-transition"
   >
-    <v-card width="500" height="320" class="card">
+    <v-card width="500" height="310" class="card">
       <v-card-title>
         Đăng nhập
       </v-card-title>
@@ -45,7 +45,14 @@
         >
       </v-card-actions>
       <span class="register">
-        <router-link to="/register">Đăng ký</router-link></span
+        <router-link
+          to="/register"
+          @click.native="
+            dialog = false;
+            scrollTo(0, 0);
+          "
+          >Đăng ký</router-link
+        ></span
       >
     </v-card>
   </v-dialog>
@@ -76,6 +83,7 @@ export default class Login extends Vue {
       username: this.username,
       password: this.password
     });
+    window.scrollTo(0, 0);
   }
 }
 </script>
