@@ -189,7 +189,7 @@
                     ><v-col cols="12"
                       ><v-checkbox
                         v-model="outboundLocal.booking.isFcl"
-                        label="Fcl"
+                        label="Hàng nguyên cont"
                       ></v-checkbox></v-col
                   ></v-row>
                   <v-btn
