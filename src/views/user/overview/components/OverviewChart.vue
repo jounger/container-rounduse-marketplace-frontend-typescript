@@ -3,18 +3,18 @@
     <v-row>
       <h1>
         {{
-          $auth.check("ROLE_FORWARDER")
+          $auth.check("ROLE_FORWARDER") || $auth.check("ROLE_SHIPPINGLINE")
             ? "Container đã hoàn thành"
             : $auth.check("ROLE_MERCHANT")
             ? "Hàng đã giao"
-            : ""
+            : "Số nhà cung cấp mới"
         }}
         trong tháng
       </h1> </v-row
     ><v-divider inset class="mt-5 mb-5"></v-divider>
     <v-card width="450">
       <apexchart
-        v-if="series[0].data.length == 4"
+        v-if="series[0].data.length > 1"
         type="line"
         height="300"
         :options="chartOptions"
@@ -39,7 +39,7 @@ export default class OverviewChart extends Vue {
   series = [
     {
       name: "",
-      data: [] as Array<number>
+      data: [0] as Array<number | null>
     }
   ];
   chartOptions = {
@@ -63,17 +63,23 @@ export default class OverviewChart extends Vue {
       }
     },
     xaxis: {
-      categories: ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"]
+      categories: ["0", "Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"]
     }
   };
   async created() {
     if (this.$auth.check("ROLE_MERCHANT")) {
-      this.series[0].name = "hàng xuất";
-    } else if (this.$auth.check("ROLE_FORWARDER")) {
-      this.series[0].name = "hàng nhập";
+      this.series[0].name = "Hàng xuất";
+    } else if (
+      this.$auth.check("ROLE_FORWARDER") ||
+      this.$auth.check("ROLE_SHIPPINGLINE")
+    ) {
+      this.series[0].name = "Container";
+    } else {
+      this.series[0].name = "Nhà cung cấp";
     }
     const year = this.dateInit.slice(0, 4);
     const month = this.dateInit.slice(5, 7);
+    const day = this.dateInit.slice(8, 10);
     const startDate = year + "-" + month + "-01T00:00";
     let endDate = year + "-" + month + "-31T23:59";
     if (Number(month) == 2) {
@@ -105,43 +111,75 @@ export default class OverviewChart extends Vue {
     });
     if (_resWeek1) {
       if (this.$auth.check("ROLE_MERCHANT")) {
-        this.series[0].data.push(_resWeek1.data.combinedOutbountQty);
-      } else if (this.$auth.check("ROLE_FORWARDER")) {
-        this.series[0].data.push(_resWeek1.data.combinedContainerQty);
+        this.series[0].data.push(_resWeek1.data.deliveredOutbountQty);
+      } else if (
+        this.$auth.check("ROLE_FORWARDER") ||
+        this.$auth.check("ROLE_SHIPPINGLINE")
+      ) {
+        this.series[0].data.push(_resWeek1.data.deliveredContainerQty);
+      } else {
+        this.series[0].data.push(_resWeek1.data.newMemberQty);
       }
     }
-    const _resWeek2 = await overview({
-      startDate: year + "-" + month + "-08T23:59",
-      endDate: year + "-" + month + "-15T23:59"
-    });
-    if (_resWeek2) {
-      if (this.$auth.check("ROLE_MERCHANT")) {
-        this.series[0].data.push(_resWeek1.data.combinedOutbountQty);
-      } else if (this.$auth.check("ROLE_FORWARDER")) {
-        this.series[0].data.push(_resWeek1.data.combinedContainerQty);
+    if (Number(day) > 8) {
+      const _resWeek2 = await overview({
+        startDate: year + "-" + month + "-08T23:59",
+        endDate: year + "-" + month + "-15T23:59"
+      });
+      if (_resWeek2) {
+        if (this.$auth.check("ROLE_MERCHANT")) {
+          this.series[0].data.push(_resWeek2.data.deliveredOutbountQty);
+        } else if (
+          this.$auth.check("ROLE_FORWARDER") ||
+          this.$auth.check("ROLE_SHIPPINGLINE")
+        ) {
+          this.series[0].data.push(_resWeek2.data.deliveredContainerQty);
+        } else {
+          this.series[0].data.push(_resWeek2.data.newMemberQty);
+        }
       }
+    } else {
+      this.series[0].data.push(null);
     }
-    const _resWeek3 = await overview({
-      startDate: year + "-" + month + "-16T23:59",
-      endDate: year + "-" + month + "-23T23:59"
-    });
-    if (_resWeek3) {
-      if (this.$auth.check("ROLE_MERCHANT")) {
-        this.series[0].data.push(_resWeek1.data.combinedOutbountQty);
-      } else if (this.$auth.check("ROLE_FORWARDER")) {
-        this.series[0].data.push(_resWeek1.data.combinedContainerQty);
+    if (Number(day) > 16) {
+      const _resWeek3 = await overview({
+        startDate: year + "-" + month + "-16T23:59",
+        endDate: year + "-" + month + "-23T23:59"
+      });
+      if (_resWeek3) {
+        if (this.$auth.check("ROLE_MERCHANT")) {
+          this.series[0].data.push(_resWeek3.data.deliveredOutbountQty);
+        } else if (
+          this.$auth.check("ROLE_FORWARDER") ||
+          this.$auth.check("ROLE_SHIPPINGLINE")
+        ) {
+          this.series[0].data.push(_resWeek3.data.deliveredContainerQty);
+        } else {
+          this.series[0].data.push(_resWeek3.data.newMemberQty);
+        }
       }
+    } else {
+      this.series[0].data.push(null);
     }
-    const _resWeek4 = await overview({
-      startDate: year + "-" + month + "-24T23:59",
-      endDate: endDate
-    });
-    if (_resWeek4) {
-      if (this.$auth.check("ROLE_MERCHANT")) {
-        this.series[0].data.push(_resWeek1.data.combinedOutbountQty);
-      } else if (this.$auth.check("ROLE_FORWARDER")) {
-        this.series[0].data.push(_resWeek1.data.combinedContainerQty);
+    if (Number(day) > 24) {
+      const _resWeek4 = await overview({
+        startDate: year + "-" + month + "-24T23:59",
+        endDate: endDate
+      });
+      if (_resWeek4) {
+        if (this.$auth.check("ROLE_MERCHANT")) {
+          this.series[0].data.push(_resWeek4.data.deliveredOutbountQty);
+        } else if (
+          this.$auth.check("ROLE_FORWARDER") ||
+          this.$auth.check("ROLE_SHIPPINGLINE")
+        ) {
+          this.series[0].data.push(_resWeek4.data.deliveredContainerQty);
+        } else {
+          this.series[0].data.push(_resWeek4.data.newMemberQty);
+        }
       }
+    } else {
+      this.series[0].data.push(null);
     }
   }
 }

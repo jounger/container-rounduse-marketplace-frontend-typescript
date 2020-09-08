@@ -158,11 +158,6 @@
           <v-stepper-content step="3">
             <v-form ref="finishForm">
               <v-checkbox
-                v-model="autoSendCheckbox"
-                label="Tự động gửi thư mời thầu cho các chủ xe"
-                disabled
-              ></v-checkbox>
-              <v-checkbox
                 v-model="checkbox"
                 label="Tôi đã đọc và đồng ý với các điều khoản sử dụng."
               ></v-checkbox>

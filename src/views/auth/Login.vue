@@ -60,8 +60,8 @@ import FormValidate from "@/mixin/form-validate";
   mixins: [FormValidate]
 })
 export default class Login extends Vue {
-  public username = "admin";
-  public password = "123456";
+  public username = "";
+  public password = "";
   valid = true;
 
   public created() {

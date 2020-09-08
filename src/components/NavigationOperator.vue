@@ -85,6 +85,7 @@ export default class NavigationOperator extends Vue {
     }
   ];
   private moderatorNavigation = [
+    { title: "Trang tổng quan", icon: "equalizer", link: "/overview" },
     {
       title: "Quản lý Đơn đăng ký",
       icon: "account_balance",

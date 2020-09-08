@@ -12,7 +12,7 @@
             Giải pháp tối ưu vỏ container rỗng, tiết kiệm chi phí quy trình xuất
             nhập khẩu của doanh nghiệp.
           </h4>
-          <v-btn to="/register" large>
+          <v-btn to="/register" @click.native="scrollTo(0, 0)" large>
             Đăng ký ngay
           </v-btn>
         </v-col>
@@ -25,7 +25,11 @@
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
-export default class Introduction extends Vue {}
+export default class Introduction extends Vue {
+  scrollTo(x: number, y: number) {
+    window.scrollTo(x, y);
+  }
+}
 </script>
 <style scoped lang="css">
 section {

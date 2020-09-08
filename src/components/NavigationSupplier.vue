@@ -134,6 +134,7 @@ export default class NavigationSupplier extends Vue {
   ];
 
   private shippingLineNavigation = [
+    { title: "Trang tổng quan", icon: "equalizer", link: "/overview" },
     { title: "Thông báo mượn", icon: "tram", link: "/borrow-notify" }
   ];
 

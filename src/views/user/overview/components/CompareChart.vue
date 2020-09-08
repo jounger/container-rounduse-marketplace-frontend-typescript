@@ -4,7 +4,7 @@
       <h1>
         Bảng so sánh
         {{
-          $auth.check("ROLE_FORWARDER")
+          $auth.check("ROLE_FORWARDER") || $auth.check("ROLE_SHIPPINELINE")
             ? "Container"
             : $auth.check("ROLE_MERCHANT")
             ? "hàng xuất"
@@ -85,7 +85,10 @@ export default class CompareChart extends Vue {
     if (this.$auth.check("ROLE_MERCHANT")) {
       this.series[0].name = "Tổng số hàng xuất";
       this.series[1].name = "Số hàng xuất đã giao";
-    } else if (this.$auth.check("ROLE_FORWARDER")) {
+    } else if (
+      this.$auth.check("ROLE_FORWARDER") ||
+      this.$auth.check("ROLE_SHIPPINGLINE")
+    ) {
       this.series[0].name = "Tổng số Container";
       this.series[1].name = "Số Container quay đầu";
     }
@@ -123,10 +126,13 @@ export default class CompareChart extends Vue {
     if (_resWeek1) {
       if (this.$auth.check("ROLE_MERCHANT")) {
         this.series[0].data.push(_resWeek1.data.outboundQty);
-        this.series[1].data.push(_resWeek1.data.combinedOutbountQty);
-      } else if (this.$auth.check("ROLE_FORWARDER")) {
+        this.series[1].data.push(_resWeek1.data.deliveredOutbountQty);
+      } else if (
+        this.$auth.check("ROLE_FORWARDER") ||
+        this.$auth.check("ROLE_SHIPPINGLINE")
+      ) {
         this.series[0].data.push(_resWeek1.data.containerQty);
-        this.series[1].data.push(_resWeek1.data.combinedContainerQty);
+        this.series[1].data.push(_resWeek1.data.deliveredContainerQty);
       }
     }
     const _resWeek2 = await overview({
@@ -136,10 +142,13 @@ export default class CompareChart extends Vue {
     if (_resWeek2) {
       if (this.$auth.check("ROLE_MERCHANT")) {
         this.series[0].data.push(_resWeek2.data.outboundQty);
-        this.series[1].data.push(_resWeek2.data.combinedOutbountQty);
-      } else if (this.$auth.check("ROLE_FORWARDER")) {
+        this.series[1].data.push(_resWeek2.data.deliveredOutbountQty);
+      } else if (
+        this.$auth.check("ROLE_FORWARDER") ||
+        this.$auth.check("ROLE_SHIPPINGLINE")
+      ) {
         this.series[0].data.push(_resWeek2.data.containerQty);
-        this.series[1].data.push(_resWeek2.data.combinedContainerQty);
+        this.series[1].data.push(_resWeek2.data.deliveredContainerQty);
       }
     }
     const _resWeek3 = await overview({
@@ -149,10 +158,13 @@ export default class CompareChart extends Vue {
     if (_resWeek3) {
       if (this.$auth.check("ROLE_MERCHANT")) {
         this.series[0].data.push(_resWeek3.data.outboundQty);
-        this.series[1].data.push(_resWeek3.data.combinedOutbountQty);
-      } else if (this.$auth.check("ROLE_FORWARDER")) {
+        this.series[1].data.push(_resWeek3.data.deliveredOutbountQty);
+      } else if (
+        this.$auth.check("ROLE_FORWARDER") ||
+        this.$auth.check("ROLE_SHIPPINGLINE")
+      ) {
         this.series[0].data.push(_resWeek3.data.containerQty);
-        this.series[1].data.push(_resWeek3.data.combinedContainerQty);
+        this.series[1].data.push(_resWeek3.data.deliveredContainerQty);
       }
     }
     const _resWeek4 = await overview({
@@ -162,10 +174,13 @@ export default class CompareChart extends Vue {
     if (_resWeek4) {
       if (this.$auth.check("ROLE_MERCHANT")) {
         this.series[0].data.push(_resWeek4.data.outboundQty);
-        this.series[1].data.push(_resWeek4.data.combinedOutbountQty);
-      } else if (this.$auth.check("ROLE_FORWARDER")) {
+        this.series[1].data.push(_resWeek4.data.deliveredOutbountQty);
+      } else if (
+        this.$auth.check("ROLE_FORWARDER") ||
+        this.$auth.check("ROLE_SHIPPINGLINE")
+      ) {
         this.series[0].data.push(_resWeek4.data.containerQty);
-        this.series[1].data.push(_resWeek4.data.combinedContainerQty);
+        this.series[1].data.push(_resWeek4.data.deliveredContainerQty);
       }
     }
   }

@@ -188,8 +188,8 @@
                   <v-row
                     ><v-col cols="12"
                       ><v-checkbox
-                        v-model="checkbox"
-                        label="Tôi đã đọc và đồng ý với các điều khoản sử dụng."
+                        v-model="outboundLocal.booking.isFcl"
+                        label="Fcl"
                       ></v-checkbox></v-col
                   ></v-row>
                   <v-btn
