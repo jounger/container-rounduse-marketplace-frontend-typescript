@@ -21,7 +21,7 @@
           </v-btn>
         </v-col>
         <v-col cols="12" md="8">
-          <v-img src="@/assets/images/managecont2.jpg"></v-img>
+          <v-img src="@/assets/images/managecont2.png"></v-img>
         </v-col>
       </v-row>
     </v-container>
