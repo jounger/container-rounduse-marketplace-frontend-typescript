@@ -24,11 +24,6 @@
           đơn vị vận tải (chủ xe vận chuyển hàng hóa) với nhau và với các đơn vị
           chủ hàng (có hàng hóa cần vận chuyển).
         </p>
-        <p>
-          Sàn giao dịch vận tải <strong>CRuM</strong> hay do
-          <strong>nhóm đồ án đại học FPT</strong> thiết kế, điều hành và khai
-          thác.
-        </p>
       </div>
       <p class="mt-15"><a @click="rule = !rule">II. NGUYÊN TẮC HOẠT ĐỘNG</a></p>
       <div v-if="rule" class="mt-10">
